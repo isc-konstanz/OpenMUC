@@ -36,6 +36,7 @@ public class RestChannelConfigMapper {
         rcc.setListening(cc.isListening());
         rcc.setLoggingInterval(cc.getLoggingInterval());
         rcc.setLoggingTimeOffset(cc.getLoggingTimeOffset());
+        rcc.setLoggingSettings(cc.getLoggingSettings());
         rcc.setSamplingGroup(cc.getSamplingGroup());
         rcc.setSamplingInterval(cc.getSamplingInterval());
         rcc.setSamplingTimeOffset(cc.getSamplingTimeOffset());
@@ -65,6 +66,7 @@ public class RestChannelConfigMapper {
                 cc.setListening(rcc.isListening());
                 cc.setLoggingInterval(rcc.getLoggingInterval());
                 cc.setLoggingTimeOffset(rcc.getLoggingTimeOffset());
+                cc.setLoggingSettings(rcc.getLoggingSettings());
                 cc.setSamplingGroup(rcc.getSamplingGroup());
                 cc.setSamplingInterval(rcc.getSamplingInterval());
                 cc.setSamplingTimeOffset(rcc.getSamplingTimeOffset());

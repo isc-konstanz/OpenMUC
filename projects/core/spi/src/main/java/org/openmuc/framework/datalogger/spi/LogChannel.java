@@ -39,4 +39,6 @@ public interface LogChannel {
 
     public Integer getLoggingTimeOffset();
 
+	public String getLoggingSettings();
+
 }

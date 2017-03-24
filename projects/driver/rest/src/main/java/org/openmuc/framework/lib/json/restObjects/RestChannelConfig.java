@@ -41,6 +41,7 @@ public class RestChannelConfig {
     private String samplingGroup = null;
     private Integer loggingInterval = null;
     private Integer loggingTimeOffset = null;
+    private String loggingSettings = null;
     private Boolean disabled = null;
     private List<ServerMapping> serverMappings = null;
 
@@ -155,6 +156,14 @@ public class RestChannelConfig {
     public void setLoggingTimeOffset(Integer loggingTimeOffset) {
         this.loggingTimeOffset = loggingTimeOffset;
     }
+
+	public String getLoggingSettings() {
+		return loggingSettings;
+	}
+
+	public void setLoggingSettings(String settings) {
+		loggingSettings = settings;
+	}
 
     public Boolean isDisabled() {
         return disabled;

@@ -54,6 +54,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     String samplingGroup = null;
     Integer loggingInterval = null;
     Integer loggingTimeOffset = null;
+	String loggingSettings = null;
     Boolean disabled = null;
     List<ServerMapping> serverMappings = null;
 
@@ -232,6 +233,16 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         this.loggingTimeOffset = loggingTimeOffset;
     }
 
+	@Override
+	public String getLoggingSettings() {
+		return loggingSettings;
+	}
+
+	@Override
+	public void setLoggingSettings(String settings) {
+		loggingSettings = settings;
+	}
+
     @Override
     public Boolean isDisabled() {
         return disabled;
@@ -366,6 +377,9 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 else if (childName.equals("loggingTimeOffset")) {
                     config.setLoggingTimeOffset(timeStringToMillis(childNode.getTextContent()));
                 }
+				else if (childName.equals("loggingSettings")) {
+					config.setLoggingSettings(childNode.getTextContent());
+				}
                 else if (childName.equals("disabled")) {
                     String disabledString = childNode.getTextContent().toLowerCase();
                     if (disabledString.equals("true")) {
@@ -487,6 +501,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
+		if (loggingSettings != null) {
+			childElement = document.createElement("loggingSettings");
+			childElement.setTextContent(loggingSettings);
+			parentElement.appendChild(childElement);
+		}
+
         if (disabled != null) {
             childElement = document.createElement("disabled");
             if (disabled) {
@@ -518,6 +538,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         configClone.samplingGroup = samplingGroup;
         configClone.loggingInterval = loggingInterval;
         configClone.loggingTimeOffset = loggingTimeOffset;
+		configClone.loggingSettings = loggingSettings;
         configClone.disabled = disabled;
 
         return configClone;
@@ -638,6 +659,13 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         else {
             configClone.loggingTimeOffset = loggingTimeOffset;
         }
+
+		if (loggingSettings == null) {
+			configClone.loggingSettings = ChannelConfig.LOGGING_SETTINGS_DEFAULT;
+		}
+		else {
+			configClone.loggingSettings = loggingSettings;
+		}
 
         if (disabled == null) {
             configClone.disabled = clonedParentConfig.disabled;

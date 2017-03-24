@@ -31,18 +31,26 @@ public class LogChannelTestImpl implements LogChannel {
     private final ValueType valueType;
     private final Integer loggingInterval;
     private final Integer loggingTimeOffset;
+	private final String loggingSettings;
     private Integer valueLength;
 
     public LogChannelTestImpl(String id, String description, String unit, ValueType valueType, Integer loggingInterval,
-            Integer loggingTimeOffset) {
+            Integer loggingTimeOffset, String loggingSettings) {
 
-        this.id = id;
-        this.description = description;
-        this.unit = unit;
-        this.valueType = valueType;
-        this.loggingInterval = loggingInterval;
-        this.loggingTimeOffset = loggingTimeOffset;
+		this.id = id;
+		this.description = description;
+		this.unit = unit;
+		this.valueType = valueType;
+		this.loggingInterval = loggingInterval;
+		this.loggingTimeOffset = loggingTimeOffset;
+		this.loggingSettings = loggingSettings;
     }
+
+	public LogChannelTestImpl(String id, String description, String unit, ValueType valueType, Integer loggingInterval,
+			Integer loggingTimeOffset) {
+
+		this(id, description, unit, valueType, loggingInterval, loggingTimeOffset, "");
+	}
 
     public LogChannelTestImpl(String id, String description, String unit, ValueType valueType, Integer loggingInterval,
             Integer loggingTimeOffset, int valueLength) {
@@ -92,4 +100,10 @@ public class LogChannelTestImpl implements LogChannel {
 
         return loggingTimeOffset;
     }
+
+	@Override
+	public String getLoggingSettings() {
+
+		return loggingSettings;
+	}
 }

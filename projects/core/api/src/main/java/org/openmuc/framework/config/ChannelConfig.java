@@ -40,6 +40,7 @@ public interface ChannelConfig {
     static final String SAMPLING_GROUP_DEFAULT = "";
     static final int LOGGING_INTERVAL_DEFAULT = -1;
     static final int LOGGING_TIME_OFFSET_DEFAULT = 0;
+	static final String LOGGING_SETTINGS_DEFAULT = "";
 
     String getId();
 
@@ -96,6 +97,10 @@ public interface ChannelConfig {
     Integer getLoggingTimeOffset();
 
     void setLoggingTimeOffset(Integer offset);
+
+	String getLoggingSettings();
+
+	void setLoggingSettings(String settings);
 
     Boolean isDisabled();
 
