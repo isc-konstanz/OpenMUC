@@ -20,6 +20,10 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.DeviceConfig;
 import org.openmuc.framework.config.IdCollisionException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
@@ -29,13 +33,19 @@ public class RestDeviceConfigMapper {
     public static RestDeviceConfig getRestDeviceConfig(DeviceConfig dc) {
 
         RestDeviceConfig rdc = new RestDeviceConfig();
-        rdc.setConnectRetryInterval(dc.getConnectRetryInterval());
+        rdc.setId(dc.getId());
         rdc.setDescription(dc.getDescription());
         rdc.setDeviceAddress(dc.getDeviceAddress());
-        rdc.isDisabled(dc.isDisabled());
-        rdc.setId(dc.getId());
-        rdc.setSamplingTimeout(dc.getSamplingTimeout());
         rdc.setSettings(dc.getSettings());
+        rdc.setSamplingTimeout(dc.getSamplingTimeout());
+        rdc.setConnectRetryInterval(dc.getConnectRetryInterval());
+        rdc.isDisabled(dc.isDisabled());
+        rdc.setDriver(dc.getDriver().getId());
+        List<String> channelIds = new ArrayList<String>(dc.getChannels().size());
+        for (ChannelConfig dvc : dc.getChannels()) {
+            channelIds.add(dvc.getId());
+        }
+        rdc.setChannels(channelIds);
         return rdc;
     }
 
@@ -51,12 +61,12 @@ public class RestDeviceConfigMapper {
                 if (rdc.getId() != null && !rdc.getId().equals("") && !idFromUrl.equals(rdc.getId())) {
                     dc.setId(rdc.getId());
                 }
-                dc.setConnectRetryInterval(rdc.getConnectRetryInterval());
                 dc.setDescription(rdc.getDescription());
                 dc.setDeviceAddress(rdc.getDeviceAddress());
-                dc.setDisabled(rdc.getDisabled());
                 dc.setSamplingTimeout(rdc.getSamplingTimeout());
+                dc.setConnectRetryInterval(rdc.getConnectRetryInterval());
                 dc.setSettings(rdc.getSettings());
+                dc.setDisabled(rdc.getDisabled());
             }
             else {
                 throw new RestConfigIsNotCorrectException();

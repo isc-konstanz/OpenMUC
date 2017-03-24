@@ -28,6 +28,7 @@ public class Const {
     public static final String DRIVERS = "drivers";
     public static final String USERS = "users";
     public static final String RECORDS = "records";
+	public static final String STATES = "states";
 
     public static final String ALIAS_CHANNELS = "/rest/channels";
     public static final String ALIAS_DEVICES = "/rest/devices";
@@ -42,6 +43,7 @@ public class Const {
     public static final String ID = "id";
     public static final String FLAG = "flag";
     public static final String CONFIGS = "configs";
+    public static final String PARAMETERS = "parameters";
     public static final String INFOS = "infos";
     public static final String SCAN = "scan";
     public static final String WRITE = "write";
@@ -58,6 +60,7 @@ public class Const {
     public static final String VALUETYPELENGTH = "valueTypeLength";
     public static final String GROUPS = "groups";
 
+    public static final String CHANNEL = "channel";
     public static final String DEVICE = "device";
     public static final String DRIVER = "driver";
     public static final String SCAN_PROGRESS_INFO = "scanProgressInfo";

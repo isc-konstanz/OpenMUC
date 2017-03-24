@@ -23,7 +23,9 @@ package org.openmuc.framework.server.restws.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -77,7 +79,7 @@ public class DeviceResourceServlet extends GenericServlet {
             String deviceID, configField;
             String pathInfo = pathAndQueryString[0];
             String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            List<String> deviceList = doGetDeviceList();
+            List<String> deviceList = doGetDeviceIds();
 
             response.setStatus(HttpServletResponse.SC_OK);
 
@@ -86,6 +88,12 @@ public class DeviceResourceServlet extends GenericServlet {
             if (pathInfo.equals("/")) {
                 json.addStringList(Const.DEVICES, deviceList);
             }
+			else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.STATES)) {
+				json.addDeviceStateList(doGetDeviceStates());
+			}
+			else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
+				json.addDeviceConfigList(doGetDeviceList());
+			}
             else {
                 deviceID = pathInfoArray[0].replace("/", "");
 
@@ -101,6 +109,13 @@ public class DeviceResourceServlet extends GenericServlet {
                     else if (pathInfoArray[1].equalsIgnoreCase(Const.STATE)) {
                         json.addDeviceState(deviceState);
                     }
+					else if (pathInfoArray.length == 3 && pathInfoArray[1].equalsIgnoreCase(Const.INFOS) && pathInfoArray[2].equalsIgnoreCase(Const.PARAMETERS)) {
+						try {
+							json.addDeviceInfoParameters(configService.getDriverInfo(rootConfig.getDevice(deviceID).getDriver().getId()));
+						} catch (DriverNotAvailableException e) {
+                            throw new IOException(e);
+						}
+					}
                     else if (pathInfoArray.length > 1 && pathInfoArray[1].equals(Const.CHANNELS)) {
                         json.addChannelList(deviceChannelList);
                         json.addDeviceState(deviceState);
@@ -280,24 +295,44 @@ public class DeviceResourceServlet extends GenericServlet {
         return deviceChannelList;
     }
 
-    private List<String> doGetDeviceList() {
+	private Map<String, DeviceState> doGetDeviceStates() {
 
-        List<String> deviceList = new ArrayList<>();
+		Map<String, DeviceState> states = new HashMap<String, DeviceState>();
 
-        Collection<DriverConfig> driverConfig;
-        driverConfig = rootConfig.getDrivers();
+		for (String id : doGetDeviceIds()) {
+			states.put(id, configService.getDeviceState(id));
+		}
+		return states;
+	}
 
-        Collection<DeviceConfig> deviceConfig = new ArrayList<>();
+	private List<DeviceConfig> doGetDeviceList() {
 
-        for (DriverConfig drvCfg : driverConfig) {
-            String driverId = drvCfg.getId();
-            deviceConfig.addAll(rootConfig.getDriver(driverId).getDevices());
-        }
-        for (DeviceConfig devCfg : deviceConfig) {
-            deviceList.add(devCfg.getId());
-        }
-        return deviceList;
-    }
+		List<DeviceConfig> deviceList = new ArrayList<DeviceConfig>();
+
+		Collection<DriverConfig> driverConfig;
+		driverConfig = rootConfig.getDrivers();
+
+		Collection<DeviceConfig> deviceConfig = new ArrayList<DeviceConfig>();
+
+		for (DriverConfig drvCfg : driverConfig) {
+			String driverId = drvCfg.getId();
+			deviceConfig.addAll(rootConfig.getDriver(driverId).getDevices());
+		}
+		for (DeviceConfig devCfg : deviceConfig) {
+			deviceList.add(devCfg);
+		}
+		return deviceList;
+	}
+
+	private List<String> doGetDeviceIds() {
+
+		List<String> deviceList = new ArrayList<String>();
+		
+		for (DeviceConfig devCfg : doGetDeviceList()) {
+			deviceList.add(devCfg.getId());
+		}
+		return deviceList;
+	}
 
     private void doGetConfigField(ToJson json, String deviceID, String configField, HttpServletResponse response)
             throws IOException {

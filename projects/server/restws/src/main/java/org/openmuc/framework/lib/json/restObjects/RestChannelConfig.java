@@ -41,8 +41,9 @@ public class RestChannelConfig {
     private String samplingGroup = null;
     private Integer loggingInterval = null;
     private Integer loggingTimeOffset = null;
-    private String loggingSettings = null;
-    private Boolean disabled = null;
+	private String loggingSettings = null;
+	private Boolean disabled = null;
+	private String device = null;
     private List<ServerMapping> serverMappings = null;
 
     public String getId() {
@@ -162,7 +163,7 @@ public class RestChannelConfig {
 	}
 
 	public void setLoggingSettings(String settings) {
-		loggingSettings = settings;
+		this.loggingSettings = settings;
 	}
 
     public Boolean isDisabled() {
@@ -172,6 +173,14 @@ public class RestChannelConfig {
     public void setDisabled(Boolean disabled) {
         this.disabled = disabled;
     }
+
+	public String getDevice() {
+		return device;
+	}
+
+	public void setDevice(String device) {
+		this.device = device;
+	}
 
     public List<ServerMapping> getServerMappings() {
         return serverMappings;

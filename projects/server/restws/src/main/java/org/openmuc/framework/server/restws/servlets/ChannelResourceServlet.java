@@ -32,6 +32,7 @@ import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.ConfigService;
 import org.openmuc.framework.config.ConfigWriteException;
 import org.openmuc.framework.config.DeviceConfig;
+import org.openmuc.framework.config.DriverNotAvailableException;
 import org.openmuc.framework.config.IdCollisionException;
 import org.openmuc.framework.config.RootConfig;
 import org.openmuc.framework.data.Flag;
@@ -83,11 +84,27 @@ public class ChannelResourceServlet extends GenericServlet {
             if (pathInfo.equals("/")) {
                 doGetAllChannels(json);
             }
+			else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.STATES)) {
+				json.addChannelStateList(doGetChannelList());
+			}
+			else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
+				json.addChannelConfigList(doGetChannelConfigList());
+			}
             else {
                 channelID = pathInfoArray[0].replace("/", "");
                 if (pathInfoArray.length == 1) {
                     doGetSpecificChannel(json, channelID, response);
                 }
+				else if (pathInfoArray[1].equalsIgnoreCase(Const.STATE)) {
+					json.addChannelState(dataAccess.getChannel(channelID).getChannelState());
+				}
+				else if (pathInfoArray.length == 3 && pathInfoArray[1].equalsIgnoreCase(Const.INFOS) && pathInfoArray[2].equalsIgnoreCase(Const.PARAMETERS)) {
+					try {
+						json.addChannelInfoParameters(configService.getDriverInfo(rootConfig.getChannel(channelID).getDevice().getDriver().getId()));
+					} catch (DriverNotAvailableException e) {
+                        throw new IOException(e);
+					}
+				}
                 else if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
                     doGetConfigs(json, channelID, response);
                 }
@@ -439,6 +456,30 @@ public class ChannelResourceServlet extends GenericServlet {
         }
         json.addChannelRecordList(channels);
     }
+
+	private List<Channel> doGetChannelList() {
+
+		List<String> ids = dataAccess.getAllIds();
+		List<Channel> channels = new ArrayList<Channel>(ids.size());
+		
+		for (String id : ids) {
+			channels.add(dataAccess.getChannel(id));
+
+		}
+		return channels;
+	}
+
+	private List<ChannelConfig> doGetChannelConfigList() {
+
+		List<String> ids = dataAccess.getAllIds();
+		List<ChannelConfig> channels = new ArrayList<ChannelConfig>(ids.size());
+		
+		for (String id : ids) {
+			channels.add(rootConfig.getChannel(id));
+
+		}
+		return channels;
+	}
 
     private void doSetRecord(String channelID, HttpServletResponse response, FromJson json) throws ClassCastException {
 

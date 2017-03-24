@@ -33,6 +33,7 @@ public class RestChannelConfigMapper {
         rcc.setDescription(cc.getDescription());
         rcc.setDisabled(cc.isDisabled());
         rcc.setId(cc.getId());
+        rcc.setDevice(cc.getDevice().getId());
         rcc.setListening(cc.isListening());
         rcc.setLoggingInterval(cc.getLoggingInterval());
         rcc.setLoggingTimeOffset(cc.getLoggingTimeOffset());

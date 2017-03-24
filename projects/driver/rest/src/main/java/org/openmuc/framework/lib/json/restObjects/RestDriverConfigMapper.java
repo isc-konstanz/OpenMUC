@@ -20,6 +20,10 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openmuc.framework.config.DeviceConfig;
 import org.openmuc.framework.config.DriverConfig;
 import org.openmuc.framework.config.IdCollisionException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
@@ -33,6 +37,11 @@ public class RestDriverConfigMapper {
         rdc.setConnectRetryInterval(dc.getConnectRetryInterval());
         rdc.setDisabled(dc.isDisabled());
         rdc.setSamplingTimeout(dc.getSamplingTimeout());
+		List<String> deviceIds = new ArrayList<String>(dc.getDevices().size());
+		for (DeviceConfig dvc : dc.getDevices()) {
+			deviceIds.add(dvc.getId());
+		}
+		rdc.setDevices(deviceIds);
         return rdc;
     }
 
