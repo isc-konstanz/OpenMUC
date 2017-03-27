@@ -101,6 +101,12 @@ public class SnmpChannel implements Channel {
         return 0;
     }
 
+	@Override
+	public String getLoggingSettings() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
     @Override
     public String getDriverName() {
         // TODO Auto-generated method stub

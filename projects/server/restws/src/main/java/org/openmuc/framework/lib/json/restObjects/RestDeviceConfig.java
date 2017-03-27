@@ -20,19 +20,15 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
-import java.util.List;
-
 public class RestDeviceConfig {
 
-    private String id;
-    private String description = null;
-    private String deviceAddress = null;
-    private String settings = null;
-    private Integer samplingTimeout = null;
-    private Integer connectRetryInterval = null;
-    private Boolean disabled = null;
-	private String driver = null;
-	private List<String> channels = null;
+	protected String id;
+	protected String description = null;
+	protected String deviceAddress = null;
+	protected String settings = null;
+	protected Integer samplingTimeout = null;
+	protected Integer connectRetryInterval = null;
+	protected Boolean disabled = null;
 
     // Device device = null;
 
@@ -91,21 +87,5 @@ public class RestDeviceConfig {
     public void isDisabled(Boolean disabled) {
         this.disabled = disabled;
     }
-
-	public String getDriver() {
-		return driver;
-	}
-
-	public void setDriver(String driver) {
-		this.driver = driver;
-	}
-
-	public List<String> getChannels() {
-		return channels;
-	}
-
-	public void setChannels(List<String> channels) {
-		this.channels = channels;
-	}
 
 }

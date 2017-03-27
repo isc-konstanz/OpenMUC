@@ -135,6 +135,13 @@ public interface Channel {
     int getLoggingTimeOffset();
 
     /**
+     * Returns the channel's configured logging settings. Returns the empty string if not configured.
+     * 
+     * @return the channel's configured logging settings.
+     */
+    String getLoggingSettings();
+
+    /**
      * Returns the unique name of the communication driver that is used by this channel to read/write data.
      * 
      * @return the unique name of the communication driver that is used by this channel to read/write data.

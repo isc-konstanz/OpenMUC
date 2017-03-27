@@ -22,7 +22,9 @@ package org.openmuc.framework.server.restws.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +34,6 @@ import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.ConfigService;
 import org.openmuc.framework.config.ConfigWriteException;
 import org.openmuc.framework.config.DeviceConfig;
-import org.openmuc.framework.config.DriverNotAvailableException;
 import org.openmuc.framework.config.IdCollisionException;
 import org.openmuc.framework.config.RootConfig;
 import org.openmuc.framework.data.Flag;
@@ -82,35 +83,34 @@ public class ChannelResourceServlet extends GenericServlet {
             ToJson json = new ToJson();
 
             if (pathInfo.equals("/")) {
-                doGetAllChannels(json);
+                doGetChannelList(json);
             }
-			else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.STATES)) {
-				json.addChannelStateList(doGetChannelList());
-			}
-			else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
-				json.addChannelConfigList(doGetChannelConfigList());
-			}
+            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.STATES)) {
+                doGetStateList(json);
+            }
+            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
+                doGetConfigsList(json);
+            }
+            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.DETAILS)) {
+                doGetDetailsList(json);
+            }
             else {
                 channelID = pathInfoArray[0].replace("/", "");
                 if (pathInfoArray.length == 1) {
-                    doGetSpecificChannel(json, channelID, response);
+                    doGetChannel(json, channelID, response);
                 }
-				else if (pathInfoArray[1].equalsIgnoreCase(Const.STATE)) {
-					json.addChannelState(dataAccess.getChannel(channelID).getChannelState());
-				}
-				else if (pathInfoArray.length == 3 && pathInfoArray[1].equalsIgnoreCase(Const.INFOS) && pathInfoArray[2].equalsIgnoreCase(Const.PARAMETERS)) {
-					try {
-						json.addChannelInfoParameters(configService.getDriverInfo(rootConfig.getChannel(channelID).getDevice().getDriver().getId()));
-					} catch (DriverNotAvailableException e) {
-                        throw new IOException(e);
-					}
-				}
+                else if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.STATE)) {
+                    doGetState(json, channelID, response);
+                }
                 else if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
                     doGetConfigs(json, channelID, response);
                 }
                 else if (pathInfoArray.length == 3 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
                     configField = pathInfoArray[2];
                     doGetConfigField(json, channelID, configField, response);
+                }
+                else if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.DETAILS)) {
+                    doGetDetails(json, channelID, response);
                 }
                 else if (pathInfoArray.length == 2 && pathInfoArray[1].startsWith(Const.HISTORY)) {
                     fromParameter = request.getParameter("from");
@@ -247,6 +247,88 @@ public class ChannelResourceServlet extends GenericServlet {
         }
     }
 
+    private void doGetChannelList(ToJson json) {
+
+        List<String> ids = dataAccess.getAllIds();
+        List<Channel> channels = new ArrayList<Channel>(ids.size());
+
+        for (String id : ids) {
+            channels.add(dataAccess.getChannel(id));
+        }
+        json.addChannelRecordList(channels);
+    }
+
+    private void doGetStateList(ToJson json) {
+
+        List<String> ids = dataAccess.getAllIds();
+        List<Channel> channels = new ArrayList<Channel>(ids.size());
+
+        for (String id : ids) {
+            channels.add(dataAccess.getChannel(id));
+        }
+        json.addChannelStateList(channels);
+    }
+
+    private void doGetConfigsList(ToJson json) {
+
+        List<String> ids = dataAccess.getAllIds();
+        List<ChannelConfig> configs = new ArrayList<ChannelConfig>(ids.size());
+        
+        for (String id : ids) {
+            configs.add(rootConfig.getChannel(id));
+        }
+        json.addChannelConfigList(configs);
+    }
+
+    private void doGetDetailsList(ToJson json) {
+
+        List<String> ids = dataAccess.getAllIds();
+        Map<Channel, ChannelConfig> details = new HashMap<Channel, ChannelConfig>(ids.size());
+        
+        for (String id : ids) {
+            details.put(dataAccess.getChannel(id), rootConfig.getChannel(id));
+        }
+        json.addChannelDetailList(details);
+    }
+
+    private void doGetChannel(ToJson json, String chId, HttpServletResponse response) throws IOException {
+
+        Channel channel = dataAccess.getChannel(chId);
+        if (channel != null) {
+            Record record = channel.getLatestRecord();
+            json.addRecord(record, channel.getValueType());
+        }
+        else {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                    "Requested rest channel is not available, ChannelID = " + chId);
+        }
+    }
+
+    private void doGetState(ToJson json, String chId, HttpServletResponse response) throws IOException {
+
+        Channel channel = dataAccess.getChannel(chId);
+        if (channel != null) {
+            json.addChannelState(channel.getChannelState());
+        }
+        else {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                    "Requested rest channel is not available, ChannelID = " + chId);
+        }
+    }
+
+    private void doGetConfigs(ToJson json, String channelID, HttpServletResponse response) throws IOException {
+
+        ChannelConfig channelConfig = rootConfig.getChannel(channelID);
+
+        if (channelConfig != null) {
+            json.addChannelConfig(channelConfig);
+        }
+        else {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                    "Requested rest channel is not available.", " ChannelID = ", channelID);
+        }
+    }
+
     private void doGetConfigField(ToJson json, String channelID, String configField, HttpServletResponse response)
             throws IOException {
 
@@ -278,12 +360,13 @@ public class ChannelResourceServlet extends GenericServlet {
         }
     }
 
-    private void doGetConfigs(ToJson json, String channelID, HttpServletResponse response) throws IOException {
+    private void doGetDetails(ToJson json, String channelID, HttpServletResponse response) throws IOException {
 
+        Channel channel = dataAccess.getChannel(channelID);
         ChannelConfig channelConfig = rootConfig.getChannel(channelID);
 
-        if (channelConfig != null) {
-            json.addChannelConfig(channelConfig);
+        if (channel != null || channelConfig != null) {
+            json.addChannelDetail(channel, channelConfig);
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
@@ -431,55 +514,6 @@ public class ChannelResourceServlet extends GenericServlet {
         }
         return ok;
     }
-
-    private void doGetSpecificChannel(ToJson json, String chId, HttpServletResponse response) throws IOException {
-
-        Channel channel = dataAccess.getChannel(chId);
-        if (channel != null) {
-            Record record = channel.getLatestRecord();
-            json.addRecord(record, channel.getValueType());
-        }
-        else {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest channel is not available, ChannelID = " + chId);
-        }
-    }
-
-    private void doGetAllChannels(ToJson json) {
-
-        List<String> ids = dataAccess.getAllIds();
-        List<Channel> channels = new ArrayList<>(ids.size());
-
-        for (String id : ids) {
-            channels.add(dataAccess.getChannel(id));
-
-        }
-        json.addChannelRecordList(channels);
-    }
-
-	private List<Channel> doGetChannelList() {
-
-		List<String> ids = dataAccess.getAllIds();
-		List<Channel> channels = new ArrayList<Channel>(ids.size());
-		
-		for (String id : ids) {
-			channels.add(dataAccess.getChannel(id));
-
-		}
-		return channels;
-	}
-
-	private List<ChannelConfig> doGetChannelConfigList() {
-
-		List<String> ids = dataAccess.getAllIds();
-		List<ChannelConfig> channels = new ArrayList<ChannelConfig>(ids.size());
-		
-		for (String id : ids) {
-			channels.add(rootConfig.getChannel(id));
-
-		}
-		return channels;
-	}
 
     private void doSetRecord(String channelID, HttpServletResponse response, FromJson json) throws ClassCastException {
 

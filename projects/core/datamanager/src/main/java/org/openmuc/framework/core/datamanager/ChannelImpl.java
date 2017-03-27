@@ -153,6 +153,11 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
+    public String getLoggingSettings() {
+        return config.loggingSettings;
+    }
+
+    @Override
     public String getDriverName() {
         return config.deviceParent.driverParent.id;
     }

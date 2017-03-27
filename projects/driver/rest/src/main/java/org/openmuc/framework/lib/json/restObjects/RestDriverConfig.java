@@ -20,15 +20,12 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
-import java.util.List;
-
 public class RestDriverConfig {
 
-    private String id = "";
-    private Integer samplingTimeout = null;
-    private Integer connectRetryInterval = null;
-    private Boolean disabled = null;
-	private List<String> devices = null;
+	protected String id = "";
+	protected Integer samplingTimeout = null;
+	protected Integer connectRetryInterval = null;
+	protected Boolean disabled = null;
 
     public String getId() {
         return id;
@@ -61,12 +58,4 @@ public class RestDriverConfig {
     public void setDisabled(Boolean disabled) {
         this.disabled = disabled;
     }
-
-	public List<String> getDevices() {
-		return devices;
-	}
-
-	public void setDevices(List<String> devices) {
-		this.devices = devices;
-	}
 }

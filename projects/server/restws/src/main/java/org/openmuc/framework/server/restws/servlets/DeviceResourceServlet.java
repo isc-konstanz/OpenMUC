@@ -79,7 +79,7 @@ public class DeviceResourceServlet extends GenericServlet {
             String deviceID, configField;
             String pathInfo = pathAndQueryString[0];
             String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            List<String> deviceList = doGetDeviceIds();
+            List<String> deviceList = doGetDeviceIdList();
 
             response.setStatus(HttpServletResponse.SC_OK);
 
@@ -88,12 +88,15 @@ public class DeviceResourceServlet extends GenericServlet {
             if (pathInfo.equals("/")) {
                 json.addStringList(Const.DEVICES, deviceList);
             }
-			else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.STATES)) {
-				json.addDeviceStateList(doGetDeviceStates());
-			}
-			else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
-				json.addDeviceConfigList(doGetDeviceList());
-			}
+            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.STATES)) {
+                doGetStateList(json);
+            }
+            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
+                doGetConfigsList(json);
+            }
+            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.DETAILS)) {
+                doGetDetailsList(json);
+            }
             else {
                 deviceID = pathInfoArray[0].replace("/", "");
 
@@ -109,13 +112,6 @@ public class DeviceResourceServlet extends GenericServlet {
                     else if (pathInfoArray[1].equalsIgnoreCase(Const.STATE)) {
                         json.addDeviceState(deviceState);
                     }
-					else if (pathInfoArray.length == 3 && pathInfoArray[1].equalsIgnoreCase(Const.INFOS) && pathInfoArray[2].equalsIgnoreCase(Const.PARAMETERS)) {
-						try {
-							json.addDeviceInfoParameters(configService.getDriverInfo(rootConfig.getDevice(deviceID).getDriver().getId()));
-						} catch (DriverNotAvailableException e) {
-                            throw new IOException(e);
-						}
-					}
                     else if (pathInfoArray.length > 1 && pathInfoArray[1].equals(Const.CHANNELS)) {
                         json.addChannelList(deviceChannelList);
                         json.addDeviceState(deviceState);
@@ -126,6 +122,9 @@ public class DeviceResourceServlet extends GenericServlet {
                     else if (pathInfoArray.length == 3 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
                         configField = pathInfoArray[2];
                         doGetConfigField(json, deviceID, configField, response);
+                    }
+                    else if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.DETAILS)) {
+                        doGetDetails(json, deviceID, response);
                     }
                     else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN)) {
                         String settings = request.getParameter(Const.SETTINGS);
@@ -283,56 +282,88 @@ public class DeviceResourceServlet extends GenericServlet {
         return channelList;
     }
 
-    private List<Channel> doGetDeviceChannelList(String deviceID) {
+    private List<DeviceConfig> getDeviceConfigs() {
 
-        List<Channel> deviceChannelList = new ArrayList<>();
-        Collection<ChannelConfig> channelConfig;
+        List<DeviceConfig> deviceConfigs = new ArrayList<DeviceConfig>();
 
-        channelConfig = rootConfig.getDevice(deviceID).getChannels();
-        for (ChannelConfig chCf : channelConfig) {
-            deviceChannelList.add(dataAccess.getChannel(chCf.getId()));
+        Collection<DriverConfig> driverConfigs;
+        driverConfigs = rootConfig.getDrivers();
+
+        for (DriverConfig drvCfg : driverConfigs) {
+            String driverId = drvCfg.getId();
+            deviceConfigs.addAll(rootConfig.getDriver(driverId).getDevices());
         }
-        return deviceChannelList;
+        return deviceConfigs;
     }
 
-	private Map<String, DeviceState> doGetDeviceStates() {
+    private List<String> doGetDeviceIdList() {
 
-		Map<String, DeviceState> states = new HashMap<String, DeviceState>();
+        List<String> deviceList = new ArrayList<String>();
 
-		for (String id : doGetDeviceIds()) {
-			states.put(id, configService.getDeviceState(id));
-		}
-		return states;
-	}
+        Collection<DeviceConfig> deviceConfigs = getDeviceConfigs();
+        for (DeviceConfig devCfg : deviceConfigs) {
+            deviceList.add(devCfg.getId());
+        }
+        return deviceList;
+    }
 
-	private List<DeviceConfig> doGetDeviceList() {
+    private void doGetStateList(ToJson json) {
 
-		List<DeviceConfig> deviceList = new ArrayList<DeviceConfig>();
+        Map<String, DeviceState> deviceStates = new HashMap<String, DeviceState>();
 
-		Collection<DriverConfig> driverConfig;
-		driverConfig = rootConfig.getDrivers();
+        Collection<DeviceConfig> deviceConfigs = getDeviceConfigs();
+        for (DeviceConfig devCfg : deviceConfigs) {
+            String deviceId = devCfg.getId();
+            deviceStates.put(deviceId, configService.getDeviceState(deviceId));
+        }
+        json.addDeviceStateList(deviceStates);
+    }
 
-		Collection<DeviceConfig> deviceConfig = new ArrayList<DeviceConfig>();
+    private void doGetConfigsList(ToJson json) {
 
-		for (DriverConfig drvCfg : driverConfig) {
-			String driverId = drvCfg.getId();
-			deviceConfig.addAll(rootConfig.getDriver(driverId).getDevices());
-		}
-		for (DeviceConfig devCfg : deviceConfig) {
-			deviceList.add(devCfg);
-		}
-		return deviceList;
-	}
+        List<DeviceConfig> deviceConfigs = getDeviceConfigs();
+        
+        json.addDeviceConfigList(deviceConfigs);
+    }
 
-	private List<String> doGetDeviceIds() {
+    private void doGetDetailsList(ToJson json) {
 
-		List<String> deviceList = new ArrayList<String>();
-		
-		for (DeviceConfig devCfg : doGetDeviceList()) {
-			deviceList.add(devCfg.getId());
-		}
-		return deviceList;
-	}
+        Map<DeviceState, DeviceConfig> deviceDetails = new HashMap<DeviceState, DeviceConfig>();
+
+        Collection<DeviceConfig> deviceConfigs = getDeviceConfigs();
+        for (DeviceConfig config : deviceConfigs) {
+            deviceDetails.put(configService.getDeviceState(config.getId()), config);
+        }
+        json.addDeviceDetailList(deviceDetails);
+    }
+
+    private void doGetConfigs(ToJson json, String deviceID, HttpServletResponse response) throws IOException {
+
+        DeviceConfig deviceConfig;
+        deviceConfig = rootConfig.getDevice(deviceID);
+
+        if (deviceConfig != null) {
+            json.addDeviceConfig(deviceConfig);
+        }
+        else {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                    "Requested rest device is not available.", " DeviceID = ", deviceID);
+        }
+    }
+
+    private void doGetDetails(ToJson json, String deviceID, HttpServletResponse response) throws IOException {
+
+        DeviceConfig deviceConfig;
+        deviceConfig = rootConfig.getDevice(deviceID);
+
+        if (deviceConfig != null) {
+            json.addDeviceDetail(configService.getDeviceState(deviceConfig.getId()), deviceConfig);
+        }
+        else {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                    "Requested rest device is not available.", " DeviceID = ", deviceID);
+        }
+    }
 
     private void doGetConfigField(ToJson json, String deviceID, String configField, HttpServletResponse response)
             throws IOException {
@@ -365,18 +396,16 @@ public class DeviceResourceServlet extends GenericServlet {
         }
     }
 
-    private void doGetConfigs(ToJson json, String deviceID, HttpServletResponse response) throws IOException {
+    private List<Channel> doGetDeviceChannelList(String deviceID) {
 
-        DeviceConfig deviceConfig;
-        deviceConfig = rootConfig.getDevice(deviceID);
+        List<Channel> deviceChannelList = new ArrayList<>();
+        Collection<ChannelConfig> channelConfig;
 
-        if (deviceConfig != null) {
-            json.addDeviceConfig(deviceConfig);
+        channelConfig = rootConfig.getDevice(deviceID).getChannels();
+        for (ChannelConfig chCf : channelConfig) {
+            deviceChannelList.add(dataAccess.getChannel(chCf.getId()));
         }
-        else {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest device is not available.", " DeviceID = ", deviceID);
-        }
+        return deviceChannelList;
     }
 
     private boolean setAndWriteDeviceConfig(String deviceID, HttpServletResponse response, FromJson json,
