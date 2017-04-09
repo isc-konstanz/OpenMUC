@@ -6,27 +6,34 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.csv.settings.DeviceSettings;
+import org.openmuc.framework.config.info.Settings;
+import org.openmuc.framework.driver.csv.ESampleMode;
+import org.openmuc.framework.driver.csv.settings.CsvDeviceOptions;
 
 public class ChannelFactory {
 
     public static HashMap<String, CsvChannel> createChannelMap(Map<String, List<String>> csvMap,
-            DeviceSettings settings) throws ArgumentSyntaxException {
+            Settings settings) throws ArgumentSyntaxException {
 
         HashMap<String, CsvChannel> channelMap = new HashMap<String, CsvChannel>();
-
-        switch (settings.samplingMode()) {
+        
+        boolean rewind;
+        if (settings.contains(CsvDeviceOptions.REWIND)) {
+            rewind = settings.getBoolean(CsvDeviceOptions.REWIND);
+        }
+        else rewind = CsvDeviceOptions.REWIND_DEFAULT;
+        ESampleMode samplingMode = ESampleMode.valueOf(settings.getString(CsvDeviceOptions.SAMPLING_MODE).toUpperCase());
+        switch (samplingMode) {
         case UNIXTIMESTAMP:
-
             channelMap = ChannelFactory.createMapUnixtimestamp(csvMap);
             break;
 
         case HHMMSS:
-            channelMap = ChannelFactory.createMapHHMMSS(csvMap, settings.rewind());
+            channelMap = ChannelFactory.createMapHHMMSS(csvMap, rewind);
             break;
 
         case LINE:
-            channelMap = ChannelFactory.createMapLine(csvMap, settings.rewind());
+            channelMap = ChannelFactory.createMapLine(csvMap, rewind);
             break;
 
         default:

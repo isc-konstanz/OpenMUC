@@ -40,6 +40,7 @@ import org.openmuc.framework.lib.json.restObjects.RestDeviceConfig;
 import org.openmuc.framework.lib.json.restObjects.RestDeviceConfigMapper;
 import org.openmuc.framework.lib.json.restObjects.RestDriverConfig;
 import org.openmuc.framework.lib.json.restObjects.RestDriverConfigMapper;
+import org.openmuc.framework.lib.json.restObjects.RestDriverSyntax;
 import org.openmuc.framework.lib.json.restObjects.RestRecord;
 import org.openmuc.framework.lib.json.restObjects.RestScanProgressInfo;
 import org.openmuc.framework.lib.json.restObjects.RestUserConfig;
@@ -159,9 +160,18 @@ public class ToJson {
         jsonObject.add(Const.CHANNELS, jsa);
     }
 
-    public void addDriverInfo(DriverInfo driverInfo) {
+    public void addDriverSyntax(DriverInfo driverInfo) {
 
-        jsonObject.add(Const.INFOS, gson.toJsonTree(driverInfo));
+    	RestDriverSyntax restDriverSyntax = new RestDriverSyntax();
+    	restDriverSyntax.setId(driverInfo.getId());
+    	restDriverSyntax.setDescription(driverInfo.getDescription());
+    	restDriverSyntax.setDeviceAddressSyntax(driverInfo.getDeviceAddressSyntax());
+    	restDriverSyntax.setDeviceSettingsSyntax(driverInfo.getDeviceSettingsSyntax());
+    	restDriverSyntax.setDeviceScanSettingsSyntax(driverInfo.getChannelScanSettingsSyntax());
+    	restDriverSyntax.setChannelAddressSyntax(driverInfo.getChannelAddressSyntax());
+    	restDriverSyntax.setChannelScanSettingsSyntax(driverInfo.getChannelScanSettingsSyntax());
+    	
+        jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverSyntax, RestDriverSyntax.class).getAsJsonObject());
     }
 
     public void addDriverConfig(DriverConfig config) {

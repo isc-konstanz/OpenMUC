@@ -123,7 +123,7 @@ public class DriverResourceServlet extends GenericServlet {
                             DriverInfo driverInfo;
                             try {
                                 driverInfo = configService.getDriverInfo(driverID);
-                                json.addDriverInfo(driverInfo);
+                                json.addDriverSyntax(driverInfo);
                             } catch (DriverNotAvailableException e) {
                                 throw new IOException(e);
                             }
