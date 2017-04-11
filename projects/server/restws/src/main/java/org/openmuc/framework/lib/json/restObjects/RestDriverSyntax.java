@@ -20,6 +20,8 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
+import org.openmuc.framework.config.DriverInfo;
+
 public class RestDriverSyntax {
 
     private String id;
@@ -84,6 +86,20 @@ public class RestDriverSyntax {
 
     public void setChannelScanSettingsSyntax(String channelScanSettingsSyntax) {
         this.channelScanSettingsSyntax = channelScanSettingsSyntax;
+    }
+
+    public static RestDriverSyntax setDriverSyntax(DriverInfo driverInfo) {
+
+        RestDriverSyntax restDriverSyntax = new RestDriverSyntax();
+        restDriverSyntax.setId(driverInfo.getId());
+        restDriverSyntax.setDescription(driverInfo.getDescription());
+        restDriverSyntax.setDeviceAddressSyntax(driverInfo.getDeviceAddressSyntax());
+        restDriverSyntax.setDeviceSettingsSyntax(driverInfo.getDeviceSettingsSyntax());
+        restDriverSyntax.setDeviceScanSettingsSyntax(driverInfo.getChannelScanSettingsSyntax());
+        restDriverSyntax.setChannelAddressSyntax(driverInfo.getChannelAddressSyntax());
+        restDriverSyntax.setChannelScanSettingsSyntax(driverInfo.getChannelScanSettingsSyntax());
+    
+        return restDriverSyntax;
     }
 
 }

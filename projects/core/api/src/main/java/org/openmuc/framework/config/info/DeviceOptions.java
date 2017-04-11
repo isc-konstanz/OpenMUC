@@ -55,6 +55,10 @@ public abstract class DeviceOptions extends DeviceInfo {
     public Settings parseAddress(String address) throws ArgumentSyntaxException {
         return this.address.parse(address);
     }
+    
+    public OptionCollection getAddress() {
+        return this.address;
+    }
 
     @Override
     public String getAddressSyntax() {
@@ -78,6 +82,10 @@ public abstract class DeviceOptions extends DeviceInfo {
     public Settings parseSettings(String settings) throws ArgumentSyntaxException {
         return this.settings.parse(settings);
     }
+    
+    public OptionCollection getSettings() {
+        return this.settings;
+    }
 
     @Override
     public String getSettingsSyntax() {
@@ -100,6 +108,10 @@ public abstract class DeviceOptions extends DeviceInfo {
 
     public Settings parseScanSettings(String scanSettings) throws ArgumentSyntaxException {
         return this.scanSettings.parse(scanSettings);
+    }
+    
+    public OptionCollection getScanSettings() {
+        return this.scanSettings;
     }
 
     @Override

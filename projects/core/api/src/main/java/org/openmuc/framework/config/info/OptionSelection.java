@@ -202,6 +202,10 @@ public class OptionSelection {
     public void addString(String name, String value) {
         this.addValue(name, new StringValue(value));
     }
+    
+    public Map<String, Value> getOptions() {
+    	return options;
+    }
 
     @Override
     public String toString() {

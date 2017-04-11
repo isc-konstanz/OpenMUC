@@ -14,7 +14,7 @@ public abstract class ChannelInfo {
 
     public abstract String getScanSettingsSyntax();
 
-    public static OptionCollection config() {
+    public static OptionCollection configs() {
         
         OptionCollection config = new OptionCollection();
         config.add(samplingInterval());
@@ -47,7 +47,7 @@ public abstract class ChannelInfo {
         
         Option samplingTimeOffset = new Option("samplingTimeOffset", "Sampling time offset", ValueType.INTEGER);
         samplingTimeOffset.setMandatory(false);
-        samplingTimeOffset.setDefaultValue(new IntValue(0));
+        samplingTimeOffset.setValueDefault(new IntValue(0));
         samplingTimeOffset.setValueSelection(OptionSelection.timeSelection());
         
         return samplingTimeOffset;
@@ -68,7 +68,7 @@ public abstract class ChannelInfo {
         Option listening = new Option("listening", "Listening", ValueType.BOOLEAN);
         listening.setDescription("Determines if this channel shall passively listen for incoming value changes from the driver.");
         listening.setMandatory(false);
-        listening.setDefaultValue(new BooleanValue(false));
+        listening.setValueDefault(new BooleanValue(false));
         
         return listening;
     }
@@ -88,7 +88,7 @@ public abstract class ChannelInfo {
         
         Option loggingTimeOffset = new Option("loggingTimeOffset", "Logging time offset", ValueType.INTEGER);
         loggingTimeOffset.setMandatory(false);
-        loggingTimeOffset.setDefaultValue(new IntValue(0));
+        loggingTimeOffset.setValueDefault(new IntValue(0));
         loggingTimeOffset.setValueSelection(OptionSelection.timeSelection());
         
         return loggingTimeOffset;
@@ -110,7 +110,7 @@ public abstract class ChannelInfo {
         valueType.setDescription("Data type of the channel.</br>"
             + "Data loggers may use this setting. Driver implementations do NOT receive this settings.");
         valueType.setMandatory(false);
-        valueType.setDefaultValue(new StringValue("DOUBLE"));
+        valueType.setValueDefault(new StringValue("DOUBLE"));
         
         return valueType;
     }
@@ -130,7 +130,7 @@ public abstract class ChannelInfo {
         Option isReadable = new Option("isReadable", "Readable", ValueType.BOOLEAN);
         isReadable.setDescription("For information only (info can be accessed by an app or driver).");
         isReadable.setMandatory(false);
-        isReadable.setDefaultValue(new BooleanValue(false));
+        isReadable.setValueDefault(new BooleanValue(false));
         
         return isReadable;
     }
@@ -140,7 +140,7 @@ public abstract class ChannelInfo {
         Option isWritable = new Option("isWritable", "Writable", ValueType.BOOLEAN);
         isWritable.setDescription("For information only (info can be accessed by an app or driver).");
         isWritable.setMandatory(false);
-        isWritable.setDefaultValue(new BooleanValue(false));
+        isWritable.setValueDefault(new BooleanValue(false));
         
         return isWritable;
     }

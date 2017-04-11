@@ -129,7 +129,7 @@ public class DriverInfo {
         return channelInfo.getScanSettingsSyntax();
     }
 
-    public static OptionCollection config() {
+    public static OptionCollection configs() {
         
         OptionCollection config = new OptionCollection();
         config.add(samplingTimeout());
@@ -144,7 +144,7 @@ public class DriverInfo {
         samplingTimeout.setDescription("Default time waited for a read operation of any Device to complete, "
                 + "if the Device doesn’t set a sampling timeout on its own.");
         samplingTimeout.setMandatory(false);
-        samplingTimeout.setDefaultValue(new IntValue(0));
+        samplingTimeout.setValueDefault(new IntValue(0));
         samplingTimeout.setValueSelection(OptionSelection.timeSelection());
         
         return samplingTimeout;
@@ -156,7 +156,7 @@ public class DriverInfo {
         connectRetryInterval.setDescription("Default time waited until a failed connection attempt of any Device is repeated, "
                 + "if the Device doesn’t set a connect retry interval on its own.");
         connectRetryInterval.setMandatory(false);
-        connectRetryInterval.setDefaultValue(new IntValue(60000));
+        connectRetryInterval.setValueDefault(new IntValue(60000));
         connectRetryInterval.setValueSelection(OptionSelection.timeSelection());
         
         return connectRetryInterval;

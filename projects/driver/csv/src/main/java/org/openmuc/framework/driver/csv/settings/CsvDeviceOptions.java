@@ -108,7 +108,7 @@ public class CsvDeviceOptions extends DeviceOptions {
         selection.addString("Closest hour, minute, second", "hhmmss");
         selection.addString("Line by line", "line");
         samplingMode.setValueSelection(selection);
-        samplingMode.setDefaultValue(new StringValue(SAMPLING_MODE_DEFAULT.toString()));
+        samplingMode.setValueDefault(new StringValue(SAMPLING_MODE_DEFAULT.toString()));
         
         return samplingMode;
     }
@@ -118,7 +118,7 @@ public class CsvDeviceOptions extends DeviceOptions {
         Option rewind = new Option(REWIND, "Rewind", ValueType.BOOLEAN);
         rewind.setDescription("Start from the beginning of the file again, when the end was reached.");
         rewind.setMandatory(false);
-        rewind.setDefaultValue(new BooleanValue(REWIND_DEFAULT));
+        rewind.setValueDefault(new BooleanValue(REWIND_DEFAULT));
         
         return rewind;
     }

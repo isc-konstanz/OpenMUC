@@ -32,19 +32,19 @@ public class Option {
     protected boolean mandatory = true;
     protected String description = null;
 
-    protected Value defaultValue = null;
+    protected Value valueDefault = null;
     protected OptionSelection valueSelection = null;
 
     public Option(String key, String name, ValueType type, 
             boolean mandatory, String description, 
-            Value defaultValue, OptionSelection valueSelection) {
+            Value valueDefault, OptionSelection valueSelection) {
         
         this.key = key;
         this.name = name;
         this.type = type;
         this.mandatory = mandatory;
         this.description = description;
-        this.defaultValue = defaultValue;
+        this.valueDefault = valueDefault;
         this.valueSelection = valueSelection;
     }
 
@@ -83,12 +83,12 @@ public class Option {
         this.description = description;
     }
 
-    public Value getDefaultValue() {
-        return defaultValue;
+    public Value getValueDefault() {
+        return valueDefault;
     }
 
-    public void setDefaultValue(Value defaultValue) {
-        this.defaultValue = defaultValue;
+    public void setValueDefault(Value valueDefault) {
+        this.valueDefault = valueDefault;
     }
 
     public OptionSelection getValueSelection() {

@@ -14,7 +14,7 @@ public abstract class DeviceInfo {
 
     public abstract String getScanSettingsSyntax();
 
-    public static OptionCollection configOptions() {
+    public static OptionCollection configs() {
         
         OptionCollection config = new OptionCollection();
         config.add(samplingTimeout());
@@ -28,7 +28,7 @@ public abstract class DeviceInfo {
         Option samplingTimeout = new Option("samplingTimeout", "Sampling timeout", ValueType.INTEGER);
         samplingTimeout.setDescription("Time waited for a read operation to complete. Overwrites the sampling timeout of its Driver.");
         samplingTimeout.setMandatory(false);
-        samplingTimeout.setDefaultValue(new IntValue(0));
+        samplingTimeout.setValueDefault(new IntValue(0));
         samplingTimeout.setValueSelection(OptionSelection.timeSelection());
         
         return samplingTimeout;
@@ -39,7 +39,7 @@ public abstract class DeviceInfo {
         Option connectRetryInterval = new Option("connectRetryInterval", "Connect retry interval", ValueType.INTEGER);
         connectRetryInterval.setDescription("Time waited until a failed connection attempt is repeated. Overwrites the connect retry interval of its Driver.");
         connectRetryInterval.setMandatory(false);
-        connectRetryInterval.setDefaultValue(new IntValue(60000));
+        connectRetryInterval.setValueDefault(new IntValue(60000));
         connectRetryInterval.setValueSelection(OptionSelection.timeSelection());
         
         return connectRetryInterval;

@@ -54,6 +54,10 @@ public abstract class ChannelOptions extends ChannelInfo {
         return this.address.parse(address);
     }
 
+    public OptionCollection getAddress() {
+        return this.address;
+    }
+
     @Override
     public String getAddressSyntax() {
         return this.address.syntax();
@@ -75,6 +79,10 @@ public abstract class ChannelOptions extends ChannelInfo {
 
     public Settings parseScanSettings(String scanSettings) throws ArgumentSyntaxException {
         return this.scanSettings.parse(scanSettings);
+    }
+    
+    public OptionCollection getScanSettings() {
+        return this.scanSettings;
     }
 
     @Override

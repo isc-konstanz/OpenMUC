@@ -38,12 +38,16 @@ import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
 
 public class OptionCollection {
+
+	public static final String DELIMITER_DEFAULT = ",";
+	public static final String KEY_VAL_SEP_DEFAULT = ":";
+	public static final boolean KEY_VAL_DEFAULT = true;
     
     private final List<Option> options;
 
-    private String delimiter = ",";
-    private String keyValueSeparator = ":";
-    private Boolean keyValue = true;
+    private String delimiter = DELIMITER_DEFAULT;
+    private String keyValueSeparator = KEY_VAL_SEP_DEFAULT;
+    private boolean keyValue = KEY_VAL_DEFAULT;
     private Locale locale = Locale.ENGLISH;
     
     private int mandatoryOptCount = 0;
@@ -75,12 +79,28 @@ public class OptionCollection {
         return add(key, key, type);
     }
 
+    public List<Option> getOptions() {
+        return options;
+    }
+    
+    public String getDelimiter() {
+        return delimiter;
+    }
+
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;
+    }
+    
+    public String getKeyValueSeperator() {
+        return keyValueSeparator;
     }
 
     public void setKeyValueSeperator(String separator) {
         this.keyValueSeparator = separator;
+    }
+    
+    public boolean hasKeyValuePairs() {
+        return keyValue;
     }
 
     public void enableKeyValuePairs(boolean enable) {

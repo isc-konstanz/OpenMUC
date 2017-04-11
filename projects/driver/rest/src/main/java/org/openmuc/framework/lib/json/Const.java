@@ -42,6 +42,7 @@ public class Const {
     public static final String ID = "id";
     public static final String FLAG = "flag";
     public static final String CONFIGS = "configs";
+    public static final String DETAILS = "details";
     public static final String INFOS = "infos";
     public static final String SCAN = "scan";
     public static final String WRITE = "write";
@@ -58,6 +59,7 @@ public class Const {
     public static final String VALUETYPELENGTH = "valueTypeLength";
     public static final String GROUPS = "groups";
 
+    public static final String CHANNEL = "channel";
     public static final String DEVICE = "device";
     public static final String DRIVER = "driver";
     public static final String SCAN_PROGRESS_INFO = "scanProgressInfo";
