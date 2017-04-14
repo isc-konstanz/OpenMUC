@@ -1,15 +1,17 @@
 package org.openmuc.framework.driver.csv;
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.driver.csv.settings.DeviceScanSettings;
-import org.openmuc.framework.driver.csv.settings.DeviceSettings;
+import org.openmuc.framework.config.info.ChannelOptions;
+import org.openmuc.framework.config.info.DeviceOptions;
+import org.openmuc.framework.config.info.Settings;
+import org.openmuc.framework.driver.csv.settings.CsvChannelOptions;
+import org.openmuc.framework.driver.csv.settings.CsvDeviceOptions;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -32,21 +34,16 @@ public class CsvDriver implements DriverService {
     // Settings seperator = ;
     // Settings comment = #
 
-    private final static String DEFAULT_SETTINGS = DeviceSettings.Option.SAMPLINGMODE.name() + "="
-            + ESampleMode.LINE.toString();
+    private final static String DEFAULT_SETTINGS = CsvDeviceOptions.SAMPLING_MODE + "="
+            + CsvDeviceOptions.SAMPLING_MODE_DEFAULT.toString();
 
     private final static String ID = "csv";
-    private final static String DESCRIPTION = "Driver to read out csv files.";
-    private final static String DEVICE_ADDRESS = "csv file path e.g. /home/usr/bin/openmuc/csv/meter.csv";
-    private final static String DEVICE_SETTINGS = DeviceSettings.syntax(DeviceSettings.class) + "\n samplingmode: "
-            + Arrays.toString(ESampleMode.values()).toLowerCase() + " Example: samplingmode=line;rewind=true Default: "
-            + DEFAULT_SETTINGS.toLowerCase();
-    private final static String CHANNEL_ADDRESS = "column header of csv file";
-    private final static String DEVICE_SCAN_SETTINGS = DeviceScanSettings.syntax(DeviceScanSettings.class)
-            + " path of directory containing csv files e.g: path=/home/usr/bin/openmuc/csv/.";
-
-    private final static DriverInfo DRIVER_INFO = new DriverInfo(ID, DESCRIPTION, DEVICE_ADDRESS, DEVICE_SETTINGS,
-            CHANNEL_ADDRESS, DEVICE_SCAN_SETTINGS);
+    private final static String NAME = "CSV";
+    private final static String DESCRIPTION = "The CSV Driver reads out values from configured files. "
+            + "Several columns from different CSV files may be read line by line or by index.";
+    private final static DeviceOptions DEVICE_OPTIONS = new CsvDeviceOptions();
+    private final static ChannelOptions CHANNEL_OPTIONS = new CsvChannelOptions();
+    private final static DriverInfo DRIVER_INFO = new DriverInfo(ID, NAME, DESCRIPTION, DEVICE_OPTIONS, CHANNEL_OPTIONS);
 
     private boolean isDeviceScanInterrupted = false;
 
@@ -64,8 +61,19 @@ public class CsvDriver implements DriverService {
         // reset interrupted flag on start of scan
         isDeviceScanInterrupted = false;
 
-        DeviceScanSettings deviceScanSettings = new DeviceScanSettings(settings);
-        File[] listOfFiles = deviceScanSettings.path().listFiles();
+        Settings deviceScanSettings = DEVICE_OPTIONS.parseScanSettings(settings);
+        String path = deviceScanSettings.getString(CsvDeviceOptions.PATH_DIR);
+        File[] listOfFiles;
+        if (!path.isEmpty()) {
+            File file = new File(path);
+            if (!file.isDirectory()) {
+                throw new ArgumentSyntaxException("<path> argument must point to a directory.");
+            }
+            listOfFiles = file.listFiles();
+        }
+        else {
+            throw new ArgumentSyntaxException("<path> argument must point to a directory.");
+        }
 
         if (listOfFiles != null) {
 

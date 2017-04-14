@@ -28,6 +28,10 @@ import org.openmuc.framework.config.DriverConfig;
 
 public class RestDriverDetail extends RestDriverConfig {
 
+	public RestDriverDetail() {
+		super();
+	}
+	
     protected List<String> devices = null;
 
     public List<String> getDevices() {

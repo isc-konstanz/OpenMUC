@@ -27,6 +27,10 @@ import org.openmuc.framework.dataaccess.ChannelState;
 
 public class RestChannelDetail extends RestChannelConfig {
 
+	public RestChannelDetail() {
+		super();
+	}
+
 	protected String device = null;
 	protected Flag flag = null;
 	protected ChannelState state = null;

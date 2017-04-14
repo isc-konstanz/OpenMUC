@@ -132,11 +132,29 @@ public class DriverResourceServlet extends GenericServlet {
                             DriverInfo driverInfo;
                             try {
                                 driverInfo = configService.getDriverInfo(driverID);
-                                if (pathInfoArray.length == 3) {
-                                    json.addDriverInfoDetails(driverInfo, pathInfoArray[2]);
+                                if (pathInfoArray.length == 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
+                                    json.addDriverInfo(driverInfo, true);
+                                }
+                                else if (pathInfoArray.length > 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
+                                    switch(pathInfoArray[3]) {
+                                    case Const.DRIVER:
+                                        json.addDriverInfo(driverInfo, false);
+                                        break;
+                                    case Const.DEVICE:
+                                        json.addDeviceInfo(driverInfo);
+                                        break;
+                                    case Const.CHANNEL:
+                                        json.addChannelInfo(driverInfo);
+                                        break;
+                                    default:
+                                        ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                                            "Requested rest path is not available.", " Path Info = ", request.getPathInfo());
+                                        
+                                        break;
+                                    }
                                 }
                                 else {
-                                    json.addDriverInfo(driverInfo);
+                                    json.addDriverSyntax(driverInfo);
                                 }
                             } catch (DriverNotAvailableException e) {
                                 throw new IOException(e);

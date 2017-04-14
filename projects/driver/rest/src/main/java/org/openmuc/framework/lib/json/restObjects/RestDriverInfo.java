@@ -20,111 +20,82 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.LinkedList;
-
 import org.openmuc.framework.config.DriverInfo;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-
 public class RestDriverInfo {
-	
-	private static final Charset CHARSET = Charset.forName("UTF-8");
 
-	String description;
-	LinkedList<RestParameterInfo> scanSettings = null;
-	RestParameterSyntax scanSettingsSyntax = null;
-	LinkedList<RestParameterInfo> config = null;
+    private String id;
+    private String name;
+    private String description;
 
-	public String getDescription() {
-		return description;
-	}
+    private RestDeviceInfo device;
+    private RestChannelInfo channel;
+    private RestOptionCollection configs;
 
-	public RestParameterSyntax getScanSettingsSyntax() {
-		return scanSettingsSyntax;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public LinkedList<RestParameterInfo> getConfig() {
-		return config;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	private void addDefaultFromResource(Path infoPath) throws IOException {
+    public String getName() {
+        return name;
+    }
 
-		if (Files.exists(infoPath)) {
-			byte[] encoded = Files.readAllBytes(infoPath);
-			String infoString = new String(encoded, CHARSET);
-			
-			if (config == null) {
-				config = new LinkedList<RestParameterInfo>();
-			}
-			
-			Gson gson = new Gson();
-			JsonArray jsa = gson.fromJson(infoString.replaceAll("\r", "").replaceAll("\n", "").replaceAll("\t", ""), JsonArray.class);
-			for (JsonElement objectJson : jsa) {
-				RestParameterInfo parameter = gson.fromJson(objectJson, RestParameterInfo.class);
-				config.add(parameter);
-			}
-		}
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	private static LinkedList<RestParameterInfo> getSyntaxParameter(String name, String syntax) {
+    public String getDescription() {
+        return description;
+    }
 
-		LinkedList<RestParameterInfo> list = new LinkedList<RestParameterInfo>();
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-		RestParameterInfo parameter = new RestParameterInfo();
-		parameter.id = name.toLowerCase();
-		parameter.name = name;
-		parameter.type = RestParameterType.TEXT;
-		
-		if (syntax != null && !syntax.toLowerCase().replace(".", "").equals("na") && !syntax.equals("?")) {
-			parameter.description = "Syntax: " + syntax;
-			parameter.required = true;
-		}
-		else {
-			parameter.description = null;
-			parameter.required = false;
-		}
-		list.add(parameter);
-		
-		return list;
-	}
+    public RestDeviceInfo getDevice() {
+        return device;
+    }
 
-	public static RestDriverInfo getInfoFromResource(DriverInfo info) throws IOException {
+    public void setDevice(RestDeviceInfo device) {
+        this.device = device;
+    }
 
-		String infoDirName = System.getProperty("org.openmuc.framework.driverinfo");
-		if (infoDirName == null) {
-			infoDirName = "lib/info/";
-		}
-		if (!infoDirName.endsWith("/")) {
-			infoDirName += "/";
-		}
-		Path infoPath = Paths.get(infoDirName + info.getId() + "/driver.json");
-		
-		RestDriverInfo restInfo;
-		if (!Files.exists(infoPath)) {
-			
-			restInfo = new RestDriverInfo();
-			restInfo.description = info.getDescription();
-			restInfo.scanSettings = getSyntaxParameter("settings", info.getDeviceScanSettingsSyntax());
-			restInfo.scanSettingsSyntax = new RestParameterSyntax(";");
-		}
-		else {
-			byte[] encoded = Files.readAllBytes(infoPath);
-			String infoString = new String(encoded, CHARSET);
-			
-			restInfo = new Gson().fromJson(infoString.replaceAll("\r", "").replaceAll("\n", "").replaceAll("\t", ""), RestDriverInfo.class);
-			if (restInfo.scanSettings != null && restInfo.scanSettingsSyntax == null) restInfo.scanSettingsSyntax = new RestParameterSyntax(":", ",");
-		}
-		
-		// Get default info json from resources
-		restInfo.addDefaultFromResource(Paths.get(infoDirName + "default/driver.json"));
-		
-		return restInfo;
-	}
+    public RestChannelInfo getChannel() {
+        return channel;
+    }
+
+    public void setChannel(RestChannelInfo channel) {
+        this.channel = channel;
+    }
+
+    public RestOptionCollection getConfigs() {
+        return configs;
+    }
+
+    public void setConfigs(RestOptionCollection configs) {
+        this.configs = configs;
+    }
+
+    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo, boolean detail) {
+
+        RestDriverInfo restDriverInfo = new RestDriverInfo();
+        restDriverInfo.setId(driverInfo.getId());
+        restDriverInfo.setName(driverInfo.getName());
+        restDriverInfo.setDescription(driverInfo.getDescription());
+        
+        if (detail) {
+            restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
+            restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
+        }
+        RestOptionCollection configs = RestOptionCollection.setOptionCollection(DriverInfo.configs());
+        configs.setSyntax(null);
+        restDriverInfo.setConfigs(configs);
+        
+        return restDriverInfo;
+    }
+
 }

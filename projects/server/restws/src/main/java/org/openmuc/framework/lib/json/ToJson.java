@@ -20,7 +20,6 @@
  */
 package org.openmuc.framework.lib.json;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +48,7 @@ import org.openmuc.framework.lib.json.restObjects.RestDriverConfig;
 import org.openmuc.framework.lib.json.restObjects.RestDriverConfigMapper;
 import org.openmuc.framework.lib.json.restObjects.RestDriverDetail;
 import org.openmuc.framework.lib.json.restObjects.RestDriverInfo;
+import org.openmuc.framework.lib.json.restObjects.RestDriverSyntax;
 import org.openmuc.framework.lib.json.restObjects.RestRecord;
 import org.openmuc.framework.lib.json.restObjects.RestScanProgressInfo;
 import org.openmuc.framework.lib.json.restObjects.RestUserConfig;
@@ -189,25 +189,28 @@ public class ToJson {
         jsonObject.add(Const.CHANNELS, jsa);
     }
 
-    public void addDriverInfo(DriverInfo driverInfo) {
+    public void addDriverSyntax(DriverInfo driverInfo) {
 
-        jsonObject.add(Const.INFOS, gson.toJsonTree(driverInfo));
+        RestDriverSyntax restDriverSyntax = RestDriverSyntax.setDriverSyntax(driverInfo);
+        jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverSyntax, RestDriverSyntax.class).getAsJsonObject());
     }
 
-    public void addDriverInfoDetails(DriverInfo driverInfo, String type) throws IOException {
+    public void addDriverInfo(DriverInfo driverInfo, boolean detail) {
 
-        if (type.equals(Const.DRIVER)) {
-            RestDriverInfo restInfo = RestDriverInfo.getInfoFromResource(driverInfo);
-            jsonObject.add(Const.INFOS, gson.toJsonTree(restInfo, RestDriverInfo.class).getAsJsonObject());
-        }    
-        else if (type.equals(Const.DEVICE)) {
-            RestDeviceInfo restInfo = RestDeviceInfo.getInfoFromResource(driverInfo);
-            jsonObject.add(Const.INFOS, gson.toJsonTree(restInfo, RestDeviceInfo.class).getAsJsonObject());
-        }
-        else if (type.equals(Const.CHANNEL)) {
-            RestChannelInfo restInfo = RestChannelInfo.getInfoFromResource(driverInfo);
-            jsonObject.add(Const.INFOS, gson.toJsonTree(restInfo, RestChannelInfo.class).getAsJsonObject());
-        }
+        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfo(driverInfo, detail);
+        jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
+    }
+
+    public void addDeviceInfo(DriverInfo driverInfo) {
+
+        RestDeviceInfo restDeviceInfo = RestDeviceInfo.getRestDeviceInfo(driverInfo);
+        jsonObject.add(Const.INFOS, gson.toJsonTree(restDeviceInfo, RestDeviceInfo.class).getAsJsonObject());
+    }
+
+    public void addChannelInfo(DriverInfo driverInfo) {
+
+        RestChannelInfo restChannelInfo = RestChannelInfo.getRestChannelInfo(driverInfo);
+        jsonObject.add(Const.INFOS, gson.toJsonTree(restChannelInfo, RestChannelInfo.class).getAsJsonObject());
     }
 
     public void addDriverConfig(DriverConfig config) {

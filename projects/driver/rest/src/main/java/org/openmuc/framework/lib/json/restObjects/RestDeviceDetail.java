@@ -29,6 +29,10 @@ import org.openmuc.framework.dataaccess.DeviceState;
 
 public class RestDeviceDetail extends RestDeviceConfig {
 
+	public RestDeviceDetail() {
+		super();
+	}
+	
 	protected String driver = null;
 	protected DeviceState state = null;
 	protected List<String> channels = null;
