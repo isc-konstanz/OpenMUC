@@ -64,7 +64,7 @@ public class RestChannelInfo {
         this.configs = configs;
     }
 
-    public static RestChannelInfo setChannelInfo(DriverInfo driverInfo) {
+    public static RestChannelInfo getRestChannelInfo(DriverInfo driverInfo) {
 
         RestChannelInfo restChannelInfo = new RestChannelInfo();
         if (driverInfo.getChannelInfo() instanceof ChannelOptions) {

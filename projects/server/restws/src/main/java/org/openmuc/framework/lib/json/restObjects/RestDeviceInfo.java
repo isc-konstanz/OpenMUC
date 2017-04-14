@@ -20,7 +20,6 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
-import org.openmuc.framework.config.ChannelInfo;
 import org.openmuc.framework.config.DeviceInfo;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.info.DeviceOptions;
@@ -74,7 +73,7 @@ public class RestDeviceInfo {
         this.configs = configs;
     }
 
-    public static RestDeviceInfo setDeviceInfo(DriverInfo driverInfo) {
+    public static RestDeviceInfo getRestDeviceInfo(DriverInfo driverInfo) {
 
         RestDeviceInfo restDeviceInfo = new RestDeviceInfo();
         if (driverInfo.getDeviceInfo() instanceof DeviceOptions) {

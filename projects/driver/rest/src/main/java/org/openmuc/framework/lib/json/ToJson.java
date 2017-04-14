@@ -171,19 +171,19 @@ public class ToJson {
 
     public void addDriverInfo(DriverInfo driverInfo, boolean detail) {
 
-        RestDriverInfo restDriverInfo = RestDriverInfo.setDriverInfo(driverInfo, detail);
+        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfo(driverInfo, detail);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
     }
 
     public void addDeviceInfo(DriverInfo driverInfo) {
 
-        RestDeviceInfo restDeviceInfo = RestDeviceInfo.setDeviceInfo(driverInfo);
+        RestDeviceInfo restDeviceInfo = RestDeviceInfo.getRestDeviceInfo(driverInfo);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDeviceInfo, RestDeviceInfo.class).getAsJsonObject());
     }
 
     public void addChannelInfo(DriverInfo driverInfo) {
 
-        RestChannelInfo restChannelInfo = RestChannelInfo.setChannelInfo(driverInfo);
+        RestChannelInfo restChannelInfo = RestChannelInfo.getRestChannelInfo(driverInfo);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restChannelInfo, RestChannelInfo.class).getAsJsonObject());
     }
 

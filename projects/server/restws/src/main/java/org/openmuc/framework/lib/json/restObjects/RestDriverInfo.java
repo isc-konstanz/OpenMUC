@@ -80,7 +80,7 @@ public class RestDriverInfo {
         this.configs = configs;
     }
 
-    public static RestDriverInfo setDriverInfo(DriverInfo driverInfo, boolean detail) {
+    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo, boolean detail) {
 
         RestDriverInfo restDriverInfo = new RestDriverInfo();
         restDriverInfo.setId(driverInfo.getId());
@@ -88,8 +88,8 @@ public class RestDriverInfo {
         restDriverInfo.setDescription(driverInfo.getDescription());
         
         if (detail) {
-            restDriverInfo.setDevice(RestDeviceInfo.setDeviceInfo(driverInfo));
-            restDriverInfo.setChannel(RestChannelInfo.setChannelInfo(driverInfo));
+            restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
+            restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
         }
         RestOptionCollection configs = RestOptionCollection.setOptionCollection(DriverInfo.configs());
         configs.setSyntax(null);
