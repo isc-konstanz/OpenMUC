@@ -23,7 +23,9 @@ package org.openmuc.framework.server.restws.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -99,7 +101,7 @@ public class DriverResourceServlet extends GenericServlet {
                 json.addDriverConfigList(new ArrayList<DriverConfig>(rootConfig.getDrivers()));
             }
             else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.DETAILS)) {
-                json.addDriverDetailList(new ArrayList<DriverConfig>(rootConfig.getDrivers()));
+                doGetDetailsList(json);
             }
             else {
                 String driverID = pathInfoArray[0].replace("/", "");
@@ -380,6 +382,21 @@ public class DriverResourceServlet extends GenericServlet {
         return ok;
     }
 
+    private void doGetDetailsList(ToJson json) throws IOException {
+
+        Map<DriverInfo, DriverConfig> driverDetails = new HashMap<DriverInfo, DriverConfig>();
+        try {
+            Collection<DriverConfig> driverConfigs = rootConfig.getDrivers();
+            for (DriverConfig config : driverConfigs) {
+                driverDetails.put(configService.getDriverInfo(config.getId()), config);
+            }
+            json.addDriverDetailList(driverDetails);
+            
+        } catch (DriverNotAvailableException e) {
+            throw new IOException(e);
+        }
+    }
+
     private void doGetConfigs(ToJson json, String drvId, HttpServletResponse response) throws IOException {
 
         DriverConfig driverConfig = rootConfig.getDriver(drvId);
@@ -427,13 +444,17 @@ public class DriverResourceServlet extends GenericServlet {
     private void doGetDetails(ToJson json, String drvId, HttpServletResponse response) throws IOException {
 
         DriverConfig driverConfig = rootConfig.getDriver(drvId);
-
-        if (driverConfig != null) {
-            json.addDriverDetail(driverConfig);
-        }
-        else {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest driver is not available.", " driverID = ", drvId);
+        try {
+            if (driverConfig != null) {
+                json.addDriverDetail(configService.getDriverInfo(drvId), driverConfig);
+            }
+            else {
+                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                        "Requested rest driver is not available.", " driverID = ", drvId);
+            }
+            
+        } catch (DriverNotAvailableException e) {
+            throw new IOException(e);
         }
     }
 

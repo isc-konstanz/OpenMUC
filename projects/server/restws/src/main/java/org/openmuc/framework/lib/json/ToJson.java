@@ -230,18 +230,18 @@ public class ToJson {
         jsonObject.add(Const.CONFIGS, jsa);
     }
 
-    public void addDriverDetail(DriverConfig config) {
+    public void addDriverDetail(DriverInfo info, DriverConfig config) {
 
-        RestDriverDetail restDetail = RestDriverDetail.getRestDriverDetail(config);
+        RestDriverDetail restDetail = RestDriverDetail.getRestDriverDetail(info, config);
         jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestDriverDetail.class).getAsJsonObject());
     }
 
-    public void addDriverDetailList(List<DriverConfig> detailList) {
+    public void addDriverDetailList(Map<DriverInfo, DriverConfig> detailList) {
 
         JsonArray jsa = new JsonArray();
         
-        for (DriverConfig driverDetail : detailList) {
-            RestDriverDetail restDetail = RestDriverDetail.getRestDriverDetail(driverDetail);
+        for (Map.Entry<DriverInfo, DriverConfig> deviceDetail : detailList.entrySet()) {
+            RestDriverDetail restDetail = RestDriverDetail.getRestDriverDetail(deviceDetail.getKey(), deviceDetail.getValue());
             jsa.add(gson.toJsonTree(restDetail, RestDriverDetail.class).getAsJsonObject());
         }
         jsonObject.add(Const.DETAILS, jsa);

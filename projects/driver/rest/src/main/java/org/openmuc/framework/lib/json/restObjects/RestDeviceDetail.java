@@ -27,7 +27,7 @@ import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.DeviceConfig;
 import org.openmuc.framework.dataaccess.DeviceState;
 
-public class RestDeviceDetail extends RestDeviceConfig {
+public class RestDeviceDetail {
 
     private String id;
     private String description = null;

@@ -25,10 +25,12 @@ import java.util.List;
 
 import org.openmuc.framework.config.DeviceConfig;
 import org.openmuc.framework.config.DriverConfig;
+import org.openmuc.framework.config.DriverInfo;
 
-public class RestDriverDetail extends RestDriverConfig {
+public class RestDriverDetail {
 
-    private String id = "";
+    private String id;
+    private String name = null;
     private Integer samplingTimeout = null;
     private Integer connectRetryInterval = null;
     private Boolean disabled = null;
@@ -41,6 +43,14 @@ public class RestDriverDetail extends RestDriverConfig {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getSamplingTimeout() {
@@ -75,10 +85,11 @@ public class RestDriverDetail extends RestDriverConfig {
         this.devices = devices;
     }
 
-    public static RestDriverDetail getRestDriverDetail(DriverConfig dc) {
+    public static RestDriverDetail getRestDriverDetail(DriverInfo di, DriverConfig dc) {
 
         RestDriverDetail rdd = new RestDriverDetail();
-        rdd.setId(dc.getId());
+        rdd.setId(di.getId());
+        rdd.setName(di.getName());
         rdd.setConnectRetryInterval(dc.getConnectRetryInterval());
         rdd.setDisabled(dc.isDisabled());
         rdd.setSamplingTimeout(dc.getSamplingTimeout());

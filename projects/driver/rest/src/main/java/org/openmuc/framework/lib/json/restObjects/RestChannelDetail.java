@@ -29,7 +29,7 @@ import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.ChannelState;
 
-public class RestChannelDetail extends RestChannelConfig {
+public class RestChannelDetail {
 
     private String id = null;
     private String channelAddress = null;
