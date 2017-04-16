@@ -26,11 +26,11 @@ import org.openmuc.framework.config.info.ChannelOptions;
 
 public class RestChannelInfo {
 
-    private String description;
+    private String description = null;
 
-    private RestOptionCollection address;
-    private RestOptionCollection scanSettings;
-    private RestOptionCollection configs;
+    private RestOptionCollection address = null;
+    private RestOptionCollection scanSettings = null;
+    private RestOptionCollection configs = null;
 
     public String getDescription() {
         return description;

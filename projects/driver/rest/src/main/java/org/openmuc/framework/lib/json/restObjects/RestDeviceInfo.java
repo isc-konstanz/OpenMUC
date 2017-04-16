@@ -26,12 +26,12 @@ import org.openmuc.framework.config.info.DeviceOptions;
 
 public class RestDeviceInfo {
 
-    private String description;
+    private String description = null;
 
-    private RestOptionCollection address;
-    private RestOptionCollection settings;
-    private RestOptionCollection scanSettings;
-    private RestOptionCollection configs;
+    private RestOptionCollection address = null;
+    private RestOptionCollection settings = null;
+    private RestOptionCollection scanSettings = null;
+    private RestOptionCollection configs = null;
 
     public String getDescription() {
         return description;

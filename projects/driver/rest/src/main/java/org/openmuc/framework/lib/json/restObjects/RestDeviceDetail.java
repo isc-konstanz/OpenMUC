@@ -29,41 +29,101 @@ import org.openmuc.framework.dataaccess.DeviceState;
 
 public class RestDeviceDetail extends RestDeviceConfig {
 
-	public RestDeviceDetail() {
-		super();
-	}
-	
-	protected String driver = null;
-	protected DeviceState state = null;
-	protected List<String> channels = null;
+    private String id;
+    private String description = null;
+    private String deviceAddress = null;
+    private String settings = null;
+    private Integer samplingTimeout = null;
+    private Integer connectRetryInterval = null;
+    private Boolean disabled = null;
+    
+    private String driver = null;
+    private DeviceState state = null;
+    private List<String> channels = null;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDeviceAddress() {
+        return deviceAddress;
+    }
+
+    public void setDeviceAddress(String deviceAddress) {
+        this.deviceAddress = deviceAddress;
+    }
+
+    public String getSettings() {
+        return settings;
+    }
+
+    public void setSettings(String settings) {
+        this.settings = settings;
+    }
+
+    public Integer getSamplingTimeout() {
+        return samplingTimeout;
+    }
+
+    public void setSamplingTimeout(Integer samplingTimeout) {
+        this.samplingTimeout = samplingTimeout;
+    }
+
+    public Integer getConnectRetryInterval() {
+        return connectRetryInterval;
+    }
+
+    public void setConnectRetryInterval(Integer connectRetryInterval) {
+        this.connectRetryInterval = connectRetryInterval;
+    }
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void isDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
 
     public String getDriver() {
-		return driver;
-	}
+        return driver;
+    }
 
-	public void setDriver(String driver) {
-		this.driver = driver;
-	}
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
 
-	public DeviceState getState() {
-		return state;
-	}
+    public DeviceState getState() {
+        return state;
+    }
 
-	public void setState(DeviceState state) {
-		this.state = state;
-	}
+    public void setState(DeviceState state) {
+        this.state = state;
+    }
 
-	public List<String> getChannels() {
-		return channels;
-	}
+    public List<String> getChannels() {
+        return channels;
+    }
 
-	public void setChannels(List<String> channels) {
-		this.channels = channels;
-	}
+    public void setChannels(List<String> channels) {
+        this.channels = channels;
+    }
 
-	public static RestDeviceDetail getRestDeviceDetail(DeviceState state, DeviceConfig dc) {
+    public static RestDeviceDetail getRestDeviceDetail(DeviceState state, DeviceConfig dc) {
 
-    	RestDeviceDetail rdd = new RestDeviceDetail();
+        RestDeviceDetail rdd = new RestDeviceDetail();
         rdd.setId(dc.getId());
         rdd.setDescription(dc.getDescription());
         rdd.setDeviceAddress(dc.getDeviceAddress());
@@ -77,7 +137,7 @@ public class RestDeviceDetail extends RestDeviceConfig {
         
         List<String> channelIds = new ArrayList<String>();
         for (ChannelConfig channelConfig : dc.getChannels()) {
-        	channelIds.add(channelConfig.getId());
+            channelIds.add(channelConfig.getId());
         }
         rdd.setChannels(channelIds);
         

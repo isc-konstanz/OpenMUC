@@ -22,10 +22,10 @@ package org.openmuc.framework.lib.json.restObjects;
 
 public class RestDriverConfig {
 
-	protected String id = "";
-	protected Integer samplingTimeout = null;
-	protected Integer connectRetryInterval = null;
-	protected Boolean disabled = null;
+    private String id = "";
+    private Integer samplingTimeout = null;
+    private Integer connectRetryInterval = null;
+    private Boolean disabled = null;
 
     public String getId() {
         return id;

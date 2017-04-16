@@ -27,23 +27,23 @@ import org.openmuc.framework.data.ValueType;
 
 public class RestChannelConfig {
 
-    protected String id = null;
-    protected String channelAddress = null;
-    protected String description = null;
-    protected String unit = null;
-    protected ValueType valueType = null;
-    protected Integer valueTypeLength = null;
-    protected Double scalingFactor = null;
-    protected Double valueOffset = null;
-    protected Boolean listening = null;
-    protected Integer samplingInterval = null;
-    protected Integer samplingTimeOffset = null;
-    protected String samplingGroup = null;
-    protected Integer loggingInterval = null;
-    protected Integer loggingTimeOffset = null;
-    protected String loggingSettings = null;
-    protected Boolean disabled = null;
-    protected List<ServerMapping> serverMappings = null;
+    private String id = null;
+    private String channelAddress = null;
+    private String description = null;
+    private String unit = null;
+    private ValueType valueType = null;
+    private Integer valueTypeLength = null;
+    private Double scalingFactor = null;
+    private Double valueOffset = null;
+    private Boolean listening = null;
+    private Integer samplingInterval = null;
+    private Integer samplingTimeOffset = null;
+    private String samplingGroup = null;
+    private Integer loggingInterval = null;
+    private Integer loggingTimeOffset = null;
+    private String loggingSettings = null;
+    private Boolean disabled = null;
+    private List<ServerMapping> serverMappings = null;
 
     public String getId() {
         return id;

@@ -29,8 +29,8 @@ import org.openmuc.framework.data.ValueType;
 
 public class RestOptionCollection {
     
-    private List<RestOption> options;
-    private RestOptionSyntax syntax;
+    private List<RestOption> options = null;
+    private RestOptionSyntax syntax = null;
 
     public List<RestOption> getOptions() {
         return options;
@@ -50,41 +50,41 @@ public class RestOptionCollection {
     
     public static RestOptionCollection setOptionCollection(OptionCollection options) {
 
-    	RestOptionCollection restOptions = new RestOptionCollection();
-    	restOptions.setOptions(RestOption.setOptions(options.getOptions()));
-    	
-    	RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
-    	restSyntax.setDelimiter(options.getDelimiter());
-    	restSyntax.setKeyValueSeparator(options.getKeyValueSeperator());
-    	restSyntax.setKeyValue(options.hasKeyValuePairs());
-    	restOptions.setSyntax(restSyntax);
-    	
-    	return restOptions;
+        RestOptionCollection restOptions = new RestOptionCollection();
+        restOptions.setOptions(RestOption.setOptions(options.getOptions()));
+        
+        RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
+        restSyntax.setDelimiter(options.getDelimiter());
+        restSyntax.setKeyValueSeparator(options.getKeyValueSeperator());
+        restSyntax.setKeyValue(options.hasKeyValuePairs());
+        restOptions.setSyntax(restSyntax);
+        
+        return restOptions;
     }
     
     public static RestOptionCollection setOptionCollection(String syntax) {
 
-    	RestOptionCollection restOptions = new RestOptionCollection();
-    	
-    	List<Option> options = new ArrayList<Option>();
-    	Option option = new Option("settings", "Settings", ValueType.STRING);
-    	option.setDescription(syntax);
-    	restOptions.setOptions(RestOption.setOptions(options));
-    	
-    	RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
-    	restSyntax.setDelimiter(";");
-    	restSyntax.setKeyValueSeparator(null);
-    	restSyntax.setKeyValue(false);
-    	restOptions.setSyntax(restSyntax);
-    	
-    	return restOptions;
+        RestOptionCollection restOptions = new RestOptionCollection();
+        
+        List<Option> options = new ArrayList<Option>();
+        Option option = new Option("settings", "Settings", ValueType.STRING);
+        option.setDescription(syntax);
+        restOptions.setOptions(RestOption.setOptions(options));
+        
+        RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
+        restSyntax.setDelimiter(";");
+        restSyntax.setKeyValueSeparator(null);
+        restSyntax.setKeyValue(false);
+        restOptions.setSyntax(restSyntax);
+        
+        return restOptions;
     }
 
     class RestOptionSyntax {
 
-        String delimiter;
-        String keyValueSeparator;
-        Boolean keyValue;
+        String delimiter = null;
+        String keyValueSeparator = null;
+        Boolean keyValue = null;
 
         public void setDelimiter(String delimiter) {
             this.delimiter = delimiter;

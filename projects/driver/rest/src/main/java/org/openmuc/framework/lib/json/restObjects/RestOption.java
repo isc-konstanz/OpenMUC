@@ -32,13 +32,13 @@ import org.openmuc.framework.data.ValueType;
 public class RestOption {
 
     private String key;
-    private String name;
-    private String description;
-    private ValueType type;
-    private boolean mandatory;
+    private String name = null;
+    private String description = null;
+    private ValueType type = null;
+    private Boolean mandatory = null;
 
-    private String valueDefault;
-    private Map<String, String> valueSelection;
+    private String valueDefault = null;
+    private Map<String, String> valueSelection = null;
 
     public String getKey() {
         return key;

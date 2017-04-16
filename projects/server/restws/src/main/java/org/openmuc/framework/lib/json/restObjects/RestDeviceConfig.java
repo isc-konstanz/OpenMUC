@@ -22,13 +22,13 @@ package org.openmuc.framework.lib.json.restObjects;
 
 public class RestDeviceConfig {
 
-	protected String id;
-	protected String description = null;
-	protected String deviceAddress = null;
-	protected String settings = null;
-	protected Integer samplingTimeout = null;
-	protected Integer connectRetryInterval = null;
-	protected Boolean disabled = null;
+    private String id;
+    private String description = null;
+    private String deviceAddress = null;
+    private String settings = null;
+    private Integer samplingTimeout = null;
+    private Integer connectRetryInterval = null;
+    private Boolean disabled = null;
 
     // Device device = null;
 
