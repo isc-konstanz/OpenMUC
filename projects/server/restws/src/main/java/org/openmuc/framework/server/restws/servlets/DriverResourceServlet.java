@@ -105,11 +105,43 @@ public class DriverResourceServlet extends GenericServlet {
             }
             else {
                 String driverID = pathInfoArray[0].replace("/", "");
+                
+                if (pathInfoArray[1].equalsIgnoreCase(Const.INFOS)) {
+                    DriverInfo driverInfo;
+                    try {
+                        driverInfo = configService.getDriverInfo(driverID);
+                        if (pathInfoArray.length == 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
+                            json.addDriverInfo(driverInfo, true);
+                        }
+                        else if (pathInfoArray.length > 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
+                            switch(pathInfoArray[3]) {
+                            case Const.DRIVER:
+                                json.addDriverInfo(driverInfo, false);
+                                break;
+                            case Const.DEVICE:
+                                json.addDeviceInfo(driverInfo);
+                                break;
+                            case Const.CHANNEL:
+                                json.addChannelInfo(driverInfo);
+                                break;
+                            default:
+                                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                                    "Requested rest path is not available.", " Path Info = ", request.getPathInfo());
+                                
+                                break;
+                            }
+                        }
+                        else {
+                            json.addDriverSyntax(driverInfo);
+                        }
+                    } catch (DriverNotAvailableException e) {
+                        throw new IOException(e);
+                    }
+                }
+                else if (driversList.contains(driverID)) {
 
-                List<Channel> driverChannelsList;
-                List<String> driverDevicesList = new ArrayList<>();
-
-                if (driversList.contains(driverID)) {
+                    List<Channel> driverChannelsList;
+                    List<String> driverDevicesList = new ArrayList<>();
 
                     Collection<ChannelConfig> channelConfigList = new ArrayList<>();
                     Collection<DeviceConfig> deviceConfigList;
@@ -129,38 +161,6 @@ public class DriverResourceServlet extends GenericServlet {
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.RUNNING)) {
                             json.addBoolean(Const.RUNNING, driverIsRunning);
-                        }
-                        else if (pathInfoArray[1].equalsIgnoreCase(Const.INFOS)) {
-                            DriverInfo driverInfo;
-                            try {
-                                driverInfo = configService.getDriverInfo(driverID);
-                                if (pathInfoArray.length == 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
-                                    json.addDriverInfo(driverInfo, true);
-                                }
-                                else if (pathInfoArray.length > 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
-                                    switch(pathInfoArray[3]) {
-                                    case Const.DRIVER:
-                                        json.addDriverInfo(driverInfo, false);
-                                        break;
-                                    case Const.DEVICE:
-                                        json.addDeviceInfo(driverInfo);
-                                        break;
-                                    case Const.CHANNEL:
-                                        json.addChannelInfo(driverInfo);
-                                        break;
-                                    default:
-                                        ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                                            "Requested rest path is not available.", " Path Info = ", request.getPathInfo());
-                                        
-                                        break;
-                                    }
-                                }
-                                else {
-                                    json.addDriverSyntax(driverInfo);
-                                }
-                            } catch (DriverNotAvailableException e) {
-                                throw new IOException(e);
-                            }
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.DEVICES)) {
                             json.addStringList(Const.DEVICES, driverDevicesList);
@@ -200,7 +200,6 @@ public class DriverResourceServlet extends GenericServlet {
                         ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
                                 "Requested rest path is not available.", " Path Info = ", request.getPathInfo());
                     }
-
                 }
                 else {
                     ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
