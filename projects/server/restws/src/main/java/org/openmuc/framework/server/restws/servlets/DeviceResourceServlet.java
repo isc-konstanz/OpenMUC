@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +51,7 @@ import org.openmuc.framework.lib.json.FromJson;
 import org.openmuc.framework.lib.json.ToJson;
 import org.openmuc.framework.lib.json.exceptions.MissingJsonObjectException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
+import org.openmuc.framework.lib.json.restObjects.RestDeviceDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -326,15 +328,20 @@ public class DeviceResourceServlet extends GenericServlet {
         json.addDeviceConfigList(deviceConfigs);
     }
 
-    private void doGetDetailsList(ToJson json) {
+    private void doGetDetailsList(ToJson json) throws IOException {
 
-        Map<DeviceState, DeviceConfig> deviceDetails = new HashMap<DeviceState, DeviceConfig>();
-
-        Collection<DeviceConfig> deviceConfigs = getDeviceConfigs();
-        for (DeviceConfig config : deviceConfigs) {
-            deviceDetails.put(configService.getDeviceState(config.getId()), config);
+        List<RestDeviceDetail> deviceDetails = new LinkedList<RestDeviceDetail>();
+        try {
+            Collection<DeviceConfig> deviceConfigs = getDeviceConfigs();
+            for (DeviceConfig config : deviceConfigs) {
+                deviceDetails.add(RestDeviceDetail.getRestDeviceDetail(configService.getDeviceState(config.getId()), config, 
+                        configService.getDriverInfo(config.getDriver().getId())));
+            }
+            json.addDeviceDetailList(deviceDetails);
+            
+        } catch (DriverNotAvailableException e) {
+            throw new IOException(e);
         }
-        json.addDeviceDetailList(deviceDetails);
     }
 
     private void doGetConfigs(ToJson json, String deviceID, HttpServletResponse response) throws IOException {
@@ -353,15 +360,18 @@ public class DeviceResourceServlet extends GenericServlet {
 
     private void doGetDetails(ToJson json, String deviceID, HttpServletResponse response) throws IOException {
 
-        DeviceConfig deviceConfig;
-        deviceConfig = rootConfig.getDevice(deviceID);
-
-        if (deviceConfig != null) {
-            json.addDeviceDetail(configService.getDeviceState(deviceConfig.getId()), deviceConfig);
-        }
-        else {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest device is not available.", " DeviceID = ", deviceID);
+        DeviceConfig deviceConfig = rootConfig.getDevice(deviceID);
+        try {
+            if (deviceConfig != null) {
+                json.addDeviceDetail(RestDeviceDetail.getRestDeviceDetail(configService.getDeviceState(deviceConfig.getId()), deviceConfig, 
+                        configService.getDriverInfo(deviceConfig.getDriver().getId())));
+            }
+            else {
+                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                        "Requested rest device is not available.", " DeviceID = ", deviceID);
+            }
+        } catch (DriverNotAvailableException e) {
+            throw new IOException(e);
         }
     }
 

@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.DeviceConfig;
+import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.dataaccess.DeviceState;
 
 public class RestDeviceDetail {
@@ -36,7 +37,7 @@ public class RestDeviceDetail {
     private Integer samplingTimeout = null;
     private Integer connectRetryInterval = null;
     private Boolean disabled = null;
-    
+
     private String driver = null;
     private DeviceState state = null;
     private List<String> channels = null;
@@ -121,7 +122,7 @@ public class RestDeviceDetail {
         this.channels = channels;
     }
 
-    public static RestDeviceDetail getRestDeviceDetail(DeviceState state, DeviceConfig dc) {
+    public static RestDeviceDetail getRestDeviceDetail(DeviceState state, DeviceConfig dc, DriverInfo info) {
 
         RestDeviceDetail rdd = new RestDeviceDetail();
         rdd.setId(dc.getId());
@@ -131,8 +132,8 @@ public class RestDeviceDetail {
         rdd.setSamplingTimeout(dc.getSamplingTimeout());
         rdd.setConnectRetryInterval(dc.getConnectRetryInterval());
         rdd.isDisabled(dc.isDisabled());
-        
-        rdd.setDriver(dc.getDriver().getId());
+
+        rdd.setDriver(info.getName());
         rdd.setState(state);
         
         List<String> channelIds = new ArrayList<String>();

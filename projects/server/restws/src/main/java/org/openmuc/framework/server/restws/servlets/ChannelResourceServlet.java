@@ -22,9 +22,8 @@ package org.openmuc.framework.server.restws.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +47,7 @@ import org.openmuc.framework.lib.json.FromJson;
 import org.openmuc.framework.lib.json.ToJson;
 import org.openmuc.framework.lib.json.exceptions.MissingJsonObjectException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
+import org.openmuc.framework.lib.json.restObjects.RestChannelDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -283,10 +283,10 @@ public class ChannelResourceServlet extends GenericServlet {
     private void doGetDetailsList(ToJson json) {
 
         List<String> ids = dataAccess.getAllIds();
-        Map<Channel, ChannelConfig> details = new HashMap<Channel, ChannelConfig>(ids.size());
+        List<RestChannelDetail> details = new LinkedList<RestChannelDetail>();
         
         for (String id : ids) {
-            details.put(dataAccess.getChannel(id), rootConfig.getChannel(id));
+            details.add(RestChannelDetail.getRestChannelDetail(dataAccess.getChannel(id), rootConfig.getChannel(id)));
         }
         json.addChannelDetailList(details);
     }
@@ -366,7 +366,7 @@ public class ChannelResourceServlet extends GenericServlet {
         ChannelConfig channelConfig = rootConfig.getChannel(channelID);
 
         if (channel != null || channelConfig != null) {
-            json.addChannelDetail(channel, channelConfig);
+            json.addChannelDetail(RestChannelDetail.getRestChannelDetail(channel, channelConfig));
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,

@@ -23,9 +23,8 @@ package org.openmuc.framework.server.restws.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +50,7 @@ import org.openmuc.framework.lib.json.FromJson;
 import org.openmuc.framework.lib.json.ToJson;
 import org.openmuc.framework.lib.json.exceptions.MissingJsonObjectException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
+import org.openmuc.framework.lib.json.restObjects.RestDriverDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,14 +94,14 @@ public class DriverResourceServlet extends GenericServlet {
             if (pathInfo.equals("/")) {
                 json.addStringList(Const.DRIVERS, driversList);
             }
-            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.RUNNING)) {
-                json.addStringList(Const.DRIVERS, configService.getIdsOfRunningDrivers());
-            }
             else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
                 json.addDriverConfigList(new ArrayList<DriverConfig>(rootConfig.getDrivers()));
             }
             else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.DETAILS)) {
                 doGetDetailsList(json);
+            }
+            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.RUNNING)) {
+                doGetRunningList(json);
             }
             else {
                 String driverID = pathInfoArray[0].replace("/", "");
@@ -111,12 +111,12 @@ public class DriverResourceServlet extends GenericServlet {
                     try {
                         driverInfo = configService.getDriverInfo(driverID);
                         if (pathInfoArray.length == 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
-                            json.addDriverInfo(driverInfo, true);
+                            json.addDriverInfoDetails(driverInfo);
                         }
                         else if (pathInfoArray.length > 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
                             switch(pathInfoArray[3]) {
                             case Const.DRIVER:
-                                json.addDriverInfo(driverInfo, false);
+                                json.addDriverInfo(driverInfo);
                                 break;
                             case Const.DEVICE:
                                 json.addDeviceInfo(driverInfo);
@@ -381,13 +381,27 @@ public class DriverResourceServlet extends GenericServlet {
         return ok;
     }
 
+    private void doGetRunningList(ToJson json) throws IOException {
+        
+        List<DriverInfo> driverInfos = new LinkedList<DriverInfo>();
+        try {
+            for (String driverId : configService.getIdsOfRunningDrivers()) {
+                driverInfos.add(configService.getDriverInfo(driverId));
+            }
+            json.addDriverDescriptionList(driverInfos);
+            
+        } catch (DriverNotAvailableException e) {
+            throw new IOException(e);
+        }
+    }
+
     private void doGetDetailsList(ToJson json) throws IOException {
 
-        Map<DriverInfo, DriverConfig> driverDetails = new HashMap<DriverInfo, DriverConfig>();
+    	List<RestDriverDetail> driverDetails = new LinkedList<RestDriverDetail>();
         try {
             Collection<DriverConfig> driverConfigs = rootConfig.getDrivers();
             for (DriverConfig config : driverConfigs) {
-                driverDetails.put(configService.getDriverInfo(config.getId()), config);
+                driverDetails.add(RestDriverDetail.getRestDriverDetail(configService.getDriverInfo(config.getId()), config));
             }
             json.addDriverDetailList(driverDetails);
             
@@ -445,7 +459,7 @@ public class DriverResourceServlet extends GenericServlet {
         DriverConfig driverConfig = rootConfig.getDriver(drvId);
         try {
             if (driverConfig != null) {
-                json.addDriverDetail(configService.getDriverInfo(drvId), driverConfig);
+                json.addDriverDetail(RestDriverDetail.getRestDriverDetail(configService.getDriverInfo(drvId), driverConfig));
             }
             else {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,

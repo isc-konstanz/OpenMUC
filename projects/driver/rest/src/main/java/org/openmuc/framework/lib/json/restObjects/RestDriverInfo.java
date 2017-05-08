@@ -80,17 +80,39 @@ public class RestDriverInfo {
         this.configs = configs;
     }
 
-    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo, boolean detail) {
+    public static RestDriverInfo getRestDriverDescription(DriverInfo driverInfo) {
 
         RestDriverInfo restDriverInfo = new RestDriverInfo();
         restDriverInfo.setId(driverInfo.getId());
         restDriverInfo.setName(driverInfo.getName());
         restDriverInfo.setDescription(driverInfo.getDescription());
         
-        if (detail) {
-            restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
-            restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
-        }
+        return restDriverInfo;
+    }
+
+    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo) {
+
+        RestDriverInfo restDriverInfo = new RestDriverInfo();
+        restDriverInfo.setId(driverInfo.getId());
+        restDriverInfo.setName(driverInfo.getName());
+        restDriverInfo.setDescription(driverInfo.getDescription());
+        
+        RestOptionCollection configs = RestOptionCollection.setOptionCollection(DriverInfo.configs());
+        configs.setSyntax(null);
+        restDriverInfo.setConfigs(configs);
+        
+        return restDriverInfo;
+    }
+
+    public static RestDriverInfo getRestDriverInfoDetails(DriverInfo driverInfo) {
+
+        RestDriverInfo restDriverInfo = new RestDriverInfo();
+        restDriverInfo.setId(driverInfo.getId());
+        restDriverInfo.setName(driverInfo.getName());
+        restDriverInfo.setDescription(driverInfo.getDescription());
+        restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
+        restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
+        
         RestOptionCollection configs = RestOptionCollection.setOptionCollection(DriverInfo.configs());
         configs.setSyntax(null);
         restDriverInfo.setConfigs(configs);

@@ -189,15 +189,32 @@ public class ToJson {
         jsonObject.add(Const.CHANNELS, jsa);
     }
 
+    public void addDriverDescriptionList(List<DriverInfo> infoList) {
+
+        JsonArray jsa = new JsonArray();
+
+        for (DriverInfo driverInfo : infoList) {
+            RestDriverInfo restDriverDesc = RestDriverInfo.getRestDriverDescription(driverInfo);
+            jsa.add(gson.toJsonTree(restDriverDesc, RestDriverInfo.class).getAsJsonObject());
+        }
+        jsonObject.add(Const.DRIVERS, jsa);
+    }
+
     public void addDriverSyntax(DriverInfo driverInfo) {
 
         RestDriverSyntax restDriverSyntax = RestDriverSyntax.setDriverSyntax(driverInfo);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverSyntax, RestDriverSyntax.class).getAsJsonObject());
     }
 
-    public void addDriverInfo(DriverInfo driverInfo, boolean detail) {
+    public void addDriverInfo(DriverInfo driverInfo) {
 
-        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfo(driverInfo, detail);
+        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfo(driverInfo);
+        jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
+    }
+
+    public void addDriverInfoDetails(DriverInfo driverInfo) {
+
+        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfoDetails(driverInfo);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
     }
 
@@ -230,19 +247,17 @@ public class ToJson {
         jsonObject.add(Const.CONFIGS, jsa);
     }
 
-    public void addDriverDetail(DriverInfo info, DriverConfig config) {
+    public void addDriverDetail(RestDriverDetail detail) {
 
-        RestDriverDetail restDetail = RestDriverDetail.getRestDriverDetail(info, config);
-        jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestDriverDetail.class).getAsJsonObject());
+        jsonObject.add(Const.DETAILS, gson.toJsonTree(detail, RestDriverDetail.class).getAsJsonObject());
     }
 
-    public void addDriverDetailList(Map<DriverInfo, DriverConfig> detailList) {
+    public void addDriverDetailList(List<RestDriverDetail> detailList) {
 
         JsonArray jsa = new JsonArray();
         
-        for (Map.Entry<DriverInfo, DriverConfig> deviceDetail : detailList.entrySet()) {
-            RestDriverDetail restDetail = RestDriverDetail.getRestDriverDetail(deviceDetail.getKey(), deviceDetail.getValue());
-            jsa.add(gson.toJsonTree(restDetail, RestDriverDetail.class).getAsJsonObject());
+        for (RestDriverDetail detail : detailList) {
+            jsa.add(gson.toJsonTree(detail, RestDriverDetail.class).getAsJsonObject());
         }
         jsonObject.add(Const.DETAILS, jsa);
     }
@@ -264,19 +279,17 @@ public class ToJson {
         jsonObject.add(Const.CONFIGS, jsa);
     }
 
-    public void addDeviceDetail(DeviceState state, DeviceConfig config) {
+    public void addDeviceDetail(RestDeviceDetail detail) {
 
-        RestDeviceDetail restDetail = RestDeviceDetail.getRestDeviceDetail(state, config);
-        jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestDeviceDetail.class).getAsJsonObject());
+        jsonObject.add(Const.DETAILS, gson.toJsonTree(detail, RestDeviceDetail.class).getAsJsonObject());
     }
 
-    public void addDeviceDetailList(Map<DeviceState, DeviceConfig> detailList) {
+    public void addDeviceDetailList(List<RestDeviceDetail> detailList) {
 
         JsonArray jsa = new JsonArray();
         
-        for (Map.Entry<DeviceState, DeviceConfig> deviceDetail : detailList.entrySet()) {
-            RestDeviceDetail restDetail = RestDeviceDetail.getRestDeviceDetail(deviceDetail.getKey(), deviceDetail.getValue());
-            jsa.add(gson.toJsonTree(restDetail, RestDeviceDetail.class).getAsJsonObject());
+        for (RestDeviceDetail detail : detailList) {
+            jsa.add(gson.toJsonTree(detail, RestDeviceDetail.class).getAsJsonObject());
         }
         jsonObject.add(Const.DETAILS, jsa);
     }
@@ -298,19 +311,17 @@ public class ToJson {
         jsonObject.add(Const.CONFIGS, jsa);
     }
 
-    public void addChannelDetail(Channel channel, ChannelConfig config) {
+    public void addChannelDetail(RestChannelDetail detail) {
 
-        RestChannelDetail restDetail = RestChannelDetail.getRestChannelDetail(channel, config);
-        jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestChannelDetail.class).getAsJsonObject());
+        jsonObject.add(Const.DETAILS, gson.toJsonTree(detail, RestChannelDetail.class).getAsJsonObject());
     }
 
-    public void addChannelDetailList(Map<Channel, ChannelConfig> detailList) {
+    public void addChannelDetailList(List<RestChannelDetail> detailList) {
 
         JsonArray jsa = new JsonArray();
         
-        for (Map.Entry<Channel, ChannelConfig> channelDetail : detailList.entrySet()) {
-            RestChannelDetail restDetail = RestChannelDetail.getRestChannelDetail(channelDetail.getKey(), channelDetail.getValue());
-            jsa.add(gson.toJsonTree(restDetail, RestChannelDetail.class).getAsJsonObject());
+        for (RestChannelDetail detail : detailList) {
+            jsa.add(gson.toJsonTree(detail, RestChannelDetail.class).getAsJsonObject());
         }
         jsonObject.add(Const.DETAILS, jsa);
     }
