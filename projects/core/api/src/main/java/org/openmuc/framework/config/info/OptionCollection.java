@@ -39,16 +39,17 @@ import org.openmuc.framework.data.ValueType;
 
 public class OptionCollection {
 
-	public static final String DELIMITER_DEFAULT = ",";
-	public static final String KEY_VAL_SEP_DEFAULT = ":";
+	public static final String SEPARATOR_DEFAULT = ",";
+	public static final String ASSIGNMENT_DEFAULT = ":";
 	public static final boolean KEY_VAL_DEFAULT = true;
     
     private final List<Option> options;
 
-    private String delimiter = DELIMITER_DEFAULT;
-    private String keyValueSeparator = KEY_VAL_SEP_DEFAULT;
+    private String separator = SEPARATOR_DEFAULT;
+    private String assignment = ASSIGNMENT_DEFAULT;
     private boolean keyValue = KEY_VAL_DEFAULT;
     private Locale locale = Locale.ENGLISH;
+    private boolean disabled = false;
     
     private int mandatoryOptCount = 0;
 
@@ -83,37 +84,65 @@ public class OptionCollection {
         return options;
     }
     
-    public String getDelimiter() {
-        return delimiter;
+    public String getSeparator() {
+        return separator;
     }
 
-    public void setDelimiter(String delimiter) {
-        this.delimiter = delimiter;
+    public void setSeparator(String separator) {
+        this.separator = separator;
     }
     
-    public String getKeyValueSeperator() {
-        return keyValueSeparator;
+    public String getAssignmentOperator() {
+        return assignment;
     }
 
-    public void setKeyValueSeperator(String separator) {
-        this.keyValueSeparator = separator;
+    public void setAssignmentOperator(String assignment) {
+        this.assignment = assignment;
     }
-    
+
     public boolean hasKeyValuePairs() {
         return keyValue;
     }
 
-    public void enableKeyValuePairs(boolean enable) {
+    public void setKeyValuePairs(boolean enable) {
         this.keyValue = enable;
+    }
+
+    public void setSyntax(String separator) {
+    	this.separator = separator;
+    	this.assignment = null;
+    	this.keyValue = false;
+    }
+
+    public void setSyntax(String separator, String assignment) {
+    	this.separator = separator;
+    	this.assignment = assignment;
+    	this.keyValue = true;
+    }
+
+    public Locale getLocale() {
+    	return locale;
     }
 
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean enable) {
+        this.disabled = enable;
+    }
+
+    public void disable() {
+        this.disabled = true;
+    }
+
     public Settings parse(String settingsStr) throws ArgumentSyntaxException {
         if (settingsStr != null) {
-            String[] settingsArray = settingsStr.trim().split(delimiter);
+            String[] settingsArray = settingsStr.trim().split(separator);
             
             Settings settings = new Settings();
             if (settingsArray.length >= 1 && settingsArray.length >= mandatoryOptCount && settingsArray.length <= options.size()) {
@@ -124,7 +153,7 @@ public class OptionCollection {
                         String key = option.getKey();
                         Value value = null;
                         for (String setting : settingsArray) {
-                            String[] keyValue = setting.trim().split(keyValueSeparator);
+                            String[] keyValue = setting.trim().split(assignment);
                             if (keyValue.length == 2) {
                                 if (keyValue[0].trim().equalsIgnoreCase(key)) {
                                     mandatoryOptMissing = false;
@@ -134,7 +163,7 @@ public class OptionCollection {
                             }
                             else {
                                 throw new ArgumentSyntaxException("Parameter is not a key value pair of type "
-                                            + "<key>" + keyValueSeparator + "<value> in parsed Settings: " + setting);
+                                            + "<key>" + assignment + "<value> in parsed Settings: " + setting);
                             }
                         }
                         if (mandatoryOptMissing) {
@@ -238,7 +267,7 @@ public class OptionCollection {
                 
                 String syntax;
                 if (keyValue) {
-                    syntax = key + keyValueSeparator + '<' + key.toLowerCase(locale) + '>';
+                    syntax = key + assignment + '<' + key.toLowerCase(locale) + '>';
                 }
                 else {
                     syntax = '<' + key + '>';
@@ -246,7 +275,7 @@ public class OptionCollection {
 
                 if (!mandatory) sb.append('[');
                 if (!first) {
-                    sb.append(delimiter);
+                    sb.append(separator);
                 }
                 sb.append(syntax);
                 if (!mandatory) sb.append(']');
@@ -269,8 +298,8 @@ public class OptionCollection {
         
         OptionCollection unmodifiableOptions = new OptionCollection(options);
         unmodifiableOptions.mandatoryOptCount = options.mandatoryOptCount;
-        unmodifiableOptions.delimiter = options.delimiter;
-        unmodifiableOptions.keyValueSeparator = options.keyValueSeparator;
+        unmodifiableOptions.separator = options.separator;
+        unmodifiableOptions.assignment = options.assignment;
         unmodifiableOptions.keyValue = options.keyValue;
         unmodifiableOptions.locale = options.locale;
         

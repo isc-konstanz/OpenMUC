@@ -49,26 +49,23 @@ public class CsvDeviceOptions extends DeviceOptions {
     }
 
     @Override
-    protected void configureAddress(OptionCollection address) throws UnsupportedOperationException {
-        address.setDelimiter(";");
-        address.enableKeyValuePairs(false);
+    protected void configureAddress(OptionCollection address) {
+        address.setSyntax(";");
         
         address.add(filePath());
     }
 
     @Override
-    protected void configureSettings(OptionCollection settings) throws UnsupportedOperationException {
-        settings.setDelimiter(";");
-        settings.setKeyValueSeperator("=");
+    protected void configureSettings(OptionCollection settings) {
+        settings.setSyntax(";", "=");
         
         settings.add(samplingMode());
         settings.add(rewind());
     }
 
     @Override
-    protected void configureScanSettings(OptionCollection scanSettings) throws UnsupportedOperationException {
-        scanSettings.setDelimiter(";");
-        scanSettings.setKeyValueSeperator("=");
+    protected void configureScanSettings(OptionCollection scanSettings) {
+        scanSettings.setSyntax(";", "=");
         
         scanSettings.add(dirPath());
     }
@@ -104,11 +101,11 @@ public class CsvDeviceOptions extends DeviceOptions {
         samplingMode.setMandatory(true);
         
         OptionSelection selection = new OptionSelection(ValueType.STRING);
-        selection.addString("Unix timestamp", "unixtimestamp");
-        selection.addString("Closest hour, minute, second", "hhmmss");
-        selection.addString("Line by line", "line");
+        selection.addString("unixtimestamp", "Unix timestamp");
+        selection.addString("hhmmss", "Closest hour, minute, second");
+        selection.addString("line", "Line by line");
         samplingMode.setValueSelection(selection);
-        samplingMode.setValueDefault(new StringValue(SAMPLING_MODE_DEFAULT.toString()));
+        samplingMode.setValueDefault(new StringValue(SAMPLING_MODE_DEFAULT.toString().toLowerCase()));
         
         return samplingMode;
     }

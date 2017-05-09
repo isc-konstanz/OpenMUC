@@ -39,18 +39,13 @@ public abstract class DeviceOptions extends DeviceInfo {
     public abstract String getDescription();
 
     private OptionCollection configureAddressOptions() {
-
         OptionCollection address = new OptionCollection();
-        try {
-            configureAddress(address);
-            return OptionCollection.unmodifiableOptions(address);
-        }
-        catch (UnsupportedOperationException e) {
-            return null;
-        }
+        
+        configureAddress(address);
+        return OptionCollection.unmodifiableOptions(address);
     }
 
-    protected abstract void configureAddress(OptionCollection address) throws UnsupportedOperationException;
+    protected abstract void configureAddress(OptionCollection address);
 
     public Settings parseAddress(String address) throws ArgumentSyntaxException {
         return this.address.parse(address);
@@ -66,18 +61,13 @@ public abstract class DeviceOptions extends DeviceInfo {
     }
 
     private OptionCollection configureSettingsOptions() {
-
         OptionCollection settings = new OptionCollection();
-        try {
-            configureSettings(settings);
-            return OptionCollection.unmodifiableOptions(settings);
-        }
-        catch (UnsupportedOperationException e) {
-            return null;
-        }
+        
+        configureSettings(settings);
+        return OptionCollection.unmodifiableOptions(settings);
     }
 
-    protected abstract void configureSettings(OptionCollection settings) throws UnsupportedOperationException;
+    protected abstract void configureSettings(OptionCollection settings);
 
     public Settings parseSettings(String settings) throws ArgumentSyntaxException {
         return this.settings.parse(settings);
@@ -93,18 +83,13 @@ public abstract class DeviceOptions extends DeviceInfo {
     }
 
     private OptionCollection configureScanSettingsOptions() {
-
         OptionCollection scanSettings = new OptionCollection();
-        try {
-            configureScanSettings(scanSettings);
-            return OptionCollection.unmodifiableOptions(scanSettings);
-        }
-        catch (UnsupportedOperationException e) {
-            return null;
-        }
+
+        configureScanSettings(scanSettings);
+        return OptionCollection.unmodifiableOptions(scanSettings);
     }
 
-    protected abstract void configureScanSettings(OptionCollection scanSettings) throws UnsupportedOperationException;
+    protected abstract void configureScanSettings(OptionCollection scanSettings);
 
     public Settings parseScanSettings(String scanSettings) throws ArgumentSyntaxException {
         return this.scanSettings.parse(scanSettings);

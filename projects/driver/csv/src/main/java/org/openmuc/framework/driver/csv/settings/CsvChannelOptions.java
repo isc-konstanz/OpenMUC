@@ -38,15 +38,14 @@ public class CsvChannelOptions extends ChannelOptions {
     }
 
     @Override
-    protected void configureAddress(OptionCollection address) throws UnsupportedOperationException {
-        address.setDelimiter(";");
-        address.enableKeyValuePairs(false);
+    protected void configureAddress(OptionCollection address) {
+        address.setSyntax(";");
         
         address.add(header());
     }
 
     @Override
-    protected void configureScanSettings(OptionCollection scanSettings) throws UnsupportedOperationException {
+    protected void configureScanSettings(OptionCollection scanSettings) {
         // No parameters required
     }
 

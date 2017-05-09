@@ -41,13 +41,13 @@ public class OptionSelection {
     private static String DELIMITER = ",";
     private static String KEY_VAL_SEP = ":";
 
-    private final Map<String, Value> options;
+    private final Map<Value, String> options;
     private final ValueType type;
     
     private boolean validate = true;
 
     public OptionSelection(ValueType type) {
-        this.options = new LinkedHashMap<String, Value>();
+        this.options = new LinkedHashMap<Value, String>();
         this.type = type;
     }
 
@@ -63,33 +63,33 @@ public class OptionSelection {
         for (String selection : selectionArray) {
             String[] keyValue = selection.trim().split(KEY_VAL_SEP);
             if (keyValue.length == 2) {
-                String key = keyValue[0];
+                String desc = keyValue[1];
                 Value val;
                 try {
                     switch (type) {
                     case BOOLEAN:
-                        val = new BooleanValue(Boolean.valueOf(keyValue[1]));
+                        val = new BooleanValue(Boolean.valueOf(keyValue[0]));
                         break;
                     case BYTE:
-                        val = new ByteValue(Byte.valueOf(keyValue[1]));
+                        val = new ByteValue(Byte.valueOf(keyValue[0]));
                         break;
                     case DOUBLE:
-                        val = new DoubleValue(Double.valueOf(keyValue[1]));
+                        val = new DoubleValue(Double.valueOf(keyValue[0]));
                         break;
                     case FLOAT:
-                        val = new FloatValue(Float.valueOf(keyValue[1]));
+                        val = new FloatValue(Float.valueOf(keyValue[0]));
                         break;
                     case INTEGER:
-                        val = new IntValue(Integer.valueOf(keyValue[1]));
+                        val = new IntValue(Integer.valueOf(keyValue[0]));
                         break;
                     case LONG:
-                        val = new LongValue(Long.valueOf(keyValue[1]));
+                        val = new LongValue(Long.valueOf(keyValue[0]));
                         break;
                     case SHORT:
-                        val = new ShortValue(Short.valueOf(keyValue[1]));
+                        val = new ShortValue(Short.valueOf(keyValue[0]));
                         break;
                     case STRING:
-                        val = new StringValue(keyValue[1]);
+                        val = new StringValue(keyValue[0]);
                         break;
                     default:
                         throw new ArgumentSyntaxException("Selection value type not configured: " + type.name().toLowerCase());
@@ -98,7 +98,7 @@ public class OptionSelection {
                     throw new ArgumentSyntaxException(MessageFormat.format("Selection value \"{0}\" is not of type: {1}.", 
                             selection, type.name().toLowerCase()));
                 }
-                options.put(key, val);
+                options.put(val, desc);
             }
             else {
                 throw new ArgumentSyntaxException("Selection is not a key value par of type "
@@ -109,7 +109,7 @@ public class OptionSelection {
 
     public boolean contains(Value value) {
         if (value != null) {
-            for (Value option : options.values()) {
+            for (Value option : options.keySet()) {
                 switch (this.type) {
                 case BOOLEAN:
                     if (option.asBoolean() == value.asBoolean()) {
@@ -167,43 +167,43 @@ public class OptionSelection {
         this.validate = enable;
     }
 
-    public void addValue(String name, Value value) {
-        this.options.put(name, value);
+    public void addValue(Value value, String description) {
+        this.options.put(value, description);
     }
 
-    public void addBoolean(String name, boolean value) {
-        this.addValue(name, new BooleanValue(value));
+    public void addBoolean(boolean value, String description) {
+        this.addValue(new BooleanValue(value), description);
     }
 
-    public void addByte(String name, byte value) {
-        this.addValue(name, new ByteValue(value));
+    public void addByte(byte value, String description) {
+        this.addValue(new ByteValue(value), description);
     }
 
-    public void addDouble(String name, double value) {
-        this.addValue(name, new DoubleValue(value));
+    public void addDouble(double value, String description) {
+        this.addValue(new DoubleValue(value), description);
     }
 
-    public void addFloat(String name, float value) {
-        this.addValue(name, new FloatValue(value));
+    public void addFloat(float value, String description) {
+        this.addValue(new FloatValue(value), description);
     }
 
-    public void addInteger(String name, int value) {
-        this.addValue(name, new IntValue(value));
+    public void addInteger(int value, String description) {
+        this.addValue(new IntValue(value), description);
     }
 
-    public void addLong(String name, long value) {
-        this.addValue(name, new LongValue(value));
+    public void addLong(long value, String description) {
+        this.addValue(new LongValue(value), description);
     }
 
-    public void addShort(String name, short value) {
-        this.addValue(name, new ShortValue(value));
+    public void addShort(short value, String description) {
+        this.addValue(new ShortValue(value), description);
     }
 
-    public void addString(String name, String value) {
-        this.addValue(name, new StringValue(value));
+    public void addString(String value, String description) {
+        this.addValue(new StringValue(value), description);
     }
     
-    public Map<String, Value> getOptions() {
+    public Map<Value, String> getOptions() {
     	return options;
     }
 
@@ -215,26 +215,26 @@ public class OptionSelection {
     public static OptionSelection timeSelection() {
         
         OptionSelection selection = new OptionSelection(ValueType.INTEGER, false);
-        selection.addInteger("None", 0);
-        selection.addInteger("100 miliseconds", 100);
-        selection.addInteger("200 miliseconds", 200);
-        selection.addInteger("500 miliseconds", 500);
-        selection.addInteger("1 second", 1000);
-        selection.addInteger("2 second", 2000);
-        selection.addInteger("5 seconds", 5000);
-        selection.addInteger("10 seconds", 10000);
-        selection.addInteger("15 seconds", 15000);
-        selection.addInteger("30 seconds", 30000);
-        selection.addInteger("45 seconds", 45000);
-        selection.addInteger("1 minute", 60000);
-        selection.addInteger("2 minutes", 120000);
-        selection.addInteger("5 minutes", 300000);
-        selection.addInteger("10 minutes", 600000);
-        selection.addInteger("15 minutes", 900000);
-        selection.addInteger("30 minutes", 1800000);
-        selection.addInteger("45 minutes", 2700000);
-        selection.addInteger("1 hour", 3600000);
-        selection.addInteger("1 day", 86400000);
+        selection.addInteger(0, "None");
+        selection.addInteger(100, "100 milliseconds");
+        selection.addInteger(200, "200 milliseconds");
+        selection.addInteger(500, "500 milliseconds");
+        selection.addInteger(1000, "1 second");
+        selection.addInteger(2000, "2 second");
+        selection.addInteger(5000, "5 seconds");
+        selection.addInteger(10000, "10 seconds");
+        selection.addInteger(15000, "15 seconds");
+        selection.addInteger(30000, "30 seconds");
+        selection.addInteger(45000, "45 seconds");
+        selection.addInteger(60000, "1 minute");
+        selection.addInteger(120000, "2 minutes");
+        selection.addInteger(300000, "5 minutes");
+        selection.addInteger(600000, "10 minutes");
+        selection.addInteger(900000, "15 minutes");
+        selection.addInteger(1800000, "30 minutes");
+        selection.addInteger(2700000, "45 minutes");
+        selection.addInteger(3600000, "1 hour");
+        selection.addInteger(86400000, "1 day");
         
         return selection;
     }
