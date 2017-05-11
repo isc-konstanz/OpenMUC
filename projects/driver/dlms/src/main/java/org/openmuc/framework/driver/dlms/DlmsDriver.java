@@ -27,6 +27,10 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.info.ChannelOptions;
+import org.openmuc.framework.config.info.DeviceOptions;
+import org.openmuc.framework.driver.dlms.settings.DlmsChannelOptions;
+import org.openmuc.framework.driver.dlms.settings.DlmsDeviceOptions;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -45,17 +49,14 @@ public class DlmsDriver implements DriverService {
     private final IClientConnectionFactory connectionFactory = new OsgiClientConnectionFactory();
     private final AddressParser addressParser = new AddressParser();
 
-    private final static DriverInfo info = new DriverInfo("dlms", // id
-            // description
-            "This is a driver to communicate with smart meter over the IEC 62056 DLMS/COSEM protocol.",
-            // device address
-            "N.A.",
-            // parameters
-            "N.A",
-            // channel address
-            "N.A",
-            // device scan settings
-            "N.A");
+    private final static String ID = "dlms";
+    private final static String NAME = "DLMS/COSEM";
+    private final static String DESCRIPTION = "This driver implements the communication with smart meters over the IEC 62056 DLMS/COSEM protocol. </br>"
+            + "The DLMS/COSEM driver uses the client library developed by the jDLMS project. "
+            + "Currently, the DLMS/COSEM driver supports communication via HDLC and TCP/IP using Logical Name Referencing to retrieve values from the device.";
+    private final static DeviceOptions DEVICE_OPTIONS = new DlmsDeviceOptions();
+    private final static ChannelOptions CHANNEL_OPTIONS = new DlmsChannelOptions();
+    private final static DriverInfo DRIVER_INFO = new DriverInfo(ID, NAME, DESCRIPTION, DEVICE_OPTIONS, CHANNEL_OPTIONS);
 
     public DlmsDriver() {
         logger.debug("DLMS Driver instantiated. Expecting rxtxserial.so in: " + System.getProperty("java.library.path")
@@ -64,7 +65,7 @@ public class DlmsDriver implements DriverService {
 
     @Override
     public DriverInfo getInfo() {
-        return info;
+        return DRIVER_INFO;
     }
 
     @Override

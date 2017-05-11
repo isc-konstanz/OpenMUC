@@ -32,6 +32,10 @@ import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.info.ChannelOptions;
+import org.openmuc.framework.config.info.DeviceOptions;
+import org.openmuc.framework.driver.mbus.settings.MBusChannelOptions;
+import org.openmuc.framework.driver.mbus.settings.MBusDeviceOptions;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -51,16 +55,13 @@ public class MBusDriver implements DriverService {
     private final Map<String, MBusSerialInterface> interfaces = new HashMap<>();
 
     private final static String ID = "mbus";
-    private final static String DESCRIPTION = "M-Bus (wired) is a protocol to read out meters.";
-    private final static String DEVICE_ADDRESS = "Synopsis: <serial_port>:<mbus_address>\nExample for <serial_port>: /dev/ttyS0 (Unix), COM1 (Windows)\n The mbus_address can either be the primary address or the secondary address";
-    private final static String SETTINGS = "Synopsis: [<baud_rate>][:<timeout>]\nThe default baud rate is 2400. Default read timeout is 2500 ms. Example: 9600:t5000";
-    private final static String CHANNEL_ADDRESS = "Synopsis: [X]<dib>:<vib>\nThe DIB and VIB fields in hexadecimal form seperated by a collon. If the channel address starts with an X then the specific data record will be selected for readout before reading it.";
-    private final static String DEVICE_SCAN_SETTINGS = "Synopsis: <serial_port>[:<baud_rate>]\nExamples for <serial_port>: /dev/ttyS0 (Unix), COM1 (Windows)";
+    private final static String NAME = "M-Bus (wired)";
+    private final static String DESCRIPTION = "The Meter-Bus \"M-Bus\" (wired) is a protocol to read out meters.";
+    private final static DeviceOptions DEVICE_OPTIONS = new MBusDeviceOptions();
+    private final static ChannelOptions CHANNEL_OPTIONS = new MBusChannelOptions();
+    private final static DriverInfo DRIVER_INFO = new DriverInfo(ID, NAME, DESCRIPTION, DEVICE_OPTIONS, CHANNEL_OPTIONS);
     // "Synopsis: <serial_port>[:<baud_rate>][:s]\nExamples for <serial_port>: /dev/ttyS0 (Unix), COM1 (Windows); s
     // forsecondary address scan.";
-
-    private final static DriverInfo info = new DriverInfo(ID, DESCRIPTION, DEVICE_ADDRESS, SETTINGS, CHANNEL_ADDRESS,
-            DEVICE_SCAN_SETTINGS);
 
     private boolean interruptScan;
     private final boolean scanSecondary = false;
@@ -70,7 +71,7 @@ public class MBusDriver implements DriverService {
 
     @Override
     public DriverInfo getInfo() {
-        return info;
+        return DRIVER_INFO;
     }
 
     @Override

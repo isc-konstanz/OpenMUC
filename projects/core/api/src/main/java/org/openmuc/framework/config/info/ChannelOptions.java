@@ -37,18 +37,13 @@ public abstract class ChannelOptions extends ChannelInfo {
     public abstract String getDescription();
 
     private OptionCollection configureAddressOptions() {
-
         OptionCollection address = new OptionCollection();
-        try {
-            configureAddress(address);
-            return OptionCollection.unmodifiableOptions(address);
-        }
-        catch (UnsupportedOperationException e) {
-            return null;
-        }
+
+        configureAddress(address);
+        return OptionCollection.unmodifiableOptions(address);
     }
 
-    protected abstract void configureAddress(OptionCollection address) throws UnsupportedOperationException;
+    protected abstract void configureAddress(OptionCollection address);
 
     public Settings parseAddress(String address) throws ArgumentSyntaxException {
         return this.address.parse(address);
@@ -64,18 +59,13 @@ public abstract class ChannelOptions extends ChannelInfo {
     }
 
     private OptionCollection configureScanSettingsOptions() {
-
         OptionCollection scanSettings = new OptionCollection();
-        try {
-            configureScanSettings(scanSettings);
-            return OptionCollection.unmodifiableOptions(scanSettings);
-        }
-        catch (UnsupportedOperationException e) {
-            return null;
-        }
+        
+        configureScanSettings(scanSettings);
+        return OptionCollection.unmodifiableOptions(scanSettings);
     }
 
-    protected abstract void configureScanSettings(OptionCollection scanSettings) throws UnsupportedOperationException;
+    protected abstract void configureScanSettings(OptionCollection scanSettings);
 
     public Settings parseScanSettings(String scanSettings) throws ArgumentSyntaxException {
         return this.scanSettings.parse(scanSettings);

@@ -110,6 +110,18 @@ public abstract class ChannelInfo {
         valueType.setDescription("Data type of the channel.</br>"
             + "Data loggers may use this setting. Driver implementations do NOT receive this settings.");
         valueType.setMandatory(false);
+        
+        OptionSelection selection = new OptionSelection(ValueType.STRING);
+        selection.addString("DOUBLE", "Double");
+        selection.addString("FLOAT", "Float");
+        selection.addString("LONG", "Long");
+        selection.addString("INTEGER", "Integer");
+        selection.addString("SHORT", "Short");
+        selection.addString("BYTE", "Byte");
+        selection.addString("BYTE_ARRAY", "Byte array");
+        selection.addString("BOOLEAN", "Boolean");
+        selection.addString("STRING", "String");
+        valueType.setValueSelection(selection);
         valueType.setValueDefault(new StringValue("DOUBLE"));
         
         return valueType;
