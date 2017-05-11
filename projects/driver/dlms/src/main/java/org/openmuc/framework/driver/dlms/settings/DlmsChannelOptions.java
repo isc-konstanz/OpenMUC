@@ -32,9 +32,9 @@ public class DlmsChannelOptions extends ChannelOptions {
         + "For a list of all valid Logical Names and the corresponding COSEM Interface Class, consult the list of standardized OBIS codes administered by the DLMS UA "
         + "<a href='http://dlms.com/documentation/listofstandardobiscodesandmaintenanceproces/index.html'>here</a>.";
 
-    public static final String CLASS_ID = "classId";
-    public static final String INSTANCE_ID = "instanceId";
-    public static final String ATTRIBUTE_ID = "attributeId";
+    public static final String CLASS_ID = "class-id";
+    public static final String INSTANCE_ID = "instance-id";
+    public static final String ATTRIBUTE_ID = "attribute-id";
 
     @Override
     public String getDescription() {
