@@ -47,23 +47,24 @@ public class RestOptionCollection {
     public void setSyntax(RestOptionSyntax syntax) {
         this.syntax = syntax;
     }
-    
-    public static RestOptionCollection setOptionCollection(OptionCollection options) {
 
-        RestOptionCollection restOptions = new RestOptionCollection();
-        restOptions.setOptions(RestOption.setOptions(options.getOptions()));
+    public static RestOptionCollection setOptionCollection(OptionCollection options) {
+        RestOptionCollection restOptions = null;
         
-        RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
-        restSyntax.setDelimiter(options.getDelimiter());
-        restSyntax.setKeyValueSeparator(options.getKeyValueSeperator());
-        restSyntax.setKeyValue(options.hasKeyValuePairs());
-        restOptions.setSyntax(restSyntax);
-        
+        if (!options.isDisabled()) {
+            restOptions = new RestOptionCollection();
+            restOptions.setOptions(RestOption.setOptions(options.getOptions()));
+            
+            RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
+            restSyntax.setSeparator(options.getSeparator());
+            restSyntax.setAssignmentOperator(options.getAssignmentOperator());
+            restSyntax.setKeyValue(options.hasKeyValuePairs());
+            restOptions.setSyntax(restSyntax);
+        }
         return restOptions;
     }
-    
-    public static RestOptionCollection setOptionCollection(String syntax) {
 
+    public static RestOptionCollection setOptionCollection(String syntax) {
         RestOptionCollection restOptions = new RestOptionCollection();
         
         List<Option> options = new ArrayList<Option>();
@@ -72,8 +73,8 @@ public class RestOptionCollection {
         restOptions.setOptions(RestOption.setOptions(options));
         
         RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
-        restSyntax.setDelimiter(";");
-        restSyntax.setKeyValueSeparator(null);
+        restSyntax.setSeparator(";");
+        restSyntax.setAssignmentOperator(null);
         restSyntax.setKeyValue(false);
         restOptions.setSyntax(restSyntax);
         
@@ -82,16 +83,16 @@ public class RestOptionCollection {
 
     class RestOptionSyntax {
 
-        String delimiter = null;
-        String keyValueSeparator = null;
+        String separator = null;
+        String assignment = null;
         Boolean keyValue = null;
 
-        public void setDelimiter(String delimiter) {
-            this.delimiter = delimiter;
+        public void setSeparator(String separator) {
+            this.separator = separator;
         }
 
-        public void setKeyValueSeparator(String keyValueSeparator) {
-            this.keyValueSeparator = keyValueSeparator;
+        public void setAssignmentOperator(String assignment) {
+            this.assignment = assignment;
         }
 
         public void setKeyValue(Boolean keyValue) {

@@ -112,8 +112,8 @@ public class RestOption {
             }
             if (option.getValueSelection() != null) {
                 Map<String, String> restSelection = new LinkedHashMap<String, String>();
-                for (Map.Entry<String, Value> selection : option.getValueSelection().getOptions().entrySet()) {
-                    restSelection.put(selection.getKey(), selection.getValue().asString());
+                for (Map.Entry<Value, String> selection : option.getValueSelection().getOptions().entrySet()) {
+                    restSelection.put(selection.getKey().asString(), selection.getValue());
                 }
                 restOption.setValueSelection(restSelection);
             }
