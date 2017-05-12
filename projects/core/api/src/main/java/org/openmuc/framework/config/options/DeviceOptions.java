@@ -18,19 +18,21 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config.info;
+package org.openmuc.framework.config.options;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.ChannelInfo;
+import org.openmuc.framework.config.DeviceInfo;
 
-public abstract class ChannelOptions extends ChannelInfo {
+public abstract class DeviceOptions extends DeviceInfo {
     
     private final OptionCollection address;
+    private final OptionCollection settings;
     private final OptionCollection scanSettings;
 
-    public ChannelOptions() {
+    public DeviceOptions() {
         
         this.address = configureAddressOptions();
+        this.settings = configureSettingsOptions();
         this.scanSettings = configureScanSettingsOptions();
     }
 
@@ -38,17 +40,17 @@ public abstract class ChannelOptions extends ChannelInfo {
 
     private OptionCollection configureAddressOptions() {
         OptionCollection address = new OptionCollection();
-
+        
         configureAddress(address);
         return OptionCollection.unmodifiableOptions(address);
     }
 
     protected abstract void configureAddress(OptionCollection address);
 
-    public Settings parseAddress(String address) throws ArgumentSyntaxException {
+    public Parameters parseAddress(String address) throws ArgumentSyntaxException {
         return this.address.parse(address);
     }
-
+    
     public OptionCollection getAddress() {
         return this.address;
     }
@@ -58,16 +60,38 @@ public abstract class ChannelOptions extends ChannelInfo {
         return this.address.syntax();
     }
 
+    private OptionCollection configureSettingsOptions() {
+        OptionCollection settings = new OptionCollection();
+        
+        configureSettings(settings);
+        return OptionCollection.unmodifiableOptions(settings);
+    }
+
+    protected abstract void configureSettings(OptionCollection settings);
+
+    public Parameters parseSettings(String settings) throws ArgumentSyntaxException {
+        return this.settings.parse(settings);
+    }
+    
+    public OptionCollection getSettings() {
+        return this.settings;
+    }
+
+    @Override
+    public String getSettingsSyntax() {
+        return this.settings.syntax();
+    }
+
     private OptionCollection configureScanSettingsOptions() {
         OptionCollection scanSettings = new OptionCollection();
-        
+
         configureScanSettings(scanSettings);
         return OptionCollection.unmodifiableOptions(scanSettings);
     }
 
     protected abstract void configureScanSettings(OptionCollection scanSettings);
 
-    public Settings parseScanSettings(String scanSettings) throws ArgumentSyntaxException {
+    public Parameters parseScanSettings(String scanSettings) throws ArgumentSyntaxException {
         return this.scanSettings.parse(scanSettings);
     }
     

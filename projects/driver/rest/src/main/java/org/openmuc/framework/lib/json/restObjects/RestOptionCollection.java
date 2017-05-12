@@ -23,8 +23,8 @@ package org.openmuc.framework.lib.json.restObjects;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openmuc.framework.config.info.Option;
-import org.openmuc.framework.config.info.OptionCollection;
+import org.openmuc.framework.config.options.Option;
+import org.openmuc.framework.config.options.OptionCollection;
 import org.openmuc.framework.data.ValueType;
 
 public class RestOptionCollection {

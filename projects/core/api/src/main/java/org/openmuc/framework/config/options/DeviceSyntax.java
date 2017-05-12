@@ -1,4 +1,4 @@
-package org.openmuc.framework.config.info;
+package org.openmuc.framework.config.options;
 
 import org.openmuc.framework.config.DeviceInfo;
 

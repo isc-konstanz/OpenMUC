@@ -7,9 +7,9 @@ import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.config.info.ChannelOptions;
-import org.openmuc.framework.config.info.DeviceOptions;
-import org.openmuc.framework.config.info.Settings;
+import org.openmuc.framework.config.options.ChannelOptions;
+import org.openmuc.framework.config.options.DeviceOptions;
+import org.openmuc.framework.config.options.Parameters;
 import org.openmuc.framework.driver.csv.settings.CsvChannelOptions;
 import org.openmuc.framework.driver.csv.settings.CsvDeviceOptions;
 import org.openmuc.framework.driver.spi.Connection;
@@ -61,7 +61,7 @@ public class CsvDriver implements DriverService {
         // reset interrupted flag on start of scan
         isDeviceScanInterrupted = false;
 
-        Settings deviceScanSettings = DEVICE_OPTIONS.parseScanSettings(settings);
+        Parameters deviceScanSettings = DEVICE_OPTIONS.parseScanSettings(settings);
         String path = deviceScanSettings.getString(CsvDeviceOptions.PATH_DIR);
         File[] listOfFiles;
         if (!path.isEmpty()) {

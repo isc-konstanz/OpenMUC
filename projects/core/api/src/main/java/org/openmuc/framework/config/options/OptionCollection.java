@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config.info;
+package org.openmuc.framework.config.options;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -140,11 +140,11 @@ public class OptionCollection {
         this.disabled = true;
     }
 
-    public Settings parse(String settingsStr) throws ArgumentSyntaxException {
+    public Parameters parse(String settingsStr) throws ArgumentSyntaxException {
         if (settingsStr != null) {
             String[] settingsArray = settingsStr.trim().split(separator);
             
-            Settings settings = new Settings();
+            Parameters settings = new Parameters();
             if (settingsArray.length >= 1 && settingsArray.length >= mandatoryOptCount && settingsArray.length <= options.size()) {
                 if (keyValue) {
                     for (Option option : options) {

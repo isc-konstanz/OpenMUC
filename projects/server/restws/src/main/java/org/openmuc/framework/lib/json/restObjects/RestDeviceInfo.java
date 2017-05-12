@@ -22,7 +22,7 @@ package org.openmuc.framework.lib.json.restObjects;
 
 import org.openmuc.framework.config.DeviceInfo;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.info.DeviceOptions;
+import org.openmuc.framework.config.options.DeviceOptions;
 
 public class RestDeviceInfo {
 

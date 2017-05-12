@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.openmuc.framework.config.info.Option;
+import org.openmuc.framework.config.options.Option;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
 

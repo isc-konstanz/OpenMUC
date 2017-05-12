@@ -20,10 +20,10 @@
  */
 package org.openmuc.framework.driver.dlms.settings;
 
-import org.openmuc.framework.config.info.DeviceOptions;
-import org.openmuc.framework.config.info.Option;
-import org.openmuc.framework.config.info.OptionCollection;
-import org.openmuc.framework.config.info.OptionSelection;
+import org.openmuc.framework.config.options.DeviceOptions;
+import org.openmuc.framework.config.options.Option;
+import org.openmuc.framework.config.options.OptionCollection;
+import org.openmuc.framework.config.options.OptionSelection;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.StringValue;

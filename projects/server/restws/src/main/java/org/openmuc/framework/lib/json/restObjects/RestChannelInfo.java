@@ -22,7 +22,7 @@ package org.openmuc.framework.lib.json.restObjects;
 
 import org.openmuc.framework.config.ChannelInfo;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.info.ChannelOptions;
+import org.openmuc.framework.config.options.ChannelOptions;
 
 public class RestChannelInfo {
 
