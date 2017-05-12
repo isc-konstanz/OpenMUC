@@ -25,20 +25,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.openmuc.framework.config.info.Option;
+import org.openmuc.framework.config.options.Option;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
 
 public class RestOption {
 
     private String key;
-    private String name;
-    private String description;
-    private ValueType type;
-    private boolean mandatory;
+    private String name = null;
+    private String description = null;
+    private ValueType type = null;
+    private Boolean mandatory = null;
 
-    private String valueDefault;
-    private Map<String, String> valueSelection;
+    private String valueDefault = null;
+    private Map<String, String> valueSelection = null;
 
     public String getKey() {
         return key;
@@ -112,8 +112,8 @@ public class RestOption {
             }
             if (option.getValueSelection() != null) {
                 Map<String, String> restSelection = new LinkedHashMap<String, String>();
-                for (Map.Entry<String, Value> selection : option.getValueSelection().getOptions().entrySet()) {
-                    restSelection.put(selection.getKey(), selection.getValue().asString());
+                for (Map.Entry<Value, String> selection : option.getValueSelection().getOptions().entrySet()) {
+                    restSelection.put(selection.getKey().asString(), selection.getValue());
                 }
                 restOption.setValueSelection(restSelection);
             }

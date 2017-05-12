@@ -20,9 +20,9 @@
  */
 package org.openmuc.framework.driver.csv.settings;
 
-import org.openmuc.framework.config.info.ChannelOptions;
-import org.openmuc.framework.config.info.Option;
-import org.openmuc.framework.config.info.OptionCollection;
+import org.openmuc.framework.config.options.ChannelOptions;
+import org.openmuc.framework.config.options.Option;
+import org.openmuc.framework.config.options.OptionCollection;
 import org.openmuc.framework.data.ValueType;
 
 public class CsvChannelOptions extends ChannelOptions {

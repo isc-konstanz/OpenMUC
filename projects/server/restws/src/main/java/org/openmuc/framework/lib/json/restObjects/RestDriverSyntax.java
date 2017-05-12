@@ -25,12 +25,12 @@ import org.openmuc.framework.config.DriverInfo;
 public class RestDriverSyntax {
 
     private String id;
-    private String description;
-    private String deviceAddressSyntax;
-    private String deviceSettingsSyntax;
-    private String deviceScanSettingsSyntax;
-    private String channelAddressSyntax;
-    private String channelScanSettingsSyntax;
+    private String description = null;
+    private String deviceAddressSyntax = null;
+    private String deviceSettingsSyntax = null;
+    private String deviceScanSettingsSyntax = null;
+    private String channelAddressSyntax = null;
+    private String channelScanSettingsSyntax = null;
 
     public String getId() {
         return id;

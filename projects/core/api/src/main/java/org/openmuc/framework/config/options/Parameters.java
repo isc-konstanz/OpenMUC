@@ -18,14 +18,14 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config.info;
+package org.openmuc.framework.config.options;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openmuc.framework.data.Value;
 
-public class Settings {
+public class Parameters {
 
     Map<String, Value> parameters = new HashMap<String, Value>();
 

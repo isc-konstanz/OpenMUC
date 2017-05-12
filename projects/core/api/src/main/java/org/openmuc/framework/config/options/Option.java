@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config.info;
+package org.openmuc.framework.config.options;
 
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;

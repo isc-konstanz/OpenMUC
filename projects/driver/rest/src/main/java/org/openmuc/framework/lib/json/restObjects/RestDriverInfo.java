@@ -25,12 +25,12 @@ import org.openmuc.framework.config.DriverInfo;
 public class RestDriverInfo {
 
     private String id;
-    private String name;
-    private String description;
+    private String name = null;
+    private String description = null;
 
-    private RestDeviceInfo device;
-    private RestChannelInfo channel;
-    private RestOptionCollection configs;
+    private RestDeviceInfo device = null;
+    private RestChannelInfo channel = null;
+    private RestOptionCollection configs = null;
 
     public String getId() {
         return id;

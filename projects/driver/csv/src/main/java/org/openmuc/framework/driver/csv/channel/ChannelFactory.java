@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.info.Settings;
+import org.openmuc.framework.config.options.Parameters;
 import org.openmuc.framework.driver.csv.ESampleMode;
 import org.openmuc.framework.driver.csv.settings.CsvDeviceOptions;
 
 public class ChannelFactory {
 
     public static HashMap<String, CsvChannel> createChannelMap(Map<String, List<String>> csvMap,
-            Settings settings) throws ArgumentSyntaxException {
+            Parameters settings) throws ArgumentSyntaxException {
 
         HashMap<String, CsvChannel> channelMap = new HashMap<String, CsvChannel>();
         
