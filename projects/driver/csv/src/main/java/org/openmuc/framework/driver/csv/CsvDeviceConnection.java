@@ -20,7 +20,7 @@ import org.openmuc.framework.driver.csv.channel.ChannelFactory;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
-import org.openmuc.framework.driver.csv.settings.CsvDeviceOptions;
+import org.openmuc.framework.driver.csv.options.CsvDeviceOptions;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
