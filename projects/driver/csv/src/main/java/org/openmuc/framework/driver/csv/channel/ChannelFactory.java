@@ -8,7 +8,7 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.options.Parameters;
 import org.openmuc.framework.driver.csv.ESampleMode;
-import org.openmuc.framework.driver.csv.settings.CsvDeviceOptions;
+import org.openmuc.framework.driver.csv.options.CsvDeviceOptions;
 
 public class ChannelFactory {
 

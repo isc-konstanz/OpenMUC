@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.mbus.settings;
+package org.openmuc.framework.driver.mbus.options;
 
 import org.openmuc.framework.config.options.DeviceOptions;
 import org.openmuc.framework.config.options.Option;

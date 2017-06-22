@@ -8,7 +8,7 @@ import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.config.options.DeviceOptions;
 import org.openmuc.framework.config.options.Parameters;
 import org.openmuc.framework.driver.csv.CsvDriver;
-import org.openmuc.framework.driver.csv.settings.CsvDeviceOptions;
+import org.openmuc.framework.driver.csv.options.CsvDeviceOptions;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

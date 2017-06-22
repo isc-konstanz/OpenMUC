@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.csv.settings;
+package org.openmuc.framework.driver.csv.options;
 
 import org.openmuc.framework.config.options.ChannelOptions;
 import org.openmuc.framework.config.options.Option;
