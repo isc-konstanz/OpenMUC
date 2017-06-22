@@ -26,8 +26,6 @@ public abstract class ChannelInfo {
         config.add(unit());
         config.add(valueType());
         config.add(valueLength());
-        config.add(isReadable());
-        config.add(isWritable());
         
         return OptionCollection.unmodifiableOptions(config);
     }
@@ -135,26 +133,6 @@ public abstract class ChannelInfo {
         valueLength.setMandatory(false);
         
         return valueLength;
-    }
-
-    private static Option isReadable() {
-        
-        Option isReadable = new Option("isReadable", "Readable", ValueType.BOOLEAN);
-        isReadable.setDescription("For information only (info can be accessed by an app or driver).");
-        isReadable.setMandatory(false);
-        isReadable.setValueDefault(new BooleanValue(false));
-        
-        return isReadable;
-    }
-
-    private static Option isWritable() {
-        
-        Option isWritable = new Option("isWritable", "Writable", ValueType.BOOLEAN);
-        isWritable.setDescription("For information only (info can be accessed by an app or driver).");
-        isWritable.setMandatory(false);
-        isWritable.setValueDefault(new BooleanValue(false));
-        
-        return isWritable;
     }
 
 }
