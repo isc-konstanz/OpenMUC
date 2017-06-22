@@ -142,76 +142,82 @@ public class OptionCollection {
 
     public Parameters parse(String settingsStr) throws ArgumentSyntaxException {
         if (settingsStr != null) {
-            String[] settingsArray = settingsStr.trim().split(separator);
-            
             Parameters settings = new Parameters();
-            if (settingsArray.length >= 1 && settingsArray.length >= mandatoryOptCount && settingsArray.length <= options.size()) {
-                if (keyValue) {
-                    for (Option option : options) {
-                        boolean mandatoryOptMissing = option.isMandatory() ? true : false;
-                        
-                        String key = option.getKey();
-                        Value value = null;
-                        for (String setting : settingsArray) {
-                            String[] keyValue = setting.trim().split(assignment);
-                            if (keyValue.length == 2) {
-                                if (keyValue[0].trim().equalsIgnoreCase(key)) {
-                                    mandatoryOptMissing = false;
-                                    
-                                    value = parseValue(option.getType(), keyValue[1]);
+            
+            if (!settingsStr.trim().isEmpty()) {
+            	String[] settingsArray = settingsStr.trim().split(separator);
+            	
+                if (settingsArray.length >= mandatoryOptCount && settingsArray.length <= options.size()) {
+                    if (keyValue) {
+                        for (Option option : options) {
+                            boolean mandatoryOptMissing = option.isMandatory() ? true : false;
+                            
+                            String key = option.getKey();
+                            Value value = null;
+                            for (String setting : settingsArray) {
+                                String[] keyValue = setting.trim().split(assignment);
+                                if (keyValue.length == 2) {
+                                    if (keyValue[0].trim().equalsIgnoreCase(key)) {
+                                        mandatoryOptMissing = false;
+                                        
+                                        value = parseValue(option.getType(), keyValue[1]);
+                                    }
+                                }
+                                else {
+                                    throw new ArgumentSyntaxException("Parameter is not a key value pair of type "
+                                                + "<key>" + assignment + "<value> in parsed Settings: " + setting);
                                 }
                             }
-                            else {
-                                throw new ArgumentSyntaxException("Parameter is not a key value pair of type "
-                                            + "<key>" + assignment + "<value> in parsed Settings: " + setting);
+                            if (mandatoryOptMissing) {
+                                throw new ArgumentSyntaxException("Mandatory parameter " + key + " is not present in parsed Settings");
+                            }
+                            
+                            if (value != null) {
+                                if (option.getValueSelection() != null 
+                                        && option.getValueSelection().hasValidation() 
+                                        && !option.getValueSelection().contains(value)) {
+                                    throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
+                                }
+                                
+                                settings.parameters.put(key, value);
                             }
                         }
-                        if (mandatoryOptMissing) {
-                            throw new ArgumentSyntaxException("Mandatory parameter " + key + " is not present in parsed Settings");
-                        }
+                    }
+                    else {
+                        int optionalOptCount = 0;
                         
-                        if (value != null) {
-                            if (option.getValueSelection() != null 
-                                    && option.getValueSelection().hasValidation() 
-                                    && !option.getValueSelection().contains(value)) {
-                                throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
+                        int i = 0;
+                        for (Option option : options) {
+                            if (i >= settingsArray.length) {
+                                break;
                             }
-                            
-                            settings.parameters.put(key, value);
+                            else if (option.isMandatory() || mandatoryOptCount+optionalOptCount < settingsArray.length) {
+                                
+                                Value value = parseValue(option.getType(), settingsArray[i]);
+                                if (option.getValueSelection() != null 
+                                        && option.getValueSelection().hasValidation() 
+                                        && !option.getValueSelection().contains(value)) {
+                                    throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
+                                }
+                                settings.parameters.put(option.getKey(), value);
+                                
+                                if (!option.isMandatory()) {
+                                    optionalOptCount++;
+                                }
+                                i++;
+                            }
                         }
                     }
                 }
-                else {
-                    int optionalOptCount = 0;
-                    
-                    int i = 0;
-                    for (Option option : options) {
-                        if (i >= settingsArray.length) {
-                            break;
-                        }
-                        else if (option.isMandatory() || mandatoryOptCount+optionalOptCount < settingsArray.length) {
-                            
-                            Value value = parseValue(option.getType(), settingsArray[i]);
-                            if (option.getValueSelection() != null 
-                                    && option.getValueSelection().hasValidation() 
-                                    && !option.getValueSelection().contains(value)) {
-                                throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
-                            }
-                            settings.parameters.put(option.getKey(), value);
-                            
-                            if (!option.isMandatory()) {
-                                optionalOptCount++;
-                            }
-                            i++;
-                        }
-                    }
+                else if (settingsArray.length < mandatoryOptCount) {
+                    throw new ArgumentSyntaxException("Mandatory parameters not configured in settings string");
+                }
+                else if (settingsArray.length > options.size()) {
+                    throw new ArgumentSyntaxException("Too many parameters in passed Settings to be parsed.");
                 }
             }
-            else if (settingsArray.length < mandatoryOptCount) {
+            else if (mandatoryOptCount > 0) {
                 throw new ArgumentSyntaxException("Mandatory parameters not configured in empty settings string");
-            }
-            else if (settingsArray.length > options.size()) {
-                throw new ArgumentSyntaxException("Too many parameters in passed Settings to be parsed.");
             }
             
             return settings;
