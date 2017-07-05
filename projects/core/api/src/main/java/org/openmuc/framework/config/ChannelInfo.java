@@ -4,6 +4,7 @@ import org.openmuc.framework.config.options.Option;
 import org.openmuc.framework.config.options.OptionCollection;
 import org.openmuc.framework.config.options.OptionSelection;
 import org.openmuc.framework.data.BooleanValue;
+import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.ValueType;
@@ -23,9 +24,11 @@ public abstract class ChannelInfo {
         config.add(listening());
         config.add(loggingInterval());
         config.add(loggingTimeOffset());
-        config.add(unit());
         config.add(valueType());
         config.add(valueLength());
+        config.add(scalingFactor());
+        config.add(valueOffset());
+        config.add(unit());
         
         return OptionCollection.unmodifiableOptions(config);
     }
@@ -92,16 +95,6 @@ public abstract class ChannelInfo {
         return loggingTimeOffset;
     }
 
-    private static Option unit() {
-        
-        Option unit = new Option("unit", "Unit", ValueType.STRING);
-        unit.setDescription("Physical unit of this channel.</br>"
-            + "For information only (info can be accessed by an app or driver).");
-        unit.setMandatory(false);
-        
-        return unit;
-    }
-
     private static Option valueType() {
         
         Option valueType = new Option("valueType", "Value type", ValueType.STRING);
@@ -133,6 +126,39 @@ public abstract class ChannelInfo {
         valueLength.setMandatory(false);
         
         return valueLength;
+    }
+
+    private static Option scalingFactor() {
+        
+        Option scalingFactor = new Option("scalingFactor", "Scaling factor", ValueType.DOUBLE);
+        scalingFactor.setDescription("Is used to scale a value read by a driver or set by an application. " +
+        		"The value read by an driver is multiplied with the scalingFactor and a value set by an application " +
+        		"is divided by the scalingFactor. Possible values are e.g.: 1.0 4.94147E-9 -2.4");
+        scalingFactor.setMandatory(false);
+        scalingFactor.setValueDefault(new DoubleValue(1));
+        
+        return scalingFactor;
+    }
+
+    private static Option valueOffset() {
+        
+        Option valueOffset = new Option("valueOffset", "Value offset", ValueType.DOUBLE);
+        valueOffset.setDescription("Is used to offset a value read by a driver or set by an application. " +
+        		"The offset is added to a value read by a driver and subtracted from a value set by an application.");
+        valueOffset.setMandatory(false);
+        valueOffset.setValueDefault(new DoubleValue(0));
+        
+        return valueOffset;
+    }
+
+    private static Option unit() {
+        
+        Option unit = new Option("unit", "Unit", ValueType.STRING);
+        unit.setDescription("Physical unit of this channel.</br>"
+            + "For information only (info can be accessed by an app or driver).");
+        unit.setMandatory(false);
+        
+        return unit;
     }
 
 }
