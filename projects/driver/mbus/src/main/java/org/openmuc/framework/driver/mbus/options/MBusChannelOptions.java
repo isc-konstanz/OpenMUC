@@ -27,14 +27,12 @@ import org.openmuc.framework.data.ValueType;
 
 public class MBusChannelOptions extends ChannelOptions {
     
-    private static final String DESCRIPTION = "A channel references a single attribute or method of a COSEM Interface Object.</br>"
-        + "To uniquely identify an Objects attribute or method, the <em>Class ID</em>, the <em>Logical Name</em> and <em>Attribute</em> or <em>Method</em> ID is needed.</br></br>"
-        + "For a list of all valid Logical Names and the corresponding COSEM Interface Class, consult the list of standardized OBIS codes administered by the DLMS UA "
-        + "<a href='http://dlms.com/documentation/listofstandardobiscodesandmaintenanceproces/index.html'>here</a>.";
+    private static final String DESCRIPTION = "A channel references data records (sometimes called variable data blocks), which contain the measured data. " +
+    		"Each data record is made up of a data information block (DIB), a value information block (VIB) and a value. " +
+    		"Similar to OBIS codes DIBs and VIBs code information such as the meaning of a value.";
 
-    public static final String CLASS_ID = "classId";
-    public static final String INSTANCE_ID = "instanceId";
-    public static final String ATTRIBUTE_ID = "attributeId";
+    public static final String DIB_KEY = "dib";
+    public static final String VIB_KEY = "vib";
 
     @Override
     public String getDescription() {
@@ -43,11 +41,10 @@ public class MBusChannelOptions extends ChannelOptions {
 
     @Override
     protected void configureAddress(OptionCollection address) {
-        address.setSyntax("/");
+        address.setSyntax(":");
 
-        address.add(classId());
-        address.add(instanceId());
-        address.add(attributeId());
+        address.add(dib());
+        address.add(vib());
     }
 
     @Override
@@ -55,36 +52,30 @@ public class MBusChannelOptions extends ChannelOptions {
         // No parameters required
     }
 
-    private Option classId() {
+    private Option dib() {
         
-        Option classId = new Option(CLASS_ID, "Class ID", ValueType.INTEGER);
-        classId.setDescription("The COSEM class ID is a 16 bit unsigned number and can be found in the list of standardized OBIS codes.");
-        classId.setMandatory(true);
+        Option dib = new Option(DIB_KEY, "Data Information Block", ValueType.STRING);
+        dib.setDescription("The DIB codes:<ol>" +
+        		"<li><b>Storage number</b> – a meter can have several storages e.g. to store historical time series data. The storage number 0 signals an actual value.</li>" +
+        		"<li><b>Function</b> – Data can have the following four function types: instantaneous value, max value, min value, value during error state.</li>" +
+        		"<li><b>Data value type</b> – The length and coding of the data value field following the DIB and VIB. Possible value types are 8/16/24/32/48/64 bit integer, 32 bit real, 2/4/6/8/12 digit binary coded decimals (BCD), date and string. In addition the value type “none” exists to label data records that have no data value field.</li>" +
+        		"<li><b>Tariff</b> – Indicates the tariff number of this data field. The data of tariff 0 is usually the sum of all other tariffs.</li>" +
+        		"<li><b>Subunit</b> – Can be used by a slave to distinguish several subunits of the metering device.</li></ol>");
+        dib.setMandatory(true);
         
-        return classId;
+        return dib;
     }
 
-    private Option instanceId() {
+    private Option vib() {
         
-        Option instanceId = new Option(INSTANCE_ID, "Logical Name", ValueType.STRING);
-        instanceId.setDescription("A logical name is a 6 byte OBIS code as it is defined by the DLMS UA. It sometimes also called <em>instance ID</em>.</br>"
-                + "It can be written as hexadecimal number (e.g. 0101010800FF) or as a series of six decimal numbers separated by periods A-B:C.D.E*F.</br></br>"
-                + "<b>Example:</b>  The clock of a smart meter is always reachable under the address [0, 0, 1, 0, 0, 255].");
-        instanceId.setMandatory(true);
+        Option vib = new Option(VIB_KEY, "Value Information Block", ValueType.STRING);
+        vib.setDescription("The VIB codes:<ol>" +
+        		"<li><b>Description</b> – The meaning of the data value (e.g. “Energy”, “Volume” etc.)</li>" +
+        		"<li><b>Unit</b> – The unit of the data value.</li>" +
+        		"<li><b>Multiplier</b> – A factor by which the data value coded in the data field has to be multiplied with.</li></ol>");
+        vib.setMandatory(true);
         
-        return instanceId;
-    }
-
-    private Option attributeId() {
-        
-        Option attributeId = new Option(ATTRIBUTE_ID, "Attribute/Method ID", ValueType.INTEGER);
-        attributeId.setDescription("The COSEM attribute/method ID is a 16 bit unsigned number and depends on the class ID.</br>"
-                + "It can be extracted best by consulting the document IEC 62056-6-2 or the Blue Book from the DLMS UA.</br>"
-                + "Usually the first attribute (attribute ID 1) of an COSEM interface class (IC) is the logical name of the object. "
-                + "Further attributes refer to actual data (see section 4.5 of IEC 62056-6-2).");
-        attributeId.setMandatory(true);
-        
-        return attributeId;
+        return vib;
     }
 
 }
