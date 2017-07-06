@@ -215,6 +215,7 @@ public class OptionSelection {
     public static OptionSelection timeSelection() {
         
         OptionSelection selection = new OptionSelection(ValueType.INTEGER, false);
+        selection.enableValidation(false);
         selection.addInteger(0, "None");
         selection.addInteger(100, "100 milliseconds");
         selection.addInteger(200, "200 milliseconds");
