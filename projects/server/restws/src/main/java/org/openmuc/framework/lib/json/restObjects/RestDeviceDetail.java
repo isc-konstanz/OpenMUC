@@ -39,6 +39,7 @@ public class RestDeviceDetail {
     private Boolean disabled = null;
 
     private String driver = null;
+    private String driverName = null;
     private DeviceState state = null;
     private List<String> channels = null;
 
@@ -106,6 +107,14 @@ public class RestDeviceDetail {
         this.driver = driver;
     }
 
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
+    }
+
     public DeviceState getState() {
         return state;
     }
@@ -133,7 +142,8 @@ public class RestDeviceDetail {
         rdd.setConnectRetryInterval(dc.getConnectRetryInterval());
         rdd.isDisabled(dc.isDisabled());
 
-        rdd.setDriver(info.getName());
+        rdd.setDriver(info.getId());
+        rdd.setDriverName(info.getName());
         rdd.setState(state);
         
         List<String> channelIds = new ArrayList<String>();
