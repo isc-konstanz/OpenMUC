@@ -28,6 +28,10 @@ import org.openmuc.framework.config.options.OptionCollection;
 import org.openmuc.framework.data.ValueType;
 
 public class RestOptionCollection {
+	
+	public final static String ADDRESS = "address";
+	public final static String SETTINGS = "settings";
+	public final static String SCAN_SETTINGS = "scanSettings";
     
     private List<RestOption> options = null;
     private RestOptionSyntax syntax = null;
@@ -64,12 +68,30 @@ public class RestOptionCollection {
         return restOptions;
     }
 
-    public static RestOptionCollection setOptionCollection(String syntax) {
+    public static RestOptionCollection setOptionCollection(String id, String syntax) {
         RestOptionCollection restOptions = new RestOptionCollection();
         
+        String name;
+        switch(id) {
+        case ADDRESS:
+        	name = "Address";
+        	break;
+        case SETTINGS:
+        	name = "Settings";
+        	break;
+        case SCAN_SETTINGS:
+        	name = "Scan settings";
+        	break;
+        default:
+        	name = id;
+        	break;
+        }
+        
         List<Option> options = new ArrayList<Option>();
-        Option option = new Option("settings", "Settings", ValueType.STRING);
+        Option option = new Option(id, name, ValueType.STRING);
         option.setDescription(syntax);
+        option.setMandatory(false);
+        options.add(option);
         restOptions.setOptions(RestOption.setOptions(options));
         
         RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();

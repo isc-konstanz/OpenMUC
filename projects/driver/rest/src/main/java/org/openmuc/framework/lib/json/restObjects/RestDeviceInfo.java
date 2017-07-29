@@ -85,9 +85,9 @@ public class RestDeviceInfo {
             restDeviceInfo.setScanSettings(RestOptionCollection.setOptionCollection(deviceOptions.getScanSettings()));
         }
         else {
-            restDeviceInfo.setAddress(RestOptionCollection.setOptionCollection(driverInfo.getDeviceAddressSyntax()));
-            restDeviceInfo.setSettings(RestOptionCollection.setOptionCollection(driverInfo.getDeviceSettingsSyntax()));
-            restDeviceInfo.setScanSettings(RestOptionCollection.setOptionCollection(driverInfo.getDeviceScanSettingsSyntax()));
+            restDeviceInfo.setAddress(RestOptionCollection.setOptionCollection(RestOptionCollection.ADDRESS, driverInfo.getDeviceAddressSyntax()));
+            restDeviceInfo.setSettings(RestOptionCollection.setOptionCollection(RestOptionCollection.SETTINGS, driverInfo.getDeviceSettingsSyntax()));
+            restDeviceInfo.setScanSettings(RestOptionCollection.setOptionCollection(RestOptionCollection.SCAN_SETTINGS, driverInfo.getDeviceScanSettingsSyntax()));
         }
         RestOptionCollection configs = RestOptionCollection.setOptionCollection(DeviceInfo.configs());
         configs.setSyntax(null);

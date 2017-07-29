@@ -75,8 +75,8 @@ public class RestChannelInfo {
             restChannelInfo.setScanSettings(RestOptionCollection.setOptionCollection(channelOptions.getScanSettings()));
         }
         else {
-            restChannelInfo.setAddress(RestOptionCollection.setOptionCollection(driverInfo.getChannelAddressSyntax()));
-            restChannelInfo.setScanSettings(RestOptionCollection.setOptionCollection(driverInfo.getChannelScanSettingsSyntax()));
+            restChannelInfo.setAddress(RestOptionCollection.setOptionCollection(RestOptionCollection.ADDRESS, driverInfo.getChannelAddressSyntax()));
+            restChannelInfo.setScanSettings(RestOptionCollection.setOptionCollection(RestOptionCollection.SCAN_SETTINGS, driverInfo.getChannelScanSettingsSyntax()));
         }
         RestOptionCollection configs = RestOptionCollection.setOptionCollection(ChannelInfo.configs());
         configs.setSyntax(null);
