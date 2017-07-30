@@ -69,7 +69,6 @@ public class SnmpDeviceV1V2c extends SnmpDevice {
      * @throws ArgumentSyntaxException
      *             thrown if Given snmp version is not correct or supported
      */
-
     public SnmpDeviceV1V2c(SNMPVersion version, String address, String authenticationPassphrase)
             throws ConnectionException, ArgumentSyntaxException {
         super(address, authenticationPassphrase);
@@ -181,7 +180,7 @@ public class SnmpDeviceV1V2c extends SnmpDevice {
         // create PDU
         PDU pdu = new PDU();
 
-        for (String oid : ScanOIDs.values()) {
+        for (String oid : SCAN_OIDS.values()) {
             pdu.add(new VariableBinding(new OID(oid)));
         }
         pdu.setType(PDU.GET);
@@ -236,7 +235,7 @@ public class SnmpDeviceV1V2c extends SnmpDevice {
                                 Vector vbs = event.getResponse().getVariableBindings();
                                 // check if sent and received OIDs are the same
                                 // or else snmp version may not compatible
-                                if (!ScanOIDs.containsValue(((VariableBinding) vbs.get(0)).getOid().toString())) {
+                                if (!SCAN_OIDS.containsValue(((VariableBinding) vbs.get(0)).getOid().toString())) {
                                     // wrong version or not correct response!
                                     return;
                                 }
