@@ -49,6 +49,7 @@ public class RestChannelDetail {
     private Boolean disabled = null;
     private List<ServerMapping> serverMappings = null;
 
+    private String driver = null;
     private String device = null;
     private Flag flag = null;
     private ChannelState state = null;
@@ -189,6 +190,14 @@ public class RestChannelDetail {
         this.serverMappings = serverMappings;
     }
 
+    public String getDriver() {
+        return driver;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
     public String getDevice() {
         return device;
     }
@@ -232,7 +241,8 @@ public class RestChannelDetail {
         rcd.setLoggingTimeOffset(cc.getLoggingTimeOffset());
         rcd.setLoggingSettings(cc.getLoggingSettings());
         rcd.setDisabled(cc.isDisabled());
-        
+
+        rcd.setDriver(c.getDriverName());
         rcd.setDevice(c.getDeviceName());
         rcd.setFlag(c.getLatestRecord().getFlag());
         rcd.setState(c.getChannelState());
