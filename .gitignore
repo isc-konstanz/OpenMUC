@@ -43,6 +43,8 @@ build/
 !/build
 /build/*
 !/build/libs-all
+/build/libs-all/*
+!/build/libs-all/openmuc-*
 
 # Framework
 felix-cache
