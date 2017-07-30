@@ -5,7 +5,7 @@ project.ext {
   
   cfgGroup = "org.openmuc.framework"
 
-  cfgCopyDependencies = false
+  cfgCopyDependencies = true
 
   cfgCopyToRoot = true
 
