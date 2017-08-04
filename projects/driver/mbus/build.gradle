@@ -1,7 +1,7 @@
 
 configurations.create("embed")
 
-def jmbusversion = "2.2.3"
+def jmbusversion = "2.2.4"
 
 repositories {
 	mavenCentral()
