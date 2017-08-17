@@ -37,6 +37,7 @@ import org.openmuc.framework.data.FloatValue;
 import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -282,15 +283,21 @@ public abstract class SnmpDevice implements Connection {
 	 * @throws ConnectionException
 	 *             thrown if SNMP get request fails
 	 */
-	public void setRequest(String oid, String value)
+	public void setRequest(String oid, Value value)
 			throws SnmpTimeoutException, SnmpRequestException, ConnectionException {
 
 		// set PDU
 		PDU pdu = new PDU();
 		pdu.setType(PDU.SET);
 
-//		Variable var = new OctetString(value);
-		Variable var = new Integer32(Integer.valueOf(value)); //can only write Integers currently
+		Variable var;
+		
+		if(value instanceof IntValue) {
+			var = new Integer32(value.asInt());
+		} else {
+			var = new OctetString(value.asString());
+		}
+
 		VariableBinding varBind = new VariableBinding(new OID(oid), var);
 		pdu.add(varBind);
 
@@ -498,7 +505,7 @@ public abstract class SnmpDevice implements Connection {
 		try {
 			for (ChannelValueContainer container : containers) {
 				String oid = container.getChannelAddress();
-				String value = container.getValue().asString();
+				Value value = container.getValue();
 				logger.warn("{}: value = '{}'", container.getChannelAddress(), value);
 				setRequest(oid, value);
 				container.setFlag(Flag.VALID);
