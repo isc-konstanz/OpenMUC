@@ -31,7 +31,11 @@ import java.util.Vector;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.data.ByteArrayValue;
+import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.data.FloatValue;
+import org.openmuc.framework.data.IntValue;
+import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
@@ -51,6 +55,7 @@ import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
+import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.Variable;
@@ -66,426 +71,455 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  */
 public abstract class SnmpDevice implements Connection {
 
-    private final static Logger logger = LoggerFactory.getLogger(SnmpDevice.class);
+	private final static Logger logger = LoggerFactory.getLogger(SnmpDevice.class);
 
-    public enum SNMPVersion {
-        V1,
-        V2c,
-        V3
-    };
+	public enum SNMPVersion {
+		V1, V2c, V3
+	};
 
-    protected Address targetAddress;
-    protected Snmp snmp;
-    protected USM usm;
-    protected int timeout = 10000; // in milliseconds
-    protected int retries = 3;
-    protected String authenticationPassphrase;
-    protected AbstractTarget target;
+	protected Address targetAddress;
+	protected Snmp snmp;
+	protected USM usm;
+	protected int timeout = 10000; // in milliseconds
+	protected int retries = 3;
+	protected String authenticationPassphrase;
+	protected AbstractTarget target;
 
-    protected List<SnmpDiscoveryListener> listeners = new ArrayList<>();
+	protected List<SnmpDiscoveryListener> listeners = new ArrayList<>();
 
-    public static final Map<String, String> SCAN_OIDS = new HashMap<>();
+	public static final Map<String, String> SCAN_OIDS = new HashMap<>();
 
-    static {
-        // some general OIDs that are valid in almost every MIB
-        SCAN_OIDS.put("Device name: ", "1.3.6.1.2.1.1.5.0");
-        SCAN_OIDS.put("Description: ", "1.3.6.1.2.1.1.1.0");
-        SCAN_OIDS.put("Location: ", "1.3.6.1.2.1.1.6.0");
-    };
+	static {
+		// some general OIDs that are valid in almost every MIB
+		SCAN_OIDS.put("Device name: ", "1.3.6.1.2.1.1.5.0");
+		SCAN_OIDS.put("Description: ", "1.3.6.1.2.1.1.1.0");
+		SCAN_OIDS.put("Location: ", "1.3.6.1.2.1.1.6.0");
+	};
 
-    /**
-     * snmp constructor takes primary parameters in order to create snmp object. this implementation uses UDP protocol
-     * 
-     * @param address
-     *            Contains ip and port. accepted string "X.X.X.X/portNo"
-     * @param authenticationPassphrase
-     *            the authentication pass phrase. If not <code>null</code>, <code>authenticationProtocol</code> must
-     *            also be not <code>null</code>. RFC3414 §11.2 requires pass phrases to have a minimum length of 8
-     *            bytes. If the length of <code>authenticationPassphrase</code> is less than 8 bytes an
-     *            <code>IllegalArgumentException</code> is thrown. [required by snmp4j library]
-     * 
-     * @throws ConnectionException
-     *             thrown if SNMP listen or initialization failed
-     * @throws ArgumentSyntaxException
-     *             thrown if Device address foramt is wrong
-     */
-    public SnmpDevice(String address, String authenticationPassphrase)
-            throws ConnectionException, ArgumentSyntaxException {
+	/**
+	 * snmp constructor takes primary parameters in order to create snmp object.
+	 * this implementation uses UDP protocol
+	 * 
+	 * @param address
+	 *            Contains ip and port. accepted string "X.X.X.X/portNo"
+	 * @param authenticationPassphrase
+	 *            the authentication pass phrase. If not <code>null</code>,
+	 *            <code>authenticationProtocol</code> must also be not
+	 *            <code>null</code>. RFC3414 §11.2 requires pass phrases to have a
+	 *            minimum length of 8 bytes. If the length of
+	 *            <code>authenticationPassphrase</code> is less than 8 bytes an
+	 *            <code>IllegalArgumentException</code> is thrown. [required by
+	 *            snmp4j library]
+	 * 
+	 * @throws ConnectionException
+	 *             thrown if SNMP listen or initialization failed
+	 * @throws ArgumentSyntaxException
+	 *             thrown if Device address foramt is wrong
+	 */
+	public SnmpDevice(String address, String authenticationPassphrase)
+			throws ConnectionException, ArgumentSyntaxException {
 
-        // start snmp compatible with all versions
-        try {
-        	TransportMapping<? extends Address> transport = new DefaultUdpTransportMapping();
-            snmp = new Snmp(transport);
+		// start snmp compatible with all versions
+		try {
+			TransportMapping<? extends Address> transport = new DefaultUdpTransportMapping();
+			snmp = new Snmp(transport);
 
-        } catch (IOException e) {
-            throw new ConnectionException("SNMP initialization failed! \n" + e.getMessage());
-        }
+		} catch (IOException e) {
+			throw new ConnectionException("SNMP initialization failed! \n" + e.getMessage());
+		}
 
-        OctetString localEngineId = new OctetString(MPv3.createLocalEngineID());
-        usm = new USM(SecurityProtocols.getInstance(), localEngineId, 0);
-        SecurityModels.getInstance().addSecurityModel(usm);
+		OctetString localEngineId = new OctetString(MPv3.createLocalEngineID());
+		usm = new USM(SecurityProtocols.getInstance(), localEngineId, 0);
+		SecurityModels.getInstance().addSecurityModel(usm);
 
-        try {
-            snmp.listen();
-        } catch (IOException e) {
-            throw new ConnectionException("SNMP listen failed! \n" + e.getMessage());
-        }
+		try {
+			snmp.listen();
+		} catch (IOException e) {
+			throw new ConnectionException("SNMP listen failed! \n" + e.getMessage());
+		}
 
-        // set address
-        try {
-            targetAddress = GenericAddress.parse(address);
-        } catch (IllegalArgumentException e) {
-            throw new ArgumentSyntaxException("Device address foramt is wrong! (eg. 1.1.1.1/1)");
-        }
+		// set address
+		try {
+			targetAddress = GenericAddress.parse(address);
+		} catch (IllegalArgumentException e) {
+			throw new ArgumentSyntaxException("Device address foramt is wrong! (eg. 1.1.1.1/1)");
+		}
 
-        this.authenticationPassphrase = authenticationPassphrase;
+		this.authenticationPassphrase = authenticationPassphrase;
 
-    }
+	}
 
-    /**
-     * Default constructor useful for scanner
-     */
-    public SnmpDevice() {
-    }
+	/**
+	 * Default constructor useful for scanner
+	 */
+	public SnmpDevice() {
+	}
 
-    /**
-     * set target parameters. Implementations are different in SNMP v1, v2c and v3
-     */
-    abstract void setTarget();
+	/**
+	 * set target parameters. Implementations are different in SNMP v1, v2c and v3
+	 */
+	abstract void setTarget();
 
-    /**
-     * Receives a list of all OIDs in string format, creates PDU and sends GET request to defined target. This method is
-     * a blocking method. It waits for response.
-     * 
-     * @param oids
-     *            list of OIDs that should be read from target
-     * @return Map&lt;String, String&gt; returns a Map of OID as Key and received value corresponding to that OID from
-     *         the target as Value
-     * 
-     * @throws SnmpTimeoutException
-     *             thrown if Target doesn't responses
-     * @throws SnmpRequestException 
-     *             thrown if the SNMP request returns an error status
-     * @throws ConnectionException
-     *             thrown if SNMP get request fails
-     */
-    public Map<String, String> getRequestList(List<String> oids) throws SnmpTimeoutException, SnmpRequestException, ConnectionException {
+	/**
+	 * Receives a list of all OIDs in string format, creates PDU and sends GET
+	 * request to defined target. This method is a blocking method. It waits for
+	 * response.
+	 * 
+	 * @param oids
+	 *            list of OIDs that should be read from target
+	 * @return Map&lt;String, String&gt; returns a Map of OID as Key and received
+	 *         value corresponding to that OID from the target as Value
+	 * 
+	 * @throws SnmpTimeoutException
+	 *             thrown if Target doesn't responses
+	 * @throws SnmpRequestException
+	 *             thrown if the SNMP request returns an error status
+	 * @throws ConnectionException
+	 *             thrown if SNMP get request fails
+	 */
+	public Map<String, String> getRequestList(List<String> oids)
+			throws SnmpTimeoutException, SnmpRequestException, ConnectionException {
 
-        Map<String, String> result = new HashMap<>();
+		Map<String, String> result = new HashMap<>();
 
-        // set PDU
-        PDU pdu = new PDU();
-        pdu.setType(PDU.GET);
+		// set PDU
+		PDU pdu = new PDU();
+		pdu.setType(PDU.GET);
 
-        for (String oid : oids) {
-            pdu.add(new VariableBinding(new OID(oid)));
-        }
+		for (String oid : oids) {
+			pdu.add(new VariableBinding(new OID(oid)));
+		}
 
-        // send GET request
-        try {
-        	ResponseEvent response = snmp.send(pdu, target);
-            PDU responsePDU = response.getResponse();
+		// send GET request
+		try {
+			ResponseEvent response = snmp.send(pdu, target);
+			PDU responsePDU = response.getResponse();
 
-            int errorStatus = responsePDU.getErrorStatus();
-            if (errorStatus == PDU.noError) {
-                @SuppressWarnings("rawtypes")
-                Vector vbs = responsePDU.getVariableBindings();
-                for (int i = 0; i < vbs.size(); i++) {
-                    VariableBinding vb = (VariableBinding) vbs.get(i);
-                    result.put(vb.getOid().toString(), vb.getVariable().toString());
-                }
-            }
-            else {
-                throw new SnmpRequestException("Request failed with status " + errorStatus + ": " + responsePDU.getErrorStatusText());
-            }
-        } catch (IOException e) {
-            throw new ConnectionException("SNMP get request failed! " + e.getMessage());
-        } catch (NullPointerException e) {
-            throw new SnmpTimeoutException("Timeout: Target doesn't respond!");
-        }
+			int errorStatus = responsePDU.getErrorStatus();
+			if (errorStatus == PDU.noError) {
+				@SuppressWarnings("rawtypes")
+				Vector vbs = responsePDU.getVariableBindings();
+				for (int i = 0; i < vbs.size(); i++) {
+					VariableBinding vb = (VariableBinding) vbs.get(i);
+					result.put(vb.getOid().toString(), vb.getVariable().toString());
+				}
+			} else {//
+				throw new SnmpRequestException(
+						"Request failed with status " + errorStatus + ": " + responsePDU.getErrorStatusText());
+			}
+		} catch (IOException e) {
+			throw new ConnectionException("SNMP get request failed! " + e.getMessage());
+		} catch (NullPointerException e) {
+			throw new SnmpTimeoutException("Timeout: Target doesn't respond!");
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Receives one single OID in string format, creates PDU and sends GET request to defined target. This method is a
-     * blocking method. It waits for response.
-     * 
-     * @param oid
-     *            OID that should be read from target
-     * @return String containing read value
-     * 
-     * @throws SnmpTimeoutException
-     *             thrown if Target doesn't responses
-     * @throws SnmpRequestException 
-     *             thrown if the SNMP request returns an error status
-     * @throws ConnectionException
-     *             thrown if SNMP get request fails
-     */
-    public String getRequest(String oid) throws SnmpTimeoutException, SnmpRequestException, ConnectionException {
+	/**
+	 * Receives one single OID in string format, creates PDU and sends GET request
+	 * to defined target. This method is a blocking method. It waits for response.
+	 * 
+	 * @param oid
+	 *            OID that should be read from target
+	 * @return String containing read value
+	 * 
+	 * @throws SnmpTimeoutException
+	 *             thrown if Target doesn't responses
+	 * @throws SnmpRequestException
+	 *             thrown if the SNMP request returns an error status
+	 * @throws ConnectionException
+	 *             thrown if SNMP get request fails
+	 */
+	public String getRequest(String oid) throws SnmpTimeoutException, SnmpRequestException, ConnectionException {
 
-        String result = null;
+		String result = null;
 
-        // set PDU
-        PDU pdu = new PDU();
-        pdu.setType(PDU.GET);
+		// set PDU
+		PDU pdu = new PDU();
+		pdu.setType(PDU.GET);
 
-        pdu.add(new VariableBinding(new OID(oid)));
+		pdu.add(new VariableBinding(new OID(oid)));
 
-        // send GET request
-        ResponseEvent response;
-        try {
-            response = snmp.send(pdu, target);
-            PDU responsePDU = response.getResponse();
+		// send GET request
+		ResponseEvent response;
+		try {
+			response = snmp.send(pdu, target);
+			PDU responsePDU = response.getResponse();
 
-            int errorStatus = responsePDU.getErrorStatus();
-            if (errorStatus == PDU.noError) {
-                @SuppressWarnings("rawtypes")
-                Vector vbs = responsePDU.getVariableBindings();
-                result = ((VariableBinding) vbs.get(0)).getVariable().toString();
-            }
-            else {
-                throw new SnmpRequestException("Request failed with status " + errorStatus + ": " + responsePDU.getErrorStatusText());
-            }
-        } catch (IOException e) {
-            throw new ConnectionException("SNMP get request failed! " + e.getMessage());
-        } catch (NullPointerException e) {
-            throw new SnmpTimeoutException("Timeout: Target doesn't respond!");
-        }
+			int errorStatus = responsePDU.getErrorStatus();
+			if (errorStatus == PDU.noError) {
+				@SuppressWarnings("rawtypes")
+				Vector vbs = responsePDU.getVariableBindings();
+				result = ((VariableBinding) vbs.get(0)).getVariable().toString();
+			} else {
+				throw new SnmpRequestException(
+						"Request failed with status " + errorStatus + ": " + responsePDU.getErrorStatusText());
+			}
+		} catch (IOException e) {
+			throw new ConnectionException("SNMP get request failed! " + e.getMessage());
+		} catch (NullPointerException e) {
+			throw new SnmpTimeoutException("Timeout: Target doesn't respond!");
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Receives a single OID in string format, as well as a Value, creates PDU and sends SET request to defined target. 
-     * This method is a blocking method. It waits for response.
-     * 
-     * @param oid
-     *            OID a value should be set for
-     * @param value
-     *            Value that should be set
-     * 
-     * @throws SnmpTimeoutException
-     *             thrown if Target doesn't responses
-     * @throws SnmpRequestException 
-     *             thrown if the SNMP request returns an error status
-     * @throws ConnectionException
-     *             thrown if SNMP get request fails
-     */
-    public void setRequest(String oid, String value) throws SnmpTimeoutException, SnmpRequestException, ConnectionException {
+	/**
+	 * Receives a single OID in string format, as well as a Value, creates PDU and
+	 * sends SET request to defined target. This method is a blocking method. It
+	 * waits for response.
+	 * 
+	 * @param oid
+	 *            OID a value should be set for
+	 * @param value
+	 *            Value that should be set
+	 * 
+	 * @throws SnmpTimeoutException
+	 *             thrown if Target doesn't responses
+	 * @throws SnmpRequestException
+	 *             thrown if the SNMP request returns an error status
+	 * @throws ConnectionException
+	 *             thrown if SNMP get request fails
+	 */
+	public void setRequest(String oid, String value)
+			throws SnmpTimeoutException, SnmpRequestException, ConnectionException {
 
-        // set PDU
-        PDU pdu = new PDU();
-        pdu.setType(PDU.SET);
+		// set PDU
+		PDU pdu = new PDU();
+		pdu.setType(PDU.SET);
 
-        Variable var = new OctetString(value);
-        VariableBinding varBind = new VariableBinding(new OID(oid), var);
-        pdu.add(varBind);
+//		Variable var = new OctetString(value);
+		Variable var = new Integer32(Integer.valueOf(value)); //can only write Integers currently
+		VariableBinding varBind = new VariableBinding(new OID(oid), var);
+		pdu.add(varBind);
 
-        // send SET request
-        ResponseEvent response;
-        try {
-            response = snmp.set(pdu, target);
-            PDU responsePDU = response.getResponse();
+		// send SET request
+		ResponseEvent response;
+		try {
+			response = snmp.set(pdu, target);
+			PDU responsePDU = response.getResponse();
 
-            int errorStatus = responsePDU.getErrorStatus();
-            if (errorStatus != PDU.noError) {
-                throw new SnmpRequestException("Request failed with status " + errorStatus + ": " + responsePDU.getErrorStatusText());
-            }
-        } catch (IOException e) {
-            throw new ConnectionException("SNMP set request failed! " + e.getMessage());
-        } catch (NullPointerException e) {
-            throw new SnmpTimeoutException("Timeout: Target doesn't respond!");
-        }
-    }
+			int errorStatus = responsePDU.getErrorStatus();
+			if (errorStatus != PDU.noError) {
+				throw new SnmpRequestException(
+						"Request failed with status " + errorStatus + ": " + responsePDU.getErrorStatusText());
+			}
+		} catch (IOException e) {
+			throw new ConnectionException("SNMP set request failed! " + e.getMessage());
+		} catch (NullPointerException e) {
+			throw new SnmpTimeoutException("Timeout: Target doesn't respond!");
+		}
+	}
 
-    public String getDeviceAddress() {
-        return targetAddress.toString();
-    }
+	public String getDeviceAddress() {
+		return targetAddress.toString();
+	}
 
-    public synchronized void addEventListener(SnmpDiscoveryListener listener) {
-        listeners.add(listener);
-    }
+	public synchronized void addEventListener(SnmpDiscoveryListener listener) {
+		listeners.add(listener);
+	}
 
-    public synchronized void removeEventListener(SnmpDiscoveryListener listener) {
-        listeners.remove(listener);
-    }
+	public synchronized void removeEventListener(SnmpDiscoveryListener listener) {
+		listeners.remove(listener);
+	}
 
-    /**
-     * This method will call all listeners for given new device
-     * 
-     * @param address
-     *            address of device
-     * @param version
-     *            version of snmp that this device support
-     * @param description
-     *            other extra information which can be useful
-     * 
-     */
-    protected synchronized void NotifyForNewDevice(Address address, SNMPVersion version, String description) {
-        SnmpDiscoveryEvent event = new SnmpDiscoveryEvent(this, address, version, description);
-        @SuppressWarnings("rawtypes")
-        Iterator i = listeners.iterator();
-        while (i.hasNext()) {
-            ((SnmpDiscoveryListener) i.next()).onNewDeviceFound(event);
-        }
-    }
+	/**
+	 * This method will call all listeners for given new device
+	 * 
+	 * @param address
+	 *            address of device
+	 * @param version
+	 *            version of snmp that this device support
+	 * @param description
+	 *            other extra information which can be useful
+	 * 
+	 */
+	protected synchronized void NotifyForNewDevice(Address address, SNMPVersion version, String description) {
+		SnmpDiscoveryEvent event = new SnmpDiscoveryEvent(this, address, version, description);
+		@SuppressWarnings("rawtypes")
+		Iterator i = listeners.iterator();
+		while (i.hasNext()) {
+			((SnmpDiscoveryListener) i.next()).onNewDeviceFound(event);
+		}
+	}
 
-    /**
-     * Calculate and return next broadcast address. (eg. if ip=1.2.3.x, returns 1.2.4.255)
-     * 
-     * @param ip
-     *            IP
-     * @return String the next broadcast address as String
-     */
-    public static String getNextBroadcastIPV4Address(String ip) {
-        String[] nums = ip.split("\\.");
-        int i = (Integer.parseInt(nums[0]) << 24 | Integer.parseInt(nums[2]) << 8 | Integer.parseInt(nums[1]) << 16
-                | Integer.parseInt(nums[3])) + 256;
+	/**
+	 * Calculate and return next broadcast address. (eg. if ip=1.2.3.x, returns
+	 * 1.2.4.255)
+	 * 
+	 * @param ip
+	 *            IP
+	 * @return String the next broadcast address as String
+	 */
+	public static String getNextBroadcastIPV4Address(String ip) {
+		String[] nums = ip.split("\\.");
+		int i = (Integer.parseInt(nums[0]) << 24 | Integer.parseInt(nums[2]) << 8 | Integer.parseInt(nums[1]) << 16
+				| Integer.parseInt(nums[3])) + 256;
 
-        return String.format("%d.%d.%d.%d", i >>> 24 & 0xFF, i >> 16 & 0xFF, i >> 8 & 0xFF, 255);
-    }
+		return String.format("%d.%d.%d.%d", i >>> 24 & 0xFF, i >> 16 & 0xFF, i >> 8 & 0xFF, 255);
+	}
 
-    /**
-     * Helper function in order to parse response vector to map structure
-     * 
-     * @param responseVector
-     *            response vector
-     * @return HashMap&lt;String, String&gt;
-     */
-    public static HashMap<String, String> parseResponseVectorToHashMap(Vector<VariableBinding> responseVector) {
+	/**
+	 * Helper function in order to parse response vector to map structure
+	 * 
+	 * @param responseVector
+	 *            response vector
+	 * @return HashMap&lt;String, String&gt;
+	 */
+	public static HashMap<String, String> parseResponseVectorToHashMap(Vector<VariableBinding> responseVector) {
 
-        HashMap<String, String> map = new HashMap<>();
-        for (VariableBinding elem : responseVector) {
-            map.put(elem.getOid().toString(), elem.getVariable().toString());
-        }
-        return map;
-    }
+		HashMap<String, String> map = new HashMap<>();
+		for (VariableBinding elem : responseVector) {
+			map.put(elem.getOid().toString(), elem.getVariable().toString());
+		}
+		return map;
+	}
 
-    protected static String scannerMakeDescriptionString(HashMap<String, String> scannerResult) {
+	protected static String scannerMakeDescriptionString(HashMap<String, String> scannerResult) {
 
-        StringBuilder desc = new StringBuilder();
-        for (String key : SCAN_OIDS.keySet()) {
-            desc.append('[')
-                    .append(key)
-                    .append('(')
-                    .append(SCAN_OIDS.get(key))
-                    .append(")=")
-                    .append(scannerResult.get(SCAN_OIDS.get(key)))
-                    .append("] ");
-        }
-        return desc.toString();
-    }
+		StringBuilder desc = new StringBuilder();
+		for (String key : SCAN_OIDS.keySet()) {
+			desc.append('[').append(key).append('(').append(SCAN_OIDS.get(key)).append(")=")
+					.append(scannerResult.get(SCAN_OIDS.get(key))).append("] ");
+		}
+		return desc.toString();
+	}
 
-    /**
-     * Returns respective SNMPVersion enum value based on given SnmpConstant version value
-     * 
-     * @param version
-     *            the version as int
-     * @return SNMPVersion or null if given value is not valid
-     */
-    protected static SNMPVersion getSnmpVersionFromSnmpConstantsValue(int version) {
-        switch (version) {
-        case 0:
-            return SNMPVersion.V1;
-        case 1:
-            return SNMPVersion.V2c;
-        case 3:
-            return SNMPVersion.V3;
-        }
-        return null;
-    }
+	/**
+	 * Returns respective SNMPVersion enum value based on given SnmpConstant version
+	 * value
+	 * 
+	 * @param version
+	 *            the version as int
+	 * @return SNMPVersion or null if given value is not valid
+	 */
+	protected static SNMPVersion getSnmpVersionFromSnmpConstantsValue(int version) {
+		switch (version) {
+		case 0:
+			return SNMPVersion.V1;
+		case 1:
+			return SNMPVersion.V2c;
+		case 3:
+			return SNMPVersion.V3;
+		}
+		return null;
+	}
 
-    @Override
-    public void disconnect() {
-    }
+	@Override
+	public void disconnect() {
+	}
 
-    /**
-     * At least device address and channel address must be specified in the container.<br>
-     * <br>
-     * containers.deviceAddress = device address (eg. 1.1.1.1/161) <br>
-     * containers.channelAddress = OID (eg. 1.3.6.1.2.1.1.0)
-     * 
-     */
-    @Override
-    public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
-            throws ConnectionException {
+	/**
+	 * At least device address and channel address must be specified in the
+	 * container.<br>
+	 * <br>
+	 * containers.deviceAddress = device address (eg. 1.1.1.1/161) <br>
+	 * containers.channelAddress = OID (eg. 1.3.6.1.2.1.1.0)
+	 * 
+	 */
+	@Override
+	public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
+			throws ConnectionException {
 
-        return readChannelGroup(containers, timeout);
-    }
+		return readChannelGroup(containers, timeout);
+	}
 
-    private Object readChannelGroup(List<ChannelRecordContainer> containers, int timeout) throws ConnectionException {
+	private Object readChannelGroup(List<ChannelRecordContainer> containers, int timeout) throws ConnectionException {
 
-        List<String> oids = new ArrayList<>();
+		List<String> oids = new ArrayList<>();
 
-        for (ChannelRecordContainer container : containers) {
-            if (getDeviceAddress().equalsIgnoreCase(container.getChannel().getDeviceAddress())) {
-                oids.add(container.getChannelAddress());
-            }
-        }
+		for (ChannelRecordContainer container : containers) {
+			if (getDeviceAddress().equalsIgnoreCase(container.getChannel().getDeviceAddress())) {
+				oids.add(container.getChannelAddress());
+			}
+		}
 
-        Map<String, String> values;
+		Map<String, String> values;
 
-        try {
-            values = getRequestList(oids);
-            long receiveTime = System.currentTimeMillis();
+		try {
+			values = getRequestList(oids);
+			long receiveTime = System.currentTimeMillis();
+			for (ChannelRecordContainer container : containers) {
+				// make sure the value exists for corresponding channel
+				if (values.get(container.getChannelAddress()) != null) {
+					// logger.debug("{}: value = '{}'", container.getChannelAddress(),
+					// values.get(container.getChannelAddress()));
+					logger.warn("{}: value = '{}'", container.getChannelAddress(),
+							values.get(container.getChannelAddress()));
 
-            for (ChannelRecordContainer container : containers) {
-                // make sure the value exists for corresponding channel
-                if (values.get(container.getChannelAddress()) != null) {
-                    logger.debug("{}: value = '{}'", container.getChannelAddress(),
-                            values.get(container.getChannelAddress()));
-                    container.setRecord(new Record(
-                            new ByteArrayValue(values.get(container.getChannelAddress()).getBytes()), receiveTime));
-                }
-            }
-        } catch (SnmpTimeoutException e) {
-            for (ChannelRecordContainer container : containers) {
-                container.setRecord(new Record(Flag.TIMEOUT));
-            }
-	    } catch (SnmpRequestException e) {
-            for (ChannelRecordContainer container : containers) {
-                container.setRecord(new Record(Flag.DRIVER_ERROR_UNSPECIFIED));
-            }
-            logger.warn("Error while requesting SNMP GET: {}", e.getMessage());
-	    }
+					switch (container.getChannel().getValueType()) {
+					case INTEGER:
+						container.setRecord(new Record(
+	                            new IntValue(Integer.valueOf(values.get(container.getChannelAddress()))), receiveTime));
+						break;
+					case LONG:
+						container.setRecord(new Record(
+	                            new LongValue(Long.valueOf(values.get(container.getChannelAddress()))), receiveTime));
+						break;
+					case FLOAT:
+						container.setRecord(new Record(
+	                            new FloatValue(Float.valueOf(values.get(container.getChannelAddress()))), receiveTime));
+						break;
+					case DOUBLE:
+						container.setRecord(new Record(
+	                            new DoubleValue(Double.valueOf(values.get(container.getChannelAddress()))), receiveTime));
+						break;
+					default:
+						container.setRecord(new Record(
+	                            new ByteArrayValue(values.get(container.getChannelAddress()).getBytes()), receiveTime));
+	                
+					}
+				}
+			}
+		} catch (SnmpTimeoutException e) {
+			for (ChannelRecordContainer container : containers) {
+				container.setRecord(new Record(Flag.TIMEOUT));
+			}
+		} catch (SnmpRequestException e) {
+			for (ChannelRecordContainer container : containers) {
+				container.setRecord(new Record(Flag.DRIVER_ERROR_UNSPECIFIED));
+			}
+			logger.warn("Error while requesting SNMP GET: {}", e.getMessage());
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public Object write(List<ChannelValueContainer> containers, Object containerListHandle)
-            throws UnsupportedOperationException, ConnectionException {
+	@Override
+	public Object write(List<ChannelValueContainer> containers, Object containerListHandle)
+			throws UnsupportedOperationException, ConnectionException {
 
-    	return setChannelGroup(containers, timeout);
-    }
+		return setChannelGroup(containers, timeout);
+	}
 
-    private Object setChannelGroup(List<ChannelValueContainer> containers, int timeout) throws ConnectionException {
+	private Object setChannelGroup(List<ChannelValueContainer> containers, int timeout) throws ConnectionException {
 
-        try {
-            for (ChannelValueContainer container : containers) {
-            	String oid = container.getChannelAddress();
-            	String value = container.getValue().asString();
-            	
-            	setRequest(oid, value);
-            }
-        } catch (SnmpTimeoutException | SnmpRequestException e) {
-	        logger.warn("Error while requesting SNMP SET: {}", e.getMessage());
-	    }
-        
-        return null;
-    }
+		try {
+			for (ChannelValueContainer container : containers) {
+				String oid = container.getChannelAddress();
+				String value = container.getValue().asString();
+				logger.warn("{}: value = '{}'", container.getChannelAddress(), value);
+				setRequest(oid, value);
+				container.setFlag(Flag.VALID);
+			}
+		} catch (SnmpTimeoutException | SnmpRequestException e) {
+			logger.warn("Error while requesting SNMP SET: {}", e.getMessage());
+		}
 
-    @Override
-    public void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
-            throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
-    }
+		return null;
+	}
 
-    @Override
-    public List<ChannelScanInfo> scanForChannels(String settings)
-            throws UnsupportedOperationException, ConnectionException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
+			throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<ChannelScanInfo> scanForChannels(String settings)
+			throws UnsupportedOperationException, ConnectionException {
+		throw new UnsupportedOperationException();
+	}
 
 }
