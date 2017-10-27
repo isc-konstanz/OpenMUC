@@ -48,4 +48,5 @@ build/
 
 # Framework
 felix-cache
+channels.xml
 shadow

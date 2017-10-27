@@ -382,10 +382,44 @@ public final class ChannelImpl implements Channel {
         Double scalingFactor = config.scalingFactor;
 
         if (valueOffset != null) {
-            adjustedValue = new DoubleValue(adjustedValue.asDouble() - valueOffset);
+        	Double adjustedDouble = adjustedValue.asDouble() - valueOffset;
+        	switch (config.valueType) {
+            case FLOAT:
+                adjustedValue = new FloatValue(adjustedDouble.floatValue());
+                break;
+            case SHORT:
+                adjustedValue = new ShortValue(adjustedDouble.shortValue());
+                break;
+            case INTEGER:
+                adjustedValue = new IntValue(adjustedDouble.intValue());
+                break;
+            case LONG:
+                adjustedValue = new LongValue(adjustedDouble.longValue());
+                break;
+            default:
+                adjustedValue = new DoubleValue(adjustedDouble);
+                break;
+        	}
         }
         if (scalingFactor != null) {
-            adjustedValue = new DoubleValue(adjustedValue.asDouble() / scalingFactor);
+        	Double adjustedDouble = adjustedValue.asDouble() / scalingFactor;
+        	switch (config.valueType) {
+            case FLOAT:
+                adjustedValue = new FloatValue(adjustedDouble.floatValue());
+                break;
+            case SHORT:
+                adjustedValue = new ShortValue(adjustedDouble.shortValue());
+                break;
+            case INTEGER:
+                adjustedValue = new IntValue(adjustedDouble.intValue());
+                break;
+            case LONG:
+                adjustedValue = new LongValue(adjustedDouble.longValue());
+                break;
+            default:
+                adjustedValue = new DoubleValue(adjustedDouble);
+                break;
+        	}
         }
         writeValueContainer.setValue(adjustedValue);
 
