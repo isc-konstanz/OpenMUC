@@ -94,20 +94,20 @@ configure(javaProjects) {
 
     if (cfgCopyDependencies) {
       if (cfgCopyToRoot) {
-        into rootDir.getPath() + "/build/libs-all"
+        into rootDir.getPath() + "/build/libs"
       }
       else {
-        into "build/libs-all"
+        into "build/libs"
       }
       //includes all the dependencies:
       from configurations.default
     }
     else {
       if (cfgCopyToRoot) {
-        into rootDir.getPath() + "/build/libs-all"
+        into rootDir.getPath() + "/build/libs"
       }
       else {
-        into "build/libs-all"
+        into "build/libs"
       }
     }
   }
