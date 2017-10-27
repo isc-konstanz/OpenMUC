@@ -5,9 +5,9 @@ project.ext {
 
   cfgGroup = "org.openmuc.framework"
 
-  cfgCopyDependencies = true
+  cfgCopyDependencies = false
 
-  cfgCopyToRoot = true
+  cfgCopyToRoot = false
 
   javaProjects = subprojects
 
