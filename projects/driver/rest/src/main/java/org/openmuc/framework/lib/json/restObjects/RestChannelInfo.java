@@ -20,9 +20,11 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
-import org.openmuc.framework.config.ChannelInfo;
+import java.io.IOException;
+
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.options.ChannelOptions;
+import org.openmuc.framework.config.ParseException;
+import org.openmuc.framework.config.options.OptionCollection;
 
 public class RestChannelInfo {
 
@@ -64,21 +66,23 @@ public class RestChannelInfo {
         this.configs = configs;
     }
 
-    public static RestChannelInfo getRestChannelInfo(DriverInfo driverInfo) {
+    public static RestChannelInfo getRestChannelInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestChannelInfo restChannelInfo = new RestChannelInfo();
-        if (driverInfo.getChannelInfo() instanceof ChannelOptions) {
-            ChannelOptions channelOptions = (ChannelOptions) driverInfo.getChannelInfo();
-            
-            restChannelInfo.setDescription(channelOptions.getDescription());
-            restChannelInfo.setAddress(RestOptionCollection.setOptionCollection(channelOptions.getAddress()));
-            restChannelInfo.setScanSettings(RestOptionCollection.setOptionCollection(channelOptions.getScanSettings()));
+        restChannelInfo.setDescription(driverInfo.getDescription());
+        if (driverInfo.getChannelAddress() instanceof OptionCollection) {
+            restChannelInfo.setAddress(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelAddress()));
         }
-        else {
-            restChannelInfo.setAddress(RestOptionCollection.setOptionCollection(driverInfo.getChannelAddressSyntax()));
-            restChannelInfo.setScanSettings(RestOptionCollection.setOptionCollection(driverInfo.getChannelScanSettingsSyntax()));
+        else if (driverInfo.getChannelAddress() != null) {
+            restChannelInfo.setAddress(RestOptionCollection.parseOptionCollection(driverInfo.getChannelAddress().getSyntax()));
         }
-        RestOptionCollection configs = RestOptionCollection.setOptionCollection(ChannelInfo.configs());
+        if (driverInfo.getChannelScanSettings() instanceof OptionCollection) {
+            restChannelInfo.setScanSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelScanSettings()));
+        }
+        else if (driverInfo.getChannelScanSettings() != null) {
+            restChannelInfo.setScanSettings(RestOptionCollection.parseOptionCollection(driverInfo.getChannelScanSettings().getSyntax()));
+        }
+        RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelConfig());
         configs.setSyntax(null);
         restChannelInfo.setConfigs(configs);
         

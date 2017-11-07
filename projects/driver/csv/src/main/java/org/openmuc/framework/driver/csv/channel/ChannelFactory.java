@@ -8,7 +8,6 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.options.Parameters;
 import org.openmuc.framework.driver.csv.ESampleMode;
-import org.openmuc.framework.driver.csv.options.CsvDeviceOptions;
 
 public class ChannelFactory {
 
@@ -18,11 +17,11 @@ public class ChannelFactory {
         HashMap<String, CsvChannel> channelMap = new HashMap<String, CsvChannel>();
         
         boolean rewind;
-        if (settings.contains(CsvDeviceOptions.REWIND)) {
-            rewind = settings.getBoolean(CsvDeviceOptions.REWIND);
+        if (settings.contains("rewind")) {
+            rewind = settings.getBoolean("rewind");
         }
-        else rewind = CsvDeviceOptions.REWIND_DEFAULT;
-        ESampleMode samplingMode = ESampleMode.valueOf(settings.getString(CsvDeviceOptions.SAMPLING_MODE).toUpperCase());
+        else rewind = true;
+        ESampleMode samplingMode = ESampleMode.valueOf(settings.getString("samplingmode").toUpperCase());
         switch (samplingMode) {
         case UNIXTIMESTAMP:
             channelMap = ChannelFactory.createMapUnixtimestamp(csvMap);

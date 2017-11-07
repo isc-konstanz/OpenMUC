@@ -96,7 +96,7 @@ public class RestOption {
         this.valueSelection = valueSelection;
     }
 
-    public static List<RestOption> setOptions(List<Option> options) {
+    public static List<RestOption> getOptions(List<Option> options) {
 
         List<RestOption> restOptions = new LinkedList<RestOption>();
         for (Option option : options) {

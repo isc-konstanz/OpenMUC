@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+  <option id="samplingInterval">
+    <name>Sampling interval</name>
+    <description><![CDATA[
+        Time interval between two attempts to read this channel.<br>
+        Removing or omitting the samling interval parameter disables sampling on this channel.
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>INTEGER</type>
+    <selection>
+      <validate>false</validate>
+      <item value="0">None</item>
+      <item value="100">100 milliseconds</item>
+      <item value="200">200 milliseconds</item>
+      <item value="500">500 milliseconds</item>
+      <item value="1000">1 second</item>
+      <item value="2000">2 second</item>
+      <item value="5000">5 seconds</item>
+      <item value="10000">10 seconds</item>
+      <item value="15000">15 seconds</item>
+      <item value="30000">30 seconds</item>
+      <item value="45000">45 seconds</item>
+      <item value="60000">1 minute</item>
+      <item value="120000">2 minutes</item>
+      <item value="300000">5 minutes</item>
+      <item value="600000">10 minutes</item>
+      <item value="900000">15 minutes</item>
+      <item value="1800000">30 minutes</item>
+      <item value="2700000">45 minutes</item>
+      <item value="3600000">1 hour</item>
+      <item value="86400000">1 day</item>
+    </selection>
+  </option>
+  <option id="samplingTimeOffset">
+    <name>Sampling time offset</name>
+    <mandatory>false</mandatory>
+    <type>INTEGER</type>
+    <default>0</default>
+    <selection>
+      <validate>false</validate>
+      <item value="0">None</item>
+      <item value="100">100 milliseconds</item>
+      <item value="200">200 milliseconds</item>
+      <item value="500">500 milliseconds</item>
+      <item value="1000">1 second</item>
+      <item value="2000">2 second</item>
+      <item value="5000">5 seconds</item>
+      <item value="10000">10 seconds</item>
+      <item value="15000">15 seconds</item>
+      <item value="30000">30 seconds</item>
+      <item value="45000">45 seconds</item>
+      <item value="60000">1 minute</item>
+      <item value="120000">2 minutes</item>
+      <item value="300000">5 minutes</item>
+      <item value="600000">10 minutes</item>
+      <item value="900000">15 minutes</item>
+      <item value="1800000">30 minutes</item>
+      <item value="2700000">45 minutes</item>
+      <item value="3600000">1 hour</item>
+      <item value="86400000">1 day</item>
+    </selection>
+  </option>
+  <option id="samplingGroup">
+    <name>Sampling group</name>
+    <description><![CDATA[
+        For grouping channels. All channels with the same samplingGroup and same samplingInterval are in one group.<br>
+        The purpose of samplingGroups is to improve the drivers performance – if possible.
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>STRING</type>
+  </option>
+  <option id="listening">
+    <name>Listening</name>
+    <description>Determines if this channel shall passively listen for incoming value changes from the driver.</description>
+    <mandatory>false</mandatory>
+    <type>BOOLEAN</type>
+  </option>
+  <option id="loggingInterval">
+    <name>Logging interval</name>
+    <description><![CDATA[
+        Time difference until this channel is logged again.<br>
+        Setting the time interval to -1 or omitting the logging interval parameter disables logging on this channel.
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>INTEGER</type>
+    <selection>
+      <validate>false</validate>
+      <item value="0">None</item>
+      <item value="100">100 milliseconds</item>
+      <item value="200">200 milliseconds</item>
+      <item value="500">500 milliseconds</item>
+      <item value="1000">1 second</item>
+      <item value="2000">2 second</item>
+      <item value="5000">5 seconds</item>
+      <item value="10000">10 seconds</item>
+      <item value="15000">15 seconds</item>
+      <item value="30000">30 seconds</item>
+      <item value="45000">45 seconds</item>
+      <item value="60000">1 minute</item>
+      <item value="120000">2 minutes</item>
+      <item value="300000">5 minutes</item>
+      <item value="600000">10 minutes</item>
+      <item value="900000">15 minutes</item>
+      <item value="1800000">30 minutes</item>
+      <item value="2700000">45 minutes</item>
+      <item value="3600000">1 hour</item>
+      <item value="86400000">1 day</item>
+    </selection>
+  </option>
+  <option id="loggingTimeOffset">
+    <name>Logging time offset</name>
+    <mandatory>false</mandatory>
+    <type>INTEGER</type>
+    <default>0</default>
+    <selection>
+      <validate>false</validate>
+      <item value="0">None</item>
+      <item value="100">100 milliseconds</item>
+      <item value="200">200 milliseconds</item>
+      <item value="500">500 milliseconds</item>
+      <item value="1000">1 second</item>
+      <item value="2000">2 second</item>
+      <item value="5000">5 seconds</item>
+      <item value="10000">10 seconds</item>
+      <item value="15000">15 seconds</item>
+      <item value="30000">30 seconds</item>
+      <item value="45000">45 seconds</item>
+      <item value="60000">1 minute</item>
+      <item value="120000">2 minutes</item>
+      <item value="300000">5 minutes</item>
+      <item value="600000">10 minutes</item>
+      <item value="900000">15 minutes</item>
+      <item value="1800000">30 minutes</item>
+      <item value="2700000">45 minutes</item>
+      <item value="3600000">1 hour</item>
+      <item value="86400000">1 day</item>
+    </selection>
+  </option>
+  <option id="valueType">
+    <name>Value type</name>
+    <mandatory>false</mandatory>
+    <type>STRING</type>
+    <default>DOUBLE</default>
+    <selection>
+      <item value="DOUBLE">Double</item>
+      <item value="FLOAT">Float</item>
+      <item value="LONG">Long</item>
+      <item value="INTEGER">Integer</item>
+      <item value="SHORT">Short</item>
+      <item value="BYTE">Byte</item>
+      <item value="BYTE_ARRAY">Byte array</item>
+      <item value="BOOLEAN">Boolean</item>
+      <item value="STRING">String</item>
+    </selection>
+  </option>
+  <option id="valueLength">
+    <name>Value length</name>
+    <description><![CDATA[
+        Only used if valueType == BYTE_ARRAY or STRING.<br>
+        Determines the maximum length of the byte array or string.
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>INTEGER</type>
+  </option>
+  <option id="scalingFactor">
+    <name>Scaling factor</name>
+    <description><![CDATA[
+        Is used to scale a value read by a driver or set by an application. 
+        The value read by an driver is multiplied with the scalingFactor and a value set by an application 
+        is divided by the scalingFactor. Possible values are e.g.: 1.0 4.94147E-9 -2.4
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>DOUBLE</type>
+    <default>1</default>
+  </option>
+  <option id="valueOffset">
+    <name>Value offset</name>
+    <description><![CDATA[
+        Is used to offset a value read by a driver or set by an application. 
+        The offset is added to a value read by a driver and subtracted from a value set by an application.
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>DOUBLE</type>
+    <default>0</default>
+  </option>
+  <option id="unit">
+    <name>Unit</name>
+    <description><![CDATA[
+        Physical unit of this channel.<br>
+        For information only (info can be accessed by an app or driver).
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>STRING</type>
+  </option>
+</configuration>

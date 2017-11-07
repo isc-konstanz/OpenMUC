@@ -10,7 +10,6 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.options.DeviceOptions;
 import org.openmuc.framework.config.options.Parameters;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
@@ -20,7 +19,6 @@ import org.openmuc.framework.driver.csv.channel.ChannelFactory;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
-import org.openmuc.framework.driver.csv.options.CsvDeviceOptions;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -32,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class CsvDeviceConnection implements Connection {
 
     private final static Logger logger = LoggerFactory.getLogger(CsvDeviceConnection.class);
-    private static final String COMMENT = "#";
+//    private static final String COMMENT = "#";
 
     private HashMap<String, CsvChannel> channelMap = new HashMap<String, CsvChannel>();
 
@@ -44,8 +42,7 @@ public class CsvDeviceConnection implements Connection {
             throws ConnectionException, ArgumentSyntaxException {
 
         logger.debug("#### deviceAddress: " + deviceAddress);
-        DeviceOptions deviceOptions = new CsvDeviceOptions();
-        settings = deviceOptions.parseSettings(deviceSettings);
+        settings = CsvDriver.info.parseDeviceSettings(deviceSettings);
 
         try {
             data = CsvFileReader.readCsvFile(deviceAddress);
@@ -92,7 +89,7 @@ public class CsvDeviceConnection implements Connection {
 
                 double value = Double.NaN;
                 
-                ESampleMode samplingMode = ESampleMode.valueOf(settings.getString(CsvDeviceOptions.SAMPLING_MODE).toUpperCase());
+                ESampleMode samplingMode = ESampleMode.valueOf(settings.getString("samplingmode").toUpperCase());
                 try {
                     if (samplingMode.equals(ESampleMode.HHMMSS)) {
                         value = channel.readValue(samplingTime);

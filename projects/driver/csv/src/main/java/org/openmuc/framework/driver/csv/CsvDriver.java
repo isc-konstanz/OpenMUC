@@ -7,11 +7,7 @@ import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.config.options.ChannelOptions;
-import org.openmuc.framework.config.options.DeviceOptions;
 import org.openmuc.framework.config.options.Parameters;
-import org.openmuc.framework.driver.csv.options.CsvChannelOptions;
-import org.openmuc.framework.driver.csv.options.CsvDeviceOptions;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -29,29 +25,21 @@ import org.slf4j.LoggerFactory;
 public class CsvDriver implements DriverService {
 
     private final static Logger logger = LoggerFactory.getLogger(CsvDriver.class);
-
+    
+    final static DriverInfo info = new DriverInfo(CsvDriver.class.getResourceAsStream("options/csv.xml"));
+    
     // Settings mode realtime, nextline-rewind, nextline
-    // Settings seperator = ;
+    // Settings separator = ;
     // Settings comment = #
-
-    private final static String DEFAULT_SETTINGS = CsvDeviceOptions.SAMPLING_MODE + "="
-            + CsvDeviceOptions.SAMPLING_MODE_DEFAULT.toString();
-
-    private final static String ID = "csv";
-    private final static String NAME = "CSV";
-    private final static String DESCRIPTION = "The CSV Driver reads out values from configured files. "
-            + "Several columns from different CSV files may be read line by line or by index.";
-    private final static DeviceOptions DEVICE_OPTIONS = new CsvDeviceOptions();
-    private final static ChannelOptions CHANNEL_OPTIONS = new CsvChannelOptions();
-    private final static DriverInfo DRIVER_INFO = new DriverInfo(ID, NAME, DESCRIPTION, DEVICE_OPTIONS, CHANNEL_OPTIONS);
-
+    final static String DEFAULT_SETTINGS = "samplingmode=line";
+    
     private boolean isDeviceScanInterrupted = false;
-
+    
     @Override
     public DriverInfo getInfo() {
-        return DRIVER_INFO;
+        return info;
     }
-
+    
     @Override
     public void scanForDevices(String settings, DriverDeviceScanListener listener)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
@@ -61,8 +49,8 @@ public class CsvDriver implements DriverService {
         // reset interrupted flag on start of scan
         isDeviceScanInterrupted = false;
 
-        Parameters deviceScanSettings = DEVICE_OPTIONS.parseScanSettings(settings);
-        String path = deviceScanSettings.getString(CsvDeviceOptions.PATH_DIR);
+        Parameters deviceScanSettings = info.parseDeviceScanSettings(settings);
+        String path = deviceScanSettings.getString("path");
         File[] listOfFiles;
         if (!path.isEmpty()) {
             File file = new File(path);

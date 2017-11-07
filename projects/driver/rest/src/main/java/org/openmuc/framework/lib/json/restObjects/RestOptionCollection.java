@@ -48,12 +48,12 @@ public class RestOptionCollection {
         this.syntax = syntax;
     }
 
-    public static RestOptionCollection setOptionCollection(OptionCollection options) {
+    public static RestOptionCollection parseOptionCollection(OptionCollection options) {
         RestOptionCollection restOptions = null;
         
-        if (!options.isDisabled()) {
+        if (!options.isEmpty() && !options.isDisabled()) {
             restOptions = new RestOptionCollection();
-            restOptions.setOptions(RestOption.setOptions(options.getOptions()));
+            restOptions.setOptions(RestOption.getOptions(options));
             
             RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
             restSyntax.setSeparator(options.getSeparator());
@@ -64,13 +64,13 @@ public class RestOptionCollection {
         return restOptions;
     }
 
-    public static RestOptionCollection setOptionCollection(String syntax) {
+    public static RestOptionCollection parseOptionCollection(String syntax) {
         RestOptionCollection restOptions = new RestOptionCollection();
         
         List<Option> options = new ArrayList<Option>();
         Option option = new Option("settings", "Settings", ValueType.STRING);
         option.setDescription(syntax);
-        restOptions.setOptions(RestOption.setOptions(options));
+        restOptions.setOptions(RestOption.getOptions(options));
         
         RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
         restSyntax.setSeparator(";");

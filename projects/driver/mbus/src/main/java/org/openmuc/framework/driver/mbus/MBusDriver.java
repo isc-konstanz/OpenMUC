@@ -32,10 +32,6 @@ import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.config.options.ChannelOptions;
-import org.openmuc.framework.config.options.DeviceOptions;
-import org.openmuc.framework.driver.mbus.options.MBusChannelOptions;
-import org.openmuc.framework.driver.mbus.options.MBusDeviceOptions;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -54,12 +50,7 @@ public class MBusDriver implements DriverService {
 
     private final Map<String, MBusSerialInterface> interfaces = new HashMap<>();
 
-    private final static String ID = "mbus";
-    private final static String NAME = "M-Bus (wired)";
-    private final static String DESCRIPTION = "The Meter-Bus \"M-Bus\" (wired) is a protocol to read out meters.";
-    private final static DeviceOptions DEVICE_OPTIONS = new MBusDeviceOptions();
-    private final static ChannelOptions CHANNEL_OPTIONS = new MBusChannelOptions();
-    private final static DriverInfo DRIVER_INFO = new DriverInfo(ID, NAME, DESCRIPTION, DEVICE_OPTIONS, CHANNEL_OPTIONS);
+    private final static DriverInfo info = new DriverInfo(MBusDriver.class.getResourceAsStream("options/mbus.xml"));
     // "Synopsis: <serial_port>[:<baud_rate>][:s]\nExamples for <serial_port>: /dev/ttyS0 (Unix), COM1 (Windows); s
     // forsecondary address scan.";
 
@@ -71,7 +62,7 @@ public class MBusDriver implements DriverService {
 
     @Override
     public DriverInfo getInfo() {
-        return DRIVER_INFO;
+        return info;
     }
 
     @Override
