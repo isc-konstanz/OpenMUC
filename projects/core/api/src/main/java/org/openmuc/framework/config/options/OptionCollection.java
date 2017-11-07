@@ -20,12 +20,11 @@
  */
 package org.openmuc.framework.config.options;
 
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -36,15 +35,17 @@ import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-public class OptionCollection {
-
-	public static final String SEPARATOR_DEFAULT = ",";
-	public static final String ASSIGNMENT_DEFAULT = ":";
-	public static final boolean KEY_VAL_DEFAULT = true;
+public class OptionCollection extends LinkedList<Option> implements OptionInfo {
+    private static final long serialVersionUID = -8478314560466205212L;
     
-    private final List<Option> options;
-
+    public static final String SEPARATOR_DEFAULT = ",";
+    public static final String ASSIGNMENT_DEFAULT = ":";
+    public static final boolean KEY_VAL_DEFAULT = true;
+    
     private String separator = SEPARATOR_DEFAULT;
     private String assignment = ASSIGNMENT_DEFAULT;
     private boolean keyValue = KEY_VAL_DEFAULT;
@@ -52,38 +53,13 @@ public class OptionCollection {
     private boolean disabled = false;
     
     private int mandatoryOptCount = 0;
-
-    public OptionCollection() {
-        this.options = new LinkedList<Option>();
-    }
-
-    private OptionCollection(OptionCollection optionCollection) {
-        this.options = (List<Option>) Collections.unmodifiableList(optionCollection.options);
-    }
-
+    
+    @Override
     public boolean add(Option option) {
         if (option.isMandatory()) mandatoryOptCount++;
-        return options.add(option);
+        return super.add(option);
     }
 
-    public boolean add(String key, String name, ValueType type, 
-            boolean mandatory, String description, 
-            Value defaultValue, OptionSelection valueSelection) {
-        return add(new Option(key, name, type, mandatory, description, defaultValue, valueSelection));
-    }
-
-    public boolean add(String key, String name, ValueType type) {
-        return add(new Option(key, name, type));
-    }
-
-    public boolean add(String key, ValueType type) {
-        return add(key, key, type);
-    }
-
-    public List<Option> getOptions() {
-        return options;
-    }
-    
     public String getSeparator() {
         return separator;
     }
@@ -91,7 +67,7 @@ public class OptionCollection {
     public void setSeparator(String separator) {
         this.separator = separator;
     }
-    
+
     public String getAssignmentOperator() {
         return assignment;
     }
@@ -105,23 +81,26 @@ public class OptionCollection {
     }
 
     public void setKeyValuePairs(boolean enable) {
+    	if (!enable) {
+            this.assignment = null;
+    	}
         this.keyValue = enable;
     }
 
     public void setSyntax(String separator) {
-    	this.separator = separator;
-    	this.assignment = null;
-    	this.keyValue = false;
+        this.separator = separator;
+        this.assignment = null;
+        this.keyValue = false;
     }
 
     public void setSyntax(String separator, String assignment) {
-    	this.separator = separator;
-    	this.assignment = assignment;
-    	this.keyValue = true;
+        this.separator = separator;
+        this.assignment = assignment;
+        this.keyValue = true;
     }
 
     public Locale getLocale() {
-    	return locale;
+        return locale;
     }
 
     public void setLocale(Locale locale) {
@@ -140,16 +119,17 @@ public class OptionCollection {
         this.disabled = true;
     }
 
-    public Parameters parse(String settingsStr) throws ArgumentSyntaxException {
+    @Override
+    public Parameters parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
         if (settingsStr != null) {
             Parameters settings = new Parameters();
             
             if (!settingsStr.trim().isEmpty()) {
-            	String[] settingsArray = settingsStr.trim().split(separator);
-            	
-                if (settingsArray.length >= mandatoryOptCount && settingsArray.length <= options.size()) {
+                String[] settingsArray = settingsStr.trim().split(separator);
+                
+                if (settingsArray.length >= mandatoryOptCount && settingsArray.length <= size()) {
                     if (keyValue) {
-                        for (Option option : options) {
+                        for (Option option : this) {
                             boolean mandatoryOptMissing = option.isMandatory() ? true : false;
                             
                             String key = option.getKey();
@@ -187,7 +167,7 @@ public class OptionCollection {
                         int optionalOptCount = 0;
                         
                         int i = 0;
-                        for (Option option : options) {
+                        for (Option option : this) {
                             if (i >= settingsArray.length) {
                                 break;
                             }
@@ -212,7 +192,7 @@ public class OptionCollection {
                 else if (settingsArray.length < mandatoryOptCount) {
                     throw new ArgumentSyntaxException("Mandatory parameters not configured in settings string");
                 }
-                else if (settingsArray.length > options.size()) {
+                else if (settingsArray.length > size()) {
                     throw new ArgumentSyntaxException("Too many parameters in passed Settings to be parsed.");
                 }
             }
@@ -260,14 +240,15 @@ public class OptionCollection {
         return value;
     }
 
-    public String syntax() {
+    @Override
+    public String getSyntax() {
 
         StringBuilder sb = new StringBuilder();
 
-        if (options.size() > 0) {
+        if (size() > 0) {
             sb.append("Synopsis: ");
             boolean first = true;
-            for (Option option : options) {
+            for (Option option : this) {
                 boolean mandatory = option.isMandatory();
                 String key = option.getKey();
                 
@@ -295,21 +276,73 @@ public class OptionCollection {
         return sb.toString();
     }
 
-    @Override
-    public String toString() {
-        return options.toString();
-    }
-
-    public static OptionCollection unmodifiableOptions(OptionCollection options) {
+    public static OptionCollection getFromDomNode(Node node) throws ParseException {
         
-        OptionCollection unmodifiableOptions = new OptionCollection(options);
-        unmodifiableOptions.mandatoryOptCount = options.mandatoryOptCount;
-        unmodifiableOptions.separator = options.separator;
-        unmodifiableOptions.assignment = options.assignment;
-        unmodifiableOptions.keyValue = options.keyValue;
-        unmodifiableOptions.locale = options.locale;
+        OptionCollection collection = new OptionCollection();
         
-        return unmodifiableOptions;
+        NodeList childNodes = node.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node childNode = childNodes.item(i);
+            String childNodeName = childNode.getNodeName();
+            if (childNodeName.equals("#text")) {
+                continue;
+            }
+            else if (childNodeName.equals("disabled")) {
+            	String disabledString = childNode.getTextContent().toLowerCase();
+                if (disabledString.equals("true")) {
+                	collection.setDisabled(true);
+                }
+                else if (disabledString.equals("false")) {
+                	collection.setDisabled(false);
+                }
+                else {
+                    throw new ParseException("Option \"disabled\" contains neither \"true\" nor \"false\"");
+                }
+            }
+            else if (childNodeName.equals("syntax")) {
+                NodeList syntaxNodes = childNode.getChildNodes();
+                for (int j = 0; j < syntaxNodes.getLength(); j++) {
+                    Node syntaxNode = syntaxNodes.item(j);
+                    String syntaxNodeName = syntaxNode.getNodeName();
+                    
+                    if (syntaxNodeName.equals("#text")) {
+                        continue;
+                    }
+                    else if (syntaxNodeName.equals("keyValue")) {
+                        String keyValString = syntaxNode.getTextContent().toLowerCase();
+                        if (keyValString.equals("true")) {
+                        	collection.setKeyValuePairs(true);
+                        }
+                        else if (keyValString.equals("false")) {
+                        	collection.setKeyValuePairs(false);
+                        }
+                        else {
+                            throw new ParseException("Syntax \"keyValue\" contains neither \"true\" nor \"false\"");
+                        }
+                        
+                        NamedNodeMap attributes = syntaxNode.getAttributes();
+                        Node nameAttribute = attributes.getNamedItem("assignment");
+                        if (nameAttribute != null) {
+                            collection.setAssignmentOperator(nameAttribute.getTextContent());
+                        }
+                    }
+                    else if (syntaxNodeName.equals("separator")) {
+                        collection.setSeparator(syntaxNode.getTextContent());
+                    }
+                    else {
+                        throw new ParseException("Unknown tag found:" + syntaxNodeName);
+                    }
+                }
+            }
+            else if (childNodeName.equals("option")) {
+                collection.add(Option.getFromDomNode(childNode));
+            }
+            else {
+                throw new ParseException("Unknown tag found:" + childNodeName);
+            }
+        }
+        
+        return collection;
     }
 
 }

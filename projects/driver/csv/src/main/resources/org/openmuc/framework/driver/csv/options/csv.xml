@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+  <driver id="csv">
+    <name>CSV</name>
+    <description><![CDATA[
+        The CSV Driver reads out values from configured files. Each device represents a specific file 
+        which may contain several columns, addressed by their headers. Rows in those columns are read 
+        either line by line or by a defined index.
+      ]]>
+    </description>
+    
+    <deviceAddress>
+      <syntax>
+        <keyValue>false</keyValue>
+        <separator>;</separator>
+      </syntax>
+      <option id="filepath">
+        <name>CSV file path</name>
+        <description><![CDATA[
+            The systems path to the CSV file.<br><br>
+            <b>Example:</b> /home/usr/bin/openmuc/csv/meter.csv
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+      </option>
+    </deviceAddress>
+    
+    <deviceSettings>
+      <syntax>
+        <keyValue assignment="=">true</keyValue>
+        <separator>;</separator>
+      </syntax>
+      <option id="samplingmode">
+        <name>Sampling mode</name>
+        <description><![CDATA[
+            The sampling mode configures the drivers method to read the CSV file:<br><br>
+            <b>Modes:</b>
+            <ol>
+              <li><b>Unix timestamp</b>: Find the line closest to the sampling timestamp in the <em>unixtimestamp</em> column.</li>
+              <li><b>Closest hour, minute, second</b>: Find the line closest to the sampling times hours, minutes and seconds in the <em>hhmmss</em> column.</li>
+              <li><b>Line by line</b>: Read the file line by line.</li>
+            </ol>
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+        <default>line</default>
+        <selection>
+          <item value="unixtimestamp">Unix timestamp</item>
+          <item value="hhmmss">Closest hour, minute, second</item>
+          <item value="line">Line by line</item>
+        </selection>
+      </option>
+      <option id="rewind">
+        <name>Rewind</name>
+        <description>Start from the beginning of the file again, when the end was reached.</description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>true</default>
+      </option>
+    </deviceSettings>
+    
+    <deviceScanSettings>
+      <syntax>
+        <keyValue assignment="=">true</keyValue>
+        <separator>;</separator>
+      </syntax>
+      <option id="path">
+        <name>CSV files directory path</name>
+        <description><![CDATA[
+            The systems path to the folder, containing the CSV files.<br><br>
+            <b>Example:</b> /home/usr/bin/openmuc/csv/
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+      </option>
+    </deviceScanSettings>
+    
+    <channelAddress>
+      <syntax>
+        <keyValue>false</keyValue>
+        <separator>;</separator>
+      </syntax>
+      <option id="header">
+        <name>Column header</name>
+        <description>The title of the header, defining the column.</description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+      </option>
+    </channelAddress>
+  </driver>
+</configuration>

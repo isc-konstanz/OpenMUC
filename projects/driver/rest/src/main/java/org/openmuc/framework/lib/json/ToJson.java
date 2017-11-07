@@ -20,6 +20,7 @@
  */
 package org.openmuc.framework.lib.json;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.openmuc.framework.config.ChannelConfig;
@@ -28,6 +29,7 @@ import org.openmuc.framework.config.DeviceConfig;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverConfig;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
@@ -169,19 +171,19 @@ public class ToJson {
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverSyntax, RestDriverSyntax.class).getAsJsonObject());
     }
 
-    public void addDriverInfo(DriverInfo driverInfo, boolean detail) {
+    public void addDriverInfo(DriverInfo driverInfo, boolean detail) throws ParseException, IOException {
 
         RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfo(driverInfo, detail);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
     }
 
-    public void addDeviceInfo(DriverInfo driverInfo) {
+    public void addDeviceInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestDeviceInfo restDeviceInfo = RestDeviceInfo.getRestDeviceInfo(driverInfo);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDeviceInfo, RestDeviceInfo.class).getAsJsonObject());
     }
 
-    public void addChannelInfo(DriverInfo driverInfo) {
+    public void addChannelInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestChannelInfo restChannelInfo = RestChannelInfo.getRestChannelInfo(driverInfo);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restChannelInfo, RestChannelInfo.class).getAsJsonObject());
