@@ -1,4 +1,4 @@
 ::BATCH file for windows
 
-call gradlew.bat build eclipse
+call gradlew.bat build
 pause

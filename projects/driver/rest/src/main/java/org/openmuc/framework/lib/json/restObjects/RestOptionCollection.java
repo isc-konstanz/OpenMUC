@@ -52,12 +52,12 @@ public class RestOptionCollection {
         this.syntax = syntax;
     }
 
-    public static RestOptionCollection setOptionCollection(OptionCollection options) {
+    public static RestOptionCollection parseOptionCollection(OptionCollection options) {
         RestOptionCollection restOptions = null;
         
         if (!options.isDisabled()) {
             restOptions = new RestOptionCollection();
-            restOptions.setOptions(RestOption.setOptions(options.getOptions()));
+            restOptions.setOptions(RestOption.getOptions(options));
             
             RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
             restSyntax.setSeparator(options.getSeparator());
@@ -68,7 +68,7 @@ public class RestOptionCollection {
         return restOptions;
     }
 
-    public static RestOptionCollection setOptionCollection(String id, String syntax) {
+    public static RestOptionCollection parseOptionCollection(String id, String syntax) {
         RestOptionCollection restOptions = new RestOptionCollection();
         
         String name;
@@ -92,7 +92,7 @@ public class RestOptionCollection {
         option.setDescription(syntax);
         option.setMandatory(false);
         options.add(option);
-        restOptions.setOptions(RestOption.setOptions(options));
+        restOptions.setOptions(RestOption.getOptions(options));
         
         RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
         restSyntax.setSeparator(";");

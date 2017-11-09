@@ -20,7 +20,11 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
+import java.io.IOException;
+
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.ParseException;
+import org.openmuc.framework.config.options.OptionCollection;
 
 public class RestDriverInfo {
 
@@ -90,21 +94,21 @@ public class RestDriverInfo {
         return restDriverInfo;
     }
 
-    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo) {
+    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestDriverInfo restDriverInfo = new RestDriverInfo();
         restDriverInfo.setId(driverInfo.getId());
         restDriverInfo.setName(driverInfo.getName());
         restDriverInfo.setDescription(driverInfo.getDescription());
         
-        RestOptionCollection configs = RestOptionCollection.setOptionCollection(DriverInfo.configs());
+        RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDriverConfig());
         configs.setSyntax(null);
         restDriverInfo.setConfigs(configs);
         
         return restDriverInfo;
     }
 
-    public static RestDriverInfo getRestDriverInfoDetails(DriverInfo driverInfo) {
+    public static RestDriverInfo getRestDriverInfoFull(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestDriverInfo restDriverInfo = new RestDriverInfo();
         restDriverInfo.setId(driverInfo.getId());
@@ -113,7 +117,7 @@ public class RestDriverInfo {
         restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
         restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
         
-        RestOptionCollection configs = RestOptionCollection.setOptionCollection(DriverInfo.configs());
+        RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDriverConfig());
         configs.setSyntax(null);
         restDriverInfo.setConfigs(configs);
         

@@ -20,43 +20,72 @@
  */
 package org.openmuc.framework.config;
 
-import org.openmuc.framework.config.options.ChannelSyntax;
-import org.openmuc.framework.config.options.DeviceSyntax;
-import org.openmuc.framework.config.options.Option;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.openmuc.framework.config.options.OptionCollection;
-import org.openmuc.framework.config.options.OptionSelection;
-import org.openmuc.framework.data.IntValue;
-import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.config.options.OptionInfo;
+import org.openmuc.framework.config.options.OptionSyntax;
+import org.openmuc.framework.config.options.Parameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class DriverInfo {
+	private final static Logger logger = LoggerFactory.getLogger(DriverInfo.class);
 
-    private final String id;
-    private final String name;
-    private final String description;
-    private final DeviceInfo deviceInfo;
-    private final ChannelInfo channelInfo;
+    private String id;
+    private String name = null;
+    private String description = null;
+    private OptionInfo deviceAddress = null;
+    private OptionInfo deviceSettings = null;
+    private OptionInfo deviceScanSettings = null;
+    private OptionInfo channelAddress = null;
+    private OptionInfo channelScanSettings = null;
     
     /**
      * Constructor to set driver info
      * 
-     * @param id
-     *            driver ID
-     * @param name
-     *            driver name
-     * @param description
-     *            driver description
-     * @param deviceInfo
-     *            device description, address, settings and scan settings syntax
-     * @param channelInfo
-     *            channel description, address and scan settings syntax
+     * @param is
+     *            resource stream, containing all driver info as XML nodes
      */
-    public DriverInfo(String id, String name, String description,
-            DeviceInfo deviceInfo, ChannelInfo channelInfo) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.deviceInfo = deviceInfo;
-        this.channelInfo = channelInfo;
+    public DriverInfo(InputStream is) {
+        if (is != null) {
+        	DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
+            docBFac.setIgnoringComments(true);
+            try {
+            	Document doc = docBFac.newDocumentBuilder().parse(is);
+	            Node node = doc.getDocumentElement();
+	            if (!node.getNodeName().equals("configuration")) {
+	                logger.warn("Root node in driver info options is not of type \"configuration\"");
+	                return;
+	            }
+	            
+	            NodeList childNodes = node.getChildNodes();
+	            for (int i = 0; i < childNodes.getLength(); i++) {
+	                Node childNode = childNodes.item(i);
+	                String childNodeName = childNode.getNodeName();
+	                if (childNodeName.equals("#text")) {
+	                    continue;
+	                }
+	                else if(childNodeName.equals("driver")) {
+	                	readFromDomNode(childNode);
+	                }
+	            }
+            } catch (Exception e) {
+                logger.warn("Error while reading driver info options: {}", e.getMessage());
+            }
+        }
+        else {
+            logger.warn("river info options resource not found");
+        }
     }
     
     /**
@@ -78,9 +107,12 @@ public class DriverInfo {
     public DriverInfo(String id, String description, 
             String deviceAddressSyntax, String deviceSettingsSyntax,
             String channelAddressSyntax, String deviceScanSettingsSyntax) {
-        this(id, null, description, 
-                new DeviceSyntax(deviceAddressSyntax, deviceSettingsSyntax, deviceScanSettingsSyntax), 
-                new ChannelSyntax(channelAddressSyntax, null));
+        this.id = id;
+        this.description = description;
+        this.deviceAddress = new OptionSyntax(deviceAddressSyntax);
+        this.deviceSettings = new OptionSyntax(deviceSettingsSyntax);
+        this.deviceScanSettings = new OptionSyntax(deviceScanSettingsSyntax);
+        this.channelAddress = new OptionSyntax(channelAddressSyntax);
     }
 
     /**
@@ -100,66 +132,139 @@ public class DriverInfo {
     public String getDescription() {
         return description;
     }
+
+    public Parameters parseDeviceAddress(String addressStr) throws ArgumentSyntaxException {
+        return deviceAddress.parse(addressStr);
+    }
+
+    public Parameters parseDeviceSettings(String settingsStr) throws ArgumentSyntaxException {
+        return deviceSettings.parse(settingsStr);
+    }
+
+    public Parameters parseDeviceScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
+        return deviceScanSettings.parse(scanSettingsStr);
+    }
+
+    public Parameters parseChannelAddress(String addressStr) throws ArgumentSyntaxException {
+        return channelAddress.parse(addressStr);
+    }
+
+    public Parameters parseChannelScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
+        return channelScanSettings.parse(scanSettingsStr);
+    }
+
+    public OptionInfo getDriverConfig() throws ParseException, IOException {
+        return readConfigs("driver");
+    }
+
+    public OptionInfo getDeviceAddress() {
+        return deviceAddress;
+    }
+
+    public OptionInfo getDeviceSettings() {
+        return deviceSettings;
+    }
+
+    public OptionInfo getDeviceScanSettings() {
+        return deviceScanSettings;
+    }
+
+    public OptionInfo getDeviceConfig() throws ParseException, IOException {
+        return readConfigs("device");
+    }
+
+    public OptionInfo getChannelAddress() {
+        return channelAddress;
+    }
+
+    public OptionInfo getChannelScanSettings() {
+        return channelScanSettings;
+    }
+
+    public OptionInfo getChannelConfig() throws ParseException, IOException {
+        return readConfigs("channel");
+    }
+
+    private OptionCollection readConfigs(String type) throws ParseException, IOException {
+
+        //Get file from resources folder
+        InputStream is = DriverInfo.class.getResourceAsStream("options/"+type+".xml");
+        if (is == null) {
+            throw new IOException("Driver info options resource not found");
+        }
+        
+        DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
+        docBFac.setIgnoringComments(true);
+        
+        Document doc;
+        try {
+            doc = docBFac.newDocumentBuilder().parse(is);
+        } catch (Exception e) {
+            throw new ParseException(e);
+        }
+        
+        Node node = doc.getDocumentElement();
+        if (!node.getNodeName().equals("configuration")) {
+            throw new ParseException("Root node in default options is not of type \"configuration\"");
+        }
+        return OptionCollection.getFromDomNode(node);
+    }
+
+    private void readFromDomNode(Node node) throws ParseException {
+    	NamedNodeMap attributes = node.getAttributes();
+        Node nameAttribute = attributes.getNamedItem("id");
+        if (nameAttribute == null) {
+            throw new ParseException("Driver info has no id attribute");
+        }
+        this.id = nameAttribute.getTextContent();
+        
+        NodeList childNodes = node.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node childNode = childNodes.item(i);
+            String childNodeName = childNode.getNodeName();
+            if (childNodeName.equals("#text")) {
+                continue;
+            }
+            else if (childNodeName.equals("name")) {
+                this.name = childNode.getTextContent();
+            }
+            else if (childNodeName.equals("description")) {
+                this.description = DriverInfo.trimTextFromDomNode(childNode);
+            }
+            else if (childNodeName.equals("deviceAddress")) {
+                this.deviceAddress = OptionCollection.getFromDomNode(childNode);
+            }
+            else if (childNodeName.equals("deviceSettings")) {
+                this.deviceSettings = OptionCollection.getFromDomNode(childNode);
+            }
+            else if (childNodeName.equals("deviceScanSettings")) {
+                this.deviceScanSettings = OptionCollection.getFromDomNode(childNode);
+            }
+            else if (childNodeName.equals("channelAddress")) {
+                this.channelAddress = OptionCollection.getFromDomNode(childNode);
+            }
+            else if (childNodeName.equals("channelScanSettings")) {
+                this.channelScanSettings = OptionCollection.getFromDomNode(childNode);
+            }
+            else {
+                throw new ParseException("Unknown tag found:" + childNodeName);
+            }
+        }
+    }
     
-    public DeviceInfo getDeviceInfo() {
-        return deviceInfo;
-    }
-
-    public String getDeviceAddressSyntax() {
-        return deviceInfo.getAddressSyntax();
-    }
-
-    public String getDeviceSettingsSyntax() {
-        return deviceInfo.getSettingsSyntax();
-    }
-
-    public String getDeviceScanSettingsSyntax() {
-        return deviceInfo.getScanSettingsSyntax();
-    }
-    
-    public ChannelInfo getChannelInfo() {
-        return channelInfo;
-    }
-
-    public String getChannelAddressSyntax() {
-        return channelInfo.getAddressSyntax();
-    }
-
-    public String getChannelScanSettingsSyntax() {
-        return channelInfo.getScanSettingsSyntax();
-    }
-
-    public static OptionCollection configs() {
-        
-        OptionCollection config = new OptionCollection();
-        config.add(samplingTimeout());
-        config.add(connectRetryInterval());
-
-        return OptionCollection.unmodifiableOptions(config);
-    }
-
-    private static Option samplingTimeout() {
-        
-        Option samplingTimeout = new Option("samplingTimeout", "Sampling timeout", ValueType.INTEGER);
-        samplingTimeout.setDescription("Default time waited for a read operation of any Device to complete, "
-                + "if the Device doesn’t set a sampling timeout on its own.");
-        samplingTimeout.setMandatory(false);
-        samplingTimeout.setValueDefault(new IntValue(0));
-        samplingTimeout.setValueSelection(OptionSelection.timeSelection());
-        
-        return samplingTimeout;
-    }
-
-    private static Option connectRetryInterval() {
-        
-        Option connectRetryInterval = new Option("connectRetryInterval", "Connect retry interval", ValueType.INTEGER);
-        connectRetryInterval.setDescription("Default time waited until a failed connection attempt of any Device is repeated, "
-                + "if the Device doesn’t set a connect retry interval on its own.");
-        connectRetryInterval.setMandatory(false);
-        connectRetryInterval.setValueDefault(new IntValue(60000));
-        connectRetryInterval.setValueSelection(OptionSelection.timeSelection());
-        
-        return connectRetryInterval;
+    public static String trimTextFromDomNode(Node node) {
+    	BufferedReader reader = new BufferedReader(new StringReader(node.getTextContent()));
+        StringBuffer result = new StringBuffer();
+        try {
+            String line;
+            while ( (line = reader.readLine() ) != null)
+                result.append(line.trim().replace("\n", "").replace("\r", ""));
+            
+            return result.toString();
+        } catch (IOException e) {
+        	logger.info("Error while trimming text: {}", e.getMessage());
+        }
+        return null;
     }
 
 }

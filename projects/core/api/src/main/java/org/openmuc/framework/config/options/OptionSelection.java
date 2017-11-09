@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -35,6 +36,9 @@ import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class OptionSelection {
 
@@ -204,38 +208,84 @@ public class OptionSelection {
     }
     
     public Map<Value, String> getOptions() {
-    	return options;
+        return options;
     }
 
     @Override
     public String toString() {
         return options.toString();
     }
-    
-    public static OptionSelection timeSelection() {
+
+    static OptionSelection getFromDomNode(Node node, ValueType type) throws ParseException {
+        OptionSelection selection = new OptionSelection(type);
         
-        OptionSelection selection = new OptionSelection(ValueType.INTEGER, false);
-        selection.enableValidation(false);
-        selection.addInteger(0, "None");
-        selection.addInteger(100, "100 milliseconds");
-        selection.addInteger(200, "200 milliseconds");
-        selection.addInteger(500, "500 milliseconds");
-        selection.addInteger(1000, "1 second");
-        selection.addInteger(2000, "2 second");
-        selection.addInteger(5000, "5 seconds");
-        selection.addInteger(10000, "10 seconds");
-        selection.addInteger(15000, "15 seconds");
-        selection.addInteger(30000, "30 seconds");
-        selection.addInteger(45000, "45 seconds");
-        selection.addInteger(60000, "1 minute");
-        selection.addInteger(120000, "2 minutes");
-        selection.addInteger(300000, "5 minutes");
-        selection.addInteger(600000, "10 minutes");
-        selection.addInteger(900000, "15 minutes");
-        selection.addInteger(1800000, "30 minutes");
-        selection.addInteger(2700000, "45 minutes");
-        selection.addInteger(3600000, "1 hour");
-        selection.addInteger(86400000, "1 day");
+        NodeList childNodes = node.getChildNodes();
+        try {
+            for (int j = 0; j < childNodes.getLength(); j++) {
+                Node childNode = childNodes.item(j);
+                String childNodeName = childNode.getNodeName();
+
+                if (childNodeName.equals("#text")) {
+                    continue;
+                }
+                else if (childNodeName.equals("validate")) {
+                    String validateString = childNode.getTextContent().toLowerCase();
+                    if (validateString.equals("true")) {
+                        selection.validate = true;
+                    }
+                    else if (validateString.equals("false")) {
+                        selection.validate = false;
+                    }
+                    else {
+                        throw new ParseException("Selection \"validate\" contains neither \"true\" nor \"false\"");
+                    }
+                }
+                else if (childNodeName.equals("item")) {
+                    NamedNodeMap attributes = childNode.getAttributes();
+                    Node nameAttribute = attributes.getNamedItem("value");
+                    if (nameAttribute == null) {
+                        throw new ParseException("Selection item has no value attribute");
+                    }
+                    String item = nameAttribute.getTextContent();
+                    String description = childNode.getTextContent();
+                    
+                    switch (type) {
+                    case FLOAT:
+                        selection.addFloat(Float.valueOf(item), description);
+                        break;
+                    case DOUBLE:
+                        selection.addDouble(Double.valueOf(item), description);
+                        break;
+                    case SHORT:
+                        selection.addShort(Short.valueOf(item), description);
+                        break;
+                    case INTEGER:
+                        selection.addInteger(Integer.valueOf(item), description);
+                        break;
+                    case LONG:
+                        selection.addLong(Long.valueOf(item), description);
+                        break;
+                    case BYTE:
+                        selection.addByte(Byte.valueOf(item), description);
+                        break;
+                    case BOOLEAN:
+                        selection.addBoolean(Boolean.parseBoolean(item), description);
+                        break;
+                    case STRING:
+                        selection.addString(item, description);
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                else {
+                    throw new ParseException("Unknown tag found:" + childNodeName);
+                }
+            }
+            
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(e);
+        }
         
         return selection;
     }

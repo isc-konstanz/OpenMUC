@@ -40,6 +40,7 @@ import org.openmuc.framework.config.DriverConfig;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.DriverNotAvailableException;
 import org.openmuc.framework.config.IdCollisionException;
+import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.config.RootConfig;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
@@ -111,7 +112,7 @@ public class DriverResourceServlet extends GenericServlet {
                     try {
                         driverInfo = configService.getDriverInfo(driverID);
                         if (pathInfoArray.length == 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
-                            json.addDriverInfoDetails(driverInfo);
+                            json.addDriverInfoFull(driverInfo);
                         }
                         else if (pathInfoArray.length > 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
                             switch(pathInfoArray[3]) {
@@ -134,7 +135,7 @@ public class DriverResourceServlet extends GenericServlet {
                         else {
                             json.addDriverSyntax(driverInfo);
                         }
-                    } catch (DriverNotAvailableException e) {
+                    } catch (DriverNotAvailableException | ParseException e) {
                         throw new IOException(e);
                     }
                 }

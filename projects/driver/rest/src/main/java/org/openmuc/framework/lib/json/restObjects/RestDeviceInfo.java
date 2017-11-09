@@ -20,9 +20,11 @@
  */
 package org.openmuc.framework.lib.json.restObjects;
 
-import org.openmuc.framework.config.DeviceInfo;
+import java.io.IOException;
+
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.options.DeviceOptions;
+import org.openmuc.framework.config.ParseException;
+import org.openmuc.framework.config.options.OptionCollection;
 
 public class RestDeviceInfo {
 
@@ -73,23 +75,29 @@ public class RestDeviceInfo {
         this.configs = configs;
     }
 
-    public static RestDeviceInfo getRestDeviceInfo(DriverInfo driverInfo) {
+    public static RestDeviceInfo getRestDeviceInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestDeviceInfo restDeviceInfo = new RestDeviceInfo();
-        if (driverInfo.getDeviceInfo() instanceof DeviceOptions) {
-            DeviceOptions deviceOptions = (DeviceOptions) driverInfo.getDeviceInfo();
-            
-            restDeviceInfo.setDescription(deviceOptions.getDescription());
-            restDeviceInfo.setAddress(RestOptionCollection.setOptionCollection(deviceOptions.getAddress()));
-            restDeviceInfo.setSettings(RestOptionCollection.setOptionCollection(deviceOptions.getSettings()));
-            restDeviceInfo.setScanSettings(RestOptionCollection.setOptionCollection(deviceOptions.getScanSettings()));
+        restDeviceInfo.setDescription(driverInfo.getDescription());
+        if (driverInfo.getDeviceAddress() instanceof OptionCollection) {
+            restDeviceInfo.setAddress(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceAddress()));
         }
-        else {
-            restDeviceInfo.setAddress(RestOptionCollection.setOptionCollection(RestOptionCollection.ADDRESS, driverInfo.getDeviceAddressSyntax()));
-            restDeviceInfo.setSettings(RestOptionCollection.setOptionCollection(RestOptionCollection.SETTINGS, driverInfo.getDeviceSettingsSyntax()));
-            restDeviceInfo.setScanSettings(RestOptionCollection.setOptionCollection(RestOptionCollection.SCAN_SETTINGS, driverInfo.getDeviceScanSettingsSyntax()));
+        else if (driverInfo.getDeviceAddress() != null) {
+            restDeviceInfo.setAddress(RestOptionCollection.parseOptionCollection(RestOptionCollection.ADDRESS, driverInfo.getDeviceAddress().getSyntax()));
         }
-        RestOptionCollection configs = RestOptionCollection.setOptionCollection(DeviceInfo.configs());
+        if (driverInfo.getDeviceSettings() instanceof OptionCollection) {
+            restDeviceInfo.setSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceSettings()));
+        }
+        else if (driverInfo.getDeviceSettings() != null) {
+            restDeviceInfo.setSettings(RestOptionCollection.parseOptionCollection(RestOptionCollection.SETTINGS, driverInfo.getDeviceSettings().getSyntax()));
+        }
+        if (driverInfo.getDeviceScanSettings() instanceof OptionCollection) {
+            restDeviceInfo.setScanSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceScanSettings()));
+        }
+        else if (driverInfo.getDeviceScanSettings() != null) {
+            restDeviceInfo.setScanSettings(RestOptionCollection.parseOptionCollection(RestOptionCollection.SCAN_SETTINGS, driverInfo.getDeviceScanSettings().getSyntax()));
+        }
+        RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceConfig());
         configs.setSyntax(null);
         restDeviceInfo.setConfigs(configs);
         
