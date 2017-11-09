@@ -55,7 +55,7 @@ public class RestOptionCollection {
     public static RestOptionCollection parseOptionCollection(OptionCollection options) {
         RestOptionCollection restOptions = null;
         
-        if (!options.isEmpty() && !options.isDisabled()) {
+        if (!options.isDisabled()) {
             restOptions = new RestOptionCollection();
             restOptions.setOptions(RestOption.getOptions(options));
             
