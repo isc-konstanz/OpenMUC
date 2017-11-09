@@ -74,13 +74,13 @@ public class RestChannelInfo {
             restChannelInfo.setAddress(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelAddress()));
         }
         else if (driverInfo.getChannelAddress() != null) {
-            restChannelInfo.setAddress(RestOptionCollection.parseOptionCollection(driverInfo.getChannelAddress().getSyntax()));
+            restChannelInfo.setAddress(RestOptionCollection.parseOptionCollection(RestOptionCollection.ADDRESS, driverInfo.getChannelAddress().getSyntax()));
         }
         if (driverInfo.getChannelScanSettings() instanceof OptionCollection) {
             restChannelInfo.setScanSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelScanSettings()));
         }
         else if (driverInfo.getChannelScanSettings() != null) {
-            restChannelInfo.setScanSettings(RestOptionCollection.parseOptionCollection(driverInfo.getChannelScanSettings().getSyntax()));
+            restChannelInfo.setScanSettings(RestOptionCollection.parseOptionCollection(RestOptionCollection.SCAN_SETTINGS, driverInfo.getChannelScanSettings().getSyntax()));
         }
         RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelConfig());
         configs.setSyntax(null);

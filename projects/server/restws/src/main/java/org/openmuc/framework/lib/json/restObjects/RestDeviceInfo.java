@@ -83,19 +83,19 @@ public class RestDeviceInfo {
             restDeviceInfo.setAddress(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceAddress()));
         }
         else if (driverInfo.getDeviceAddress() != null) {
-            restDeviceInfo.setAddress(RestOptionCollection.parseOptionCollection(driverInfo.getDeviceAddress().getSyntax()));
+            restDeviceInfo.setAddress(RestOptionCollection.parseOptionCollection(RestOptionCollection.ADDRESS, driverInfo.getDeviceAddress().getSyntax()));
         }
         if (driverInfo.getDeviceSettings() instanceof OptionCollection) {
             restDeviceInfo.setSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceSettings()));
         }
         else if (driverInfo.getDeviceSettings() != null) {
-            restDeviceInfo.setSettings(RestOptionCollection.parseOptionCollection(driverInfo.getDeviceSettings().getSyntax()));
+            restDeviceInfo.setSettings(RestOptionCollection.parseOptionCollection(RestOptionCollection.SETTINGS, driverInfo.getDeviceSettings().getSyntax()));
         }
         if (driverInfo.getDeviceScanSettings() instanceof OptionCollection) {
             restDeviceInfo.setScanSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceScanSettings()));
         }
         else if (driverInfo.getDeviceScanSettings() != null) {
-            restDeviceInfo.setScanSettings(RestOptionCollection.parseOptionCollection(driverInfo.getDeviceScanSettings().getSyntax()));
+            restDeviceInfo.setScanSettings(RestOptionCollection.parseOptionCollection(RestOptionCollection.SCAN_SETTINGS, driverInfo.getDeviceScanSettings().getSyntax()));
         }
         RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceConfig());
         configs.setSyntax(null);
