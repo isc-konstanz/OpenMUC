@@ -84,17 +84,29 @@ public class RestDriverInfo {
         this.configs = configs;
     }
 
-    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo, boolean detail) throws ParseException, IOException {
+    public static RestDriverInfo getRestDriverInfoFull(DriverInfo driverInfo) throws ParseException, IOException {
+
+        RestDriverInfo restDriverInfo = new RestDriverInfo();
+        restDriverInfo.setId(driverInfo.getId());
+        restDriverInfo.setName(driverInfo.getName());
+        restDriverInfo.setDescription(driverInfo.getDescription());
+        restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
+        restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
+
+        RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDriverConfig());
+        configs.setSyntax(null);
+        restDriverInfo.setConfigs(configs);
+        
+        return restDriverInfo;
+    }
+
+    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestDriverInfo restDriverInfo = new RestDriverInfo();
         restDriverInfo.setId(driverInfo.getId());
         restDriverInfo.setName(driverInfo.getName());
         restDriverInfo.setDescription(driverInfo.getDescription());
         
-        if (detail) {
-            restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
-            restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
-        }
         RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDriverConfig());
         configs.setSyntax(null);
         restDriverInfo.setConfigs(configs);

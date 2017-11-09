@@ -171,9 +171,15 @@ public class ToJson {
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverSyntax, RestDriverSyntax.class).getAsJsonObject());
     }
 
-    public void addDriverInfo(DriverInfo driverInfo, boolean detail) throws ParseException, IOException {
+    public void addDriverInfoFull(DriverInfo driverInfo) throws ParseException, IOException {
 
-        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfo(driverInfo, detail);
+        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfoFull(driverInfo);
+        jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
+    }
+
+    public void addDriverInfo(DriverInfo driverInfo) throws ParseException, IOException {
+
+        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfo(driverInfo);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
     }
 

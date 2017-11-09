@@ -125,12 +125,12 @@ public class DriverResourceServlet extends GenericServlet {
                             try {
                                 driverInfo = configService.getDriverInfo(driverID);
                                 if (pathInfoArray.length == 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
-                                    json.addDriverInfo(driverInfo, true);
+                                    json.addDriverInfoFull(driverInfo);
                                 }
                                 else if (pathInfoArray.length > 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
                                     switch(pathInfoArray[3]) {
                                     case Const.DRIVER:
-                                        json.addDriverInfo(driverInfo, false);
+                                        json.addDriverInfo(driverInfo);
                                         break;
                                     case Const.DEVICE:
                                         json.addDeviceInfo(driverInfo);
