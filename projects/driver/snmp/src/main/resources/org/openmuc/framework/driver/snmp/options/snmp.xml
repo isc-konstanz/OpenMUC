@@ -5,7 +5,7 @@
     <description><![CDATA[
         The Simple Network Management Protocol (SNMP) is an Internet-standard protocol for monitoring 
         and management of devices on IP networks.<br>
-        The driver acts as a manager in the network and connects to devices, representing agents, via their
+        The driver acts as a manager in the network and connects to devices, representing agents, via their 
         IP address. Manager-to-agents requests can be done to data channels, addressed through their full 
         object identifiers (OID).
       ]]>
@@ -23,7 +23,7 @@
         <type>STRING</type>
       </option>
       <option id="port">
-        <name>IP address</name>
+        <name>Port</name>
         <description><![CDATA[
             The address port of the target SNMP agent device.<br>
             By convention, SNMP agents use the UDP-Port 161, while sending traps to 162.
