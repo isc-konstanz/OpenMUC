@@ -36,8 +36,6 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -45,11 +43,10 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @Component
-public final class SnmpDriver implements DriverService {
-
-    private final static Logger logger = LoggerFactory.getLogger(SnmpDriver.class);
-
-    private final static DriverInfo info = new DriverInfo("snmp", "snmp v1/v2c/v3 are supported.", "?", "?", "?", "?");
+public class SnmpDriver implements DriverService {
+//    private final static Logger logger = LoggerFactory.getLogger(SnmpDriver.class);
+    
+    private final static DriverInfo info = new DriverInfo(SnmpDriver.class.getResourceAsStream("options/snmp.xml"));
 
     // AUTHENTICATIONPASSPHRASE is the same COMMUNITY word in SNMP V2c
     public enum SnmpDriverSettingVariableNames {
@@ -139,7 +136,7 @@ public final class SnmpDriver implements DriverService {
      * @throws ConnectionException
      *             thrown if SNMP listen or initialization failed
      * @throws ArgumentSyntaxException
-     *             thrown if Device address foramt is wrong
+     *             thrown if Device address format is wrong
      */
     @Override
     public Connection connect(String deviceAddress, String settings)
