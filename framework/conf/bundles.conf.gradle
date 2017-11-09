@@ -14,7 +14,7 @@ configurations.osgibundles.transitive = false;
 configurations.osgimain.transitive = false;
 
 dependencies {
-  def openmucVersion = "0.16.0"
+  def openmucVersion = "0.17.7"
 
   osgimain group: "org.apache.felix", name: "org.apache.felix.main", version: "5.6.8"
 
