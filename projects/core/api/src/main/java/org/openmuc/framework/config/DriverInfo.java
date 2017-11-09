@@ -258,7 +258,7 @@ public class DriverInfo {
         try {
             String line;
             while ( (line = reader.readLine() ) != null)
-                result.append(line.trim().replace("\n", "").replace("\r", ""));
+                result.append(line.replaceAll("^\\s+", "").replace("\n", "").replace("\r", ""));
             
             return result.toString();
         } catch (IOException e) {
