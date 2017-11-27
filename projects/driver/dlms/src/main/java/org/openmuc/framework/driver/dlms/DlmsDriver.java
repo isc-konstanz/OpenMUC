@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class DlmsDriver implements DriverService {
     private final static Logger logger = LoggerFactory.getLogger(DlmsDriver.class);
 
-    private final static DriverInfo info = new DriverInfo(DlmsDriver.class.getResourceAsStream("options/dlms.xml"));
+    private final static DriverInfo info = new DriverInfo(DlmsDriver.class.getResourceAsStream("options.xml"));
 
     private final IClientConnectionFactory connectionFactory = new OsgiClientConnectionFactory();
     private final AddressParser addressParser = new AddressParser();

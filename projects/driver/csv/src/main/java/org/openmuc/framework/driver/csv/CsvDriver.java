@@ -26,7 +26,7 @@ public class CsvDriver implements DriverService {
 
     private final static Logger logger = LoggerFactory.getLogger(CsvDriver.class);
     
-    final static DriverInfo info = new DriverInfo(CsvDriver.class.getResourceAsStream("options/csv.xml"));
+    final static DriverInfo info = new DriverInfo(CsvDriver.class.getResourceAsStream("options.xml"));
     
     // Settings mode realtime, nextline-rewind, nextline
     // Settings separator = ;
