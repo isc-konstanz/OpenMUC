@@ -1,0 +1,12 @@
+dependencies {
+  compile project(':openmuc-core-spi')
+  
+  compile group: "org.openmuc", name: "jrxtx", version: "1.0.0"
+}
+
+jar {
+  manifest {
+    name = "OpenMUC Driver - IEC 62056-21 mode A-D"
+    instruction 'Export-Package', ''
+  }
+}

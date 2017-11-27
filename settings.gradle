@@ -1,4 +1,4 @@
-include "openmuc-app-simpledemo", "openmuc-core-api", "openmuc-core-datamanager", "openmuc-core-spi", "openmuc-datalogger-ascii", "openmuc-datalogger-slotsdb", "openmuc-driver-aggregator", "openmuc-driver-csv", "openmuc-driver-dlms", "openmuc-driver-ehz", "openmuc-driver-iec60870", "openmuc-driver-iec61850", "openmuc-driver-iec62056p21c", "openmuc-driver-knx", "openmuc-driver-mbus", "openmuc-driver-modbus", "openmuc-driver-rest", "openmuc-driver-snmp", "openmuc-driver-wmbus", "openmuc-server-restws", "openmuc-webui-base", "openmuc-webui-channelaccesstool", "openmuc-webui-channelconfigurator", "openmuc-webui-dataexporter", "openmuc-webui-dataplotter", "openmuc-webui-mediaviewer", "openmuc-webui-spi", "openmuc-webui-userconfigurator"
+include "openmuc-app-simpledemo", "openmuc-core-api", "openmuc-core-datamanager", "openmuc-core-spi", "openmuc-datalogger-ascii", "openmuc-datalogger-slotsdb", "openmuc-driver-aggregator", "openmuc-driver-csv", "openmuc-driver-dlms", "openmuc-driver-ehz", "openmuc-driver-iec60870", "openmuc-driver-iec61850", "openmuc-driver-iec62056p21", "openmuc-driver-knx", "openmuc-driver-mbus", "openmuc-driver-modbus", "openmuc-driver-rest", "openmuc-driver-snmp", "openmuc-driver-wmbus", "openmuc-server-restws", "openmuc-webui-base", "openmuc-webui-channelaccesstool", "openmuc-webui-channelconfigurator", "openmuc-webui-dataexporter", "openmuc-webui-dataplotter", "openmuc-webui-mediaviewer", "openmuc-webui-spi", "openmuc-webui-userconfigurator"
 
 project(":openmuc-app-simpledemo").projectDir = file("projects/app/simpledemo")
 project(":openmuc-core-api").projectDir = file("projects/core/api")
@@ -12,7 +12,7 @@ project(":openmuc-driver-dlms").projectDir = file("projects/driver/dlms")
 project(":openmuc-driver-ehz").projectDir = file("projects/driver/ehz")
 project(":openmuc-driver-iec60870").projectDir = file("projects/driver/iec60870")
 project(":openmuc-driver-iec61850").projectDir = file("projects/driver/iec61850")
-project(":openmuc-driver-iec62056p21c").projectDir = file("projects/driver/iec62056p21c")
+project(":openmuc-driver-iec62056p21").projectDir = file("projects/driver/iec62056p21")
 project(":openmuc-driver-knx").projectDir = file("projects/driver/knx")
 project(":openmuc-driver-mbus").projectDir = file("projects/driver/mbus")
 project(":openmuc-driver-modbus").projectDir = file("projects/driver/modbus")
