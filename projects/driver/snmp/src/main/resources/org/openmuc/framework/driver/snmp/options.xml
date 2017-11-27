@@ -100,30 +100,8 @@
         <keyValue assignment="=">true</keyValue>
         <separator>:</separator>
       </syntax>
-      <option id="SNMPVersion">
-        <name>Version</name>
-        <description><![CDATA[
-            The version of the used SNMP communication protocol.<br><br>
-            Currently, scanning is only available vor SNMPv2c.
-          ]]>
-        </description>
-        <mandatory>true</mandatory>
-        <type>STRING</type>
-        <selection>
-          <item value="V2c">Version 2c</item>
-        </selection>
-      </option>
-      <option id="AUTHENTICATIONPASSPHRASE">
-        <name>Community</name>
-        <description><![CDATA[
-            For SNMPv1/v2c, The authentication passphrase corresponds to the community word.<br>
-            By convention, most devices with SNMPv1/v2c have a read-only community "public". 
-            For read and write access, the community string has to be set to "private".
-          ]]>
-        </description>
-        <mandatory>true</mandatory>
-        <type>STRING</type>
-      </option>
+      <option id="SNMPVersion"></option>
+      <option id="AUTHENTICATIONPASSPHRASE"></option>
       <option id="STARTIP">
         <name>Start of selected IP range</name>
         <description>The start IP of the selected range to scan for SNMP device agents.</description>

@@ -84,35 +84,8 @@
         <keyValue>false</keyValue>
         <separator>:</separator>
       </syntax>
-      <option id="serialPort">
-        <name>Serial port</name>
-        <description>The serial port should be given that connects to the M-Bus converter. (e.g. /dev/ttyS0, /dev/ttyUSB0 on Linux).</description>
-        <mandatory>true</mandatory>
-        <type>STRING</type>
-      </option>
-      <option id="baudrate">
-        <name>Baudrate</name>
-        <description><![CDATA[
-            The baud rate for the serial communication.<br>
-            Defaults to 2400bd.
-          ]]>
-        </description>
-        <mandatory>false</mandatory>
-        <type>INTEGER</type>
-        <default>2400</default>
-        <selection>
-          <validate>false</validate>
-          <item value="300">300</item>
-          <item value="600">600</item>
-          <item value="1200">1200</item>
-          <item value="2400">2400</item>
-          <item value="4800">4800</item>
-          <item value="9600">9600</item>
-          <item value="14400">14400</item>
-          <item value="19200">19200</item>
-          <item value="38400">38400</item>
-        </selection>
-      </option>
+      <option id="serialPort"></option>
+      <option id="baudrate"></option>
     </deviceScanSettings>
     
     <channelAddress>
