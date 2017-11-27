@@ -45,12 +45,12 @@
         </description>
         <mandatory>true</mandatory>
         <type>STRING</type>
-        <default>line</default>
         <selection>
           <item value="unixtimestamp">Unix timestamp</item>
           <item value="hhmmss">Closest hour, minute, second</item>
           <item value="line">Line by line</item>
         </selection>
+        <default>line</default>
       </option>
       <option id="rewind">
         <name>Rewind</name>

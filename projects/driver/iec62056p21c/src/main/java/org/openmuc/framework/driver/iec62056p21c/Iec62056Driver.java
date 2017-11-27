@@ -39,7 +39,7 @@ import org.osgi.service.component.annotations.Component;
 @Component
 public final class Iec62056Driver implements DriverService {
 
-    private final static DriverInfo info = new DriverInfo("iec62056p21", // id
+    private final static DriverInfo info = new DriverInfo("iec62056p21c", // id
             // description
             "This driver can read meters using IEC 62056-21 Mode C.",
             // device address

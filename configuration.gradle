@@ -26,7 +26,7 @@ project.ext {
     it.getPath() == ":openmuc-driver-ehz" ||
     it.getPath() == ":openmuc-driver-iec60870" ||
     it.getPath() == ":openmuc-driver-iec61850" ||
-    it.getPath() == ":openmuc-driver-iec62056p21" ||
+    it.getPath() == ":openmuc-driver-iec62056p21c" ||
     it.getPath() == ":openmuc-driver-knx" ||
     it.getPath() == ":openmuc-driver-mbus" ||
     it.getPath() == ":openmuc-driver-modbus" ||
