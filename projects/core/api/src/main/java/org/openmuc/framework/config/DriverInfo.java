@@ -30,7 +30,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.openmuc.framework.config.options.OptionCollection;
 import org.openmuc.framework.config.options.OptionInfo;
 import org.openmuc.framework.config.options.OptionSyntax;
-import org.openmuc.framework.config.options.Parameters;
+import org.openmuc.framework.config.options.Preferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -48,6 +48,7 @@ public class DriverInfo {
     private OptionInfo deviceSettings = null;
     private OptionInfo deviceScanSettings = null;
     private OptionInfo channelAddress = null;
+    private OptionInfo channelSettings = null;
     private OptionInfo channelScanSettings = null;
     
     /**
@@ -133,23 +134,27 @@ public class DriverInfo {
         return description;
     }
 
-    public Parameters parseDeviceAddress(String addressStr) throws ArgumentSyntaxException {
+    public Preferences parseDeviceAddress(String addressStr) throws ArgumentSyntaxException {
         return deviceAddress.parse(addressStr);
     }
 
-    public Parameters parseDeviceSettings(String settingsStr) throws ArgumentSyntaxException {
+    public Preferences parseDeviceSettings(String settingsStr) throws ArgumentSyntaxException {
         return deviceSettings.parse(settingsStr);
     }
 
-    public Parameters parseDeviceScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
+    public Preferences parseDeviceScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
         return deviceScanSettings.parse(scanSettingsStr);
     }
 
-    public Parameters parseChannelAddress(String addressStr) throws ArgumentSyntaxException {
+    public Preferences parseChannelAddress(String addressStr) throws ArgumentSyntaxException {
         return channelAddress.parse(addressStr);
     }
 
-    public Parameters parseChannelScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
+    public Preferences parseChannelSettings(String settingsStr) throws ArgumentSyntaxException {
+        return channelSettings.parse(settingsStr);
+    }
+
+    public Preferences parseChannelScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
         return channelScanSettings.parse(scanSettingsStr);
     }
 
@@ -175,6 +180,10 @@ public class DriverInfo {
 
     public OptionInfo getChannelAddress() {
         return channelAddress;
+    }
+
+    public OptionInfo getChannelSettings() {
+        return channelSettings;
     }
 
     public OptionInfo getChannelScanSettings() {
@@ -242,6 +251,9 @@ public class DriverInfo {
             }
             else if (childNodeName.equals("channelAddress")) {
                 this.channelAddress = OptionCollection.getFromDomNode(childNode);
+            }
+            else if (childNodeName.equals("channelSettings")) {
+                this.channelSettings = OptionCollection.getFromDomNode(childNode);
             }
             else if (childNodeName.equals("channelScanSettings")) {
                 this.channelScanSettings = OptionCollection.getFromDomNode(childNode);

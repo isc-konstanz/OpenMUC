@@ -61,6 +61,13 @@ public interface Channel {
     String getChannelAddress();
 
     /**
+     * Returns the settings of this channel. Returns the empty string if not configured.
+     * 
+     * @return the settings of this channel.
+     */
+    String getChannelSettings();
+
+    /**
      * Returns the description of this channel. Returns the empty string if not configured.
      * 
      * @return the description of this channel.

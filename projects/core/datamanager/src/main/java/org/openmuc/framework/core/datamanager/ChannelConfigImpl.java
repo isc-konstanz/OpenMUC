@@ -42,6 +42,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
 
     String id;
     String channelAddress = null;
+    String channelSettings = null;
     String description = null;
     String unit = null;
     ValueType valueType = null;
@@ -108,6 +109,16 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     @Override
     public void setChannelAddress(String address) {
         channelAddress = address;
+    }
+
+    @Override
+    public String getChannelSettings() {
+        return channelSettings;
+    }
+
+    @Override
+    public void setChannelSettings(String settings) {
+        channelSettings = settings;
     }
 
     @Override
@@ -299,6 +310,9 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 else if (childName.equals("channelAddress")) {
                     config.setChannelAddress(childNode.getTextContent());
                 }
+                else if (childName.equals("channelSettings")) {
+                    config.setChannelSettings(childNode.getTextContent());
+                }
                 else if (childName.equals("serverMapping")) {
                     NamedNodeMap attributes = childNode.getAttributes();
                     Node nameAttribute = attributes.getNamedItem("id");
@@ -407,6 +421,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
+        if (channelSettings != null) {
+            childElement = document.createElement("channelSettings");
+            childElement.setTextContent(channelSettings);
+            parentElement.appendChild(childElement);
+        }
+
         if (serverMappings != null) {
             for (ServerMapping serverMapping : serverMappings) {
                 childElement = document.createElement("serverMapping");
@@ -506,6 +526,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
 
         configClone.description = description;
         configClone.channelAddress = channelAddress;
+        configClone.channelSettings = channelSettings;
         configClone.serverMappings = serverMappings;
         configClone.unit = unit;
         configClone.valueType = valueType;
@@ -538,6 +559,13 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         }
         else {
             configClone.channelAddress = channelAddress;
+        }
+
+        if (channelSettings == null) {
+            configClone.channelSettings = CHANNEL_SETTINGS_DEFAULT;
+        }
+        else {
+            configClone.channelSettings = channelSettings;
         }
 
         if (serverMappings == null) {

@@ -28,6 +28,8 @@ public interface ChannelValueContainer {
 
     String getChannelAddress();
 
+    String getChannelSettings();
+
     Object getChannelHandle();
 
     void setChannelHandle(Object handle);

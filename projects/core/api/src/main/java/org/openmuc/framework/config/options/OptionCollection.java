@@ -120,9 +120,9 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
     }
 
     @Override
-    public Parameters parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
+    public Preferences parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
         if (settingsStr != null) {
-            Parameters settings = new Parameters();
+            Preferences settings = new Preferences();
             
             if (!settingsStr.trim().isEmpty()) {
                 String[] settingsArray = settingsStr.trim().split(separator);

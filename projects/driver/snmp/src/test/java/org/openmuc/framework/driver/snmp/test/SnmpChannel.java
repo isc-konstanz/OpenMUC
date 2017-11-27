@@ -39,6 +39,7 @@ public class SnmpChannel implements Channel {
 
     private String id;
     private String address;
+    private String settings;
     private String description;
     private String unit;
     private ValueType valueType;
@@ -63,6 +64,11 @@ public class SnmpChannel implements Channel {
     public String getChannelAddress() {
         return address;
     }
+
+	@Override
+	public String getChannelSettings() {
+		return settings;
+	}
 
     @Override
     public String getDescription() {
