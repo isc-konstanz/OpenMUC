@@ -186,12 +186,16 @@ public class ToJson {
     public void addDeviceInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestDeviceInfo restDeviceInfo = RestDeviceInfo.getRestDeviceInfo(driverInfo);
+        restDeviceInfo.setDescription(driverInfo.getDescription());
+        
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDeviceInfo, RestDeviceInfo.class).getAsJsonObject());
     }
 
     public void addChannelInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestChannelInfo restChannelInfo = RestChannelInfo.getRestChannelInfo(driverInfo);
+        restChannelInfo.setDescription(driverInfo.getDescription());
+        
         jsonObject.add(Const.INFOS, gson.toJsonTree(restChannelInfo, RestChannelInfo.class).getAsJsonObject());
     }
 

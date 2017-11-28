@@ -69,7 +69,6 @@ public class RestChannelInfo {
     public static RestChannelInfo getRestChannelInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestChannelInfo restChannelInfo = new RestChannelInfo();
-        restChannelInfo.setDescription(driverInfo.getDescription());
         if (driverInfo.getChannelAddress() instanceof OptionCollection) {
             restChannelInfo.setAddress(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelAddress()));
         }
