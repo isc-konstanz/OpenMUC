@@ -1,0 +1,22 @@
+repositories {
+   flatDir {
+       dirs rootDir.getPath() + '/dependencies/pi4j'
+   }
+}
+
+dependencies {
+  def pi4jversion = '1.2-SNAPSHOT'
+
+  compile project(':openmuc-core-spi')
+
+  compile group: 'com.pi4j', name: 'pi4j-core', version: pi4jversion
+  compile group: 'com.pi4j', name: 'pi4j-device', version: pi4jversion
+  compile group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jversion
+}
+
+jar {
+  manifest {
+    name = "OpenMUC Driver - Raspberry Pi 1-Wire"
+    instruction 'Export-Package', ''
+  }
+}

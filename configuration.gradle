@@ -31,6 +31,9 @@ project.ext {
     it.getPath() == ":openmuc-driver-mbus" ||
     it.getPath() == ":openmuc-driver-modbus" ||
     it.getPath() == ":openmuc-driver-rest" ||
+    it.getPath() == ":openmuc-driver-rpi-gpio" ||
+    it.getPath() == ":openmuc-driver-rpi-s0" ||
+    it.getPath() == ":openmuc-driver-rpi-w1" ||
     it.getPath() == ":openmuc-driver-snmp" ||
     it.getPath() == ":openmuc-driver-wmbus" ||
     it.getPath() == ":openmuc-server-restws" ||
@@ -57,14 +60,18 @@ configure(javaProjects) {
   apply plugin: "maven"
 }
 
-task updateBundles(type:Exec) {
+task update {
+  apply from: "./framework/conf/bundles.conf.gradle"
+
+  dependsOn(build)
   dependsOn(distributionProjects.install)
-  commandLine "./framework/bin/openmuc", "update-bundles"
+  
+  dependsOn(updateBundles)
 }
 
 tasks.withType(Tar) {
 
-  dependsOn(updateBundles)
+  dependsOn(update)
 
   into(project.name) {
 
