@@ -8,7 +8,7 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>log/openmuc.log</file>
+    <file>/var/log/emonmuc/emonmuc.log</file>
     <append>true</append>
     <encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -16,7 +16,7 @@
   </appender>
 
  
-  <root level="INFO">
+  <root level="TRACE">
     <appender-ref ref="STDOUT" />
   </root>
  

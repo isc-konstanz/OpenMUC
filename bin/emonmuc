@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-#Scriptname: openmuc
-#Description: Script to start, stop, restart and reload OpenMUC
+#Scriptname: emonmuc
+#Description: Script to start, stop, restart and reload emonmuc
 
 # Add JVM options here.
-JVM_OPTS=""
+JVM_OPTS="-Djava.library.path=/usr/lib/jni -cp /usr/share/java/RXTXcomm.jar"
+
+# Set location for PID and Error output file. Default is "$APP_HOME/log/emonmuc.pid" or ".log"
+PID_FILE=/var/run/emonmuc/emonmuc.pid
+ERR_FILE=/var/log/emonmuc/emonmuc.out
 
 find_app_home()
 {
@@ -31,10 +35,10 @@ cd "$APP_HOME"
 
 # If root change user to owner of this script
 if [ $UID -eq 0 ] ; then
-    SCRIPT_OWNER=`stat -c "%U" bin/openmuc`
+    SCRIPT_OWNER=`stat -c "%U" bin/emonmuc`
     echo "Executed as root, will run as owner of this script: $SCRIPT_OWNER"
     if [ "$SCRIPT_OWNER" != "root" ] ; then
-        exec su $SCRIPT_OWNER  bin/openmuc "$@"
+        exec su $SCRIPT_OWNER  bin/emonmuc "$@"
     fi
 fi
 
@@ -62,6 +66,65 @@ location of your Java installation."
 fi
 
 
+start_emonmuc() {
+    if [ -f $PID_FILE ]; then
+        if ps -p `cat $PID_FILE` > /dev/null
+        then
+            echo "emonmuc is already running. Stop it first before running emonmuc again."
+            exit 2
+        else
+            rm -f $PID_FILE
+        fi
+    fi
+
+    while IFS= read -r line
+    do
+      ln -sf "$line"
+    done < "$APP_HOME"/conf/bundles.conf
+
+    echo "Starting OpenMUC"
+    echo "Starting emonmuc"
+
+    if [ "$2" != "-fg" ]
+    then
+        echo "Starting in background. To start emonmuc in foreground run this script with the -fg flag."
+        # Option: -Dgosh.args=--nointeractive is necessary for running emonmuc in background
+        exec "$JAVACMD" $JVM_OPTS -Dgosh.args=--nointeractive -jar "$APP_HOME"/bin/felix.jar >"$ERR_FILE" 2>&1 &
+    else
+        exec "$JAVACMD" $JVM_OPTS -jar "$APP_HOME"/bin/felix.jar
+    fi
+
+    if [ $? = 0 ]; then
+        # save PID of the emonmuc background process
+        echo $! > $PID_FILE
+        exit 0;
+    else
+        exit 1;
+    fi
+    echo "done"
+}
+
+
+stop_emonmuc() {
+    echo -n "Stopping emonmuc"
+        do_stop
+    RET_STATUS=$?
+    echo ""
+        case "$RET_STATUS" in
+                0)
+            echo "done"
+                        exit 0
+                ;;
+                1)
+            echo "no emonmuc process is running"
+                        exit 1
+                ;;
+        2)
+            echo "Unable to stop emonmuc, try -f flag to kill by brute force"
+                        exit 2
+                ;;                        
+    esac
+}
 
 
 #
@@ -111,64 +174,6 @@ do_stop()
 }
 
 
-stop_openmuc() {
-    echo -n "Stopping OpenMUC"
-        do_stop
-    RET_STATUS=$?
-    echo ""
-        case "$RET_STATUS" in
-                0)
-            echo "done"
-                        exit 0
-                ;;
-                1)
-            echo "no OpenMUC process is running"
-                        exit 1
-                ;;
-        2)
-            echo "Unable to stop OpenMUC, try -f flag to kill by brute force"
-                        exit 2
-                ;;                        
-    esac
-}
-
-start_openmuc() {
-    if [ -f $PID_FILE ]; then
-        if ps -p `cat $PID_FILE` > /dev/null
-        then
-            echo "OpenMUC is already running. Stop it first before running OpenMUC again."
-            exit 2
-        else
-            rm -f $PID_FILE
-        fi
-    fi
-
-    while IFS= read -r line
-    do
-      ln -sf "$line"
-    done < "$APP_HOME"/conf/bundles.conf
-
-    echo "Starting OpenMUC"
-
-    if [ "$2" != "-fg" ]
-    then
-        echo "Starting in background. To start OpenMUC in foreground run this script with the -fg flag."
-        # Option: -Dgosh.args=--nointeractive is necessary for running openmuc in background
-        exec "$JAVACMD" $JVM_OPTS -Dgosh.args=--nointeractive -jar "$APP_HOME"/bin/felix.jar >"$APP_HOME"/log/openmuc.out 2>&1 &
-    else
-        exec "$JAVACMD" $JVM_OPTS -jar "$APP_HOME"/bin/felix.jar
-    fi
-
-    if [ $? = 0 ]; then
-        # save PID of the openmuc background process
-        echo $! > $PID_FILE
-        exit 0;
-    else
-        exit 1;
-    fi
-    echo "done"
-}
-
 enable_bundle() {
     case "$2" in
         app)
@@ -206,6 +211,7 @@ enable_bundle() {
     echo "To start the new bundle, you need to run:"
     echo "  systemctl restart emonmuc"
 }
+
 
 disable_bundle() {
     case "$2" in
@@ -245,19 +251,18 @@ disable_bundle() {
     echo "  systemctl restart emonmuc"
 }
 
-PID_FILE=$APP_HOME/log/openmuc.pid
 
 case "$1" in
     start)
-        start_openmuc $*
+        start_emonmuc $*
         ;;
     stop)
-        stop_openmuc
+        stop_emonmuc
         ;;
     restart)
-        stop_openmuc
+        stop_emonmuc
         sleep 10
-        start_openmuc $*
+        start_emonmuc $*
         ;;
     enable)
         enable_bundle $*

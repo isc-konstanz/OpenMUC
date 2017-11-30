@@ -3,7 +3,9 @@ repositories {
   mavenCentral()
   
   flatDir {
-    dirs rootDir.getPath() + '/dependencies/pi4j'
+    dirs rootDir.getPath() + "/dependencies/pi4j", 
+		rootDir.getPath() + "/../emonjava/build/libs", 
+		rootDir.getPath() + "/../OpenPCharge/build/libs"
   }
 }
 
@@ -16,6 +18,8 @@ configurations.optional.transitive = false;
 
 dependencies {
   main group: "org.apache.felix", name: "org.apache.felix.main", version: "5.6.8"
+
+  core group: "org.emoncms", name: "openmuc-datalogger-emoncms", version: "1.0.0"
 
   core project(":openmuc-core-api")
   core project(":openmuc-core-spi")
