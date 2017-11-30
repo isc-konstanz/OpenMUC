@@ -3,8 +3,7 @@ repositories {
   mavenCentral()
   
   flatDir {
-    dirs rootDir.getPath() + "/dependencies/pi4j", 
-		rootDir.getPath() + "/../emonjava/build/libs", 
+    dirs rootDir.getPath() + "/../emonjava/build/libs", 
 		rootDir.getPath() + "/../OpenPCharge/build/libs"
   }
 }
@@ -63,13 +62,6 @@ dependencies {
   // RXTX is a native interface to serial ports in java.
   //--------------------------------------------------------------------------------------------------
   core group: "org.openmuc", name: "jrxtx", version: "1.0.0"
-
-  //--------------------------------------------------------------------------------------------------
-  // Pi4J is intended to provide access to the full I/O capabilities of the Raspberry Pi platform.
-  //--------------------------------------------------------------------------------------------------
-  core group: "com.pi4j", name: "pi4j-core", version: "1.2-SNAPSHOT"
-  core group: "com.pi4j", name: "pi4j-device", version: "1.2-SNAPSHOT"
-  core group: "com.pi4j", name: "pi4j-gpio-extension", version: "1.2-SNAPSHOT"
 
   //--------------------------------------------------------------------------------------------------
   // The Apache Felix Gogo standard shell for OSGi (http://felix.apache.org/site/apache-felix-gogo.html)
