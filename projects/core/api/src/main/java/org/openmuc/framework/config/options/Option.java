@@ -32,7 +32,6 @@ import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -126,13 +125,7 @@ public class Option {
         this.valueSelection = valueSelection;
     }
 
-    static Option getFromDomNode(Node node) throws ParseException {
-        NamedNodeMap attributes = node.getAttributes();
-        Node nameAttribute = attributes.getNamedItem("id");
-        if (nameAttribute == null) {
-            throw new ParseException("Option has no id attribute");
-        }
-        String id = nameAttribute.getTextContent();
+    static Option getFromDomNode(String id, Node node) throws ParseException {
         
         Option option = new Option(id);
         Node valueDefaultNode = null;

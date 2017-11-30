@@ -11,7 +11,7 @@ public class OptionSyntax implements OptionInfo {
     }
 
 	@Override
-	public Parameters parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
+	public Preferences parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
 		throw new UnsupportedOperationException();
 	}
 

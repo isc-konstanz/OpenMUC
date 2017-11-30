@@ -78,7 +78,6 @@ public class RestDeviceInfo {
     public static RestDeviceInfo getRestDeviceInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestDeviceInfo restDeviceInfo = new RestDeviceInfo();
-        restDeviceInfo.setDescription(driverInfo.getDescription());
         if (driverInfo.getDeviceAddress() instanceof OptionCollection) {
             restDeviceInfo.setAddress(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceAddress()));
         }
