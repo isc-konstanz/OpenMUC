@@ -9,10 +9,10 @@ repositories {
 
 configurations.create("main")
 configurations.create("core")
-configurations.create("opt")
+configurations.create("optional")
 configurations.main.transitive = false;
 configurations.core.transitive = false;
-configurations.opt.transitive = false;
+configurations.optional.transitive = false;
 
 dependencies {
   main group: "org.apache.felix", name: "org.apache.felix.main", version: "5.6.8"
@@ -21,23 +21,39 @@ dependencies {
   core project(":openmuc-core-spi")
   core project(":openmuc-core-datamanager")
 
-  core project(":openmuc-datalogger-ascii")
-  core project(":openmuc-datalogger-slotsdb")
-
   core project(":openmuc-server-restws")
 
-  core project(":openmuc-driver-csv")
+  optional project(":openmuc-datalogger-ascii")
+  optional project(":openmuc-datalogger-slotsdb")
 
-  core project(":openmuc-webui-spi")
-  core project(":openmuc-webui-base")
-  core project(":openmuc-webui-channelconfigurator")
-  core project(":openmuc-webui-channelaccesstool")
-  core project(":openmuc-webui-userconfigurator")
-  core project(":openmuc-webui-dataexporter")
-  core project(":openmuc-webui-dataplotter")
-  core project(":openmuc-webui-mediaviewer")
+  optional project(":openmuc-driver-csv")
+  optional project(":openmuc-driver-aggregator")
+  optional project(":openmuc-driver-csv")
+  optional project(":openmuc-driver-dlms")
+  optional project(":openmuc-driver-ehz")
+  optional project(":openmuc-driver-iec60870")
+  optional project(":openmuc-driver-iec61850")
+  optional project(":openmuc-driver-iec62056p21")
+  optional project(":openmuc-driver-knx")
+  optional project(":openmuc-driver-mbus")
+  optional project(":openmuc-driver-modbus")
+  optional project(":openmuc-driver-rest")
+  optional project(":openmuc-driver-rpi-gpio")
+  optional project(":openmuc-driver-rpi-s0")
+  optional project(":openmuc-driver-rpi-w1")
+  optional project(":openmuc-driver-snmp")
+  optional project(":openmuc-driver-wmbus")
 
-  core project(":openmuc-app-simpledemo")
+  optional project(":openmuc-app-simpledemo")
+
+  optional project(":openmuc-webui-spi")
+  optional project(":openmuc-webui-base")
+  optional project(":openmuc-webui-channelconfigurator")
+  optional project(":openmuc-webui-channelaccesstool")
+  optional project(":openmuc-webui-userconfigurator")
+  optional project(":openmuc-webui-dataexporter")
+  optional project(":openmuc-webui-dataplotter")
+  optional project(":openmuc-webui-mediaviewer")
 
   //--------------------------------------------------------------------------------------------------
   // RXTX is a native interface to serial ports in java.
@@ -107,6 +123,11 @@ task syncCoreBundles(type: Sync) {
   into rootDir.getPath() + "./bundle-enabled"
 }
 
+task syncOptionalBundles(type: Sync) {
+  from configurations.optional;
+  into rootDir.getPath() + "./bundle-available"
+}
+
 task copyFelixMain(type: Copy) {
   from configurations.main;
   into rootDir.getPath() + "./bin"
@@ -116,5 +137,6 @@ task copyFelixMain(type: Copy) {
 task updateBundles {
   dependsOn cleanBundles
   dependsOn syncCoreBundles
+  dependsOn syncOptionalBundles
   dependsOn copyFelixMain
 }

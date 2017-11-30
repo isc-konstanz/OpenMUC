@@ -48,5 +48,6 @@ log
 data
 cache
 bundle/*
+conf/bundles.conf
 conf/channels.xml
 conf/shadow

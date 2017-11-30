@@ -61,7 +61,7 @@ configure(javaProjects) {
 }
 
 task update {
-  apply from: "./conf/bundle-conf.gradle"
+  apply from: "./conf/bundles.gradle"
 
   dependsOn(build)
   dependsOn(distributionProjects.install)
