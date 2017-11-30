@@ -357,6 +357,7 @@ public class ToJson {
         for (ChannelScanInfo channelScanInfo : channelScanInfoList) {
             JsonObject jso = new JsonObject();
             jso.addProperty(Const.CHANNELADDRESS, channelScanInfo.getChannelAddress());
+            jso.addProperty(Const.CHANNELSETTINGS, channelScanInfo.getChannelSettings());
             jso.addProperty(Const.VALUETYPE, channelScanInfo.getValueType().name());
             jso.addProperty(Const.VALUETYPELENGTH, channelScanInfo.getValueTypeLength());
             jso.addProperty(Const.DESCRIPTION, channelScanInfo.getDescription());
