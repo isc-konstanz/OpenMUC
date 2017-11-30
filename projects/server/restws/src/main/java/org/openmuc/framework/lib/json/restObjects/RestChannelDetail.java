@@ -25,6 +25,8 @@ import java.util.List;
 import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.ServerMapping;
 import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.ChannelState;
@@ -33,6 +35,7 @@ public class RestChannelDetail {
 
     private String id = null;
     private String channelAddress = null;
+    private String channelSettings = null;
     private String description = null;
     private String unit = null;
     private ValueType valueType = null;
@@ -51,9 +54,11 @@ public class RestChannelDetail {
 
     private String driver = null;
     private String device = null;
+    private Long timestamp = null;
+    private Object value = null;
     private Flag flag = null;
     private ChannelState state = null;
-    
+
     public String getId() {
         return id;
     }
@@ -68,6 +73,14 @@ public class RestChannelDetail {
 
     public void setChannelAddress(String channelAddress) {
         this.channelAddress = channelAddress;
+    }
+
+    public String getChannelSettings() {
+        return channelSettings;
+    }
+
+    public void setChannelSettings(String settings) {
+        channelSettings = settings;
     }
 
     public String getDescription() {
@@ -205,6 +218,21 @@ public class RestChannelDetail {
     public void setDevice(String device) {
         this.device = device;
     }
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
 
     public Flag getFlag() {
         return flag;
@@ -228,6 +256,7 @@ public class RestChannelDetail {
         rcd.setId(cc.getId());
         rcd.setDescription(cc.getDescription());
         rcd.setChannelAddress(cc.getChannelAddress());
+        rcd.setChannelSettings(cc.getChannelSettings());
         rcd.setUnit(cc.getUnit());
         rcd.setValueType(cc.getValueType());
         rcd.setValueTypeLength(cc.getValueTypeLength());
@@ -244,7 +273,60 @@ public class RestChannelDetail {
 
         rcd.setDriver(c.getDriverName());
         rcd.setDevice(c.getDeviceName());
-        rcd.setFlag(c.getLatestRecord().getFlag());
+        if (c.getLatestRecord() != null) {
+        	Record rc = c.getLatestRecord();
+        	
+        	rcd.setTimestamp(rc.getTimestamp());
+        	
+            Value value = rc.getValue();
+            Flag flag = rc.getFlag();
+            switch (cc.getValueType()) {
+            case FLOAT:
+                if (Float.isInfinite(value.asFloat())) {
+                	flag = Flag.VALUE_IS_INFINITY;
+                }
+                else if (Float.isNaN(value.asFloat())) {
+                	flag = Flag.VALUE_IS_NAN;
+                }
+            	rcd.setValue(value.asFloat());
+                break;
+            case DOUBLE:
+                if (Double.isInfinite(value.asDouble())) {
+                	flag = Flag.VALUE_IS_INFINITY;
+                }
+                else if (Double.isNaN(value.asDouble())) {
+                	flag = Flag.VALUE_IS_NAN;
+                }
+            	rcd.setValue(value.asDouble());
+                break;
+            case SHORT:
+            	rcd.setValue(value.asShort());
+                break;
+            case INTEGER:
+            	rcd.setValue(value.asInt());
+                break;
+            case LONG:
+            	rcd.setValue(value.asLong());
+                break;
+            case BYTE:
+            	rcd.setValue(value.asByte());
+                break;
+            case BOOLEAN:
+            	rcd.setValue(value.asBoolean());
+                break;
+            case BYTE_ARRAY:
+            	rcd.setValue(value.asByteArray());
+                break;
+            case STRING:
+            	rcd.setValue(value.asString());
+                break;
+            default:
+            	rcd.setValue(null);
+                break;
+            }
+        	rcd.setFlag(flag);
+        }
+        
         rcd.setState(c.getChannelState());
         return rcd;
     }

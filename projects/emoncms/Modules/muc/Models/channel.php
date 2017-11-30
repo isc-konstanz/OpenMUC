@@ -270,8 +270,9 @@ class Channel
 		$configs = array();
 		if (isset($channel)) {
 			foreach($channel as $key => $value) {
-				if (strcmp($key, 'id') !== 0 &&
-						strcmp($key, 'channelAddress')  &&
+			    if (strcmp($key, 'id') !== 0 &&
+			            strcmp($key, 'channelAddress') !== 0 &&
+			            strcmp($key, 'channelSettings') !== 0  &&
 						strcmp($key, 'loggingSettings') !== 0 &&
 						strcmp($key, 'device') !== 0 &&
 						strcmp($key, 'flag') !== 0 &&
