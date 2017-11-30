@@ -55,6 +55,7 @@ public class Const {
     public static final String WRITEABLE = "writeable";
     public static final String METADATA = "metadata";
     public static final String CHANNELADDRESS = "channelAddress";
+    public static final String CHANNELSETTINGS = "channelSettings";
     public static final String VALUETYPE = "type";
     public static final String VALUETYPELENGTH = "valueTypeLength";
     public static final String GROUPS = "groups";
