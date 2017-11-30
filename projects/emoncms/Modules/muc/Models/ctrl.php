@@ -75,7 +75,7 @@ class Controller
 		
 		// Request the muc to register the user
 		// TODO: Add ports to be configurable in settings
-		$url = 'http://'.$address.':36666/rest/users';
+		$url = 'http://'.$address.':8080/rest/users';
 		$data = array('id' => 'emoncms', 
 				'password' => $password);
 		
@@ -304,11 +304,11 @@ class Controller
 
 		// TODO: Add ports to be configurable in settings
 		if ($ctrl['type'] === 'HTTP'){
-			$url = 'http://'.$ctrl['address'].':36666/rest/'.$action;
+			$url = 'http://'.$ctrl['address'].':8080/rest/'.$action;
 			return $this->sendHttpRequest('emoncms', $ctrl['password'], $url, $type, $data);
 		}
 		elseif ($ctrl['type'] === 'HTTPS') {
-			$url = 'https://'.$ctrl['address'].':36667/rest/'.$action;
+			$url = 'https://'.$ctrl['address'].':8443/rest/'.$action;
 			return $this->sendHttpRequest('emoncms', $ctrl['password'], $url, $type, $data);
 		}
 		elseif ($ctrl['type'] === 'MQTT') {

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #Scriptname: emonmuc
 #Description: Script to start, stop, restart and reload emonmuc
 
@@ -36,8 +36,8 @@ cd "$APP_HOME"
 # If root change user to owner of this script
 if [ $UID -eq 0 ] ; then
     SCRIPT_OWNER=`stat -c "%U" bin/emonmuc`
-    echo "Executed as root, will run as owner of this script: $SCRIPT_OWNER"
     if [ "$SCRIPT_OWNER" != "root" ] ; then
+        echo "Executed as root, will run as owner of this script: $SCRIPT_OWNER"
         exec su $SCRIPT_OWNER  bin/emonmuc "$@"
     fi
 fi
@@ -67,7 +67,7 @@ fi
 
 
 start_emonmuc() {
-    if [ -f $PID_FILE ]; then
+    if [ -f $PID_FILE ] ; then
         if ps -p `cat $PID_FILE` > /dev/null
         then
             echo "emonmuc is already running. Stop it first before running emonmuc again."
@@ -77,12 +77,13 @@ start_emonmuc() {
         fi
     fi
 
-    while IFS= read -r line
-    do
-      ln -sf "$line"
-    done < "$APP_HOME"/conf/bundles.conf
+    if [ -e "$APP_HOME"/conf/bundles.conf ] ; then
+        while IFS= read -r line
+        do
+            ln -sf "$line"
+        done < "$APP_HOME"/conf/bundles.conf
+    fi
 
-    echo "Starting OpenMUC"
     echo "Starting emonmuc"
 
     if [ "$2" != "-fg" ]
@@ -179,32 +180,32 @@ enable_bundle() {
         app)
             echo "Enabling app $3."
             echo "\$APP_HOME/bundle-available/openmuc-app-$3-*.jar \$APP_HOME/bundle-enabled/openmuc-app-$3.jar" >> "$APP_HOME"/conf/bundles.conf
-            ln -sf "$APP_HOME"/bundle-available/openmuc-app-$2-*.jar "$APP_HOME"/bundle-enabled/openmuc-app-$2.jar
+            ln -sf "$APP_HOME"/bundle-available/openmuc-app-$3-*.jar "$APP_HOME"/bundle-enabled/openmuc-app-$3.jar
             ;;
         datalogger)
             echo "Enabling datalogger $3."
             echo "\$APP_HOME/bundle-available/openmuc-datalogger-$3-*.jar \$APP_HOME/bundle-enabled/openmuc-datalogger-$3.jar" >> "$APP_HOME"/conf/bundles.conf
-            ln -sf "$APP_HOME"/bundle-available/openmuc-datalogger-$2-*.jar "$APP_HOME"/bundle-enabled/openmuc-datalogger-$2.jar
+            ln -sf "$APP_HOME"/bundle-available/openmuc-datalogger-$3-*.jar "$APP_HOME"/bundle-enabled/openmuc-datalogger-$3.jar
             ;;
         driver)
             echo "Enabling driver $3."
             echo "\$APP_HOME/bundle-available/openmuc-driver-$3-*.jar \$APP_HOME/bundle-enabled/openmuc-driver-$3.jar" >> "$APP_HOME"/conf/bundles.conf
-            ln -sf "$APP_HOME"/bundle-available/openmuc-driver-$2-*.jar "$APP_HOME"/bundle-enabled/openmuc-driver-$2.jar
+            ln -sf "$APP_HOME"/bundle-available/openmuc-driver-$3-*.jar "$APP_HOME"/bundle-enabled/openmuc-driver-$3.jar
             ;;
         server)
             echo "Enabling server $3."
             echo "\$APP_HOME/bundle-available/openmuc-server-$3-*.jar \$APP_HOME/bundle-enabled/openmuc-server-$3.jar" >> "$APP_HOME"/conf/bundles.conf
-            ln -sf "$APP_HOME"/bundle-available/openmuc-server-$2-*.jar "$APP_HOME"/bundle-enabled/openmuc-server-$2.jar
+            ln -sf "$APP_HOME"/bundle-available/openmuc-server-$3-*.jar "$APP_HOME"/bundle-enabled/openmuc-server-$3.jar
             ;;
         webui)
             echo "Enabling webui bundle $3."
             echo "\$APP_HOME/bundle-available/openmuc-webui-$3-*.jar \$APP_HOME/bundle-enabled/openmuc-webui-$3.jar" >> "$APP_HOME"/conf/bundles.conf
-            ln -sf "$APP_HOME"/bundle-available/openmuc-webui-$2-*.jar "$APP_HOME"/bundle-enabled/openmuc-webui-$2.jar
+            ln -sf "$APP_HOME"/bundle-available/openmuc-webui-$3-*.jar "$APP_HOME"/bundle-enabled/openmuc-webui-$3.jar
             ;;
         *)
             echo "Enabling bundle $2."
-            echo "$3 \$APP_HOME/bundle-enabled/$2.jar" >> "$APP_HOME"/conf/bundles.conf
-            ln -sf $3 "$APP_HOME"/bundle-enabled/$2.jar
+            echo "$3 \$APP_HOME/bundle-enabled/$3.jar" >> "$APP_HOME"/conf/bundles.conf
+            ln -sf $3 "$APP_HOME"/bundle-enabled/$3.jar
             ;;
     esac
 
@@ -217,33 +218,33 @@ disable_bundle() {
     case "$2" in
         app)
             echo "Disabling app $3."
-            sed -i "/openmuc-app-$2/d" "$APP_HOME"/conf/bundles.conf
-            rm -f "$APP_HOME"/bundle-enabled/openmuc-app-$2.jar
+            sed -i "/openmuc-app-$3/d" "$APP_HOME"/conf/bundles.conf
+            rm -f "$APP_HOME"/bundle-enabled/openmuc-app-$3.jar
             ;;
         datalogger)
             echo "Disabling datalogger $3."
-            sed -i "/openmuc-datalogger-$2/d" "$APP_HOME"/conf/bundles.conf
-            rm -f "$APP_HOME"/bundle-enabled/openmuc-datalogger-$2.jar
+            sed -i "/openmuc-datalogger-$3/d" "$APP_HOME"/conf/bundles.conf
+            rm -f "$APP_HOME"/bundle-enabled/openmuc-datalogger-$3.jar
             ;;
         driver)
             echo "Disabling driver $3."
-            sed -i "/openmuc-driver-$2/d" "$APP_HOME"/conf/bundles.conf
-            rm -f "$APP_HOME"/bundle-enabled/openmuc-driver-$2.jar
+            sed -i "/openmuc-driver-$3/d" "$APP_HOME"/conf/bundles.conf
+            rm -f "$APP_HOME"/bundle-enabled/openmuc-driver-$3.jar
             ;;
         server)
             echo "Disabling server $3."
-            sed -i "/openmuc-server-$2/d" "$APP_HOME"/conf/bundles.conf
-            rm -f "$APP_HOME"/bundle-enabled/openmuc-server-$2.jar
+            sed -i "/openmuc-server-$3/d" "$APP_HOME"/conf/bundles.conf
+            rm -f "$APP_HOME"/bundle-enabled/openmuc-server-$3.jar
            ;;
         webui)
             echo "Disabling webui bundle $3."
             sed -i "/openmuc-webui-$2/d" "$APP_HOME"/conf/bundles.conf
-            rm -f "$APP_HOME"/bundle-enabled/openmuc-webui-$2.jar
+            rm -f "$APP_HOME"/bundle-enabled/openmuc-webui-$3.jar
             ;;
         *)
-            echo "Disabling bundle $2."
+            echo "Disabling bundle $3."
             sed -i "/$2/d" "$APP_HOME"/conf/bundles.conf
-            rm -f "$APP_HOME"/bundle-enabled/$2.jar
+            rm -f "$APP_HOME"/bundle-enabled/$3.jar
             ;;
     esac
 
@@ -286,3 +287,4 @@ case "$1" in
 esac
 
 exit 0
+
