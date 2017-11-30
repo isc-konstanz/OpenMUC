@@ -30,6 +30,7 @@ public class RestChannelConfigMapper {
 
         RestChannelConfig rcc = new RestChannelConfig();
         rcc.setChannelAddress(cc.getChannelAddress());
+        rcc.setChannelSettings(cc.getChannelSettings());
         rcc.setDescription(cc.getDescription());
         rcc.setDisabled(cc.isDisabled());
         rcc.setId(cc.getId());
@@ -61,6 +62,7 @@ public class RestChannelConfigMapper {
                     cc.setId(rcc.getId());
                 }
                 cc.setChannelAddress(rcc.getChannelAddress());
+                cc.setChannelSettings(rcc.getChannelSettings());
                 cc.setDescription(rcc.getDescription());
                 cc.setDisabled(rcc.isDisabled());
                 cc.setListening(rcc.isListening());

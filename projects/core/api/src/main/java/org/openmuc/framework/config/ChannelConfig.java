@@ -30,6 +30,7 @@ public interface ChannelConfig {
     static final Boolean DISABLED_DEFAULT = false;
     static final String DESCRIPTION_DEFAULT = "";
     static final String CHANNEL_ADDRESS_DEFAULT = "";
+    static final String CHANNEL_SETTINGS_DEFAULT = "";
     static final String UNIT_DEFAULT = "";
     static final ValueType VALUE_TYPE_DEFAULT = ValueType.DOUBLE;
     static final int BYTE_ARRAY_SIZE_DEFAULT = 10;
@@ -53,6 +54,10 @@ public interface ChannelConfig {
     String getChannelAddress();
 
     void setChannelAddress(String address);
+
+    String getChannelSettings();
+
+    void setChannelSettings(String settings);
 
     String getUnit();
 

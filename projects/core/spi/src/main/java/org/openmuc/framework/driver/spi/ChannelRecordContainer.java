@@ -28,6 +28,8 @@ public interface ChannelRecordContainer extends ReadRecordContainer {
 
     public String getChannelAddress();
 
+    public String getChannelSettings();
+
     public Object getChannelHandle();
 
     public void setChannelHandle(Object handle);

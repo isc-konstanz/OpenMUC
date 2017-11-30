@@ -110,6 +110,11 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
+    public String getChannelSettings() {
+        return config.channelSettings;
+    }
+
+    @Override
     public String getDescription() {
         return config.description;
     }

@@ -24,13 +24,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.openmuc.framework.config.options.Option;
 import org.openmuc.framework.config.options.OptionCollection;
 import org.openmuc.framework.config.options.OptionInfo;
 import org.openmuc.framework.config.options.OptionSyntax;
-import org.openmuc.framework.config.options.Parameters;
+import org.openmuc.framework.config.options.Preferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -39,7 +42,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class DriverInfo {
-	private final static Logger logger = LoggerFactory.getLogger(DriverInfo.class);
+    private final static Logger logger = LoggerFactory.getLogger(DriverInfo.class);
 
     private String id;
     private String name = null;
@@ -48,6 +51,7 @@ public class DriverInfo {
     private OptionInfo deviceSettings = null;
     private OptionInfo deviceScanSettings = null;
     private OptionInfo channelAddress = null;
+    private OptionInfo channelSettings = null;
     private OptionInfo channelScanSettings = null;
     
     /**
@@ -58,27 +62,27 @@ public class DriverInfo {
      */
     public DriverInfo(InputStream is) {
         if (is != null) {
-        	DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
             docBFac.setIgnoringComments(true);
             try {
-            	Document doc = docBFac.newDocumentBuilder().parse(is);
-	            Node node = doc.getDocumentElement();
-	            if (!node.getNodeName().equals("configuration")) {
-	                logger.warn("Root node in driver info options is not of type \"configuration\"");
-	                return;
-	            }
-	            
-	            NodeList childNodes = node.getChildNodes();
-	            for (int i = 0; i < childNodes.getLength(); i++) {
-	                Node childNode = childNodes.item(i);
-	                String childNodeName = childNode.getNodeName();
-	                if (childNodeName.equals("#text")) {
-	                    continue;
-	                }
-	                else if(childNodeName.equals("driver")) {
-	                	readFromDomNode(childNode);
-	                }
-	            }
+                Document doc = docBFac.newDocumentBuilder().parse(is);
+                Node node = doc.getDocumentElement();
+                if (!node.getNodeName().equals("configuration")) {
+                    logger.warn("Root node in driver info options is not of type \"configuration\"");
+                    return;
+                }
+                
+                NodeList childNodes = node.getChildNodes();
+                for (int i = 0; i < childNodes.getLength(); i++) {
+                    Node childNode = childNodes.item(i);
+                    String childNodeName = childNode.getNodeName();
+                    if (childNodeName.equals("#text")) {
+                        continue;
+                    }
+                    else if(childNodeName.equals("driver")) {
+                        readFromDomNode(childNode);
+                    }
+                }
             } catch (Exception e) {
                 logger.warn("Error while reading driver info options: {}", e.getMessage());
             }
@@ -133,23 +137,27 @@ public class DriverInfo {
         return description;
     }
 
-    public Parameters parseDeviceAddress(String addressStr) throws ArgumentSyntaxException {
+    public Preferences parseDeviceAddress(String addressStr) throws ArgumentSyntaxException {
         return deviceAddress.parse(addressStr);
     }
 
-    public Parameters parseDeviceSettings(String settingsStr) throws ArgumentSyntaxException {
+    public Preferences parseDeviceSettings(String settingsStr) throws ArgumentSyntaxException {
         return deviceSettings.parse(settingsStr);
     }
 
-    public Parameters parseDeviceScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
+    public Preferences parseDeviceScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
         return deviceScanSettings.parse(scanSettingsStr);
     }
 
-    public Parameters parseChannelAddress(String addressStr) throws ArgumentSyntaxException {
+    public Preferences parseChannelAddress(String addressStr) throws ArgumentSyntaxException {
         return channelAddress.parse(addressStr);
     }
 
-    public Parameters parseChannelScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
+    public Preferences parseChannelSettings(String settingsStr) throws ArgumentSyntaxException {
+        return channelSettings.parse(settingsStr);
+    }
+
+    public Preferences parseChannelScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
         return channelScanSettings.parse(scanSettingsStr);
     }
 
@@ -175,6 +183,10 @@ public class DriverInfo {
 
     public OptionInfo getChannelAddress() {
         return channelAddress;
+    }
+
+    public OptionInfo getChannelSettings() {
+        return channelSettings;
     }
 
     public OptionInfo getChannelScanSettings() {
@@ -211,12 +223,14 @@ public class DriverInfo {
     }
 
     private void readFromDomNode(Node node) throws ParseException {
-    	NamedNodeMap attributes = node.getAttributes();
+        NamedNodeMap attributes = node.getAttributes();
         Node nameAttribute = attributes.getNamedItem("id");
         if (nameAttribute == null) {
             throw new ParseException("Driver info has no id attribute");
         }
         this.id = nameAttribute.getTextContent();
+        
+        Map<String, Option> optionsById = new HashMap<String, Option>();
         
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
@@ -232,19 +246,22 @@ public class DriverInfo {
                 this.description = DriverInfo.trimTextFromDomNode(childNode);
             }
             else if (childNodeName.equals("deviceAddress")) {
-                this.deviceAddress = OptionCollection.getFromDomNode(childNode);
+                this.deviceAddress = OptionCollection.getFromDomNode(childNode, optionsById);
             }
             else if (childNodeName.equals("deviceSettings")) {
-                this.deviceSettings = OptionCollection.getFromDomNode(childNode);
+                this.deviceSettings = OptionCollection.getFromDomNode(childNode, optionsById);
             }
             else if (childNodeName.equals("deviceScanSettings")) {
-                this.deviceScanSettings = OptionCollection.getFromDomNode(childNode);
+                this.deviceScanSettings = OptionCollection.getFromDomNode(childNode, optionsById);
             }
             else if (childNodeName.equals("channelAddress")) {
-                this.channelAddress = OptionCollection.getFromDomNode(childNode);
+                this.channelAddress = OptionCollection.getFromDomNode(childNode, optionsById);
+            }
+            else if (childNodeName.equals("channelSettings")) {
+                this.channelSettings = OptionCollection.getFromDomNode(childNode, optionsById);
             }
             else if (childNodeName.equals("channelScanSettings")) {
-                this.channelScanSettings = OptionCollection.getFromDomNode(childNode);
+                this.channelScanSettings = OptionCollection.getFromDomNode(childNode, optionsById);
             }
             else {
                 throw new ParseException("Unknown tag found:" + childNodeName);
@@ -253,7 +270,7 @@ public class DriverInfo {
     }
     
     public static String trimTextFromDomNode(Node node) {
-    	BufferedReader reader = new BufferedReader(new StringReader(node.getTextContent()));
+        BufferedReader reader = new BufferedReader(new StringReader(node.getTextContent()));
         StringBuffer result = new StringBuffer();
         try {
             String line;
@@ -262,7 +279,7 @@ public class DriverInfo {
             
             return result.toString();
         } catch (IOException e) {
-        	logger.info("Error while trimming text: {}", e.getMessage());
+            logger.info("Error while trimming text: {}", e.getMessage());
         }
         return null;
     }

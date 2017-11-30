@@ -50,7 +50,7 @@ public class MBusDriver implements DriverService {
 
     private final Map<String, MBusSerialInterface> interfaces = new HashMap<>();
 
-    private final static DriverInfo info = new DriverInfo(MBusDriver.class.getResourceAsStream("options/mbus.xml"));
+    private final static DriverInfo info = new DriverInfo(MBusDriver.class.getResourceAsStream("options.xml"));
     // "Synopsis: <serial_port>[:<baud_rate>][:s]\nExamples for <serial_port>: /dev/ttyS0 (Unix), COM1 (Windows); s
     // forsecondary address scan.";
 

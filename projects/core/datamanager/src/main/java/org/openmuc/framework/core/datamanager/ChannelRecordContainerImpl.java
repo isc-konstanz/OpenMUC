@@ -34,10 +34,12 @@ public final class ChannelRecordContainerImpl implements ChannelRecordContainer 
     Record record = DEFAULT_RECORD;
     Object channelHandle;
     String channelAddress;
+    String channelSettings;
 
     public ChannelRecordContainerImpl(ChannelImpl channel) {
         this.channel = channel;
         channelAddress = channel.config.channelAddress;
+        channelSettings = channel.config.channelSettings;
         channelHandle = channel.handle;
     }
 
@@ -51,6 +53,11 @@ public final class ChannelRecordContainerImpl implements ChannelRecordContainer 
     @Override
     public String getChannelAddress() {
         return channelAddress;
+    }
+
+    @Override
+    public String getChannelSettings() {
+        return channelSettings;
     }
 
     @Override

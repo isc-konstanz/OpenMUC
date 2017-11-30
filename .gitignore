@@ -3,8 +3,9 @@
 *.ap_
 
 # Generated files
-bin/
 gen/
+bin/
+!/bin/
 
 # Compiled class file
 *.class
@@ -40,13 +41,13 @@ local.properties
 *.gradletasknamecache
 *.gradle/
 build/
-!/build
-/build/*
-!/build/libs-all
-/build/libs-all/*
-!/build/libs-all/openmuc-*
+/build/
 
 # Framework
-felix-cache
-channels.xml
-shadow
+log
+data
+cache
+bundle/*
+conf/bundles.conf
+conf/channels.xml
+conf/shadow
