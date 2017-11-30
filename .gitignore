@@ -3,8 +3,9 @@
 *.ap_
 
 # Generated files
-bin/
 gen/
+bin/
+!/bin/
 
 # Compiled class file
 *.class
@@ -43,6 +44,9 @@ build/
 /build/
 
 # Framework
-felix-cache
+log
+data
+cache
+bundle/*
 conf/channels.xml
 conf/shadow

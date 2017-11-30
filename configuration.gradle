@@ -61,7 +61,7 @@ configure(javaProjects) {
 }
 
 task update {
-  apply from: "./framework/conf/bundles.conf.gradle"
+  apply from: "./conf/bundle-conf.gradle"
 
   dependsOn(build)
   dependsOn(distributionProjects.install)
@@ -87,14 +87,11 @@ tasks.withType(Tar) {
       include "dependencies/**"
       include "src/**"
 
-      include "framework/felix/**"
-      include "framework/bundle/**"
-      include "framework/conf/**"
-      include "framework/bin/"
-      include "framework/log/README.txt"
-      include "framework/dependencies/**"
-      include "framework/csv-driver/**"
-      include "framework/README.txt"
+      include "bin/**"
+      include "bundle-available/**"
+      include "bundle-enabled/**"
+      include "conf/**"
+      include "lib/**"
 
       exclude "**/projects/**/bin"
       exclude "**/projects/**/build"
@@ -121,12 +118,6 @@ tasks.withType(Tar) {
     from("./build/asciidoc/html5/") {
       include "**"
     }
-    from("./build/asciidoc/pdf/") {
-      include "*.pdf"
-    }
-  }
-
-  into(project.name + "/framework/media/") {
     from("./build/asciidoc/pdf/") {
       include "*.pdf"
     }
