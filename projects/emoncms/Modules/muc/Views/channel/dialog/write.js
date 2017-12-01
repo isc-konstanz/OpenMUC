@@ -3,6 +3,7 @@ var channelWriteDialog =
 	'ctrlId': null,
 	'channelId': null,
 	'valueType': null,
+	'value': null,
 
 	'load': function(channel) {
 		
@@ -16,6 +17,12 @@ var channelWriteDialog =
 		}
 		else {
 			this.valueType = 'DOUBLE';
+		}
+		if (typeof channel.value !== 'undefined') {
+			this.value = channel.value
+		}
+		else {
+			this.value = '';
 		}
 		
 		this.draw();
@@ -32,29 +39,40 @@ var channelWriteDialog =
 	},
 
 	'clearModal':function() {
-
+		
 		$('#channel-write-label').html('Write to Channel: <b>'+this.channelId+'</b>');
-
+		
 		// Check Value Type
 		switch(this.valueType.toLowerCase()) {
 		case 'string': // STRING
-	        $('#value-float', '#channel-write-value').val('').hide();
-	        $('#value-boolean', '#channel-write-value').val('').hide();
-	        $('#value-text', '#channel-write-value').val('').show();
+			$('#value-float', '#channel-write-value').hide();
+			$('#value-boolean', '#channel-write-value').hide();
+			$('#value-text', '#channel-write-value').show();
+			$('#text-input', '#channel-write-value').val(this.value);
 			break;
 		case 'boolean': // BOOLEAN
-	        $('#value-float', '#channel-write-value').val('').hide();
-	        $('#value-boolean', '#channel-write-value').val('').show();
-	        $('#value-text', '#channel-write-value').val('').hide();
+			$('#value-float', '#channel-write-value').hide();
+			$('#value-text', '#channel-write-value').hide();
+			$('#value-boolean', '#channel-write-value').show();
+			var toggle = $('#boolean-input', '#channel-write-value');
+			if (typeof channel.value !== 'undefined' && this.value.toLowerCase() == 'true') {
+				toggle.addClass('btn-success');
+				toggle.text('True');
+			}
+			else {
+				toggle.removeClass('btn-success');
+				toggle.text('False');
+			}
 			break;
 		default: // DOUBLE
-	        $('#value-float', '#channel-write-value').val('').show();
-	        $('#value-boolean', '#channel-write-value').val('').hide();
-	        $('#value-text', '#channel-write-value').val('').hide();
+			$('#value-boolean', '#channel-write-value').hide();
+			$('#value-text', '#channel-write-value').hide();
+			$('#value-float', '#channel-write-value').show();
+			$('#value-input', '#channel-write-value').val(this.value);
 			break;
 		}
-        
-        $('#channel-write-loader').hide();
+		
+		$('#channel-write-loader').hide();
 	},
 
 	'registerEvents':function() {
