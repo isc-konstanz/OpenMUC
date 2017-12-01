@@ -483,6 +483,7 @@ var config =
 					value = $("#option-value-large-input", config.container).val();
 				}
 				config.setOption(key, group, ''+value);
+				config.groupShow[group] = true;
 				
 				config.draw();
 			}
