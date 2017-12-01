@@ -278,56 +278,61 @@ public class RestChannelDetail {
         	
         	rcd.setTimestamp(rc.getTimestamp());
         	
-            Value value = rc.getValue();
             Flag flag = rc.getFlag();
-            switch (cc.getValueType()) {
-            case FLOAT:
-                if (Float.isInfinite(value.asFloat())) {
-                	flag = Flag.VALUE_IS_INFINITY;
+            Value value = rc.getValue();
+            if (value != null) {
+                switch (c.getValueType()) {
+                case FLOAT:
+                    if (Float.isInfinite(value.asFloat())) {
+                    	flag = Flag.VALUE_IS_INFINITY;
+                    }
+                    else if (Float.isNaN(value.asFloat())) {
+                    	flag = Flag.VALUE_IS_NAN;
+                    }
+                	rcd.setValue(value.asFloat());
+                    break;
+                case DOUBLE:
+                    if (Double.isInfinite(value.asDouble())) {
+                    	flag = Flag.VALUE_IS_INFINITY;
+                    }
+                    else if (Double.isNaN(value.asDouble())) {
+                    	flag = Flag.VALUE_IS_NAN;
+                    }
+                	rcd.setValue(value.asDouble());
+                    break;
+                case SHORT:
+                	rcd.setValue(value.asShort());
+                    break;
+                case INTEGER:
+                	rcd.setValue(value.asInt());
+                    break;
+                case LONG:
+                	rcd.setValue(value.asLong());
+                    break;
+                case BYTE:
+                	rcd.setValue(value.asByte());
+                    break;
+                case BOOLEAN:
+                	rcd.setValue(value.asBoolean());
+                    break;
+                case BYTE_ARRAY:
+                	rcd.setValue(value.asByteArray());
+                    break;
+                case STRING:
+                	rcd.setValue(value.asString());
+                    break;
+                default:
+                	rcd.setValue(null);
+                    break;
                 }
-                else if (Float.isNaN(value.asFloat())) {
-                	flag = Flag.VALUE_IS_NAN;
-                }
-            	rcd.setValue(value.asFloat());
-                break;
-            case DOUBLE:
-                if (Double.isInfinite(value.asDouble())) {
-                	flag = Flag.VALUE_IS_INFINITY;
-                }
-                else if (Double.isNaN(value.asDouble())) {
-                	flag = Flag.VALUE_IS_NAN;
-                }
-            	rcd.setValue(value.asDouble());
-                break;
-            case SHORT:
-            	rcd.setValue(value.asShort());
-                break;
-            case INTEGER:
-            	rcd.setValue(value.asInt());
-                break;
-            case LONG:
-            	rcd.setValue(value.asLong());
-                break;
-            case BYTE:
-            	rcd.setValue(value.asByte());
-                break;
-            case BOOLEAN:
-            	rcd.setValue(value.asBoolean());
-                break;
-            case BYTE_ARRAY:
-            	rcd.setValue(value.asByteArray());
-                break;
-            case STRING:
-            	rcd.setValue(value.asString());
-                break;
-            default:
+            }
+            else {
             	rcd.setValue(null);
-                break;
             }
         	rcd.setFlag(flag);
         }
-        
         rcd.setState(c.getChannelState());
+        
         return rcd;
     }
 
