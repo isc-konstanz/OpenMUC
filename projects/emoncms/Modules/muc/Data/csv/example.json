@@ -1,0 +1,221 @@
+{
+    "name": "Home1",
+    "category": "Demonstration",
+    "group": "CSV",
+    "description": "Configuration for a CSV driver demonstration, creating the device channels, inputs and feeds for a virtual household.",
+    
+    "prefix": "name",
+    
+    "device": {
+        "driver": "csv",
+        "description": "Household energy consumption",
+        "address": "./lib/csv-driver/home1.csv",
+        "settings": "samplingmode=hhmmss;rewind=true"
+    },
+    
+    "channels": [
+        {
+            "name": "pv_generation_power",
+            "description": "Photovoltaic generation power",
+            "address": "pv_power_production",
+            "configs": {"unit": "kW", "samplingInterval": "5000", "loggingInterval": "5000"},
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": {"type": "ProcessArg::VALUE", "value": "1000"}
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "solar_power"}
+                },
+                {
+                    "process": "power_to_kwh",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "solar_energy"}
+                }
+            ]
+        },
+        {
+            "name": "grid_import_power",
+            "description": "Grid import power",
+            "address": "grid_power",
+            "configs": {"unit": "kW", "samplingInterval": "5000", "loggingInterval": "5000"},
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": {"type": "ProcessArg::VALUE", "value": "1000"}
+                },
+                {
+                    "process": "allowpositive",
+                    "arguments": {"type": "ProcessArg::NONE"}
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "grid_import_power"}
+                },
+                {
+                    "process": "power_to_kwh",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "grid_import_energy"}
+                }
+            ]
+        },
+        {
+            "name": "grid_export_power",
+            "description": "Grid export power",
+            "address": "grid_power",
+            "configs": {"unit": "kW", "samplingInterval": "5000", "samplingTimeOffset": "1000", "loggingInterval": "5000", "loggingTimeOffset": "1000"},
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": {"type": "ProcessArg::VALUE", "value": "-1000"}
+                },
+                {
+                    "process": "allowpositive",
+                    "arguments": {"type": "ProcessArg::NONE"}
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "grid_export_power"}
+                },
+                {
+                    "process": "power_to_kwh",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "grid_export_energy"}
+                },
+                {
+                    "process": "scale",
+                    "arguments": {"type": "ProcessArg::VALUE", "value": "-1"}
+                },
+                {
+                    "process": "add_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "solar_power"}
+                },
+                {
+                    "process": "allowpositive",
+                    "arguments": {"type": "ProcessArg::NONE"}
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "consumption_power"}
+                },
+                {
+                    "process": "power_to_kwh",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "consumption_energy"}
+                }
+            ]
+        },
+        {
+            "name": "hp_consumption",
+            "description": "Heat pump consumption",
+            "address": "hp_power_consumption",
+            "configs": {"unit": "kW", "samplingInterval": "5000", "loggingInterval": "5000"},
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": {"type": "ProcessArg::VALUE", "value": "1000"}
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "heatpump_power"}
+                },
+                {
+                    "process": "power_to_kwh",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "heatpump_energy"}
+                }
+            ]
+        },
+        {
+            "name": "ev_consumption",
+            "description": "Electric vehicle consumption",
+            "address": "ev_power_consumption",
+            "configs": {"unit": "kW", "samplingInterval": "5000", "loggingInterval": "5000"},
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": {"type": "ProcessArg::VALUE", "value": "1000"}
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "ev_power"}
+                },
+                {
+                    "process": "power_to_kwh",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "ev_energy"}
+                }
+            ]
+        }
+    ],
+
+    "feeds": [
+        {
+            "name": "solar_power",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "solar_energy",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "grid_import_power",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "grid_import_energy",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "grid_export_power",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "grid_export_energy",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "consumption_power",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "consumption_energy",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "heatpump_power",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "heatpump_energy",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "ev_power",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "ev_energy",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        }
+    ]
+}

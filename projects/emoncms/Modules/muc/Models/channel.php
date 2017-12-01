@@ -29,7 +29,7 @@ class Channel
 		$this->redis = $redis;
 		$this->log = new EmonLogger(__FILE__);
 	}
-	
+
 	public function create($userid, $ctrlid, $deviceid, $configs)
 	{
 		$userid = (int) $userid;
@@ -45,14 +45,11 @@ class Channel
 		else $description = '';
 		
 		$authorization = isset($configs['authorization']) ? $configs['authorization'] : null;
-		$settings = $this->create_settings($userid, $nodeid, $id, $authorization, null);
-		if ($description !== '') {
-			$this->input->set_fields($settings['inputid'], '{"description":"'.$description.'"}');
-		}
+		$settings = $this->create_settings($userid, $nodeid, $id, $description, $authorization, null);
 		
 		$data = array(
 				'device' => $deviceid,
-				'configs' => $this->parse_channel($id, $description, $authorization, $settings, $configs)
+				'configs' => $this->parse_channel($id, $description, $settings, $configs)
 		);
 		$response = $this->ctrl->request($ctrlid, 'channels/'.$id, 'POST', $data);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -124,7 +121,7 @@ class Channel
 		$details = (array) $response['details'];
 		return $this->get_channel($ctrl, $details);
 	}
-	
+
 	private function get_channel($ctrl, $details)
 	{
 		$address = isset($details['channelAddress']) ? $details['channelAddress'] : '';
@@ -165,7 +162,7 @@ class Channel
 		return $channel;
 	}
 
-	private function parse_channel($id, $description, $auth, $settings, $configs)
+	private function parse_channel($id, $description, $settings, $configs)
 	{
 		$channel = array(
 				'id' => $id
@@ -197,8 +194,8 @@ class Channel
 		
 		return $channel;
 	}
-	
-	private function create_settings($userid, $nodeid, $id, $auth, $authid)
+
+	private function create_settings($userid, $nodeid, $name, $description, $auth, $authid)
 	{
 		$settings = array(
 				'nodeid' => $nodeid
@@ -224,8 +221,14 @@ class Channel
 					break;
 			}
 			
-			$input = $this->get_mysql_input($userid, $nodeid, $id);
-			$settings['inputid'] = $input['id'];
+			$input = $this->get_input_by_node_name($userid, $nodeid, $name);
+			if (isset($input)) {
+				$inputid = $input['id'];
+			}
+			else {
+				$inputid = $this->create_input($userid, $nodeid, $name, $description);
+			}
+			$settings['inputid'] = $inputid;
 		}
 		
 		$settings['authorization'] = $auth;
@@ -285,48 +288,71 @@ class Channel
 		return $configs;
 	}
 	
-	private function get_input($userid, $inputid, $nodeid, $id)
+	private function create_input($userid, $nodeid, $name, $description)
+	{
+		$inputid = $this->input->create_input($userid, $nodeid, $name);
+		if ($inputid > 0 && $description !== '') {
+			$this->input->set_fields($inputid, '{"description":"'.$description.'"}');
+		}
+		
+		return $inputid;
+	}
+	
+	private function get_input_by_node_name($userid, $nodeid, $name)
+	{
+		$result = $this->mysqli->query("SELECT id, nodeid, name, description, processList FROM input WHERE nodeid = '$nodeid' AND name = '$name'");
+		if ($result->num_rows == 0) {
+			return null;
+		}
+		return (array) $result->fetch_object();
+	}
+
+	private function get_input($userid, $id)
 	{
 		if ($this->redis) {
 			// Get from redis cache
-			return $this->get_redis_input($userid, $inputid, $nodeid, $id);
+			return $this->get_redis_input($userid, $id);
 		}
 		else {
 			// Get from mysql db
-			return $this->get_mysql_input($userid, $nodeid, $id);
+			return $this->get_mysql_input($userid, $id);
 		}
 	}
-	
-	private function get_redis_input($userid, $inputid, $nodeid, $id)
+
+	private function get_redis_input($userid, $id)
 	{
-		$input = array();
-		
-		if (!$this->redis->exists("input:$inputid") && !$this->load_redis_input($inputid)) {
-			// Input does not exist and needs to be re-created
-			$inputid = $this->input->create_input($userid, $nodeid, $id);
+		if (!$this->redis->exists("input:$id") && !$this->load_input_to_redis($id)) {
+			return null;
 		}
-		
-		$input['id'] = $inputid;
-		$input['nodeid'] = $nodeid;
-		$input['description'] = $this->redis->hget("input:$inputid",'description');
-		$input['processList'] = $this->redis->hget("input:$inputid",'processList');
-		$input['time'] = $this->redis->hget("input:lastvalue:$inputid",'time');
-		
-		return $input;
+		return (array) $this->redis->hGetAll("input:$id");
 	}
-	
-	private function get_mysql_input($userid, $nodeid, $id)
+
+	private function get_mysql_input($userid, $id)
 	{
-		$result = $this->mysqli->query("SELECT id, nodeid, description, processList, time FROM input WHERE nodeid = '$nodeid' AND `name` = '$id'");
+		$result = $this->mysqli->query("SELECT id, nodeid, name, description, processList FROM input WHERE id = '$id'");
+		if ($result->num_rows == 0) {
+			return null;
+		}
+		return (array) $result->fetch_object();
+	}
+
+	private function load_redis_input($id)
+	{
+		$result = $this->mysqli->query("SELECT id, nodeid, name, description, processList FROM input WHERE id = '$id'");
 		if ($result->num_rows > 0) {
-			return (array) $result->fetch_object();
+			$row = (array) $result->fetch_object();
+			
+			$this->redis->hMSet("input:$id",array(
+					'id'=>$id,
+					'nodeid'=>$row['nodeid'],
+					'name'=>$row['name'],
+					'description'=>$row['description'],
+					'processList'=>$row['processList']
+			));
+			
+			return true;
 		}
-		else {
-			// Input does not exist and needs to be re-created
-			$inputid = $this->input->create_input($userid, $nodeid, $id);
-			$result = $this->mysqli->query("SELECT id, nodeid, description, processList, time FROM input WHERE id = '$inputid'");
-			return (array) $result->fetch_object();
-		}
+		return false;
 	}
 
 	public function update($userid, $ctrlid, $id, $configs)
@@ -345,8 +371,8 @@ class Channel
 		// TODO: check if input with name and node exists and abort if so
 		
 		$authorization = isset($configs['authorization']) ? $configs['authorization'] : null;
-		$settings = $this->create_settings($userid, $nodeid, $id, $authorization, null);
-		$channel = $this->parse_channel($newid, $description, $authorization, $settings, $configs);
+		$settings = $this->create_settings($userid, $nodeid, $id, $description, $authorization, null);
+		$channel = $this->parse_channel($newid, $description, $settings, $configs);
 		
 		$response = $this->ctrl->request($ctrlid, 'channels/'.$id.'/configs', 'PUT', array('configs' => $channel));
 		if (isset($response["success"]) && !$response["success"]) {
@@ -374,7 +400,7 @@ class Channel
 					$value = False;
 					break;
 				default:
-					return array('success'=>false, 'message'=>'Unknown boolean value :'.$value);
+					return array('success'=>false, 'message'=>'Unknown boolean value: '.$value);
 			}
 		}
 		else if (is_numeric($value)) {
@@ -430,18 +456,4 @@ class Channel
 		}
 		return $channels;
 	}
-
-    private function load_redis_input($id)
-    {
-        $result = $this->mysqli->query("SELECT id, nodeid, name, description, processList FROM input WHERE id = '$id'");
-        $row = (array) $result->fetch_object();
-
-        $this->redis->hMSet("input:$id",array(
-            'id'=>$id,
-            'nodeid'=>$row['nodeid'],
-            'name'=>$row['name'],
-            'description'=>$row['description'],
-            'processList'=>$row['processList']
-        ));
-    }
 }

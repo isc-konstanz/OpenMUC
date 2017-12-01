@@ -11,7 +11,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-class Device
+class DeviceConnection
 {
 	private $ctrl;
 	private $mysqli;
@@ -31,7 +31,7 @@ class Device
 		$ctrlid = (int) $ctrlid;
 		
 		$configs = (array) json_decode($configs);
-
+        
 		$id = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$configs['id']);
 		
 		// Check if the specified driver is registered already and add it, if necessary

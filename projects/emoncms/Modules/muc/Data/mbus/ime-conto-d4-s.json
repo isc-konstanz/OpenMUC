@@ -1,0 +1,45 @@
+{
+	"name": "CONTO D4-S",
+    "category": "Energy meters",
+    "group": "IME Messgeräte GmbH",
+	"description": "<b>Energy Meter CONTO D4-S</b>:<br>Current: 10(63)A<br>Voltage : 230(400) - 240(415)V",
+	
+    "prefix": "name",
+    
+    "device": {
+        "driver": "mbus",
+	    "description": "Energy Meter",
+	    "settings": "9600"
+    },
+    
+	"channels": [
+		{
+			"name": "energy",
+			"address": "06:fd61",
+			"configs": {"unit": "kW", "samplingInterval": "900000"},
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {"type": "ProcessArg::FEEDID", "value": "energy"}
+				},
+				{
+					"process": "kwh_to_power",
+					"arguments": {"type": "ProcessArg::FEEDID", "value": "power"}
+				}
+			]
+		}
+	],
+
+	"feeds": [
+		{
+			"name": "energy",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPTIMESERIES"
+		},
+		{
+			"name": "power",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPTIMESERIES"
+		}
+	]
+}

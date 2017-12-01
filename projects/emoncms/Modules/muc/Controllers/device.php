@@ -21,7 +21,7 @@ function device_controller($format, $action, $method)
 	$ctrl = new Controller($mysqli, $redis);
 	
 	require_once "Modules/muc/Models/device.php";
-	$device = new Device($ctrl, $mysqli, $redis);
+	$device = new DeviceConnection($ctrl, $mysqli, $redis);
 
 	if ($format == 'html')
 	{

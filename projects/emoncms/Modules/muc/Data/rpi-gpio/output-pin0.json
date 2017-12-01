@@ -1,0 +1,60 @@
+{
+    "name": "Pin 0 (GPIO0)",
+    "category": "Raspberry Pi",
+    "group": "GPIO",
+    "description": "Configuration for a Raspberry Pi pin, either as input or output.",
+    
+    "prefix": "name",
+    
+    "control": [
+        {
+            "id": "state",
+            "type": "Switch",
+            "label": "Pin state",
+            "mapping": {
+                "ON": { "channel": "pin0_state", "value": "true" },
+                "OFF": { "channel": "pin0_state", "value": "false" }
+            },
+            "input": "pin0_state"
+        }
+    ],
+    
+    "device": {
+        "driver": "rpi-gpio",
+        "description": "Raspberry Pi GPIO0",
+        "address": "pin:0",
+        "settings": "type:output"
+    },
+    
+    "options": {
+    	"Type": {
+			"key":"type",
+    		"type": "selection",
+    		"description":"Configure input/output",
+    		"select": ["input", "output"]
+    	}
+    },
+    
+    "channels": [
+        {
+            "name": "pin0_state",
+            "description": "GPIO0 Pin state",
+            "configs": {"valueType":"BOOLEAN", "samplingInterval": "2000", "loggingInterval": "2000"},
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "pin0_state"}
+                }
+            ]
+        }
+    ],
+    
+    "feeds": [
+        {
+            "name": "pin0_state",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10"
+        }
+    ]
+}
