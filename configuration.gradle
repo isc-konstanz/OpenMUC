@@ -79,7 +79,6 @@ tasks.withType(Tar) {
       include "build.gradle"
       include "configuration.gradle"
       include "LICENSE**"
-      include "doc/CHANGELOG.txt"
       include "gradle/wrapper/**"
       include "gradlew"
       include "gradlew.bat"
@@ -111,15 +110,6 @@ tasks.withType(Tar) {
 
     from("./build/") {
       include "settings.gradle"
-    }
-  }
-
-  into(project.name + "/doc/user-guide/") {
-    from("./build/asciidoc/html5/") {
-      include "**"
-    }
-    from("./build/asciidoc/pdf/") {
-      include "*.pdf"
     }
   }
 
