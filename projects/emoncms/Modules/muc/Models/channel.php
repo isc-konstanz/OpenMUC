@@ -45,7 +45,7 @@ class Channel
 		else $description = '';
 		
 		$authorization = isset($configs['authorization']) ? $configs['authorization'] : null;
-		$settings = $this->create_settings($userid, $nodeid, $id, $authorization, null);
+		$settings = $this->create_log_settings($userid, $nodeid, $id, $authorization, null);
 		if ($description !== '') {
 			$this->input->set_fields($settings['inputid'], '{"description":"'.$description.'"}');
 		}
@@ -127,11 +127,15 @@ class Channel
 	
 	private function get_channel($ctrl, $details)
 	{
-		$address = isset($details['channelAddress']) ? $details['channelAddress'] : '';
-		$settings = $this->get_settings($ctrl['userid'], $ctrl['id'], $details);
+		$time = isset($details['timestamp']) ? $details['timestamp'] : null;
+		$value = isset($details['value']) ? $details['value'] : null;
 		
-		if (isset($settings['inputid'])) {
-			$input = $this->get_input($ctrl['userid'], $settings['inputid'], $settings['nodeid'], $details['id']);
+		$address = isset($details['channelAddress']) ? $details['channelAddress'] : '';
+		$settings = isset($details['channelSettings']) ? $details['channelSettings'] : '';
+		$logsettings = $this->get_log_settings($ctrl['userid'], $ctrl['id'], $details);
+		
+		if (isset($logsettings['inputid'])) {
+			$input = $this->get_input($ctrl['userid'], $logsettings['inputid'], $logsettings['nodeid'], $details['id']);
 			$description = $input['description'];
 		}
 		elseif (isset($details['description'])) {
@@ -144,18 +148,21 @@ class Channel
 				'ctrlid'=>$ctrl['id'],
 				'driverid'=>$details['driver'],
 				'deviceid'=>$details['device'],
-				'nodeid'=>$settings['nodeid'],
+				'nodeid'=>$logsettings['nodeid'],
 				'id'=>$details['id'],
 				'description'=>$description,
+				'time'=>$time,
+				'value'=>$value,
 				'flag'=>$details['flag'],
 				'state'=>$details['state'],
-				'address'=>$address
+				'address'=>$address,
+				'settings'=>$settings
 		);
 		
 		$configs = $this->get_configs($details);
 		if (count($configs) > 0) $channel['configs'] = $configs;
 		
-		if (isset($settings['authorization'])) $channel['authorization'] = $settings['authorization'];
+		if (isset($logsettings['authorization'])) $channel['authorization'] = $logsettings['authorization'];
 		
 		if (isset($details['disabled'])) {
 			$channel['disabled'] = $details['disabled'];
@@ -165,7 +172,7 @@ class Channel
 		return $channel;
 	}
 
-	private function parse_channel($id, $description, $auth, $settings, $configs)
+	private function parse_channel($id, $description, $auth, $logsettings, $configs)
 	{
 		$channel = array(
 				'id' => $id
@@ -173,7 +180,8 @@ class Channel
 		if ($description !== '') $channel['description'] = $description;
 		
 		if (isset($configs['address'])) $channel['channelAddress'] = $configs['address'];
-		if (isset($settings)) $channel['loggingSettings'] = $this->parse_settings($settings);
+		if (isset($configs['settings'])) $channel['channelSettings'] = $configs['settings'];
+		if (isset($logsettings)) $channel['loggingSettings'] = $this->parse_log_settings($logsettings);
 		
 		if (isset($configs['configs'])) {
 			$detailconfigs = (array) $configs['configs'];
@@ -198,7 +206,7 @@ class Channel
 		return $channel;
 	}
 	
-	private function create_settings($userid, $nodeid, $id, $auth, $authid)
+	private function create_log_settings($userid, $nodeid, $id, $auth, $authid)
 	{
 		$settings = array(
 				'nodeid' => $nodeid
@@ -235,7 +243,7 @@ class Channel
 		return $settings;
 	}
 
-	private function get_settings($userid, $ctrlid, $channel)
+	private function get_log_settings($userid, $ctrlid, $channel)
 	{
 		$settings = array();
 		if (isset($channel) ) {
@@ -256,7 +264,7 @@ class Channel
 		return $settings;
 	}
 
-	private function parse_settings($settings)
+	private function parse_log_settings($settings)
 	{
 		$arr = array();
 		foreach ($settings as $key=>$value) {
@@ -270,17 +278,19 @@ class Channel
 		$configs = array();
 		if (isset($channel)) {
 			foreach($channel as $key => $value) {
-			    if (strcmp($key, 'id') !== 0 &&
-			            strcmp($key, 'channelAddress') !== 0 &&
-			            strcmp($key, 'channelSettings') !== 0  &&
-						strcmp($key, 'loggingSettings') !== 0 &&
+				if (strcmp($key, 'id') !== 0 &&
 						strcmp($key, 'device') !== 0 &&
+						strcmp($key, 'channelAddress') !== 0 &&
+						strcmp($key, 'channelSettings') !== 0  &&
+						strcmp($key, 'loggingSettings') !== 0 &&
+						strcmp($key, 'timestamp') !== 0 &&
+						strcmp($key, 'value') !== 0 &&
 						strcmp($key, 'flag') !== 0 &&
 						strcmp($key, 'state') !== 0 &&
 						strcmp($key, 'disabled') !== 0) {
-							
-							$configs[$key] = $value;
-						}
+					
+					$configs[$key] = $value;
+				}
 			}
 		}
 		return $configs;
@@ -346,7 +356,7 @@ class Channel
 		// TODO: check if input with name and node exists and abort if so
 		
 		$authorization = isset($configs['authorization']) ? $configs['authorization'] : null;
-		$settings = $this->create_settings($userid, $nodeid, $id, $authorization, null);
+		$settings = $this->create_log_settings($userid, $nodeid, $id, $authorization, null);
 		$channel = $this->parse_channel($newid, $description, $authorization, $settings, $configs);
 		
 		$response = $this->ctrl->request($ctrlid, 'channels/'.$id.'/configs', 'PUT', array('configs' => $channel));
@@ -423,6 +433,7 @@ class Channel
 			);
 			if (isset($scan['description'])) $channel['description'] = $scan['description'];
 			if (isset($scan['channelAddress'])) $channel['address'] = $scan['channelAddress'];
+			if (isset($scan['channelSettings'])) $channel['settings'] = $scan['channelSettings'];
 			if (isset($scan['type'])) $channel['configs'] = array('valueType' => $scan['type']);
 			if (isset($scan['metadata'])) $channel['metadata'] = $scan['metadata'];
 			$channel['authorization'] = 'DEFAULT';
@@ -432,17 +443,17 @@ class Channel
 		return $channels;
 	}
 
-    private function load_redis_input($id)
-    {
-        $result = $this->mysqli->query("SELECT id, nodeid, name, description, processList FROM input WHERE id = '$id'");
-        $row = (array) $result->fetch_object();
+	private function load_redis_input($id)
+	{
+		$result = $this->mysqli->query("SELECT id, nodeid, name, description, processList FROM input WHERE id = '$id'");
+		$row = (array) $result->fetch_object();
 
-        $this->redis->hMSet("input:$id",array(
-            'id'=>$id,
-            'nodeid'=>$row['nodeid'],
-            'name'=>$row['name'],
-            'description'=>$row['description'],
-            'processList'=>$row['processList']
-        ));
-    }
+		$this->redis->hMSet("input:$id",array(
+			'id'=>$id,
+			'nodeid'=>$row['nodeid'],
+			'name'=>$row['name'],
+			'description'=>$row['description'],
+			'processList'=>$row['processList']
+		));
+	}
 }

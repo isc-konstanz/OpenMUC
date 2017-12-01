@@ -30,6 +30,7 @@ var channelConfigDialog =
 
 		var groups = {
 			address: "Channel address",
+			settings: "Channel settings",
 			configs: "Configuration"
 		};
 		config.init($('#channel-config-container'), groups);
