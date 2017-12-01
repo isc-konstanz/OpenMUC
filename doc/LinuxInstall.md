@@ -95,28 +95,36 @@ as well as other systemctl commands *[start|restart|stop|status]*
 ## 2.4 Protocol drivers
 
 By default, no drivers are enabled. As a first step, a set of protocol drivers ought to be used should be selected.  
-This can be done, e.g. to enable the **CSV** driver, by its unique ID
+This can be done with their unique ID, e.g. to enable the **CSV** driver:
+
+~~~
+sudo /opt/emonmuc/bin/emonmuc enable driver csv
+~~~
+
+To disable the driver, use
 
 ~~~
 sudo /opt/emonmuc/bin/emonmuc disable driver csv
 ~~~
 
-Currently, possible drivers are:
+Several drivers can be enabled at once, while each needs to be selected individually. A list of possible drivers are:
 
-  - csv
-  - dlms
-  - ehz
-  - iec60870
-  - iec61850
-  - iec62056p21
-  - knx
-  - mbus
-  - wmbus
-  - modbus
-  - rpi-gpio
-  - rpi-s0
-  - rpi-w1
-  - snp
+ - **csv**: Read CSV files
+ - **dlms**: DLMS/COSEM
+ - **ehz**: eHz meters
+ - **iec60870**: IEC 60870-5-104
+ - **iec61850**: IEC 61850
+ - **iec62056p21**: IEC 62056-21
+ - **knx**: KNX
+ - **mbus**: M-Bus (wired)
+ - **wmbus**: M-Bus (wireless)
+ - **modbus**: Modbus TCP
+ - **rpi-gpio**: GPIO (Raspberry Pi)
+ - **rpi-s0**: S0 (Raspberry Pi)
+ - **rpi-w1**: 1-Wire (Raspberry Pi)
+ - **snmp**: SNMP
+ 
+Details about most drivers and specific information about their usage and configuration may be found in the [OpenMUC User Guide](https://www.openmuc.org/openmuc/user-guide/).
 
 
 ---------------
