@@ -29,6 +29,7 @@ public class RestChannelConfig {
 
     private String id = null;
     private String channelAddress = null;
+    private String channelSettings = null;
     private String description = null;
     private String unit = null;
     private ValueType valueType = null;
@@ -59,6 +60,14 @@ public class RestChannelConfig {
 
     public void setChannelAddress(String channelAddress) {
         this.channelAddress = channelAddress;
+    }
+
+    public String getChannelSettings() {
+        return channelSettings;
+    }
+
+    public void setChannelSettings(String settings) {
+        channelSettings = settings;
     }
 
     public String getDescription() {

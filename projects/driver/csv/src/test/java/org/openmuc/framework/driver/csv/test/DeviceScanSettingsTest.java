@@ -15,7 +15,7 @@ public class DeviceScanSettingsTest {
 
     private final static Logger logger = LoggerFactory.getLogger(DeviceScanSettingsTest.class);
 
-    final static DriverInfo info = new DriverInfo(CsvDriver.class.getResourceAsStream("options/csv.xml"));
+    final static DriverInfo info = new DriverInfo(CsvDriver.class.getResourceAsStream("options.xml"));
     
     // Tests expected to be OK
 

@@ -22,6 +22,7 @@ package org.openmuc.framework.config.options;
 
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ParseException;
@@ -81,9 +82,9 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
     }
 
     public void setKeyValuePairs(boolean enable) {
-    	if (!enable) {
+        if (!enable) {
             this.assignment = null;
-    	}
+        }
         this.keyValue = enable;
     }
 
@@ -120,9 +121,9 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
     }
 
     @Override
-    public Parameters parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
+    public Preferences parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
         if (settingsStr != null) {
-            Parameters settings = new Parameters();
+            Preferences settings = new Preferences();
             
             if (!settingsStr.trim().isEmpty()) {
                 String[] settingsArray = settingsStr.trim().split(separator);
@@ -276,7 +277,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
         return sb.toString();
     }
 
-    public static OptionCollection getFromDomNode(Node node) throws ParseException {
+    public static OptionCollection getFromDomNode(Node node, Map<String, Option> options) throws ParseException {
         
         OptionCollection collection = new OptionCollection();
         
@@ -288,12 +289,12 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                 continue;
             }
             else if (childNodeName.equals("disabled")) {
-            	String disabledString = childNode.getTextContent().toLowerCase();
+                String disabledString = childNode.getTextContent().toLowerCase();
                 if (disabledString.equals("true")) {
-                	collection.setDisabled(true);
+                    collection.setDisabled(true);
                 }
                 else if (disabledString.equals("false")) {
-                	collection.setDisabled(false);
+                    collection.setDisabled(false);
                 }
                 else {
                     throw new ParseException("Option \"disabled\" contains neither \"true\" nor \"false\"");
@@ -311,10 +312,10 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                     else if (syntaxNodeName.equals("keyValue")) {
                         String keyValString = syntaxNode.getTextContent().toLowerCase();
                         if (keyValString.equals("true")) {
-                        	collection.setKeyValuePairs(true);
+                            collection.setKeyValuePairs(true);
                         }
                         else if (keyValString.equals("false")) {
-                        	collection.setKeyValuePairs(false);
+                            collection.setKeyValuePairs(false);
                         }
                         else {
                             throw new ParseException("Syntax \"keyValue\" contains neither \"true\" nor \"false\"");
@@ -335,7 +336,24 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                 }
             }
             else if (childNodeName.equals("option")) {
-                collection.add(Option.getFromDomNode(childNode));
+                NamedNodeMap attributes = childNode.getAttributes();
+                Node nameAttribute = attributes.getNamedItem("id");
+                if (nameAttribute == null) {
+                    throw new ParseException("Option has no id attribute");
+                }
+                String id = nameAttribute.getTextContent();
+                
+                Option option;
+                if (options != null && options.containsKey(id)) {
+                    option = options.get(id);
+                }
+                else {
+                    option = Option.getFromDomNode(id, childNode);
+                    if (options != null) {
+                        options.put(id, option);
+                    }
+                }
+                collection.add(option);
             }
             else {
                 throw new ParseException("Unknown tag found:" + childNodeName);
@@ -343,6 +361,10 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
         }
         
         return collection;
+    }
+
+    public static OptionCollection getFromDomNode(Node node) throws ParseException {
+        return getFromDomNode(node, null);
     }
 
 }

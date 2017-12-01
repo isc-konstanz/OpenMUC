@@ -1,0 +1,31 @@
+/*
+ * Copyright 2016 ISC Konstanz
+ *
+ * This file is part of emonjava.
+ * For more information visit https://bitbucket.org/isc-konstanz/emonjava
+ *
+ * Emonjava is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Emonjava is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with emonjava.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+Dependencies
+------------
+
+Information about the licenses of open source dependencies packaged
+with emonjava can be found in the folder named "dependencies" inside the
+distribution.
+
+You may request the source code of the dependencies by sending a mail
+through the bitbucket project website.

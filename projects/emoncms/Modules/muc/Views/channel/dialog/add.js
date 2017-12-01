@@ -48,6 +48,7 @@ var channelAddDialog =
 
 		var groups = {
 			address: "Channel address",
+			settings: "Channel settings",
 			configs: "Configuration"
 		};
 		config.init($('#channel-add-container'), groups);

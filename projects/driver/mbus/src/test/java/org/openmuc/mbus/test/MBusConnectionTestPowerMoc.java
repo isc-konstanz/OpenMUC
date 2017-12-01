@@ -124,6 +124,12 @@ public class MBusConnectionTestPowerMoc {
                 return channel;
             }
 
+			@Override
+			public String getChannelSettings() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
             @Override
             public ChannelRecordContainer copy() {
                 // TODO Auto-generated method stub

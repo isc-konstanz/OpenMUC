@@ -281,6 +281,7 @@ public class FromJson {
             while (jseIterator.hasNext()) {
                 JsonObject jso = jseIterator.next().getAsJsonObject();
                 String channelAddress = getString(jso.get(Const.CHANNELADDRESS));
+                String channelSettings = getString(jso.get(Const.CHANNELSETTINGS));
                 ValueType valueType = ValueType.valueOf(getString(jso.get(Const.VALUETYPE)));
                 int valueTypeLength = getInt(jso.get(Const.VALUETYPELENGTH));
                 String description = getString(jso.get(Const.DESCRIPTION));
@@ -288,8 +289,8 @@ public class FromJson {
                 boolean writeable = getBoolean(jso.get(Const.WRITEABLE));
                 String metadata = getString(jso.get(Const.METADATA));
 
-                returnValue.add(new ChannelScanInfo(channelAddress, description, valueType, valueTypeLength, readable,
-                        writeable, metadata));
+                returnValue.add(new ChannelScanInfo(channelAddress, channelSettings, description, valueType, valueTypeLength, 
+                		readable, writeable, metadata));
             }
         }
         else {

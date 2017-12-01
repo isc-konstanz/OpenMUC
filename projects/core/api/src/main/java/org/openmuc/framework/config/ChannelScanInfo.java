@@ -26,6 +26,7 @@ import org.openmuc.framework.data.ValueType;
 public class ChannelScanInfo {
 
     private final String channelAddress;
+    private final String channelSettings;
     private final String description;
     private final ValueType valueType;
     private final Integer valueTypeLength;
@@ -34,20 +35,35 @@ public class ChannelScanInfo {
     private final String metaData;
 
     public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength) {
-        this(channelAddress, description, valueType, valueTypeLength, true, true);
+        this(channelAddress, "", description, valueType, valueTypeLength, true, true);
+    }
+
+    public ChannelScanInfo(String channelAddress, String channelSettings, String description, ValueType valueType, Integer valueTypeLength) {
+        this(channelAddress, channelSettings, description, valueType, valueTypeLength, true, true);
     }
 
     public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength,
             Boolean readable, Boolean writable) {
-        this(channelAddress, description, valueType, valueTypeLength, readable, writable, "");
+        this(channelAddress, "", description, valueType, valueTypeLength, readable, writable, "");
+    }
+
+    public ChannelScanInfo(String channelAddress, String channelSettings, String description, ValueType valueType, Integer valueTypeLength,
+            Boolean readable, Boolean writable) {
+        this(channelAddress, channelSettings, description, valueType, valueTypeLength, readable, writable, "");
     }
 
     public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength,
+            Boolean readable, Boolean writable, String metaData) {
+        this(channelAddress, "", description, valueType, valueTypeLength, readable, writable, metaData);
+    }
+
+    public ChannelScanInfo(String channelAddress, String channelSettings, String description, ValueType valueType, Integer valueTypeLength,
             Boolean readable, Boolean writable, String metaData) {
         if (channelAddress == null || channelAddress.equals("")) {
             throw new IllegalArgumentException("Channel Address may not be empty.");
         }
         this.channelAddress = channelAddress;
+        this.channelSettings = channelSettings;
         this.description = description;
         this.valueType = valueType;
         this.valueTypeLength = valueTypeLength;
@@ -58,6 +74,10 @@ public class ChannelScanInfo {
 
     public String getChannelAddress() {
         return channelAddress;
+    }
+
+    public String getChannelSettings() {
+        return channelSettings;
     }
 
     public String getDescription() {

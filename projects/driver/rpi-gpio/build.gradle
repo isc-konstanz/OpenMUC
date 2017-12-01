@@ -1,0 +1,37 @@
+configurations.create('embed')
+
+def pi4jversion = '1.2-SNAPSHOT'
+
+repositories {
+   flatDir {
+       dirs '/dependencies/pi4j', rootDir.getPath() + '/dependencies/pi4j'
+   }
+}
+
+dependencies {
+  compile project(':openmuc-core-spi')
+
+  compile group: 'com.pi4j', name: 'pi4j-core', version: pi4jversion
+  embed group: 'com.pi4j', name: 'pi4j-core', version: pi4jversion
+
+  compile group: 'com.pi4j', name: 'pi4j-device', version: pi4jversion
+  embed group: 'com.pi4j', name: 'pi4j-device', version: pi4jversion
+
+  compile group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jversion
+  embed group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jversion
+}
+
+jar {
+  manifest {
+    name = "OpenMUC Driver - Raspberry Pi GPIO"
+    instruction 'Bundle-ClassPath', '.,lib/pi4j-core.jar,lib/pi4j-device.jar,lib/pi4j-gpio-extension.jar'
+    instruction 'Import-Package', '!com.pi4j.*,*' + jarDefaultImportPackageVersion
+    instruction 'Export-Package', ''
+  }
+}
+
+jar {
+  into('lib') {
+    from configurations.embed
+  }
+}

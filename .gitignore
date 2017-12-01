@@ -3,8 +3,9 @@
 *.ap_
 
 # Generated files
-bin/
 gen/
+bin/
+!/bin/
 
 # Compiled class file
 *.class
@@ -40,13 +41,23 @@ local.properties
 *.gradletasknamecache
 *.gradle/
 build/
-!/build
-/build/*
-!/build/libs-all
-/build/libs-all/*
-!/build/libs-all/openmuc-*
+/build/
 
 # Framework
-felix-cache
-channels.xml
-shadow
+log
+data
+cache
+conf/bundles.conf
+conf/channels.xml
+conf/shadow
+bundle-enabled/*
+!bundle-enabled/jrxtx*
+!bundle-enabled/logback*
+!bundle-enabled/openmuc-core-api*
+!bundle-enabled/openmuc-core-datamanager*
+!bundle-enabled/openmuc-core-spi*
+!bundle-enabled/openmuc-datalogger-emoncms*
+!bundle-enabled/openmuc-server-restws*
+!bundle-enabled/org.apache.felix*
+!bundle-enabled/pi4j*
+!bundle-enabled/slf4j*

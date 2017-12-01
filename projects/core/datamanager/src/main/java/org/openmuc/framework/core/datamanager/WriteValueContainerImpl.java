@@ -34,10 +34,12 @@ public final class WriteValueContainerImpl implements WriteValueContainer, Chann
     private Flag flag = Flag.DRIVER_ERROR_UNSPECIFIED;
     Object channelHandle;
     String channelAddress;
+    String channelSettings;
 
     public WriteValueContainerImpl(ChannelImpl channel) {
         this.channel = channel;
         channelAddress = channel.config.channelAddress;
+        channelSettings = channel.config.channelSettings;
         channelHandle = channel.handle;
     }
 
@@ -64,6 +66,11 @@ public final class WriteValueContainerImpl implements WriteValueContainer, Chann
     @Override
     public String getChannelAddress() {
         return channelAddress;
+    }
+
+    @Override
+    public String getChannelSettings() {
+        return channelSettings;
     }
 
     @Override

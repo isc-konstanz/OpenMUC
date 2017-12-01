@@ -29,6 +29,12 @@ public class CsvChannelRecordContainer implements ChannelRecordContainer {
         return this.channelAddress;
     }
 
+	@Override
+	public String getChannelSettings() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
     @Override
     public Object getChannelHandle() {
         // TODO Auto-generated method stub
