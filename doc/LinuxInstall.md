@@ -1,4 +1,4 @@
-![emonmuc header](https://github.com/isc-konstanz/emonmuc/blob/master/docs/img/emonmuc-logo.png)
+![emonmuc header](https://github.com/isc-konstanz/emonmuc/blob/master/doc/img/emonmuc-logo.png)
 
 This document describes how to install emonmuc (**e**nergy **mon**itoring **m**ulty **u**tility **c**ommunication), an open-source protocoll driver project to enable the communication with a variety of metering or other devices, developed based on the [OpenMUC](https://www.openmuc.org/) project.
 
@@ -46,7 +46,7 @@ sudo nano /opt/emonmuc/conf/system.properties
    >     org.openmuc.framework.datalogger.emoncms.url = https://emoncms.org/
 
 - A default authentication for emoncms may be configured. While each data channel can be configured to have its own credentials, it may be preferable to group them with the same authentication, as this improves bulk posting and hence reduced traffic.  
-To do this, uncomment the lines related to authorization and authentication, and enter the users Write Api Key  
+To do this, **uncomment the lines** related to authorization and authentication, and enter the users Write Api Key  
    >     # API Key credentials to authorize communication with the emoncms webserver
    >     org.openmuc.framework.datalogger.emoncms.authorization = WRITE
    >     org.openmuc.framework.datalogger.emoncms.authentication = YOUR_API_KEY
@@ -55,12 +55,12 @@ To do this, uncomment the lines related to authorization and authentication, and
    >     # Set the maximum amount of IPC threads running synchronously. Default is 1
    >     org.openmuc.framework.datalogger.emoncms.maxThreads = 10
 
-## 2.2 Emoncms modules
+## 2.2 Emoncms module
 
-The directory *modules* contains 4 necessary emoncms modules, needed to be linked to the emoncms dir
+Inside the projects direcotry is the designated emoncms module, needed to be linked to the emoncms dir
 ~~~
-sudo chown www-data:root -R /opt/emonmuc/modules
-sudo ln -s /opt/emonmuc/modules/muc /var/www/emoncms/Modules/muc
+sudo chown www-data:root -R /opt/emonmuc/projects/emoncms/Modules
+sudo ln -s /opt/emonmuc/projects/emoncms/Modules/muc /var/www/emoncms/Modules/muc
 ~~~
 
 Then, check for Database upates in the Administration pane for the necessary tables to be created.
@@ -71,7 +71,7 @@ Then, check for Database upates in the Administration pane for the necessary tab
 To provide the comfortable starting, stopping or automatic execution at boot, a systemd service is provided to install:
 ~~~
 sudo chmod +x /opt/emonmuc/bin/emonmuc
-sudo cp /opt/emonmuc/scripts/emonmuc.service /lib/systemd/system/emonmuc.service
+sudo cp /opt/emonmuc/bin/emonmuc.service /lib/systemd/system/emonmuc.service
 sudo systemctl enable emonmuc.service
 ~~~
 
@@ -90,6 +90,33 @@ The application will now start at boot and can be started with
 sudo systemctl start emonmuc
 ~~~
 as well as other systemctl commands *[start|restart|stop|status]*
+
+
+## 2.4 Protocol drivers
+
+By default, no drivers are enabled. As a first step, a set of protocol drivers ought to be used should be selected.  
+This can be done, e.g. to enable the **CSV** driver, by its unique ID
+
+~~~
+sudo /opt/emonmuc/bin/emonmuc disable driver csv
+~~~
+
+Currently, possible drivers are:
+
+  - csv
+  - dlms
+  - ehz
+  - iec60870
+  - iec61850
+  - iec62056p21
+  - knx
+  - mbus
+  - wmbus
+  - modbus
+  - rpi-gpio
+  - rpi-s0
+  - rpi-w1
+  - snp
 
 
 ---------------
