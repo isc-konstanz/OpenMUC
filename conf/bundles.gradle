@@ -110,18 +110,18 @@ dependencies {
 }
 
 task cleanBundles(type: Delete) {
-  delete fileTree(dir: "./bundle-available")
-  delete fileTree(dir: "./bundle-enabled")
+  delete fileTree(dir: "./bundles-available")
+  delete fileTree(dir: "./bundles-enabled")
 }
 
 task syncCoreBundles(type: Sync) {
   from configurations.core;
-  into rootDir.getPath() + "./bundle-enabled"
+  into rootDir.getPath() + "./bundles-enabled"
 }
 
 task syncOptionalBundles(type: Sync) {
   from configurations.optional;
-  into rootDir.getPath() + "./bundle-available"
+  into rootDir.getPath() + "./bundles-available"
 }
 
 task copyFelixMain(type: Copy) {
