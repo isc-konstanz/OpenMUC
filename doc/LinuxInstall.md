@@ -85,7 +85,7 @@ After a reboot, several basic commands to the framework are available:
 If desired, the framework may be started in the foreground, by passing the option **-fg**
 ~~~
 emonmuc start -fg
-~~
+~~~
 
 Further, the script allows the configuration of apps, drivers, or other bundles, registered to the framework.
 
