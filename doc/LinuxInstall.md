@@ -19,11 +19,10 @@ The project provides detailed installation guides for several platforms. Recomme
 
 # 2 Install emonmuc
 
-First, create some necessary directories for the installation and data 
+First, create some necessary directories for the installation and data and set the right permissions
 ~~~
-sudo mkdir /var/lib/emonmuc
-sudo mkdir /var/log/emonmuc
-sudo mkdir /var/run/emonmuc
+sudo mkdir /var/{lib,log,run}/emonmuc
+sudo chown ctrl:root /var/{lib,log,run}/emonmuc
 ~~~
 
 Now, the emonmuc application can be installed either via git or simply copied in a subdirection */opt/emonmuc*.
@@ -31,6 +30,7 @@ Now, the emonmuc application can be installed either via git or simply copied in
 Git is a source code management and revision control system but at this stage it is just used to download and update the emoncms application. After downloading, the right permissions need to be set:
 ~~~
 sudo git clone -b stable https://github.com/isc-konstanz/emonmuc.git /opt/emonmuc
+sudo chown ctrl:root -R /opt/emonmuc
 ~~~
 
 
@@ -38,7 +38,7 @@ sudo git clone -b stable https://github.com/isc-konstanz/emonmuc.git /opt/emonmu
 
 For some configurations, the settings may be necessary to be adjusted. All settings can be found in the *system.properties*
 ~~~
-sudo nano /opt/emonmuc/conf/system.properties
+nano /opt/emonmuc/conf/system.properties
 ~~~
 
 - The web servers location may be updated. By default, it is commented and points to an emoncms sever at localhost, e.g. VPN addresses or the remote emoncms.org server can be a valid selection though.
@@ -66,45 +66,41 @@ sudo ln -s /opt/emonmuc/projects/emoncms/Modules/muc /var/www/emoncms/Modules/mu
 Then, check for Database upates in the Administration pane for the necessary tables to be created.
 
 
-## 2.3 System service
+## 2.3 System script
 
-To provide the comfortable starting, stopping or automatic execution at boot, a systemd service is provided to install:
+Emonmuc provides a run-script, allowing the framework to be configured, started and stopped comfortably.
+
+Configure this script to be part of the the users environment variable *path* in `~/.bashrc`:
 ~~~
-sudo chmod +x /opt/emonmuc/bin/emonmuc
-sudo cp /opt/emonmuc/bin/emonmuc.service /lib/systemd/system/emonmuc.service
-sudo systemctl enable emonmuc.service
+export PATH=$PATH:/opt/emonmuc/bin
 ~~~
 
-With `/var/run/emonmuc` being located in a tmpfs and not created automatically at boot, this needs to be taken care of, for the service to work properly.
-This will be handled by systemds' service **tmpfiles**, which can be configured in `/usr/lib/tmpfiles.d/`:
+After a reboot, several basic commands to the framework are available:
 
-Create the configuration file *emonmuc.conf*
-~~~
-sudo nano /usr/lib/tmpfiles.d/emonmuc.conf
-~~~
-and add the line
->     d /var/run/emonmuc 0755 - - -
+ - Start the framework: `emonmuc start`
+ - Stop the framework: `emonmuc stop`
+ - Restart the framework: `emonmuc restart`
+ - Reload configuration: `emonmuc reload`
 
-The application will now start at boot and can be started with
+If desired, the framework may be started in the foreground, by passing the option **-fg**
 ~~~
-sudo systemctl start emonmuc
-~~~
-as well as other systemctl commands *[start|restart|stop|status]*
+emonmuc start -fg
+~~
+
+Further, the script allows the configuration of apps, drivers, or other bundles, registered to the framework.
 
 
-## 2.4 Protocol drivers
+### 2.3.1 Protocol drivers
 
 By default, no drivers are enabled. As a first step, a set of protocol drivers ought to be used should be selected.  
 This can be done with their unique ID, e.g. to enable the **CSV** driver:
-
 ~~~
-sudo /opt/emonmuc/bin/emonmuc enable driver csv
+emonmuc enable driver csv
 ~~~
 
 To disable the driver, use
-
 ~~~
-sudo /opt/emonmuc/bin/emonmuc disable driver csv
+emonmuc disable driver csv
 ~~~
 
 Several drivers can be enabled at once, while each needs to be selected individually. A list of possible drivers are:
@@ -125,6 +121,32 @@ Several drivers can be enabled at once, while each needs to be selected individu
  - **snmp**: SNMP
  
 Details about most drivers and specific information about their usage and configuration may be found in the [OpenMUC User Guide](https://www.openmuc.org/openmuc/user-guide/).
+
+
+## 2.4 System service
+
+To provide the comfortable starting, stopping or automatic execution at boot, a systemd service is provided to install:
+~~~
+sudo chmod ugo+x /opt/emonmuc/bin/emonmuc
+sudo cp /opt/emonmuc/bin/emonmuc.service /lib/systemd/system/emonmuc.service
+sudo systemctl enable emonmuc.service
+~~~
+
+With `/var/run/emonmuc` being located in a tmpfs and not created automatically at boot, this needs to be taken care of, for the service to work properly.
+This will be handled by systemds' service **tmpfiles**, which can be configured in `/usr/lib/tmpfiles.d/`:
+
+Create the configuration file *emonmuc.conf*
+~~~
+sudo nano /usr/lib/tmpfiles.d/emonmuc.conf
+~~~
+and add the line
+>     d /var/run/emonmuc 0755 ctrl root -
+
+The application will now start at boot and can be started with
+~~~
+sudo systemctl start emonmuc
+~~~
+as well as other systemctl commands *[start|restart|stop|status]*
 
 
 ---------------
