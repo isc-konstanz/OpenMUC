@@ -45,7 +45,6 @@ build/
 
 # Framework
 log
-data
 cache
 conf/bundles.conf
 conf/channels.xml

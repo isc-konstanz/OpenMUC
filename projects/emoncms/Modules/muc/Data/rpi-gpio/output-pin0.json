@@ -26,15 +26,28 @@
         "settings": "type:output"
     },
     
-    "options": {
-    	"Type": {
+    "options": [
+    	{
 			"key":"type",
+			"name":"Type",
+			"syntax": "deviceSettings",
     		"type": "selection",
     		"description":"Configure input/output",
-    		"select": ["input", "output"]
+    		"select": [
+	    		{"name": "Input", "value": "input"},
+	    		{"name": "Output", "value": "output"}
+    		]
     	}
-    },
+    ],
     
+    "syntax": {
+     	"deviceSettings": {
+     		"keyValue": true,
+     		"assignment": ":",
+     		"separator": ","
+     	}
+     },
+
     "channels": [
         {
             "name": "pin0_state",
