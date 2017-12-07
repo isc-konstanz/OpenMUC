@@ -84,7 +84,19 @@ public class W1Connection implements Connection {
                     Double temperature = sensor.getTemperature(prefs.getUnit());
                     
                     if (temperature != null) {
-                        value = new DoubleValue(temperature);
+                        // Skip temperature readings of exactly 85, as they are commonly missreadings
+                    	if (temperature < 85) {
+                            value = new DoubleValue(temperature);
+                    	}
+                    	else {
+                    		// Don't skip the reading, if the latest value read in the last 10 minutes was also above 80
+                        	Record lastRecord = container.getChannel().getLatestRecord();
+                        	if (lastRecord.getFlag() == Flag.VALID) {
+                        		if (lastRecord.getValue().asDouble() >= 80 && samplingTime - lastRecord.getTimestamp() <= 600000) {
+                                    value = new DoubleValue(temperature);
+                        		}
+                        	}
+                    	}
                     }
                     break;
                 default:
