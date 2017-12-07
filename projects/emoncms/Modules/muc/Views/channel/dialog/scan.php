@@ -7,7 +7,7 @@
 <style>
 	#channel-scan-results-table td:nth-of-type(1) { width:14px; text-align: center; }
 	#channel-scan-results-table td:nth-of-type(2) { width:25%; }
-	#channel-scan-results-table td:nth-of-type(4) { width:5%; }
+	#channel-scan-results-table td:nth-of-type(5) { width:5%; }
 </style>
 
 <div id="channel-modal-scan" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="channel-scan-label" aria-hidden="true" data-backdrop="static">
@@ -29,6 +29,7 @@
 				<th colspan="1"></th>
 				<th><?php echo _('Description'); ?></th>
 				<th><?php echo _('Address'); ?></th>
+				<th><?php echo _('Settings'); ?></th>
 				<th><?php echo _('Type'); ?></th>
 				<th><?php echo _('Meta'); ?></th>
 			</tr>
