@@ -46,6 +46,7 @@ import com.pi4j.io.gpio.GpioPinDigital;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RCMPin;
 import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.wiringpi.GpioUtil;
 
 @Component
 public class GpioDriver implements DriverService, GpioConnectionCallbacks {
@@ -60,6 +61,15 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
 
     public GpioDriver() {
         pins = Collections.synchronizedList(new ArrayList<GpioPin>());
+        
+        // Check if privileged access is required on the running system and enable non-
+        // privileged GPIO access if not.
+        if (!GpioUtil.isPrivilegedAccessRequired()) {
+            GpioUtil.enableNonPrivilegedAccess();
+        }
+        else {
+        	logger.warn("Privileged access is required on this system to access GPIO pins");
+        }
         gpio = GpioFactory.getInstance();
     }
 

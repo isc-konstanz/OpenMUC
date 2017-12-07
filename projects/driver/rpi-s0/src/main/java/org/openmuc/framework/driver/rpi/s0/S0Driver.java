@@ -47,6 +47,7 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.RCMPin;
 import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.wiringpi.GpioUtil;
 
 
 @Component
@@ -62,6 +63,15 @@ public class S0Driver implements DriverService, S0ConnectionCallbacks {
 
     public S0Driver() {
         pins = Collections.synchronizedList(new ArrayList<GpioPin>());
+
+        // Check if privileged access is required on the running system and enable non-
+        // privileged GPIO access if not.
+        if (!GpioUtil.isPrivilegedAccessRequired()) {
+            GpioUtil.enableNonPrivilegedAccess();
+        }
+        else {
+        	logger.warn("Privileged access is required on this system to access GPIO pins");
+        }
         gpio = GpioFactory.getInstance();
     }
 
