@@ -22,7 +22,7 @@ package org.openmuc.framework.driver.mbus;
 
 import java.util.Map;
 
-import org.openmuc.jmbus.MBusSap;
+import org.openmuc.jmbus.MBusConnection;
 
 /**
  * Class representing an MBus Connection.<br>
@@ -32,20 +32,20 @@ import org.openmuc.jmbus.MBusSap;
 public class MBusSerialInterface {
 
     private int connectionCounter = 0;
-    private final MBusSap mBusSap;
+    private final MBusConnection connection;
     private boolean open = true;
     private final String serialPortName;
     private final Map<String, MBusSerialInterface> interfaces;
 
-    public MBusSerialInterface(MBusSap mBusSap, String serialPortName, Map<String, MBusSerialInterface> interfaces) {
-        this.mBusSap = mBusSap;
+    public MBusSerialInterface(MBusConnection connection, String serialPortName, Map<String, MBusSerialInterface> interfaces) {
+        this.connection = connection;
         this.serialPortName = serialPortName;
         this.interfaces = interfaces;
         interfaces.put(serialPortName, this);
     }
 
-    public MBusSap getMBusSap() {
-        return mBusSap;
+    public MBusConnection getConnection() {
+        return connection;
     }
 
     public void increaseConnectionCounter() {
@@ -69,7 +69,7 @@ public class MBusSerialInterface {
 
     public void close() {
         synchronized (interfaces) {
-            mBusSap.close();
+            connection.close();
             open = false;
             interfaces.remove(serialPortName);
         }
