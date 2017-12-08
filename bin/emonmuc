@@ -81,7 +81,7 @@ start_emonmuc() {
     if [ -e "$APP_HOME"/conf/bundles.conf ] ; then
         while IFS= read -r line
         do
-            ln -sf "$line" 2>/dev/null
+            ln -sf $line 2>/dev/null
         done < "$APP_HOME"/conf/bundles.conf
     fi
 
@@ -180,8 +180,8 @@ enable_bundle() {
     case "$2" in
         app)
             echo "Enabling app $3."
-            echo "$APP_HOME/bundle-available/openmuc-app-$3-*.jar $APP_HOME/bundle-enabled/openmuc-app-$3.jar" >> "$APP_HOME"/conf/bundles.conf
-            ln -sf "$APP_HOME"/bundle-available/openmuc-app-$3-*.jar "$APP_HOME"/bundle-enabled/openmuc-app-$3.jar
+            echo "$APP_HOME/bundles-available/openmuc-app-$3-*.jar $APP_HOME/bundles-enabled/openmuc-app-$3.jar" >> "$APP_HOME"/conf/bundles.conf
+            ln -sf "$APP_HOME"/bundles-available/openmuc-app-$3-*.jar "$APP_HOME"/bundles-enabled/openmuc-app-$3.jar
             ;;
         datalogger)
             echo "Enabling datalogger $3."
