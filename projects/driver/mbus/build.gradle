@@ -1,22 +1,14 @@
 
 configurations.create("embed")
 
-def jmbusversion = "2.2.4"
-
-repositories {
-	mavenCentral()
-	flatDir {
-		dirs 'dependencies/jmbus'
-	}
-}
+def jmbusversion = "3.0.1"
 
 dependencies {
-
+  compile project(":openmuc-core-spi")
+  
   compile group: "org.openmuc", name: "jmbus", version: jmbusversion
   embed   group: "org.openmuc", name: "jmbus", version: jmbusversion
 
-  compile project(":openmuc-core-spi")
-  
   testCompile "org.mockito:mockito-core:1.10.19"
   testCompile "org.powermock:powermock-api-mockito:1.6.2" 
   testCompile "org.powermock:powermock-module-junit4:1.6.2" 
@@ -27,7 +19,7 @@ jar {
   manifest {
     name = "OpenMUC Driver - M-Bus"
     instruction "Bundle-ClassPath", ".,lib/jmbus-" + jmbusversion + ".jar"
-    instruction "Import-Package", "!org.openmuc.jmbus*,gnu.io,*" + jarDefaultImportPackageVersion
+    instruction "Import-Package", "!org.openmuc.jmbus*,org.openmuc.jrxtx,gnu.io;resolution:=optional,*" + jarDefaultImportPackageVersion
     instruction "Export-Package", ""
   }
 }

@@ -31,6 +31,7 @@ public class RestChannelInfo {
     private String description = null;
 
     private RestOptionCollection address = null;
+    private RestOptionCollection settings = null;
     private RestOptionCollection scanSettings = null;
     private RestOptionCollection configs = null;
 
@@ -48,6 +49,14 @@ public class RestChannelInfo {
 
     public void setAddress(RestOptionCollection address) {
         this.address = address;
+    }
+    
+    public RestOptionCollection getSettings() {
+        return settings;
+    }
+
+    public void setSettings(RestOptionCollection settings) {
+        this.settings = settings;
     }
 
     public RestOptionCollection getScanSettings() {
@@ -69,12 +78,14 @@ public class RestChannelInfo {
     public static RestChannelInfo getRestChannelInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
         RestChannelInfo restChannelInfo = new RestChannelInfo();
-        restChannelInfo.setDescription(driverInfo.getDescription());
         if (driverInfo.getChannelAddress() instanceof OptionCollection) {
             restChannelInfo.setAddress(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelAddress()));
         }
         else if (driverInfo.getChannelAddress() != null) {
             restChannelInfo.setAddress(RestOptionCollection.parseOptionCollection(RestOptionCollection.ADDRESS, driverInfo.getChannelAddress().getSyntax()));
+        }
+        if (driverInfo.getChannelSettings() instanceof OptionCollection) {
+            restChannelInfo.setSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelSettings()));
         }
         if (driverInfo.getChannelScanSettings() instanceof OptionCollection) {
             restChannelInfo.setScanSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getChannelScanSettings()));

@@ -29,7 +29,7 @@
         <mandatory>true</mandatory>
         <type>STRING</type>
         <selection>
-          <item value="TEMPERATURE_SENSOR">Temperature sensor</item>
+          <item value="TemperatureSensor">Temperature sensor</item>
         </selection>
       </option>
     </deviceSettings>
@@ -53,6 +53,6 @@
       </option>
     </channelSettings>
     
-    <channelScanSettings><disable>true</disable></channelScanSettings>
+    <channelScanSettings><disabled>true</disabled></channelScanSettings>
   </driver>
 </configuration>
