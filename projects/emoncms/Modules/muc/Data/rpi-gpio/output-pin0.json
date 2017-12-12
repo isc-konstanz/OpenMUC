@@ -36,7 +36,8 @@
     		"select": [
 	    		{"name": "Input", "value": "input"},
 	    		{"name": "Output", "value": "output"}
-    		]
+    		],
+    		"mandatory": true
     	}
     ],
     
