@@ -109,9 +109,9 @@ class Driver
 		);
 		
 		if (isset($details['name'])) {
-			$driver['name'] = $details['id'];
+			$driver['name'] = $details['name'];
 		}
-		$driver['name'] = '';
+		else $driver['name'] = '';
 		
 		if (isset($details['devices'])) {
 			$driver['devices'] = $details['devices'];
