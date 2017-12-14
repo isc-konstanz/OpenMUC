@@ -47,6 +47,8 @@ dependencies {
   optional project(":openmuc-driver-snmp")
   optional project(":openmuc-driver-wmbus")
 
+  optional group: "org.openmuc.framework", name: "openmuc-app-pcharge", version: "0.2.1"
+  optional group: "org.openmuc.framework", name: "openmuc-driver-pcharge", version: "0.2.1"
   optional project(":openmuc-app-simpledemo")
 
   optional project(":openmuc-webui-spi")
