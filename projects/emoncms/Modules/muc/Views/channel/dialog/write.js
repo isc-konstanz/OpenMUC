@@ -55,7 +55,7 @@ var channelWriteDialog =
 			$('#value-text', '#channel-write-value').hide();
 			$('#value-boolean', '#channel-write-value').show();
 			var toggle = $('#boolean-input', '#channel-write-value');
-			if (typeof channel.value !== 'undefined' && this.value.toLowerCase() == 'true') {
+			if (typeof this.value !== 'undefined' && String(this.value).toLowerCase() == 'true') {
 				toggle.addClass('btn-success');
 				toggle.text('True');
 			}

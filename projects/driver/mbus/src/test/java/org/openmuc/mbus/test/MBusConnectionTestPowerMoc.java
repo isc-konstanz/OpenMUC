@@ -1,11 +1,13 @@
 package org.openmuc.mbus.test;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
+
+import javax.xml.bind.DatatypeConverter;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,11 +19,11 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.driver.mbus.MBusConnection;
+import org.openmuc.framework.driver.mbus.MBusDevice;
 import org.openmuc.framework.driver.mbus.MBusSerialInterface;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.jmbus.MBusSap;
+import org.openmuc.jmbus.MBusConnection;
 import org.openmuc.jmbus.SecondaryAddress;
 import org.openmuc.jmbus.VariableDataStructure;
 import org.powermock.api.mockito.PowerMockito;
@@ -29,7 +31,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(MBusConnection.class)
+@PrepareForTest(MBusDevice.class)
 public class MBusConnectionTestPowerMoc {
 
     private final Map<String, MBusSerialInterface> interfaces = new HashMap<>();
@@ -53,28 +55,28 @@ public class MBusConnectionTestPowerMoc {
             0x0, 0x0, (byte) 0x8c, (byte) 0x81, 0x10, 0x6, 0x0, 0x0, 0x0, 0x0, (byte) 0x8c, 0x1, 0x14, 0x44, 0x27, 0x26,
             0x0, 0x4, 0x6d, 0x2a, 0x14, (byte) 0xba, 0x17, 0x0f, 0x21, 0x4, 0x0, 0x10, (byte) 0xa0, (byte) 0xa9, 0x16 };
 
-    public MBusConnection mockingConnection(String mBusAdresse) throws Exception {
+    public MBusDevice mockingConnection(String mBusAdresse) throws Exception {
 
-        MBusSap mockedMBusSap = PowerMockito.mock(MBusSap.class);
+        MBusConnection mockedMBusConnection = PowerMockito.mock(MBusConnection.class);
         VariableDataStructure vds = new VariableDataStructure(NZR_ANSWER, 6, NZR_ANSWER.length - 6, null, null);
         vds.decode();
         System.out.println(vds.getDataRecords().get(0).getDataValue().toString());
-        PowerMockito.when(mockedMBusSap.read(Matchers.anyInt())).thenReturn(vds);
+        PowerMockito.when(mockedMBusConnection.read(Matchers.anyInt())).thenReturn(vds);
 
-        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusSap, mBusAdresse, interfaces);
+        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusConnection, mBusAdresse, interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = mBusAdresse.trim().split(":");
         Integer mBusAddress;
         SecondaryAddress secondaryAddress = null;
         if (deviceAddressTokens[1].length() == 16) {
             mBusAddress = 0xfd;
-            secondaryAddress = SecondaryAddress.getFromHexString(deviceAddressTokens[1]);
+            secondaryAddress = SecondaryAddress.newFromLongHeader(DatatypeConverter.parseHexBinary(deviceAddressTokens[1]), 0);
         }
         else {
             mBusAddress = Integer.decode(deviceAddressTokens[1]);
         }
 
-        MBusConnection mBusConnection = new MBusConnection(serialIntervace, mBusAddress, secondaryAddress);
+        MBusDevice mBusConnection = new MBusDevice(serialIntervace, mBusAddress, secondaryAddress);
 
         return mBusConnection;
 
@@ -140,25 +142,25 @@ public class MBusConnectionTestPowerMoc {
 
     @Test
     public void testScanForChannels() throws Exception {
-        MBusConnection mBusConnection = mockingConnection("/dev/ttyS100:5");
+        MBusDevice mBusConnection = mockingConnection("/dev/ttyS100:5");
         Assert.assertEquals(mBusConnection.scanForChannels(null).get(0).getValueType(), ValueType.LONG);
     }
 
     @Test
     public void testScanForChannelsByteArray() throws Exception {
 
-        MBusSap mockedMBusSap = PowerMockito.mock(MBusSap.class);
+        MBusConnection mockedMBusConnection = PowerMockito.mock(MBusConnection.class);
         VariableDataStructure vds = new VariableDataStructure(SIEMENS_UH50_ANSWER, 6, SIEMENS_UH50_ANSWER.length - 6,
                 null, null);
         vds.decode();
         System.out.println(vds.getDataRecords().get(0).getDataValue().toString());
         System.out.println("Get Sec Address" + vds.getSecondaryAddress().toString());
-        PowerMockito.when(mockedMBusSap.read(Matchers.anyInt())).thenReturn(vds);
+        PowerMockito.when(mockedMBusConnection.read(Matchers.anyInt())).thenReturn(vds);
 
-        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusSap, "/dev/ttyS100:5", interfaces);
+        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusConnection, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
-        MBusConnection mBusConnection = new MBusConnection(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
+        MBusDevice mBusConnection = new MBusDevice(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
                 null);
         Assert.assertEquals(mBusConnection.scanForChannels(null).get(22).getValueType(), ValueType.BYTE_ARRAY);
     }
@@ -167,7 +169,7 @@ public class MBusConnectionTestPowerMoc {
     public void testReadWithSec() throws Exception {
 
         List<ChannelRecordContainer> crc = new LinkedList<>();
-        MBusConnection mBusConnection = mockingConnection("/dev/ttyS100:74973267a7320404");
+        MBusDevice mBusConnection = mockingConnection("/dev/ttyS100:74973267a7320404");
         crc.add(mockChannelRecordContainer("04:03"));
         crc.add(mockChannelRecordContainer("02:fd5b"));
 
@@ -179,7 +181,7 @@ public class MBusConnectionTestPowerMoc {
     public void testRead() throws Exception {
 
         List<ChannelRecordContainer> crc = new LinkedList<>();
-        MBusConnection mBusConnection = mockingConnection("/dev/ttyS100:5");
+        MBusDevice mBusConnection = mockingConnection("/dev/ttyS100:5");
         crc.add(mockChannelRecordContainer("04:03"));
         crc.add(mockChannelRecordContainer("02:fd5b"));
 
@@ -191,17 +193,17 @@ public class MBusConnectionTestPowerMoc {
     public void testReadBcdDateLong() throws Exception {
         List<ChannelRecordContainer> crc = new LinkedList<>();
 
-        MBusSap mockedMBusSap = PowerMockito.mock(MBusSap.class);
+        MBusConnection mockedMBusConnection = PowerMockito.mock(MBusConnection.class);
         VariableDataStructure vds = new VariableDataStructure(SIEMENS_UH50_ANSWER, 6, SIEMENS_UH50_ANSWER.length - 6,
                 null, null);
         vds.decode();
         System.out.println(vds.getDataRecords().get(0).getDataValue().toString());
-        PowerMockito.when(mockedMBusSap.read(Matchers.anyInt())).thenReturn(vds);
+        PowerMockito.when(mockedMBusConnection.read(Matchers.anyInt())).thenReturn(vds);
 
-        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusSap, "/dev/ttyS100:5", interfaces);
+        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusConnection, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
-        MBusConnection mBusConnection = new MBusConnection(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
+        MBusDevice mBusConnection = new MBusDevice(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
                 null);
         crc.add(mockChannelRecordContainer("09:74"));
         crc.add(mockChannelRecordContainer("42:6c"));
@@ -214,7 +216,7 @@ public class MBusConnectionTestPowerMoc {
     @Test
     public void testReadWrongChannelAddressAtContainer() throws Exception {
         List<ChannelRecordContainer> crc = new LinkedList<>();
-        MBusConnection mBusConnection = mockingConnection("/dev/ttyS100:5");
+        MBusDevice mBusConnection = mockingConnection("/dev/ttyS100:5");
         crc.add(mockChannelRecordContainer("X04:03:5ff0"));
 
         mBusConnection.read(crc, null, null);
@@ -225,7 +227,7 @@ public class MBusConnectionTestPowerMoc {
     @Test
     public void testReadWithX() throws Exception {
         List<ChannelRecordContainer> crc = new LinkedList<>();
-        MBusConnection mBusConnection = mockingConnection("/dev/ttyS100:5");
+        MBusDevice mBusConnection = mockingConnection("/dev/ttyS100:5");
         crc.add(mockChannelRecordContainer("X04:03"));
 
         mBusConnection.read(crc, null, null);
@@ -235,7 +237,7 @@ public class MBusConnectionTestPowerMoc {
     @Test
     public void testReadAndDisconnect() throws Exception {
         List<ChannelRecordContainer> crc = new LinkedList<>();
-        MBusConnection mBusConnection = mockingConnection("/dev/ttyS100:5");
+        MBusDevice mBusConnection = mockingConnection("/dev/ttyS100:5");
         crc.add(mockChannelRecordContainer("04:03"));
         mBusConnection.read(crc, null, null);
         mBusConnection.disconnect();
@@ -245,7 +247,7 @@ public class MBusConnectionTestPowerMoc {
     @Test
     public void testDisconnect() throws Exception {
 
-        MBusConnection mBusConnection = mockingConnection("/dev/ttyS100:5");
+        MBusDevice mBusConnection = mockingConnection("/dev/ttyS100:5");
         mBusConnection.disconnect();
         mBusConnection.disconnect();
 
@@ -254,7 +256,7 @@ public class MBusConnectionTestPowerMoc {
     @Test(expected = ConnectionException.class)
     public void testDisconnectRead() throws Exception {
         List<ChannelRecordContainer> crc = new LinkedList<>();
-        MBusConnection mBusConnection = mockingConnection("/dev/ttyS100:5");
+        MBusDevice mBusConnection = mockingConnection("/dev/ttyS100:5");
         mBusConnection.disconnect();
         mBusConnection.read(crc, null, null);
 
@@ -262,16 +264,16 @@ public class MBusConnectionTestPowerMoc {
 
     @Test(expected = ConnectionException.class)
     public void testReadThrowsIOException() throws Exception {
-        MBusSap mockedMBusSap = PowerMockito.mock(MBusSap.class);
+        MBusConnection mockedMBusConnection = PowerMockito.mock(MBusConnection.class);
         VariableDataStructure vds = new VariableDataStructure(NZR_ANSWER, 6, NZR_ANSWER.length - 6, null, null);
         vds.decode();
         System.out.println(vds.getDataRecords().get(0).getDataValue().toString());
-        PowerMockito.when(mockedMBusSap.read(Matchers.anyInt())).thenThrow(new IOException());
+        PowerMockito.when(mockedMBusConnection.read(Matchers.anyInt())).thenThrow(new IOException());
 
-        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusSap, "/dev/ttyS100:5", interfaces);
+        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusConnection, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
-        MBusConnection mBusConnection = new MBusConnection(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
+        MBusDevice mBusConnection = new MBusDevice(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
                 null);
         List<ChannelRecordContainer> crc = new LinkedList<>();
         crc.add(mockChannelRecordContainer("04:03"));
@@ -281,18 +283,18 @@ public class MBusConnectionTestPowerMoc {
     }
 
     @Test
-    public void testReadThrowsTimeoutException() throws Exception {
+    public void testReadThrowsInterruptedIOException() throws Exception {
 
-        MBusSap mockedMBusSap = PowerMockito.mock(MBusSap.class);
+        MBusConnection mockedMBusConnection = PowerMockito.mock(MBusConnection.class);
         VariableDataStructure vds = new VariableDataStructure(NZR_ANSWER, 6, NZR_ANSWER.length - 6, null, null);
         vds.decode();
         System.out.println(vds.getDataRecords().get(0).getDataValue().toString());
-        PowerMockito.when(mockedMBusSap.read(Matchers.anyInt())).thenThrow(new TimeoutException());
+        PowerMockito.when(mockedMBusConnection.read(Matchers.anyInt())).thenThrow(new InterruptedIOException());
 
-        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusSap, "/dev/ttyS100:5", interfaces);
+        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusConnection, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
-        MBusConnection mBusConnection = new MBusConnection(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
+        MBusDevice mBusConnection = new MBusDevice(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
                 null);
         List<ChannelRecordContainer> crc = new LinkedList<>();
         crc.add(mockChannelRecordContainer("04:03"));
@@ -302,18 +304,18 @@ public class MBusConnectionTestPowerMoc {
     }
 
     @Test
-    public void testScanThrowsTimeoutException() throws Exception {
+    public void testScanThrowsInterruptedIOException() throws Exception {
 
-        MBusSap mockedMBusSap = PowerMockito.mock(MBusSap.class);
+        MBusConnection mockedMBusConnection = PowerMockito.mock(MBusConnection.class);
         VariableDataStructure vds = new VariableDataStructure(NZR_ANSWER, 6, NZR_ANSWER.length - 6, null, null);
         vds.decode();
         System.out.println(vds.getDataRecords().get(0).getDataValue().toString());
-        PowerMockito.when(mockedMBusSap.read(Matchers.anyInt())).thenThrow(new TimeoutException());
+        PowerMockito.when(mockedMBusConnection.read(Matchers.anyInt())).thenThrow(new InterruptedIOException());
 
-        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusSap, "/dev/ttyS100:5", interfaces);
+        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusConnection, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
-        MBusConnection mBusConnection = new MBusConnection(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
+        MBusDevice mBusConnection = new MBusDevice(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
                 null);
         List<ChannelRecordContainer> crc = new LinkedList<>();
         crc.add(mockChannelRecordContainer("04:03"));
@@ -325,16 +327,16 @@ public class MBusConnectionTestPowerMoc {
     @Test(expected = ConnectionException.class)
     public void testScanThrowsIOException() throws Exception {
 
-        MBusSap mockedMBusSap = PowerMockito.mock(MBusSap.class);
+        MBusConnection mockedMBusConnection = PowerMockito.mock(MBusConnection.class);
         VariableDataStructure vds = new VariableDataStructure(NZR_ANSWER, 6, NZR_ANSWER.length - 6, null, null);
         vds.decode();
         System.out.println(vds.getDataRecords().get(0).getDataValue().toString());
-        PowerMockito.when(mockedMBusSap.read(Matchers.anyInt())).thenThrow(new IOException());
+        PowerMockito.when(mockedMBusConnection.read(Matchers.anyInt())).thenThrow(new IOException());
 
-        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusSap, "/dev/ttyS100:5", interfaces);
+        MBusSerialInterface serialIntervace = new MBusSerialInterface(mockedMBusConnection, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
-        MBusConnection mBusConnection = new MBusConnection(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
+        MBusDevice mBusConnection = new MBusDevice(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
                 null);
         List<ChannelRecordContainer> crc = new LinkedList<>();
         crc.add(mockChannelRecordContainer("04:03"));

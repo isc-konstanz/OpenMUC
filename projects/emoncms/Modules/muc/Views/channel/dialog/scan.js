@@ -93,6 +93,7 @@ var channelScanDialog =
 						'<td><a class="add-channel" title="Add" row='+i+'><i class="icon-plus-sign" style="cursor:pointer"></i></a></td>'+
 						'<td>'+channelScanDialog.scanChannels[i]['description']+'</td>'+
 						'<td>'+channelScanDialog.scanChannels[i]['address']+'</td>'+
+						'<td>'+channelScanDialog.scanChannels[i]['settings']+'</td>'+
 						'<td>'+channelScanDialog.scanChannels[i]['configs']['valueType']+'</td>'+
 						'<td>'+channelScanDialog.scanChannels[i]['metadata']+'</td>'+
 						'</tr>';

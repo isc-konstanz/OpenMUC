@@ -21,11 +21,11 @@
 package org.openmuc.framework.driver.mbus;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
+
+import javax.xml.bind.DatatypeConverter;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
@@ -36,10 +36,10 @@ import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
-import org.openmuc.jmbus.MBusSap;
-import org.openmuc.jmbus.ScanSecondaryAddress;
+import org.openmuc.jmbus.MBusConnection;
 import org.openmuc.jmbus.SecondaryAddress;
 import org.openmuc.jmbus.VariableDataStructure;
+import org.openmuc.jmbus.transportlayer.SerialBuilder;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +55,7 @@ public class MBusDriver implements DriverService {
     // forsecondary address scan.";
 
     private boolean interruptScan;
-    private final boolean scanSecondary = false;
+    // private final boolean scanSecondary = false;
 
     private int timeout = 2500;
     private int baudRate = 2400;
@@ -79,11 +79,16 @@ public class MBusDriver implements DriverService {
 
         setScanOptions(args);
 
-        MBusSap mBusSap;
+        MBusConnection connection;
         if (!interfaces.containsKey(args[0])) {
-            mBusSap = new MBusSap(args[0], baudRate);
             try {
-                mBusSap.open();
+                SerialBuilder<?, ?> connectionBuilder;
+                connectionBuilder = MBusConnection.newSerialBuilder(args[0]);
+                connectionBuilder.setBaudrate(baudRate);
+                connectionBuilder.setTimeout(timeout);
+                
+            	connection = (MBusConnection) connectionBuilder.build();
+                
             } catch (IllegalArgumentException e) {
                 throw new ArgumentSyntaxException();
             } catch (IOException e) {
@@ -91,53 +96,39 @@ public class MBusDriver implements DriverService {
             }
         }
         else {
-            mBusSap = interfaces.get(args[0]).getMBusSap();
+            connection = interfaces.get(args[0]).getConnection();
         }
 
-        mBusSap.setTimeout(timeout);
-
         try {
-            if (scanSecondary) {
-                List<SecondaryAddress> addresses = ScanSecondaryAddress.scan(mBusSap, "ffffffff");
-                Iterator<SecondaryAddress> iterAddresses = addresses.iterator();
-                while (iterAddresses.hasNext()) {
-                    SecondaryAddress secondaryAddress = iterAddresses.next();
+            VariableDataStructure dataStructure = null;
+            for (int i = 0; i <= 250; i++) {
 
-                    listener.deviceFound(new DeviceScanInfo(args[0] + ":" + secondaryAddress, "",
-                            getScanDescription(secondaryAddress)));
+                if (interruptScan) {
+                    throw new ScanInterruptedException();
                 }
-            }
-            else {
-                VariableDataStructure dataStructure = null;
-                for (int i = 0; i <= 250; i++) {
 
-                    if (interruptScan) {
-                        throw new ScanInterruptedException();
-                    }
-
-                    if (i % 5 == 0) {
-                        listener.scanProgressUpdate(i * 100 / 250);
-                    }
-                    logger.debug("scanning for meter with primary address {}", i);
-                    try {
-                        dataStructure = mBusSap.read(i);
-                    } catch (TimeoutException e) {
-                        continue;
-                    } catch (IOException e) {
-                        throw new ScanException(e);
-                    }
-                    String description = "";
-                    if (dataStructure != null) {
-                        SecondaryAddress secondaryAddress = dataStructure.getSecondaryAddress();
-                        description = getScanDescription(secondaryAddress);
-                    }
-                    listener.deviceFound(new DeviceScanInfo(args[0] + ":" + i, "", description));
-                    logger.debug("found meter: {}", i);
+                if (i % 5 == 0) {
+                    listener.scanProgressUpdate(i * 100 / 250);
                 }
+                logger.debug("scanning for meter with primary address {}", i);
+                try {
+                    dataStructure = connection.read(i);
+                } catch (InterruptedIOException e) {
+                    continue;
+                } catch (IOException e) {
+                    throw new ScanException(e);
+                }
+                String description = "";
+                if (dataStructure != null) {
+                    SecondaryAddress secondaryAddress = dataStructure.getSecondaryAddress();
+                    description = getScanDescription(secondaryAddress);
+                }
+                listener.deviceFound(new DeviceScanInfo(args[0] + ":" + i, "", description));
+                logger.debug("found meter: {}", i);
             }
 
         } finally {
-            mBusSap.close();
+            connection.close();
         }
 
     }
@@ -151,7 +142,7 @@ public class MBusDriver implements DriverService {
     @Override
     public Connection connect(String deviceAddress, String settings)
             throws ArgumentSyntaxException, ConnectionException {
-
+    	
         String[] deviceAddressTokens = deviceAddress.trim().split(":");
 
         if (deviceAddressTokens.length != 2) {
@@ -163,12 +154,12 @@ public class MBusDriver implements DriverService {
         try {
             if (deviceAddressTokens[1].length() == 16) {
                 mBusAddress = 0xfd;
-                secondaryAddress = SecondaryAddress.getFromHexString(deviceAddressTokens[1]);
+                secondaryAddress = SecondaryAddress.newFromLongHeader(DatatypeConverter.parseHexBinary(deviceAddressTokens[1]), 0);
             }
             else {
                 mBusAddress = Integer.decode(deviceAddressTokens[1]);
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             throw new ArgumentSyntaxException("Settings: mBusAddress (" + deviceAddressTokens[1]
                     + ") is not a int nor a 16 sign long hexadecimal secondary address");
         }
@@ -184,37 +175,38 @@ public class MBusDriver implements DriverService {
                 if (serialInterface == null) {
 
                     parseDeviceSettings(settings);
-
-                    MBusSap mBusSap = new MBusSap(serialPortName, baudRate);
-
                     try {
-                        mBusSap.open();
-                    } catch (IOException e1) {
+                        SerialBuilder<?, ?> connectionBuilder;
+                        connectionBuilder = MBusConnection.newSerialBuilder(serialPortName);
+                        connectionBuilder.setBaudrate(baudRate);
+                        connectionBuilder.setTimeout(timeout);
+                        
+                    	MBusConnection connection = (MBusConnection) connectionBuilder.build();
+                        serialInterface = new MBusSerialInterface(connection, serialPortName, interfaces);
+                        
+                    } catch (IOException e) {
                         throw new ConnectionException("Unable to bind local interface: " + deviceAddressTokens[0]);
                     }
-                    mBusSap.setTimeout(timeout);
-                    serialInterface = new MBusSerialInterface(mBusSap, serialPortName, interfaces);
-
                 }
             }
 
             synchronized (serialInterface) {
                 try {
-                    serialInterface.getMBusSap().linkReset(mBusAddress);
+                    serialInterface.getConnection().linkReset(mBusAddress);
                     sleep(100); // for slow slaves
                     if (secondaryAddress != null) {
-                        serialInterface.getMBusSap().selectComponent(secondaryAddress);
+                        serialInterface.getConnection().selectComponent(secondaryAddress);
                         sleep(100);
                     }
-                    serialInterface.getMBusSap().read(mBusAddress);
+                    serialInterface.getConnection().read(mBusAddress);
 
-                } catch (IOException e) {
-                    serialInterface.close();
-                    throw new ConnectionException(e);
-                } catch (TimeoutException e) {
+                } catch (InterruptedIOException e) {
                     if (serialInterface.getDeviceCounter() == 0) {
                         serialInterface.close();
                     }
+                    throw new ConnectionException(e);
+                } catch (IOException e) {
+                    serialInterface.close();
                     throw new ConnectionException(e);
                 }
 
@@ -224,7 +216,7 @@ public class MBusDriver implements DriverService {
 
         }
 
-        return new MBusConnection(serialInterface, mBusAddress, secondaryAddress);
+        return new MBusDevice(serialInterface, mBusAddress, secondaryAddress);
 
     }
 

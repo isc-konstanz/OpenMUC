@@ -118,7 +118,7 @@ var channelConfigDialog =
 					channelConfig['disabled'] = channelConfigDialog.channelConfig['disabled'];
 				}
 				channelConfig['address'] = config.parseOptions('address');
-				channelConfig['settings'] = channelConfigDialog.channelConfig['settings'];
+				channelConfig['settings'] = config.parseOptions('settings');
 				
 				// Make sure JSON.stringify gets passed the right object type
 				channelConfig['configs'] = $.extend({}, config.getOptions('configs'));

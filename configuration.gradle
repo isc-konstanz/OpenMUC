@@ -1,7 +1,6 @@
-
 project.ext {
 
-  cfgVersion = "0.17.7"
+  cfgVersion = "1.1.0"
 
   cfgGroup = "org.openmuc.framework"
 
@@ -60,18 +59,16 @@ configure(javaProjects) {
   apply plugin: "maven"
 }
 
-task update {
+task bundles {
   apply from: "./conf/bundles.gradle"
 
-  dependsOn(build)
   dependsOn(distributionProjects.install)
-  
   dependsOn(updateBundles)
 }
 
 tasks.withType(Tar) {
 
-  dependsOn(update)
+  dependsOn(bundles)
 
   into(project.name) {
 

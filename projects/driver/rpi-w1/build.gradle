@@ -24,6 +24,7 @@ dependencies {
 jar {
   manifest {
     name = "OpenMUC Driver - Raspberry Pi 1-Wire"
+    instruction 'Bundle-ClassPath', '.,lib/pi4j-core.jar,lib/pi4j-device.jar,lib/pi4j-gpio-extension.jar'
     instruction 'Import-Package', '!com.pi4j.*,*' + jarDefaultImportPackageVersion
     instruction 'Export-Package', ''
   }
