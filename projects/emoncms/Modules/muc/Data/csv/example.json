@@ -9,7 +9,7 @@
     "device": {
         "driver": "csv",
         "description": "Household energy consumption",
-        "address": "./lib/csv-driver/home1.csv",
+        "address": "./lib/csv/home1.csv",
         "settings": "samplingmode=hhmmss;rewind=true"
     },
     

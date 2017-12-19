@@ -6,7 +6,29 @@
     
     "prefix": "name",
     
-    "control": [
+    "device": {
+        "driver": "rpi-gpio",
+        "description": "Raspberry Pi GPIO0",
+        "address": "pin:0",
+        "settings": "type:output"
+    },
+    
+    "options": [
+        {
+            "id": "type",
+            "name": "Type",
+            "description": "Configure input/output",
+            "type": "selection",
+            "select": [
+                { "name": "Input", "value": "input" },
+                { "name": "Output", "value": "output" }
+            ],
+            "mandatory": true,
+            "syntax": "deviceSettings"
+        }
+    ],
+    
+    "items": [
         {
             "id": "state",
             "type": "Switch",
@@ -18,36 +40,6 @@
             "input": "pin0_state"
         }
     ],
-    
-    "device": {
-        "driver": "rpi-gpio",
-        "description": "Raspberry Pi GPIO0",
-        "address": "pin:0",
-        "settings": "type:output"
-    },
-    
-    "options": [
-    	{
-			"key":"type",
-			"name":"Type",
-			"syntax": "deviceSettings",
-    		"type": "selection",
-    		"description":"Configure input/output",
-    		"select": [
-	    		{"name": "Input", "value": "input"},
-	    		{"name": "Output", "value": "output"}
-    		],
-    		"mandatory": true
-    	}
-    ],
-    
-    "syntax": {
-     	"deviceSettings": {
-     		"keyValue": true,
-     		"assignment": ":",
-     		"separator": ","
-     	}
-     },
 
     "channels": [
         {
@@ -70,5 +62,13 @@
             "engine": "Engine::PHPFINA",
             "interval": "10"
         }
-    ]
+    ],
+    
+    "syntax": {
+        "deviceSettings": {
+            "keyValue": true,
+            "assignment": ":",
+            "separator": ","
+        }
+    }
 }
