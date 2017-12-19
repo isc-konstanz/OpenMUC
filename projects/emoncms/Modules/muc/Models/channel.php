@@ -19,8 +19,7 @@ class Channel
 	private $redis;
 	private $log;
 
-	public function __construct($ctrl, $mysqli, $redis)
-	{
+	public function __construct($ctrl, $mysqli, $redis) {
 		require_once "Modules/input/input_model.php";
 		$this->input = new Input($mysqli,$redis,null);
 
@@ -30,13 +29,12 @@ class Channel
 		$this->log = new EmonLogger(__FILE__);
 	}
 
-	public function create($userid, $ctrlid, $deviceid, $configs)
-	{
-		$userid = (int) $userid;
-		$ctrlid = (int) $ctrlid;
-
+	public function create($userid, $ctrlid, $deviceid, $configs) {
+		$userid = intval($userid);
+		$ctrlid = intval($ctrlid);
+        
 		$configs = (array) json_decode($configs);
-
+        
 		$nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$configs['nodeid']);
 		$id = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$configs['id']);
 		if (isset($configs['description'])) {
@@ -61,9 +59,8 @@ class Channel
 		return array('success'=>true, 'message'=>'Channel successfully added');
 	}
 
-	public function get_list($userid)
-	{
-		$userid = (int) $userid;
+	public function get_list($userid) {
+		$userid = intval($userid);
 		
 		$channels = array();
 		foreach($this->ctrl->get_list($userid) as $ctrl) {
@@ -78,9 +75,8 @@ class Channel
 		return $channels;
 	}
 
-	public function get_states($userid)
-	{
-		$userid = (int) $userid;
+	public function get_states($userid) {
+		$userid = intval($userid);
 		
 		$states = array();
 		foreach($this->ctrl->get_list($userid) as $ctrl) {
@@ -100,9 +96,8 @@ class Channel
 		return $states;
 	}
 
-	public function info($ctrlid, $driverid)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function info($ctrlid, $driverid) {
+		$ctrlid = intval($ctrlid);
 		
 		$response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/infos/details/channel', 'GET', null);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -112,9 +107,8 @@ class Channel
 		return $response['infos'];
 	}
 
-	public function get($ctrlid, $id)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function get($ctrlid, $id) {
+		$ctrlid = intval($ctrlid);
 		
 		$ctrl = $this->ctrl->get($ctrlid);
 		$response = $this->ctrl->request($ctrlid, 'channels/'.$id.'/details', 'GET', null);
@@ -125,8 +119,7 @@ class Channel
 		return $this->get_channel($ctrl, $details);
 	}
 
-	private function get_channel($ctrl, $details)
-	{
+	private function get_channel($ctrl, $details) {
 		$time = isset($details['timestamp']) ? $details['timestamp'] : null;
 		$value = isset($details['value']) ? $details['value'] : null;
 		
@@ -172,8 +165,7 @@ class Channel
 		return $channel;
 	}
 
-	private function parse_channel($id, $description, $settings, $configs)
-	{
+	private function parse_channel($id, $description, $logsettings, $configs) {
 		$channel = array(
 				'id' => $id
 		);
@@ -206,8 +198,7 @@ class Channel
 		return $channel;
 	}
 	
-	private function create_log_settings($userid, $nodeid, $name, $description, $auth, $authid)
-	{
+	private function create_log_settings($userid, $nodeid, $name, $description, $auth, $authid) {
 		$settings = array(
 				'nodeid' => $nodeid
 		);
@@ -215,8 +206,7 @@ class Channel
 		$key = null;
 		if ($auth !== 'NONE') {
 			// TODO: check if device for authid exists and fetch devicekey
-			switch ($auth)
-			{
+			switch ($auth) {
 				case 'WRITE':
 					global $user;
 					
@@ -249,8 +239,7 @@ class Channel
 		return $settings;
 	}
 
-	private function get_log_settings($userid, $ctrlid, $channel)
-	{
+	private function get_log_settings($userid, $ctrlid, $channel) {
 		$settings = array();
 		if (isset($channel) ) {
 			if(isset($channel['loggingSettings'])) {
@@ -270,8 +259,7 @@ class Channel
 		return $settings;
 	}
 
-	private function parse_log_settings($settings)
-	{
+	private function parse_log_settings($settings) {
 		$arr = array();
 		foreach ($settings as $key=>$value) {
 			$arr[] = $key.':'.$value;
@@ -279,8 +267,7 @@ class Channel
 		return implode(",", $arr);
 	}
 
-	private function get_configs($channel)
-	{
+	private function get_configs($channel) {
 		$configs = array();
 		if (isset($channel)) {
 			foreach($channel as $key => $value) {
@@ -302,8 +289,7 @@ class Channel
 		return $configs;
 	}
 	
-	private function create_input($userid, $nodeid, $name, $description)
-	{
+	private function create_input($userid, $nodeid, $name, $description) {
 		$inputid = $this->input->create_input($userid, $nodeid, $name);
 		if ($inputid > 0 && $description !== '') {
 			$this->input->set_fields($inputid, '{"description":"'.$description.'"}');
@@ -312,8 +298,7 @@ class Channel
 		return $inputid;
 	}
 	
-	private function get_input_by_node_name($userid, $nodeid, $name)
-	{
+	private function get_input_by_node_name($userid, $nodeid, $name) {
 		$result = $this->mysqli->query("SELECT id, nodeid, name, description, processList FROM input WHERE nodeid = '$nodeid' AND name = '$name'");
 		if ($result->num_rows == 0) {
 			return null;
@@ -321,8 +306,7 @@ class Channel
 		return (array) $result->fetch_object();
 	}
 
-	private function get_input($userid, $id)
-	{
+	private function get_input($userid, $id) {
 		if ($this->redis) {
 			// Get from redis cache
 			return $this->get_redis_input($userid, $id);
@@ -333,16 +317,14 @@ class Channel
 		}
 	}
 
-	private function get_redis_input($userid, $id)
-	{
+	private function get_redis_input($userid, $id) {
 		if (!$this->redis->exists("input:$id") && !$this->load_input_to_redis($id)) {
 			return null;
 		}
 		return (array) $this->redis->hGetAll("input:$id");
 	}
 
-	private function get_mysql_input($userid, $id)
-	{
+	private function get_mysql_input($userid, $id) {
 		$result = $this->mysqli->query("SELECT id, nodeid, name, description, processList FROM input WHERE id = '$id'");
 		if ($result->num_rows == 0) {
 			return null;
@@ -350,8 +332,7 @@ class Channel
 		return (array) $result->fetch_object();
 	}
 
-	private function load_redis_input($id)
-	{
+	private function load_redis_input($id) {
 		$result = $this->mysqli->query("SELECT id, nodeid, name, description, processList FROM input WHERE id = '$id'");
 		if ($result->num_rows > 0) {
 			$row = (array) $result->fetch_object();
@@ -369,9 +350,8 @@ class Channel
 		return false;
 	}
 
-	public function update($userid, $ctrlid, $id, $configs)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function update($userid, $ctrlid, $id, $configs) {
+		$ctrlid = intval($ctrlid);
 		
 		$configs = (array) json_decode($configs);
 		
@@ -401,8 +381,7 @@ class Channel
 		return array('success'=>true, 'message'=>'Channel successfully updated');
 	}
 
-	public function write($ctrlid, $id, $value, $valueType)
-	{
+	public function write($ctrlid, $id, $value, $valueType) {
 		// Make sure to encode the value parameter in the correct format, 
 		// depending on its valueType
 		if (strtolower($valueType) === 'boolean') {
@@ -418,7 +397,7 @@ class Channel
 			}
 		}
 		else if (is_numeric($value)) {
-			$value = (float) $value;
+			$value = floatval($value);
 		}
 		else {
 			return array('success'=>false, 'message'=>'Value inconsistend with its type');
@@ -433,9 +412,8 @@ class Channel
 		return array('success'=>true, 'message'=>'Channel successfully written to');
 	}
 
-	public function delete($ctrlid, $id)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function delete($ctrlid, $id) {
+		$ctrlid = intval($ctrlid);
 		
 		$response = $this->ctrl->request($ctrlid, 'channels/'.$id, 'DELETE', null);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -444,9 +422,8 @@ class Channel
 		return array('success'=>true, 'message'=>'Channel successfully removed');
 	}
 
-	public function scan($ctrlid, $device, $settings)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function scan($ctrlid, $device, $settings) {
+		$ctrlid = intval($ctrlid);
 
 		$response = $this->ctrl->request($ctrlid, 'devices/'.$device.'/scan', 'GET', array('settings' => $settings));
 		if (isset($response["success"]) && !$response["success"]) {

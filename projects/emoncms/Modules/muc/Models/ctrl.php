@@ -17,16 +17,14 @@ class Controller
 	private $redis;
 	private $log;
 
-	public function __construct($mysqli, $redis)
-	{
+	public function __construct($mysqli, $redis) {
 		$this->mysqli = $mysqli;
 		$this->redis = $redis;
 		$this->log = new EmonLogger(__FILE__);
 	}
 
-	public function create($userid, $type, $address, $description)
-	{
-		$userid = (int) $userid;
+	public function create($userid, $type, $address, $description) {
+		$userid = intval($userid);
 		if ($type === 'MQTT') {
 			return array('success'=>false, 'message'=>'MQTT controller communication not yet implemented');
 		}
@@ -90,8 +88,7 @@ class Controller
 		return array('success'=>true, 'id'=>$id, 'message'=>'MUC successfully registered');
 	}
 
-	public function exists($id)
-	{
+	public function exists($id) {
 		$id = intval($id);
 		
 		static $ctrl_exists_cache = array(); // Array to hold the cache
@@ -119,8 +116,7 @@ class Controller
 		return $ctrl_exists;
 	}
 
-	public function get_list($userid)
-	{
+	public function get_list($userid) {
 		if ($this->redis) {
 			return $this->get_redis_list($userid);
 		} else {
@@ -128,9 +124,8 @@ class Controller
 		}
 	}
 
-	private function get_redis_list($userid)
-	{
-		$userid = (int) $userid;
+	private function get_redis_list($userid) {
+		$userid = intval($userid);
 		
 		if (!$this->redis->exists("user:muc:$userid")) $this->load_redis($userid);
 
@@ -146,9 +141,8 @@ class Controller
 		return $ctrls;
 	}
 
-	private function get_mysql_list($userid)
-	{
-		$userid = (int) $userid;
+	private function get_mysql_list($userid) {
+		$userid = intval($userid);
 		$ctrls = array();
 
 		$result = $this->mysqli->query("SELECT id, userid, type, address, description, password FROM muc WHERE userid = '$userid'");
@@ -170,9 +164,8 @@ class Controller
 		return $ctrls;
 	}
 	
-	private function get_driver_list($id)
-	{
-		$id = (int) $id;
+	private function get_driver_list($id) {
+		$id = intval($id);
 		
 		$response = $this->request($id, 'drivers', 'GET', null);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -181,9 +174,8 @@ class Controller
 		return $response['drivers'];
 	}
 
-	public function get($id)
-	{
-		$id = (int) $id;
+	public function get($id) {
+		$id = intval($id);
 
 		if ($this->redis) {
             if (!$this->redis->exists("muc:$id")) $this->load_redis_ctrl($id);
@@ -194,9 +186,8 @@ class Controller
 		}
 	}
 
-	public function set_fields($userid, $id, $fields)
-	{
-		$id = (int) $id;
+	public function set_fields($userid, $id, $fields) {
+		$id = intval($id);
 
 		$fields = json_decode(stripslashes($fields));
 		$array = array();
@@ -271,10 +262,9 @@ class Controller
 		}
 	}
 
-	public function delete($userid, $id)
-	{
-		$id = (int) $id;
-		$userid = (int) $userid;
+	public function delete($userid, $id) {
+		$id = intval($id);
+		$userid = intval($userid);
 		
 		$data = array('id' => $id);
 		$response = $this->request($id, 'users', 'DELETE', array('configs' => $data));
@@ -296,9 +286,8 @@ class Controller
 		return array('success'=>true, 'message'=>'Controller successfully removed');
 	}
 
-	public function request($id, $action, $type, $data)
-	{
-		$id = (int) $id;
+	public function request($id, $action, $type, $data) {
+		$id = intval($id);
 
 		$ctrl = $this->get($id);
 
@@ -319,8 +308,7 @@ class Controller
 		}
 	}
 
-	private function sendHttpRequest($username, $password, $url, $type, $data)
-	{
+	private function sendHttpRequest($username, $password, $url, $type, $data) {
 // 		$this->log->info('Sending request to "'.$url.'"');
 
 		$ch = curl_init();
@@ -403,8 +391,7 @@ class Controller
 		return $result;
 	}
 
-	private function load_redis($userid)
-	{
+	private function load_redis($userid) {
 		$this->redis->delete("user:muc:$userid");
 		$result = $this->mysqli->query("SELECT id, userid, type, address, description, password FROM muc WHERE userid = '$userid'");
 		while ($row = (array) $result->fetch_object())
@@ -421,8 +408,7 @@ class Controller
 		}
 	}
 
-	private function load_redis_ctrl($id)
-	{
+	private function load_redis_ctrl($id) {
 		$result = $this->mysqli->query("SELECT id, userid, type, address, description, password FROM muc WHERE id = '$id'");
 		$row = (array) $result->fetch_object();
 		if (!$row) {

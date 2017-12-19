@@ -18,17 +18,15 @@ class DeviceConnection
 	private $redis;
 	private $log;
 
-	public function __construct($ctrl, $mysqli, $redis)
-	{
+	public function __construct($ctrl, $mysqli, $redis) {
 		$this->ctrl = $ctrl;
 		$this->mysqli = $mysqli;
 		$this->redis = $redis;
 		$this->log = new EmonLogger(__FILE__);
 	}
 
-	public function create($ctrlid, $driverid, $configs)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function create($ctrlid, $driverid, $configs) {
+		$ctrlid = intval($ctrlid);
 		
 		$configs = (array) json_decode($configs);
         
@@ -57,9 +55,8 @@ class DeviceConnection
 		return array('success'=>true, 'message'=>'Device successfully added');
 	}
 
-	public function get_list($userid)
-	{
-		$userid = (int) $userid;
+	public function get_list($userid) {
+		$userid = intval($userid);
 		
 		$devices = array();
 		foreach($this->ctrl->get_list($userid) as $ctrl) {
@@ -74,9 +71,8 @@ class DeviceConnection
 		return $devices;
 	}
 
-	public function get_states($userid)
-	{
-		$userid = (int) $userid;
+	public function get_states($userid) {
+		$userid = intval($userid);
 		
 		$states = array();
 		foreach($this->ctrl->get_list($userid) as $ctrl) {
@@ -96,9 +92,8 @@ class DeviceConnection
 		return $states;
 	}
 
-	public function info($ctrlid, $driverid)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function info($ctrlid, $driverid) {
+		$ctrlid = intval($ctrlid);
 
 		$response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/infos/details/device', 'GET', null);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -107,9 +102,8 @@ class DeviceConnection
 		return $response['infos'];
 	}
 
-	public function get($ctrlid, $id)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function get($ctrlid, $id) {
+		$ctrlid = intval($ctrlid);
 		
 		$ctrl = $this->ctrl->get($ctrlid);
 		$response = $this->ctrl->request($ctrlid, 'devices/'.$id.'/details', 'GET', null);
@@ -120,8 +114,7 @@ class DeviceConnection
 		return $this->get_device($ctrl, $details);
 	}
 
-	private function get_device($ctrl, $details)
-	{
+	private function get_device($ctrl, $details) {
 		if (isset($details['driverName'])) {
 			$driver= $details['driverName'];
 		}
@@ -161,8 +154,7 @@ class DeviceConnection
 		return $device;
 	}
 
-	private function parse_device($id, $configs)
-	{
+	private function parse_device($id, $configs) {
 		$device = array('id' => $id);
 		
 		if (isset($configs['description'])) {
@@ -183,8 +175,7 @@ class DeviceConnection
 		return $device;
 	}
 
-	private function get_configs($device)
-	{
+	private function get_configs($device) {
 		$configs = array();
 		foreach($device as $key => $value) {
 			if (strcmp($key, 'ctrlid') !== 0 &&
@@ -203,9 +194,8 @@ class DeviceConnection
 		return $configs;
 	}
 
-	public function update($ctrlid, $id, $configs)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function update($ctrlid, $id, $configs) {
+		$ctrlid = intval($ctrlid);
 
 		$configs = (array) json_decode($configs);
 		
@@ -219,9 +209,8 @@ class DeviceConnection
 		return array('success'=>true, 'message'=>'Device successfully updated');
 	}
 
-	public function delete($ctrlid, $id)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function delete($ctrlid, $id) {
+		$ctrlid = intval($ctrlid);
 
 		$response = $this->ctrl->request($ctrlid, 'devices/'.$id, 'DELETE', null);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -230,9 +219,8 @@ class DeviceConnection
 		return array('success'=>true, 'message'=>'Device successfully removed');
 	}
 
-	public function scan($ctrlid, $driverid, $settings)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function scan($ctrlid, $driverid, $settings) {
+		$ctrlid = intval($ctrlid);
 		
 		// Check if the specified driver is registered already and add it, if necessary
 		require_once "Modules/muc/Models/driver.php";
@@ -268,9 +256,8 @@ class DeviceConnection
 		return $devices;
 	}
 
-	public function scan_progress($ctrlid, $driverid)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function scan_progress($ctrlid, $driverid) {
+		$ctrlid = intval($ctrlid);
 
 		$response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/scanProgressInfo', 'GET', null);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -279,9 +266,8 @@ class DeviceConnection
 		return $response['scanProgressInfo'];
 	}
 
-	public function scan_cancel($ctrlid, $driverid)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function scan_cancel($ctrlid, $driverid) {
+		$ctrlid = intval($ctrlid);
 
 		return $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/scanInterrupt', 'PUT', null);
 	}

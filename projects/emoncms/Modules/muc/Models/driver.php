@@ -16,15 +16,13 @@ class Driver
 	private $ctrl;
 	private $log;
 
-	public function __construct($ctrl)
-	{
+	public function __construct($ctrl) {
 		$this->ctrl = $ctrl;
 		$this->log = new EmonLogger(__FILE__);
 	}
 
-	public function create($ctrlid, $id, $configs)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function create($ctrlid, $id, $configs) {
+		$ctrlid = intval($ctrlid);
 
 		$configs = (array) json_decode($configs);
 		$driver = $this->parse_driver($id, $configs);
@@ -36,9 +34,8 @@ class Driver
 		return array('success'=>true, 'message'=>'Driver successfully added');
 	}
 
-	public function get_list($userid)
-	{
-		$userid = (int) $userid;
+	public function get_list($userid) {
+		$userid = intval($userid);
 		
 		$drivers = array();
 		foreach($this->ctrl->get_list($userid) as $ctrl) {
@@ -53,9 +50,8 @@ class Driver
 		return $drivers;
 	}
 
-	public function get_configured($ctrlid)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function get_configured($ctrlid) {
+		$ctrlid = intval($ctrlid);
 
 		$response = $this->ctrl->request($ctrlid, 'drivers', 'GET', null);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -64,9 +60,8 @@ class Driver
 		return $response['drivers'];
 	}
 
-	public function get_available($ctrlid)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function get_available($ctrlid) {
+		$ctrlid = intval($ctrlid);
 
 		$response = $this->ctrl->request($ctrlid, 'drivers/running', 'GET', null);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -75,9 +70,8 @@ class Driver
 		return $response['drivers'];
 	}
 
-	public function info($ctrlid, $id)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function info($ctrlid, $id) {
+		$ctrlid = intval($ctrlid);
 
 		$response = $this->ctrl->request($ctrlid, 'drivers/'.$id.'/infos/details/driver', 'GET', null);
 		if (isset($response["success"]) && !$response["success"]) {
@@ -86,9 +80,8 @@ class Driver
 		return $response['infos'];
 	}
 
-	public function get($ctrlid, $id)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function get($ctrlid, $id) {
+		$ctrlid = intval($ctrlid);
 		
 		$ctrl = $this->ctrl->get($ctrlid);
 		$response = $this->ctrl->request($ctrlid, 'drivers/'.$id.'/details', 'GET', null);
@@ -99,8 +92,7 @@ class Driver
 		return $this->get_driver($ctrl, $details);
 	}
 
-	private function get_driver($ctrl, $details)
-	{
+	private function get_driver($ctrl, $details) {
 		$driver = array(
 			'userid'=>$ctrl['userid'],
 			'ctrlid'=>$ctrl['id'],
@@ -129,8 +121,7 @@ class Driver
 		return $driver;
 	}
 
-	private function parse_driver($id, $configs)
-	{
+	private function parse_driver($id, $configs) {
 		$driver = array( 'id' => $id);
 		
 		if (isset($configs['configs'])) {
@@ -145,8 +136,7 @@ class Driver
 		return $driver;
 	}
 
-	private function get_configs($device)
-	{
+	private function get_configs($device) {
 		$configs = array();
 		foreach($device as $key => $value) {
 			if (strcmp($key, 'id') !== 0 &&
@@ -160,9 +150,8 @@ class Driver
 		return $configs;
 	}
 
-	public function update($ctrlid, $id, $details)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function update($ctrlid, $id, $details) {
+		$ctrlid = intval($ctrlid);
 		
 		$details = (array) json_decode($details);
 		$configs = $this->parse_driver($details['id'], $details);
@@ -174,9 +163,8 @@ class Driver
 		return array('success'=>true, 'message'=>'Driver successfully updated');
 	}
 
-	public function delete($ctrlid, $id)
-	{
-		$ctrlid = (int) $ctrlid;
+	public function delete($ctrlid, $id) {
+		$ctrlid = intval($ctrlid);
 		
 		$response = $this->ctrl->request($ctrlid, 'drivers/'.$id, 'DELETE', null);
 		if (isset($response["success"]) && !$response["success"]) {
