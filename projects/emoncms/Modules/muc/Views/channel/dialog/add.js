@@ -169,6 +169,7 @@ var channelAddDialog =
 							'authorization': authorization
 					};
 					channelConfig['address'] = config.parseOptions('address');
+					channelConfig['settings'] = config.parseOptions('settings');
 					
 					// Make sure JSON.stringify gets passed the right object type
 					channelConfig['configs'] = $.extend({}, config.getOptions('configs'));
