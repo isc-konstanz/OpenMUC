@@ -1,0 +1,73 @@
+{
+    "name": "Pin 3 (GPIO3)",
+    "category": "Raspberry Pi",
+    "group": "GPIO",
+    "description": "Configuration for a Raspberry Pi pin, either as input or output.",
+    
+    "prefix": "name",
+    
+    "device": {
+        "driver": "rpi-gpio",
+        "description": "Raspberry Pi GPIO3",
+        "address": "pin:3"
+    },
+    
+    "options": [
+        {
+            "id": "type",
+            "name": "Type",
+            "description": "Configure input/output",
+            "type": "selection",
+            "select": [
+                { "name": "Input", "value": "input" },
+                { "name": "Output", "value": "output" }
+            ],
+            "mandatory": true,
+            "syntax": "deviceSettings"
+        }
+    ],
+    
+    "items": [
+        {
+            "id": "state",
+            "type": "Switch",
+            "label": "Pin state",
+            "mapping": {
+                "ON": { "channel": "pin3_state", "value": "true" },
+                "OFF": { "channel": "pin3_state", "value": "false" }
+            },
+            "input": "pin3_state"
+        }
+    ],
+
+    "channels": [
+        {
+            "name": "pin3_state",
+            "description": "GPIO3 Pin state",
+            "configs": {"valueType":"BOOLEAN", "samplingInterval": "2000", "loggingInterval": "2000"},
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "pin3_state"}
+                }
+            ]
+        }
+    ],
+    
+    "feeds": [
+        {
+            "name": "pin3_state",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10"
+        }
+    ],
+    
+    "syntax": {
+        "deviceSettings": {
+            "keyValue": true,
+            "assignment": ":",
+            "separator": ","
+        }
+    }
+}

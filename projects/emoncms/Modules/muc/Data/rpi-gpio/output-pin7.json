@@ -1,0 +1,73 @@
+{
+    "name": "Pin 7 (GPIO7)",
+    "category": "Raspberry Pi",
+    "group": "GPIO",
+    "description": "Configuration for a Raspberry Pi pin, either as input or output.",
+    
+    "prefix": "name",
+    
+    "device": {
+        "driver": "rpi-gpio",
+        "description": "Raspberry Pi GPIO7",
+        "address": "pin:7"
+    },
+    
+    "options": [
+        {
+            "id": "type",
+            "name": "Type",
+            "description": "Configure input/output",
+            "type": "selection",
+            "select": [
+                { "name": "Input", "value": "input" },
+                { "name": "Output", "value": "output" }
+            ],
+            "mandatory": true,
+            "syntax": "deviceSettings"
+        }
+    ],
+    
+    "items": [
+        {
+            "id": "state",
+            "type": "Switch",
+            "label": "Pin state",
+            "mapping": {
+                "ON": { "channel": "pin7_state", "value": "true" },
+                "OFF": { "channel": "pin7_state", "value": "false" }
+            },
+            "input": "pin7_state"
+        }
+    ],
+
+    "channels": [
+        {
+            "name": "pin7_state",
+            "description": "GPIO7 Pin state",
+            "configs": {"valueType":"BOOLEAN", "samplingInterval": "2000", "loggingInterval": "2000"},
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "pin7_state"}
+                }
+            ]
+        }
+    ],
+    
+    "feeds": [
+        {
+            "name": "pin7_state",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10"
+        }
+    ],
+    
+    "syntax": {
+        "deviceSettings": {
+            "keyValue": true,
+            "assignment": ":",
+            "separator": ","
+        }
+    }
+}
