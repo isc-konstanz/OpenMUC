@@ -6,9 +6,7 @@
 
 <style>
 	#channel-add-table td:nth-of-type(1) { width:10%; }
-	#channel-add-table td:nth-of-type(2) { width:5%; }
-	#channel-add-table td:nth-of-type(3) { width:5%; }
-	#channel-add-table td:nth-of-type(4) { width:10%; }
+	#channel-add-table td:nth-of-type(2) { width:10%; }
 </style>
 
 <div id="channel-modal-add" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="channel-add-label" aria-hidden="true" data-backdrop="static">
@@ -20,8 +18,6 @@
 		<table id="channel-add-table" class="table">
 			<tr>
 				<th><?php echo _('Device'); ?></th>
-				<th><?php echo _('Authorization'); ?></th>
-				<th><?php echo _('Node'); ?></th>
 				<th><?php echo _('Key'); ?></th>
 				<th><?php echo _('Name'); ?></th>
 			</tr>
@@ -29,19 +25,6 @@
 				<td>
 					<label id="channel-add-device-label" style="padding: 4px 6px; margin-bottom: 10px;"><span style="color:#888"><em><?php echo _('loading...'); ?></em></span></label>
 					<select id="channel-add-device-select" class="input-large" style="display:none;"></select>
-				</td>
-            	<td>
-                	<select id="channel-add-auth" class="input-medium" style="width: 105px;">
-                        <option value=DEFAULT><?php echo _('Default'); ?></option>
-                        <option value=DEVICE><?php echo _('Device'); ?></option>
-                        <option value=WRITE><?php echo _('Write'); ?></option>
-                    	<option value=READ><?php echo _('Read'); ?></option>
-                        <option value=NONE><?php echo _('None'); ?></option>
-                	</select>
-                </td>
-				<td>
-					<label id="channel-add-node-label" style="padding: 4px 6px; margin-bottom: 10px; display:none;"></label>
-					<input id="channel-add-node" class="input-medium" type="text">
 				</td>
 				<td><input id="channel-add-name" class="input-medium" type="text"></td>
 				<td><input id="channel-add-description" class="input-large" type="text" style="width:97%;"></td>

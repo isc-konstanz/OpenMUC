@@ -6,9 +6,7 @@
 
 <style>
 	#channel-config-table td:nth-of-type(1) { width:10%; }
-	#channel-config-table td:nth-of-type(2) { width:5%; }
-	#channel-config-table td:nth-of-type(3) { width:5%; }
-	#channel-config-table td:nth-of-type(4) { width:10%; }
+	#channel-config-table td:nth-of-type(2) { width:10%; }
 </style>
 
 <div id="channel-modal-config" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="channel-config-modal" aria-hidden="true" data-backdrop="static">
@@ -20,27 +18,12 @@
 		<table id="channel-config-table" class="table">
 			<tr>
 				<th><?php echo _('Device'); ?></th>
-				<th><?php echo _('Authorization'); ?></th>
-				<th><?php echo _('Node'); ?></th>
 				<th><?php echo _('Key'); ?></th>
 				<th><?php echo _('Name'); ?></th>
 			</tr>
 			<tr>
 				<td><label id="channel-config-device" style="padding: 4px 6px; margin-bottom: 10px;"></label></td>
-            	<td>
-                	<select id="channel-config-auth" class="input-medium" style="width: 105px;">
-                        <option value=DEFAULT><?php echo _('Default'); ?></option>
-                        <option value=DEVICE><?php echo _('Device'); ?></option>
-                        <option value=WRITE><?php echo _('Write'); ?></option>
-                    	<option value=READ><?php echo _('Read'); ?></option>
-                        <option value=NONE><?php echo _('None'); ?></option>
-                	</select>
-                </td>
-				<td>
-					<label id="channel-config-node-label" style="padding: 4px 6px; margin-bottom: 10px; display:none;"></label>
-					<input id="channel-config-node" class="input-medium" type="text">
-				</td>
-				<td><input id="channel-config-name" class="input-medium" type="text"></td>
+            	<td><input id="channel-config-name" class="input-medium" type="text"></td>
 				<td><input id="channel-config-description" class="input-large" type="text"></td>
 			</tr>
 		</table>
