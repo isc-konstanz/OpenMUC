@@ -9,8 +9,7 @@
     "device": {
         "driver": "rpi-gpio",
         "description": "Raspberry Pi GPIO0",
-        "address": "pin:0",
-        "settings": "type:output"
+        "address": "pin:0"
     },
     
     "options": [

@@ -1,5 +1,5 @@
 {
-    "name": "Home1",
+    "name": "Home",
     "category": "Demonstration",
     "group": "CSV",
     "description": "Configuration for a CSV driver demonstration, creating the device channels, inputs and feeds for a virtual household.",
@@ -9,9 +9,23 @@
     "device": {
         "driver": "csv",
         "description": "Household energy consumption",
-        "address": "./lib/csv/home1.csv",
         "settings": "samplingmode=hhmmss;rewind=true"
     },
+    
+    "options": [
+        {
+            "id": "file",
+            "name": "CSV file",
+            "description": "One of Two provided demonstration CSV files.",
+            "type": "selection",
+            "select": [
+                { "name": "Home 1", "value": "./lib/csv/home1.csv" },
+                { "name": "Home 2", "value": "./lib/csv/home2.csv" }
+            ],
+            "mandatory": true,
+            "syntax": "deviceAddress"
+        }
+    ],
     
     "channels": [
         {
@@ -217,5 +231,11 @@
             "engine": "Engine::PHPFINA",
             "interval": "60"
         }
-    ]
+    ],
+    
+    "syntax": {
+        "deviceAddress": {
+            "keyValue": false
+        }
+    }
 }
