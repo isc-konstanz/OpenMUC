@@ -16,7 +16,8 @@
 		{
 			"name": "energy",
 			"address": "06:fd61",
-			"configs": {"unit": "kW", "samplingInterval": "900000"},
+			"logging": {"loggingInterval": "900000"},
+			"configs": {"samplingInterval": "900000", "unit": "kW", "valueType":"DOUBLE"},
 			"processList": [
 				{
 					"process": "log_to_feed",

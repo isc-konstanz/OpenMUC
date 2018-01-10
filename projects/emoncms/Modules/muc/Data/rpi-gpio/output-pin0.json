@@ -44,7 +44,8 @@
         {
             "name": "pin0_state",
             "description": "GPIO0 Pin state",
-            "configs": {"valueType":"BOOLEAN", "samplingInterval": "2000", "loggingInterval": "2000"},
+			"logging": {"loggingInterval": "2000"},
+            "configs": {"samplingInterval": "2000", "valueType":"BOOLEAN"},
             "processList": [
                 {
                     "process": "log_to_feed",
