@@ -16,21 +16,25 @@ require_once "Modules/device/device_template.php";
 class MucTemplate extends DeviceTemplate
 {
     protected function load_template_list($userid) {
-    	$list = array();
-    	
-    	$it = new RecursiveDirectoryIterator("Modules/muc/Data");
-    	foreach (new RecursiveIteratorIterator($it) as $file) {
-    		if ($file->getExtension() == "json") {
-    			$type = pathinfo(substr(strstr($file, "Modules/muc/Data"), 17), PATHINFO_DIRNAME).'/'.pathinfo($file, PATHINFO_FILENAME);
-    			$list[$type] = json_decode(file_get_contents($file));
-	    	}
-    	}
+        $list = array();
+        
+        $it = new RecursiveDirectoryIterator("Modules/muc/Data");
+        foreach (new RecursiveIteratorIterator($it) as $file) {
+            if ($file->getExtension() == "json") {
+                $type = pathinfo(substr(strstr($file, "Modules/muc/Data"), 17), PATHINFO_DIRNAME).'/'.pathinfo($file, PATHINFO_FILENAME);
+                $list[$type] = $this->get_template($userid, $type);
+            }
+        }
         return $list;
     }
 
     public function get_template($userid, $type) {
-    	if (file_exists("Modules/muc/Data/$type.json")) {
-    		return json_decode(file_get_contents("Modules/muc/Data/$type.json"));
+        if (file_exists("Modules/muc/Data/$type.json")) {
+            $template = json_decode(file_get_contents("Modules/muc/Data/$type.json"));
+            if (empty($template->options)) {
+                $template->options = array();
+            }
+            return $template;
         }
     }
 
@@ -70,7 +74,7 @@ class MucTemplate extends DeviceTemplate
         if (!is_object($result)) {
             return $result;
         }
-        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $result->prefix);
+        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $result);
         
         if (isset($result->feeds)) {
             $feeds = $result->feeds;
@@ -165,21 +169,26 @@ class MucTemplate extends DeviceTemplate
         require_once "Modules/muc/Models/channel.php";
         $channel = new Channel($ctrl, $this->mysqli, $this->redis);
         
-    	foreach($channels as $c) {
-    		// Create each channel
-    	    $configs = (array) $c;
-    	    $configs['id'] = $configs['name'];
-    	    unset($configs['name']);
-    	    
-    	    $configs['nodeid'] = $configs['node'];
-    	    unset($configs['node']);
-    	    
-    		if (isset($options['channelAddress'])) $configs['address'] = $options['channelAddress'];
-    		if (isset($options['channelSettings'])) $configs['settings'] = $options['channelSettings'];
-    		
-    		$channel->create($userid, $ctrlid, $deviceid, json_encode($configs));
-    	}
-    	return true;
+        foreach($channels as $c) {
+            // Create each channel
+            $configs = (array) $c;
+            $configs['id'] = $configs['name'];
+            unset($configs['name']);
+            
+            $configs['nodeid'] = $configs['node'];
+            unset($configs['node']);
+            
+            if (isset($options['channelAddress'])) $configs['address'] = $options['channelAddress'];
+            if (isset($options['channelSettings'])) $configs['settings'] = $options['channelSettings'];
+            if (isset($configs['logging'])) {
+                $logging = (array) $configs['logging'];
+                $logging['nodeid'] = $configs['nodeid'];
+                $configs['logging'] = $logging;
+            }
+            
+            $channel->create($userid, $ctrlid, $deviceid, json_encode($configs));
+        }
+        return true;
     }
 
     protected function parse_options($options, $template) {
