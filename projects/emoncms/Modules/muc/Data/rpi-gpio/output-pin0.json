@@ -6,11 +6,13 @@
     
     "prefix": "name",
     
-    "device": {
-        "driver": "rpi-gpio",
-        "description": "Raspberry Pi GPIO0",
-        "address": "pin:0"
-    },
+    "devices": [
+        {
+            "driver": "rpi-gpio",
+            "description": "Raspberry Pi GPIO0",
+            "address": "pin:0"
+        }
+    ],
     
     "options": [
         {
