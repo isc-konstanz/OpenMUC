@@ -1,18 +1,16 @@
 {
-    "name": "Pin 0 (GPIO0)",
+    "name": "Pin 7 (GPIO7)",
     "category": "Raspberry Pi",
     "group": "GPIO",
     "description": "Configuration for a Raspberry Pi pin, either as input or output.",
     
     "prefix": "name",
     
-    "devices": [
-        {
-            "driver": "rpi-gpio",
-            "description": "Raspberry Pi GPIO0",
-            "address": "pin:0"
-        }
-    ],
+    "device": {
+        "driver": "rpi-gpio",
+        "description": "Raspberry Pi GPIO7",
+        "address": "pin:7"
+    },
     
     "options": [
         {
@@ -35,23 +33,22 @@
             "type": "Switch",
             "label": "Pin state",
             "mapping": {
-                "ON": { "channel": "pin0_state", "value": "true" },
-                "OFF": { "channel": "pin0_state", "value": "false" }
+                "ON": { "channel": "pin7_state", "value": "true" },
+                "OFF": { "channel": "pin7_state", "value": "false" }
             },
-            "input": "pin0_state"
+            "input": "pin7_state"
         }
     ],
 
     "channels": [
         {
-            "name": "pin0_state",
-            "description": "GPIO0 Pin state",
-			"logging": {"loggingInterval": "2000"},
-            "configs": {"samplingInterval": "2000", "valueType":"BOOLEAN"},
+            "name": "pin7_state",
+            "description": "GPIO7 Pin state",
+            "configs": {"valueType":"BOOLEAN", "samplingInterval": "2000", "loggingInterval": "2000"},
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "pin0_state"}
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "pin7_state"}
                 }
             ]
         }
@@ -59,7 +56,7 @@
     
     "feeds": [
         {
-            "name": "pin0_state",
+            "name": "pin7_state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "10"
