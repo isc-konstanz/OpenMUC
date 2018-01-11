@@ -29,7 +29,7 @@ class MucThing extends DeviceThing
         $this->channel = new Channel($this->ctrl, $this->mysqli, $this->redis);
     }
     
-    public function get_item($device) {
+    public function get_item_list($device) {
         $file = "Modules/muc/Data/".$device['type'].".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
@@ -40,9 +40,8 @@ class MucThing extends DeviceThing
         $ctrlid = null;
         if (isset($device['options']['ctrlid'])) {
             $ctrlid = intval($device['options']['ctrlid']);
-        }
-        else {
-            $ctrlid = $this->get_ctrl_id($device['userid'], $device['name'], $template->device->driver);
+        } else {
+            return array('success'=>false, 'message'=>'Controller ID not found.');
         }
         $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $template);
         
