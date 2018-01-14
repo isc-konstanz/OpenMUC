@@ -44,6 +44,8 @@ import org.w3c.dom.NodeList;
 public class DriverInfo {
     private final static Logger logger = LoggerFactory.getLogger(DriverInfo.class);
 
+    public final static String VIRTUAL = "virtual";
+
     private String id;
     private String name = null;
     private String description = null;
@@ -282,6 +284,10 @@ public class DriverInfo {
             logger.info("Error while trimming text: {}", e.getMessage());
         }
         return null;
+    }
+
+    public static DriverInfo getVirtualDriverInfo() {
+    	return new DriverInfo(DriverInfo.class.getResourceAsStream("virtual.xml"));
     }
 
 }

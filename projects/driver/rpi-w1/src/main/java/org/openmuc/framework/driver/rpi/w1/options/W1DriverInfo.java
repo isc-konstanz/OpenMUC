@@ -50,6 +50,12 @@ public class W1DriverInfo extends DriverInfo {
         return new W1DevicePreferences(address, settings);
     }
 
+    public W1ScanPreferences getScanPreferences(String settingsStr) throws ArgumentSyntaxException {
+        Preferences settings = parseDeviceScanSettings(settingsStr);
+        
+        return new W1ScanPreferences(settings);
+    }
+
     public W1ChannelPreferences getChannelPreferences(ChannelValueContainer container) throws ArgumentSyntaxException {
         String settings = container.getChannelSettings();
         

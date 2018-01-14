@@ -34,6 +34,19 @@
       </option>
     </deviceSettings>
     
+    <deviceScanSettings>
+      <option id="ignore">
+        <name>Ignore existing</name>
+        <description><![CDATA[
+            Ignore already configured devices and only list possible new connections.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <defaultValue>true</defaultValue>
+        <type>BOOLEAN</type>
+      </option>
+    </deviceScanSettings>
+    
     <channelSettings>
       <option id="unit">
         <name>Unit</name>
