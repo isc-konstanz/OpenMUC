@@ -1229,6 +1229,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 availableDrivers.add(activeDriverName);
             }
         }
+        availableDrivers.add(DriverInfo.VIRTUAL);
+        
         return availableDrivers;
     }
 
@@ -1321,6 +1323,9 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
     @Override
     public DriverInfo getDriverInfo(String driverId) throws DriverNotAvailableException {
+    	if (driverId.equals(DriverInfo.VIRTUAL)) {
+    		return DriverInfo.getVirtualDriverInfo();
+    	}
         DriverService driver = activeDrivers.get(driverId);
         if (driver == null) {
             throw new DriverNotAvailableException();
