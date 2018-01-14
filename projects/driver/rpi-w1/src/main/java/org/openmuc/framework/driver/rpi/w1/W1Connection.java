@@ -49,12 +49,25 @@ import com.pi4j.io.w1.W1Device;
 public class W1Connection implements Connection {
     private final static Logger logger = LoggerFactory.getLogger(W1Connection.class);
     private final W1DriverInfo info = W1DriverInfo.getInfo();
-    
+
+    /**
+     * Interface used by {@link W1Connection} to notify the {@link W1Driver} about events
+     */
+    public interface W1ConnectionCallbacks {
+        
+        public void onDisconnect(String id);
+    }
+
+    /**
+     * The Connections current callback object, which is used to notify of connection events
+     */
+    private final W1ConnectionCallbacks callbacks;
+
     private final W1Device device;
     private final W1Type type;
 
-    public W1Connection(W1Device device, W1Type type) {
-        
+    public W1Connection(W1ConnectionCallbacks callbacks, W1Device device, W1Type type) {
+        this.callbacks = callbacks;
         this.device = device;
         this.type = type;
     }
@@ -64,7 +77,6 @@ public class W1Connection implements Connection {
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
 
         throw new UnsupportedOperationException();
-//        logger.info("Scan for Channels of 1-Wire device: {}", device.getName());
     }
 
     @Override
@@ -125,40 +137,18 @@ public class W1Connection implements Connection {
     public void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
             throws UnsupportedOperationException, ConnectionException {
         
-        switch(type) {
-        default:
-            throw new UnsupportedOperationException("Listening for 1-Wire devices not supported for type: " + type.getName());
-        }
+        throw new UnsupportedOperationException("Listening for 1-Wire devices not supported for type: " + type.getName());
     }
 
     @Override
     public Object write(List<ChannelValueContainer> containers, Object containerListHandle)
             throws UnsupportedOperationException, ConnectionException {
-        
-        for (ChannelValueContainer container : containers) {
-            Double value = container.getValue().asDouble();
-//            try {
-//                ChannelAddress address = new ChannelAddress(container.getChannelAddress());
-                
-                if (value != null && !value.isNaN()) {
-                    switch(type) {
-                    default:
-                        throw new UnsupportedOperationException("Writing to 1-Wire devices not supported for type: " + type.getName());
-                    }
-                }
-                else {
-                    logger.warn("No value received to write to 1-Wire device \"{}\"", device.getId());
-                }
-//            } catch (ArgumentSyntaxException e) {
-//                logger.warn("Unable to configure channel address \"{}\": {}", container.getChannelAddress(), e);
-//            }
-        }
-        
-        return null;
+    	
+        throw new UnsupportedOperationException("Writing to 1-Wire devices not supported for type: " + type.getName());
     }
 
     @Override
     public void disconnect() {
-        
+        callbacks.onDisconnect(device.getId().trim().replace("\n", "").replace("\r", ""));
     }
 }
