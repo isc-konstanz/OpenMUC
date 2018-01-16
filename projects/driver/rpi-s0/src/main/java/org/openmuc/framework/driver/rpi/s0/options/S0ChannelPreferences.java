@@ -26,6 +26,9 @@ public class S0ChannelPreferences {
 
     private static final String IMPULSES_KEY = "impulses";
 
+    private static final String DERIVATIVE_KEY = "derivative";
+    private static final boolean DERIVATIVE_DEFAULT = false;
+
     private static final String COUNT_INTERVAL_KEY = "countInterval";
     private static final boolean COUNT_INTERVAL_DEFAULT = false;
 
@@ -42,15 +45,20 @@ public class S0ChannelPreferences {
     }
 
     public Integer getImpulses() {
-        
         if (settings.contains(IMPULSES_KEY)) {
             return settings.getInteger(IMPULSES_KEY);
         }
         return null;
     }
 
+    public boolean isDerivative() {
+        if (settings.contains(DERIVATIVE_KEY)) {
+            return settings.getBoolean(DERIVATIVE_KEY);
+        }
+        return DERIVATIVE_DEFAULT;
+    }
+
     public boolean isCountInterval() {
-        
         if (settings.contains(COUNT_INTERVAL_KEY)) {
             return settings.getBoolean(COUNT_INTERVAL_KEY);
         }

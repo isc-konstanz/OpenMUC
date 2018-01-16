@@ -31,6 +31,7 @@ import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
+import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.driver.rpi.s0.options.S0ChannelPreferences;
 import org.openmuc.framework.driver.rpi.s0.options.S0DriverInfo;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
@@ -43,10 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.pi4j.io.gpio.GpioPin;
-import com.pi4j.io.gpio.PinEdge;
 import com.pi4j.io.gpio.PinPullResistance;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 @Component
 public class S0Connection implements Connection {
@@ -60,7 +58,7 @@ public class S0Connection implements Connection {
         
         public void onDisconnect(GpioPin pin);
     }
-    
+
     /**
      * The Connections current callback object, which is used to notify of connection events
      */
@@ -69,7 +67,7 @@ public class S0Connection implements Connection {
     private final GpioPin pin;
     private final S0Listener counter;
 
-    private Map<String, Integer> lastCounters = new HashMap<String, Integer>();
+    private Map<String, Integer> counterValues = new HashMap<String, Integer>();
 
     public S0Connection(S0ConnectionCallbacks callbacks, GpioPin pin, PinPullResistance pullResistance, int bounceTime) {
         this.callbacks = callbacks;
@@ -100,29 +98,42 @@ public class S0Connection implements Connection {
             try {
                 S0ChannelPreferences prefs = info.getChannelPreferences(container);
                 
-                Value value;
-                if (prefs.isCountInterval()) {
-                    String channelId = container.getChannel().getId();
+                Value value = null;
+                if (prefs.isDerivative() || prefs.isCountInterval()) {
+                	Channel channel = container.getChannel();
+                    String channelId = channel.getId();
                     
                     int lastVal;
-                    if (lastCounters.containsKey(channelId)) {
-                        lastVal = lastCounters.get(channelId);
+                    if (counterValues.containsKey(channelId)) {
+                        lastVal = counterValues.get(channelId);
                     }
                     else {
                         lastVal = 0;
                     }
-                    lastCounters.put(channelId, newVal);
+                    counterValues.put(channelId, newVal);
                     
-                    value = new DoubleValue((newVal - lastVal)/(double) prefs.getImpulses());
+                    double counterDelta = (newVal - lastVal)/(double) prefs.getImpulses();
+                    
+                    if (prefs.isDerivative() && channel.getLatestRecord().getFlag() == Flag.VALID) {
+                    	long timeDelta = (samplingTime - channel.getLatestRecord().getTimestamp())/3600000;
+                    	if (timeDelta > 0) {
+                            value = new DoubleValue(counterDelta/timeDelta);
+                    	}
+                    }
+                    else {
+                        value = new DoubleValue(counterDelta);
+                    }
                 }
                 else {
                     value = new DoubleValue(newVal/(double) prefs.getImpulses());
                 }
-                container.setRecord(new Record(value, samplingTime, Flag.VALID));
+                if (value != null) {
+                    container.setRecord(new Record(value, samplingTime, Flag.VALID));
+                }
                 
             } catch (ArgumentSyntaxException e) {
                 logger.warn("Unable to configure channel address \"{}\": {}", container.getChannelAddress(), e);
-                container.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_READ_FAILURE));
+                container.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID));
             }
         }
         return null;
@@ -146,70 +157,5 @@ public class S0Connection implements Connection {
     public void disconnect() {
         
         callbacks.onDisconnect(pin);
-    }
-
-    private class S0Listener implements GpioPinListenerDigital {
-
-        private List<ChannelRecordContainer> containers = null;
-        private RecordsReceivedListener listener = null;
-
-        private final int bounceTime;
-        private final PinEdge edge;
-        private final GpioPin pin;
-        
-        private long lastSamplingTime;
-        private volatile Integer counter;
-
-        public S0Listener(GpioPin pin, PinPullResistance pullResistance, int bounceTime) {
-            this.pin = pin;
-            this.bounceTime = bounceTime;
-            if (pullResistance == PinPullResistance.PULL_UP) {
-                edge = PinEdge.FALLING;
-            }
-            else edge = PinEdge.RISING;
-            
-            this.counter = 0;
-            lastSamplingTime = System.currentTimeMillis();
-        }
-
-        public void setRecordListener(List<ChannelRecordContainer> containers, RecordsReceivedListener listener) {
-            this.containers = containers;
-            this.listener = listener;
-        }
-
-        public int getValue() {
-            return this.counter;
-        }
-
-        @Override
-        public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-            if (event.getPin() == pin && event.getEdge() == edge) {
-                long samplingTime = System.currentTimeMillis();
-                
-                if (samplingTime - lastSamplingTime > bounceTime) {
-                    synchronized (this.counter) {
-                        
-                        this.counter += 1;
-                        
-                        if (listener != null && containers != null) {
-                            for (ChannelRecordContainer container : containers) {
-                                try {
-                                    S0ChannelPreferences prefs = info.getChannelPreferences(container);
-                                    
-                                    Value value = new DoubleValue(this.counter/(double) prefs.getImpulses());
-                                    container.setRecord(new Record(value, samplingTime, Flag.VALID));
-                                    
-                                } catch (ArgumentSyntaxException e) {
-                                    logger.warn("Unable to configure channel address \"{}\": {}", container.getChannelAddress(), e.getMessage());
-                                    container.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_READ_FAILURE));
-                                }
-                            }
-                            listener.newRecords(containers);
-                        }
-                        lastSamplingTime = samplingTime;
-                    }
-                }
-            }
-        }
     }
 }
