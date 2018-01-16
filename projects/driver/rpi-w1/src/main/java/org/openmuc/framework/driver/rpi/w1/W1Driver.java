@@ -127,11 +127,11 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
         		
                 List<W1Device> devices = master.getDevices();
                 for (W1Device d : devices) {
-                	String id = device.getId().trim().replace("\n", "").replace("\r", "");
+                	String id = d.getId().trim().replace("\n", "").replace("\r", "");
                     if (prefs.getId().equals(id)) {
                         device = d;
                     }
-                    this.devices.put(id, device);
+                    this.devices.put(id, d);
                 }
         	}
         	if (device != null) {
