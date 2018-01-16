@@ -4,7 +4,7 @@
     <name>S0 (Raspberry Pi)</name>
     <description><![CDATA[
         The S0 Driver enables the GPIO pins of the Raspberry Pi platform to read the output from 
-        electricity meters that give pulses proportional to the amount of consumed energy. 
+        metering devices that give pulses proportional to the amount of e.g. consumed energy. 
         Devices represent the "General-purpose inputs/outputs (GPIOs) of the Raspberry Pi as inputs,
         with their channels counting registered pulses from the connected meters.
       ]]>
@@ -102,11 +102,21 @@
       <option id="impulses">
         <name>imp./kWh</name>
         <description><![CDATA[
-            The amount of impulses corresponding to one kWh.
+            The amount of impulses corresponding to one unit.
           ]]>
         </description>
         <mandatory>true</mandatory>
         <type>INTEGER</type>
+      </option>
+      <option id="derivative">
+        <name>Time derivative</name>
+        <description><![CDATA[
+            Calculate the time derivative of counted pulses.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
       </option>
       <option id="countInterval">
         <name>Count pulses per interval</name>
