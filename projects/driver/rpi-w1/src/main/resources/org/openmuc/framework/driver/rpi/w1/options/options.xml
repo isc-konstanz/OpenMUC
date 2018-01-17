@@ -42,7 +42,7 @@
           ]]>
         </description>
         <mandatory>false</mandatory>
-        <defaultValue>true</defaultValue>
+        <default>true</default>
         <type>BOOLEAN</type>
       </option>
     </deviceScanSettings>

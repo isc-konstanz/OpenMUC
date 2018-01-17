@@ -102,7 +102,7 @@
       <option id="impulses">
         <name>imp./kWh</name>
         <description><![CDATA[
-            The amount of impulses corresponding to one unit.
+            The amount of impulses corresponding to one kWh.
           ]]>
         </description>
         <mandatory>true</mandatory>
@@ -111,7 +111,7 @@
       <option id="derivative">
         <name>Time derivative</name>
         <description><![CDATA[
-            Calculate the time derivative of counted pulses.
+            Calculate the time derivative of counted pulses by the hour.
           ]]>
         </description>
         <mandatory>false</mandatory>
