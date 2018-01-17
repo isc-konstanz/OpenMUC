@@ -105,13 +105,14 @@ class MucTemplate extends DeviceTemplate
     public function init_template($device, $template) {
         $userid = intval($device['userid']);
         
-        if (!is_object($template)) {
+        if (empty($template)) {
             $result = $this->prepare_template($device);
             if (isset($result["success"]) && !$result["success"]) {
                 return $result;
             }
             $template = $result;
         }
+        if (!is_object($template)) $template = (object) $template;
         
         $result = $this->get_template($userid, $device['type']);
         if (!is_object($result)) {
@@ -139,8 +140,8 @@ class MucTemplate extends DeviceTemplate
                 
                 // Create channels
                 $result = $this->create_channels($userid, $ctrlid, $device['name'], $options, $channels);
-                if ($result !== true) {
-                    return array('success'=>false, 'message'=>'Error while creating device connection channels.');
+                if (isset($result["success"]) && !$result["success"]) {
+                    return $result;
                 }
             }
         }
@@ -180,7 +181,7 @@ class MucTemplate extends DeviceTemplate
                 return $result;
             }
         }
-        return array('success'=>true, 'message'=>'Devices and channels successfully created');
+        return array('success'=>true, 'message'=>'Devices successfully created');
     }
 
     // Create the channels
@@ -215,9 +216,12 @@ class MucTemplate extends DeviceTemplate
             else {
                 $device = $deviceid;
             }
-            $channel->create($userid, $ctrlid, $device, json_encode($configs));
+            $result = $channel->create($userid, $ctrlid, $device, json_encode($configs));
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
         }
-        return true;
+        return array('success'=>true, 'message'=>'Channels successfully created');
     }
 
     protected function parse_options($options, $template) {
