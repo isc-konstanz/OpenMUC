@@ -32,8 +32,9 @@
 	<tr><td><?php echo _('List channel states'); ?></td><td><a href="<?php echo $path; ?>muc/channel/states.json"><?php echo $path; ?>muc/channel/states.json</a></td></tr>
 	<tr><td><?php echo _('Get channel information'); ?></td><td><a href="<?php echo $path; ?>muc/channel/info.json?ctrlid=1&driverid=csv"><?php echo $path; ?>muc/channel/info.json?ctrlid=1&driverid=csv</a></td></tr>
 	<tr><td><?php echo _('Get channel details'); ?></td><td><a href="<?php echo $path; ?>muc/channel/get.json?ctrlid=1&id=Power"><?php echo $path; ?>muc/channel/get.json?ctrlid=1&id=Power</a></td></tr>
-	<tr><td><?php echo _('Update channel configuration'); ?></td><td><a href="<?php echo $path; ?>muc/channel/update.json?ctrlid=1&id=Power&configs={%22id%22:%22Power%22,%22nodeid%22:%22Home%22,%22disabled%22:%22true%22}"><?php echo $path; ?>muc/channel/update.json?ctrlid=1&id=Power&configs={"id":"Power","nodeid":"Home","disabled":"true"}</a></td></tr>
+	<tr><td><?php echo _('Set latest channel value'); ?></td><td><a href="<?php echo $path; ?>muc/channel/set.json?ctrlid=1&id=Switch&value=false&valueType=boolean"><?php echo $path; ?>muc/channel/set.json?ctrlid=1&id=Switch&value=false&valueType=boolean</a></td></tr>
 	<tr><td><?php echo _('Write value to channel'); ?></td><td><a href="<?php echo $path; ?>muc/channel/write.json?ctrlid=1&id=Switch&value=false&valueType=boolean"><?php echo $path; ?>muc/channel/write.json?ctrlid=1&id=Switch&value=false&valueType=boolean</a></td></tr>
+	<tr><td><?php echo _('Update channel configuration'); ?></td><td><a href="<?php echo $path; ?>muc/channel/update.json?ctrlid=1&id=Power&configs={%22id%22:%22Power%22,%22nodeid%22:%22Home%22,%22disabled%22:%22true%22}"><?php echo $path; ?>muc/channel/update.json?ctrlid=1&id=Power&configs={"id":"Power","nodeid":"Home","disabled":"true"}</a></td></tr>
 	<tr><td><?php echo _('Delete existing channel'); ?></td><td><a href="<?php echo $path; ?>muc/channel/delete.json?ctrlid=1&id=Power"><?php echo $path; ?>muc/channel/delete.json?ctrlid=1&id=Power</a></td></tr>
 </table>
 

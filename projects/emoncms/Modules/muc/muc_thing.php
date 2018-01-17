@@ -99,7 +99,12 @@ class MucThing extends DeviceThing
             }
             else $valueType = null;
             
-            $result = $this->channel->write($ctrlid, $mapping['channelid'], $mapping['value'], $valueType);
+            if (isset($mapping['write']) && !$mapping['write']) {
+                $result = $this->channel->set($ctrlid, $mapping['channelid'], $mapping['value'], $valueType);
+            }
+            else {
+                $result = $this->channel->write($ctrlid, $mapping['channelid'], $mapping['value'], $valueType);
+            }
             if (isset($result['success']) && !$result['success']) {
                 return $result;
             }
