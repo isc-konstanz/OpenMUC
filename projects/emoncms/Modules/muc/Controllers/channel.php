@@ -47,13 +47,13 @@ function channel_controller($format, $action, $method)
 					elseif ($action == 'info') $result = $channel->info($session['userid'], $ctrlid, get('driverid'));
 					elseif ($action == 'scan') $result = $channel->scan($ctrlid, get('deviceid'), get('settings'));
 					elseif ($action == "get") $result = $channel->get($ctrlid, get('id'));
-					elseif ($action == 'update') $result = $channel->update($session['userid'], $ctrlid, get('nodeid'), get('id'), get('configs'));
+					elseif ($action == "set") $result = $channel->set($ctrlid, get('id'), get('value'), get('valueType'));
 					elseif ($action == "write") $result = $channel->write($ctrlid, get('id'), get('value'), get('valueType'));
+					elseif ($action == 'update') $result = $channel->update($session['userid'], $ctrlid, get('id'), get('configs'));
 					elseif ($action == "delete") $result = $channel->delete($ctrlid, get('id'));
 				}
 			}
-			else
-			{
+			else {
 				$result = array('success'=>false, 'message'=>'Controller does not exist');
 			}
 		}

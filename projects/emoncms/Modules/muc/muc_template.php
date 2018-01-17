@@ -105,6 +105,14 @@ class MucTemplate extends DeviceTemplate
     public function init_template($device, $template) {
         $userid = intval($device['userid']);
         
+        if (!is_object($template)) {
+            $result = $this->prepare_template($device);
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
+            $template = $result;
+        }
+        
         $result = $this->get_template($userid, $device['type']);
         if (!is_object($result)) {
             return $result;

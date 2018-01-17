@@ -323,7 +323,7 @@ class Channel
 			
 			$input = $this->get_input_by_node_name($userid, $nodeid, $name);
 			if (empty($input)) {
-			    $this->input->create_input($userid, $nodeid, $name);
+				$this->input->create_input($userid, $nodeid, $name);
 			}
 		}
 		$settings = array(
@@ -421,8 +421,8 @@ class Channel
 	}
 
 	public function update($userid, $ctrlid, $nodeid, $id, $configs) {
-	    $userid = intval($userid);
-	    $ctrlid = intval($ctrlid);
+		$userid = intval($userid);
+		$ctrlid = intval($ctrlid);
 		
 		$configs = (array) json_decode($configs);
 		
@@ -456,7 +456,38 @@ class Channel
 	}
 
 	public function write($ctrlid, $id, $value, $valueType) {
-		// Make sure to encode the value parameter in the correct format, 
+		$value = $this->parse_value($value, $valueType);
+		if (isset($value["success"]) && !$value["success"]) {
+			return $value;
+		}
+		$record = array( 'value' => $value );
+		
+		$response = $this->ctrl->request($ctrlid, 'channels/'.$id, 'PUT', array('record' => $record));
+		if (isset($response["success"]) && !$response["success"]) {
+			return $response;
+		}
+		return array('success'=>true, 'message'=>'Channel successfully written to');
+	}
+
+	public function set($ctrlid, $id, $value, $valueType) {
+		$value = $this->parse_value($value, $valueType);
+		if (isset($value["success"]) && !$value["success"]) {
+			return $value;
+		}
+		$record = array(
+			'flag' => 'VALID',
+			'value' => $value
+		);
+		
+		$response = $this->ctrl->request($ctrlid, 'channels/'.$id.'/latestRecord', 'PUT', array('record' => $record));
+		if (isset($response["success"]) && !$response["success"]) {
+			return $response;
+		}
+		return array('success'=>true, 'message'=>'Channel successfully written to');
+	}
+
+	private function parse_value($value, $valueType) {
+		// Make sure to encode the value parameter in the correct format,
 		// depending on its valueType
 		if (strtolower($valueType) === 'boolean') {
 			switch (strtolower($value)) {
@@ -476,14 +507,7 @@ class Channel
 		else {
 			return array('success'=>false, 'message'=>'Value inconsistend with its type');
 		}
-		
-		$record = array( 'value' => $value );
-		
-		$response = $this->ctrl->request($ctrlid, 'channels/'.$id, 'PUT', array('record' => $record));
-		if (isset($response["success"]) && !$response["success"]) {
-			return $response;
-		}
-		return array('success'=>true, 'message'=>'Channel successfully written to');
+		return $value;
 	}
 
 	public function delete($ctrlid, $id) {

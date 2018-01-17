@@ -29,6 +29,7 @@ import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.dataaccess.Channel;
@@ -66,8 +67,7 @@ public class S0Connection implements Connection {
 
     private final GpioPin pin;
     private final S0Listener counter;
-
-    private Map<String, Integer> counterValues = new HashMap<String, Integer>();
+    private final Map<String, Record> counters = new HashMap<String, Record>();
 
     public S0Connection(S0ConnectionCallbacks callbacks, GpioPin pin, PinPullResistance pullResistance, int bounceTime) {
         this.callbacks = callbacks;
@@ -102,27 +102,30 @@ public class S0Connection implements Connection {
                 if (prefs.isDerivative() || prefs.isCountInterval()) {
                 	Channel channel = container.getChannel();
                     String channelId = channel.getId();
-                    
+                    Record lastRecord = null;
                     int lastVal;
-                    if (counterValues.containsKey(channelId)) {
-                        lastVal = counterValues.get(channelId);
+                    if (counters.containsKey(channelId)) {
+                    	lastRecord = counters.get(channelId);
+                        lastVal = lastRecord.getValue().asInt();
                     }
                     else {
                         lastVal = 0;
                     }
-                    counterValues.put(channelId, newVal);
-                    
                     double counterDelta = (newVal - lastVal)/(double) prefs.getImpulses();
                     
-                    if (prefs.isDerivative() && channel.getLatestRecord().getFlag() == Flag.VALID) {
-                    	long timeDelta = (samplingTime - channel.getLatestRecord().getTimestamp())/3600000;
-                    	if (timeDelta > 0) {
-                            value = new DoubleValue(counterDelta/timeDelta);
+                    if (prefs.isDerivative()) {
+                    	if (lastRecord != null) {
+                        	double timeDelta = (samplingTime - lastRecord.getTimestamp())/3600000.0;
+                        	if (timeDelta > 0) {
+                                value = new DoubleValue(counterDelta/timeDelta);
+                        	}
                     	}
                     }
                     else {
                         value = new DoubleValue(counterDelta);
                     }
+                    
+                    counters.put(channelId, new Record(new IntValue(newVal), samplingTime));
                 }
                 else {
                     value = new DoubleValue(newVal/(double) prefs.getImpulses());
@@ -130,7 +133,9 @@ public class S0Connection implements Connection {
                 if (value != null) {
                     container.setRecord(new Record(value, samplingTime, Flag.VALID));
                 }
-                
+                else {
+                    container.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
+                }
             } catch (ArgumentSyntaxException e) {
                 logger.warn("Unable to configure channel address \"{}\": {}", container.getChannelAddress(), e);
                 container.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID));

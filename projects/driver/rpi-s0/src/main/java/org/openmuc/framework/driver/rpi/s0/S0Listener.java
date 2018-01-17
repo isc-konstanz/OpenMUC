@@ -92,11 +92,13 @@ public class S0Listener implements GpioPinListenerDigital {
                                 S0ChannelPreferences prefs = info.getChannelPreferences(container);
                                 
                                 Value value = null;
-                                if (prefs.isDerivative() && lastSamplingTime != null) {
-                                	double counterDelta = 1.0/(double) prefs.getImpulses();
-                                	long timeDelta = (samplingTime - lastSamplingTime)/3600000;
-                                	if (timeDelta > 0) {
-                                        value = new DoubleValue(counterDelta/timeDelta);
+                                if (prefs.isDerivative()) {
+                                	if (lastSamplingTime != null) {
+                                    	double counterDelta = 1.0/(double) prefs.getImpulses();
+                                    	double timeDelta = (samplingTime - lastSamplingTime)/3600000.0;
+                                    	if (timeDelta > 0) {
+                                            value = new DoubleValue(counterDelta/timeDelta);
+                                    	}
                                 	}
                                 }
                                 else {
@@ -104,6 +106,9 @@ public class S0Listener implements GpioPinListenerDigital {
                                 }
                                 if (value != null) {
                                     container.setRecord(new Record(value, samplingTime, Flag.VALID));
+                                }
+                                else {
+                                    container.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
                                 }
                             } catch (ArgumentSyntaxException e) {
                                 logger.warn("Unable to configure channel address \"{}\": {}", container.getChannelAddress(), e.getMessage());
