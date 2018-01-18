@@ -9,7 +9,6 @@ var config =
 
 
 	'init':function(parent, groups) {
-		
 		if (!parent) {
 			alert('Config has to be loaded to valid container');
 			return false;
@@ -48,7 +47,6 @@ var config =
 	},
 
 	'load':function(options, info) {
-		
 		if (options == null) options = {};
 		this.options = options;
 
@@ -62,7 +60,7 @@ var config =
 					var optionsInfo = info[group]['options']
 
 					// When no options are configured, they were disabled and the overlay will be shown
-					var optionsLength = Object.keys(optionsInfo).length;
+					var optionsLength = optionsInfo.length;
 					if (optionsLength > 0) {
 
 						// If group option is a String, parse it depending on its syntax info
@@ -102,7 +100,6 @@ var config =
 	},
 	
 	'loadOptions':function(group) {
-		
 		if (typeof this.options[group] !== 'undefined') {
 			var options = this.info[group]['options']
 			var syntax = this.info[group]['syntax']
@@ -138,7 +135,6 @@ var config =
 	},
 	
 	'draw':function() {
-
 		var optionsShow = false;
 		var optionsSelect = '';
 		for (var group in this.groups) {
@@ -188,7 +184,6 @@ var config =
 	},
 	
 	'drawGroup':function(group, header) {
-
 		var select = '';
 
 		$('#'+group+'-header', config.container).html(
@@ -254,7 +249,6 @@ var config =
 	},
 	
 	'drawOption':function(key, name, group, option) {
-
 		var row = '';
 		if (typeof option !== 'undefined') {
 
@@ -345,8 +339,7 @@ var config =
 			}
 		});
 
-		$('#config', config.container).on('click', '.edit-option', function(){
-
+		$('#config', config.container).on('click', '.edit-option', function() {
 			var key = $(this).attr('key');
 			var group = $(this).attr('group');
 
@@ -365,8 +358,7 @@ var config =
 			$('#option-select', config.container).prop('disabled', true);
 		});
 
-		$('#config', config.container).on('click', '.delete-option', function(){
-
+		$('#config', config.container).on('click', '.delete-option', function() {
 			var key = $(this).attr('key');
 			var group = $(this).attr('group');
 			delete config.options[group][key];
@@ -375,7 +367,6 @@ var config =
 		});
 
 		$('#config #option-select', config.container).off('change').on('change', function() {
-
 			$('#option-value-boolean', config.container).hide();
 			$('#option-value-small', config.container).hide();
 			$('#option-value-medium', config.container).hide();
@@ -447,8 +438,7 @@ var config =
 			}
 		});
 
-		$('#config #option-add, #config #option-edit', config.container).off('click').on('click', function(){
-			
+		$('#config #option-add, #config #option-edit', config.container).off('click').on('click', function() {
 			var key = $('#option-select', config.container).val();
 			var group = $('#option-select :selected', config.container).attr('group');
 			
@@ -490,7 +480,6 @@ var config =
 		});
 
 		$('#config #option-cancel', config.container).off('click').on('click', function() {
-			
 			$('#option-header-add', config.container).show();
 			$('#option-header-edit', config.container).hide();
 			
@@ -532,7 +521,6 @@ var config =
 	},
 	
 	'getOption':function(key, group) {
-
 		if (typeof config.options[group] !== 'undefined' && 
 				typeof config.options[group][key] !== 'undefined') {
 
@@ -542,15 +530,13 @@ var config =
 	},
 	
 	'setOption':function(key, group, value) {
-
-		if (typeof config.options[group] === 'undefined') {
+		if (typeof config.options[group] === 'undefined' || config.options[group] === '') {
 			config.options[group] = {};
 		}
 		config.options[group][key] = value;
 	},
 
 	'getOptions':function(group) {
-		
 		if (typeof config.options[group] !== 'undefined') {
 			return config.options[group];
 		}
@@ -558,8 +544,8 @@ var config =
 	},
 
 	'parseOptions':function(group) {
-		
-		if (typeof config.options[group] !== 'undefined') {
+		if (typeof config.options[group] !== 'undefined' && config.options[group] !== '' &&
+				typeof config.info[group] !== 'undefined') {
 			var optArr = [];
 			// Add options in the defined order of the information
 			var options = config.info[group]['options'];
@@ -567,7 +553,7 @@ var config =
 			
 			for (var p = 0, i = 0; i < options.length; i++) {
 				optInfo = options[i];
-
+				
 				if (config.options[group].hasOwnProperty(optInfo.key)) {
 					var value = config.options[group][optInfo.key];
 					if (syntax['keyValue']) {
@@ -584,7 +570,6 @@ var config =
 	},
 
 	'valid':function() {
-
 		for (var group in config.groups) {
 			if (config.groups.hasOwnProperty(group)) {
 				if (typeof config.info[group] !== 'undefined') {

@@ -49,6 +49,7 @@ var channelAddDialog =
 		var groups = {
 			address: "Channel address",
 			settings: "Channel settings",
+			logging: "Logging settings",
 			configs: "Configuration"
 		};
 		config.init($('#channel-add-container'), groups);
@@ -108,10 +109,9 @@ var channelAddDialog =
 
 	'clearModal':function() {
 		
-        $('#channel-add-device-label').html('<span style="color:#888"><em>loading...</em></span>').show();
+		$('#channel-add-device-label').html('<span style="color:#888"><em>loading...</em></span>').show();
 		$("#channel-add-device-select").empty().hide();
-        $('#channel-add-node-label').text('').hide();
-        $('#channel-add-node').val('').show();
+		$('#channel-add-node-label').text('').hide();
 		$('#channel-add-name').val('');
 		$('#channel-add-description').val('');
 		$('#channel-add-info').text('').hide();
@@ -132,8 +132,8 @@ var channelAddDialog =
 			
 			var container = $('#channel-add-body');
 			container.animate({
-		    	scrollTop: container.scrollTop() + container.height()
-		    });
+				scrollTop: container.scrollTop() + container.height()
+			});
 		});
 		
 		$('#channel-add-device-select').off('change').on('change', function() {
@@ -150,28 +150,23 @@ var channelAddDialog =
 		});
 
 		$("#channel-add-save").off('click').on('click', function () {
-
-			var node = $('#channel-add-node').val();
 			var name = $('#channel-add-name').val();
 
-			if (node && name && channelAddDialog.deviceId) {
-
+			if (name && channelAddDialog.deviceId) {
 				var description = $('#channel-add-description').val();
-				var authorization = $('#channel-add-auth').val();
 				
 				if (config.valid()) {
 					$('#channel-add-loader').show();
 					
 					var channelConfig = {
-							'nodeid': node,
 							'id': name,
-							'description': description,
-							'authorization': authorization
+							'description': description
 					};
 					channelConfig['address'] = config.parseOptions('address');
 					channelConfig['settings'] = config.parseOptions('settings');
 					
 					// Make sure JSON.stringify gets passed the right object type
+					channelConfig['logging'] = $.extend({}, config.getOptions('logging'));
 					channelConfig['configs'] = $.extend({}, config.getOptions('configs'));
 					
 					var result = channel.create(channelAddDialog.ctrlId, channelAddDialog.deviceId, channelConfig);
