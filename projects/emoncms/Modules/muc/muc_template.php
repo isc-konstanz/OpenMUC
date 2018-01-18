@@ -260,7 +260,7 @@ class MucTemplate extends DeviceTemplate
             else if ($option->mandatory) {
                 return array('success'=>false, 'message'=>'Mandatory option for device '.$template->device->name.' not configured: '.$id);
             }
-            return $result;
         }
+        return $result;
     }
 }
