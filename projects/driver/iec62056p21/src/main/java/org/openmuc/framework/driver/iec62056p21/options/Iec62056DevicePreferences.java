@@ -25,6 +25,7 @@ import org.openmuc.framework.driver.iec62056p21.serial.SerialSettings;
 
 import gnu.io.SerialPort;
 
+
 public class Iec62056DevicePreferences {
 
     protected static final String PORT_KEY = "serialPort";
@@ -66,7 +67,6 @@ public class Iec62056DevicePreferences {
     }
 
     public String getSerialPort() {
-        
         if (address.contains(PORT_KEY)) {
             return address.getString(PORT_KEY);
         }
@@ -74,9 +74,13 @@ public class Iec62056DevicePreferences {
     }
 
     public String getAddress() {
-        
         if (address.contains(ADDRESS_KEY)) {
-            return address.getString(ADDRESS_KEY);
+        	// Address strings length must by divisible by 4
+        	String addressStr = address.getString(ADDRESS_KEY);
+        	for (int i=0; i<addressStr.length() % 4; i++) {
+        		addressStr = '0' + addressStr;
+        	}
+            return addressStr;
         }
         return "";
     }
