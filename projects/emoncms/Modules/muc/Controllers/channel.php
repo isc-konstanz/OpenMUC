@@ -49,7 +49,7 @@ function channel_controller($format, $action, $method)
 					elseif ($action == "get") $result = $channel->get($ctrlid, get('id'));
 					elseif ($action == "set") $result = $channel->set($ctrlid, get('id'), get('value'), get('valueType'));
 					elseif ($action == "write") $result = $channel->write($ctrlid, get('id'), get('value'), get('valueType'));
-					elseif ($action == 'update') $result = $channel->update($session['userid'], $ctrlid, get('id'), get('configs'));
+					elseif ($action == 'update') $result = $channel->update($session['userid'], $ctrlid, get('nodeid'), get('id'), get('configs'));
 					elseif ($action == "delete") $result = $channel->delete($ctrlid, get('id'));
 				}
 			}

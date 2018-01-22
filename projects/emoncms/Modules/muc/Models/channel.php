@@ -490,16 +490,18 @@ class Channel
 		// Make sure to encode the value parameter in the correct format,
 		// depending on its valueType
 		if (strtolower($valueType) === 'boolean') {
-			switch (strtolower($value)) {
-				case 'true':
-					$value = True;
-					break;
-				case 'false':
-					$value = False;
-					break;
-				default:
-					return array('success'=>false, 'message'=>'Unknown boolean value: '.$value);
-			}
+		    if (is_bool($value) === false) {
+		        switch (strtolower($value)) {
+		            case 'true':
+		                $value = True;
+		                break;
+		            case 'false':
+		                $value = False;
+		                break;
+		            default:
+		                return array('success'=>false, 'message'=>'Unknown boolean value: '.$value);
+		        }
+		    }
 		}
 		else if (is_numeric($value)) {
 			$value = floatval($value);

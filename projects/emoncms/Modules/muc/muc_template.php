@@ -31,11 +31,14 @@ class MucTemplate extends DeviceTemplate
     public function get_template($userid, $type) {
         if (file_exists("Modules/muc/Data/$type.json")) {
             $template = json_decode(file_get_contents("Modules/muc/Data/$type.json"));
-            if (empty($template->options)) {
-                $template->options = array();
+            if (is_object($template)) {
+                if (empty($template->options)) {
+                    $template->options = array();
+                }
+                return $template;
             }
-            return $template;
         }
+        return array('success'=>false, 'message'=>'Error while reading template: '.$type);
     }
 
     public function get_template_options($userid, $type) {
