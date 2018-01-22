@@ -18,7 +18,7 @@ configurations.optional.transitive = false;
 dependencies {
   main group: "org.apache.felix", name: "org.apache.felix.main", version: "5.6.8"
 
-  core group: "org.emoncms", name: "openmuc-datalogger-emoncms", version: "1.1.0"
+  core group: "org.emoncms", name: "openmuc-datalogger-emoncms", version: "1.1.1"
 
   core project(":openmuc-core-api")
   core project(":openmuc-core-spi")

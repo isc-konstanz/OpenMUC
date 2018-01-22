@@ -98,10 +98,23 @@
                 {
                     "process": "power_to_kwh",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "grid_export_energy"}
-                },
+                }
+            ]
+        },
+        {
+            "name": "consumption_power",
+            "description": "Consumption power",
+            "address": "grid_power",
+			"logging": {"loggingInterval": "5000", "loggingTimeOffset": "1000", "loggingMaxInterval": "60000"},
+            "configs": {"samplingInterval": "5000", "samplingTimeOffset": "1000", "unit": "kW", "valueType":"DOUBLE"},
+            "processList": [
                 {
                     "process": "scale",
-                    "arguments": {"type": "ProcessArg::VALUE", "value": "-1"}
+                    "arguments": {"type": "ProcessArg::VALUE", "value": "1000"}
+                },
+                {
+                    "process": "if_gt_equal_skip",
+                    "arguments": {"type": "ProcessArg::VALUE", "value": "0"}
                 },
                 {
                     "process": "add_feed",
