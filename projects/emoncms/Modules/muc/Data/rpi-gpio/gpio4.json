@@ -1,16 +1,16 @@
 {
-    "name": "Pin 3 (GPIO3)",
+    "name": "GPIO 4 (Pin4)",
     "category": "Raspberry Pi",
     "group": "GPIO",
     "description": "Configuration for a Raspberry Pi pin, either as input or output.",
     
-    "prefix": "name",
-    
-    "device": {
-        "driver": "rpi-gpio",
-        "description": "Raspberry Pi GPIO3",
-        "address": "pin:3"
-    },
+    "devices": [
+        {
+            "driver": "rpi-gpio",
+            "description": "Raspberry Pi GPIO 4",
+            "address": "pin:4"
+        }
+    ],
     
     "options": [
         {
@@ -33,22 +33,23 @@
             "type": "Switch",
             "label": "Pin state",
             "mapping": {
-                "ON": { "channel": "pin3_state", "value": "true" },
-                "OFF": { "channel": "pin3_state", "value": "false" }
+                "ON": { "channel": "gpio4_state", "value": true },
+                "OFF": { "channel": "gpio4_state", "value": false }
             },
-            "input": "pin3_state"
+            "input": "gpio4_state"
         }
     ],
-
+    
     "channels": [
         {
-            "name": "pin3_state",
-            "description": "GPIO3 Pin state",
-            "configs": {"valueType":"BOOLEAN", "samplingInterval": "2000", "loggingInterval": "2000"},
+            "name": "gpio4_state",
+            "description": "GPIO 4 Pin state",
+            "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "configs": {"samplingInterval": 5000, "valueType":"BOOLEAN"},
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "pin3_state"}
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "gpio4_state"}
                 }
             ]
         }
@@ -56,10 +57,10 @@
     
     "feeds": [
         {
-            "name": "pin3_state",
+            "name": "gpio4_state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "10"
+            "interval": "60"
         }
     ],
     
