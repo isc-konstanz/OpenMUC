@@ -71,14 +71,16 @@ class MucThing extends DeviceThing
             if (isset($item['input'])) {
                 $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $item['input'], $template->channels);
                 if ($inputid == false) {
+                    $this->log->error("get_item_list() failed to find input of item '".$item['id']."' in template: ".$device['type']);
                     continue;
                 }
                 unset($item['input']);
                 $item = array_merge($item, array('inputid'=>$inputid));
             }
             if (isset($item['feed'])) {
-                $feedid = $this->get_feed_id($userid, $prefix, $item['feed']);
+                $feedid = $this->get_feed_id($device['userid'], $prefix, $item['feed']);
                 if ($feedid == false) {
+                    $this->log->error("get_item_list() failed to find feed of item '".$item['id']."' in template: ".$device['type']);
                     continue;
                 }
                 unset($item['feed']);
