@@ -34,8 +34,8 @@
             "name": "pv_generation_power",
             "description": "Photovoltaic generation power",
             "address": "pv_power_production",
-			"logging": {"loggingInterval": "5000", "loggingMaxInterval": "60000"},
-            "configs": {"samplingInterval": "5000", "unit": "kW", "valueType":"DOUBLE"},
+			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "scale",
@@ -55,8 +55,8 @@
             "name": "grid_import_power",
             "description": "Grid import power",
             "address": "grid_power",
-			"logging": {"loggingInterval": "5000", "loggingMaxInterval": "60000"},
-            "configs": {"samplingInterval": "5000", "unit": "kW", "valueType":"DOUBLE"},
+			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "scale",
@@ -80,8 +80,8 @@
             "name": "grid_export_power",
             "description": "Grid export power",
             "address": "grid_power",
-			"logging": {"loggingInterval": "5000", "loggingTimeOffset": "1000", "loggingMaxInterval": "60000"},
-            "configs": {"samplingInterval": "5000", "samplingTimeOffset": "1000", "unit": "kW", "valueType":"DOUBLE"},
+			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "scale",
@@ -105,8 +105,8 @@
             "name": "consumption_power",
             "description": "Consumption power",
             "address": "grid_power",
-			"logging": {"loggingInterval": "5000", "loggingTimeOffset": "1000", "loggingMaxInterval": "60000"},
-            "configs": {"samplingInterval": "5000", "samplingTimeOffset": "1000", "unit": "kW", "valueType":"DOUBLE"},
+			"logging": {"loggingInterval": 5000, "loggingTimeOffset": 1000, "loggingMaxInterval": 60000},
+            "configs": {"samplingInterval": 5000, "samplingTimeOffset": 1000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "scale",
@@ -138,8 +138,8 @@
             "name": "hp_consumption",
             "description": "Heat pump consumption",
             "address": "hp_power_consumption",
-			"logging": {"loggingInterval": "5000", "loggingMaxInterval": "60000"},
-            "configs": {"samplingInterval": "5000", "unit": "kW", "valueType":"DOUBLE"},
+			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "scale",
@@ -159,8 +159,8 @@
             "name": "ev_consumption",
             "description": "Electric vehicle consumption",
             "address": "ev_power_consumption",
-			"logging": {"loggingInterval": "5000", "loggingMaxInterval": "60000"},
-            "configs": {"samplingInterval": "5000", "unit": "kW", "valueType":"DOUBLE"},
+			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "scale",
