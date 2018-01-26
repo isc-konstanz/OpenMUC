@@ -136,13 +136,15 @@ public final class Iec62056Driver implements DriverService {
         synchronized(connection) {
             try {
                 connection.open();
+                connection.read(settings);
                 
-            } catch (IOException e) {
+            } catch (IOException | TimeoutException e) {
+            	connection.close();
+            	
                 throw new ConnectionException("Failed to open local serial port \"" +serialSettings.getPort() + "\": " + e.getMessage(), e);
             }
             logger.debug("Connected to device \"{}\" at {}", settings.getAddress(), serialSettings.getPort());
         }
-        
         return new Iec62056Device(connection, settings);
     }
 

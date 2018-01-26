@@ -57,7 +57,7 @@ public class Iec62056Device implements Connection {
     @Override
     public List<ChannelScanInfo> scanForChannels(String settings)
             throws UnsupportedOperationException, ScanException, ConnectionException {
-
+    	
         List<Iec62056DataSet> dataSets;
         try {
             synchronized(connection) {
@@ -67,16 +67,13 @@ public class Iec62056Device implements Connection {
             if (dataSets == null) {
                 throw new TimeoutException("No data sets received.");
             }
-        } catch (IOException e) {
+        } catch (IOException | TimeoutException e) {
             logger.debug("Scanning channels for device failed: " + e);
             throw new ScanException(e);
-        } catch (TimeoutException e) {
-            logger.debug("Timeout while scanning channels for device: " + e);
-            throw new ScanException(e);
         }
-
+        
         List<ChannelScanInfo> scanInfos = new ArrayList<>(dataSets.size());
-
+        
         for (Iec62056DataSet dataSet : dataSets) {
             try {
                 Double.parseDouble(dataSet.getValue());
@@ -107,35 +104,37 @@ public class Iec62056Device implements Connection {
             if (dataSets == null) {
                 throw new TimeoutException("No data sets received.");
             }
-        } catch (IOException e) {
+	        long time = System.currentTimeMillis();
+	        for (Iec62056DataSet dataSet : dataSets) {
+	            if (dataSetsById.containsKey(dataSet.getId())) {
+	                String value = dataSet.getValue();
+	                if (value != null) {
+	                    ChannelRecordContainer container = dataSetsById.get(dataSet.getId());
+	                    try {
+	                        container.setRecord(new Record(new DoubleValue(Double.parseDouble(dataSet.getValue())), time));
+	                    } catch (NumberFormatException e) {
+	                        container.setRecord(new Record(new StringValue(dataSet.getValue()), time));
+	                    }
+	                }
+	                break;
+	            }
+	        }
+        } catch (IOException | TimeoutException e) {
             logger.debug("Reading from device failed: " + e);
             
+            Flag flag;
+            if (e instanceof TimeoutException) {
+            	flag = Flag.TIMEOUT;
+            }
+            else {
+            	flag = Flag.DRIVER_ERROR_READ_FAILURE;
+            }
             for (ChannelRecordContainer container : containers) {
-                container.setRecord(new Record(Flag.DRIVER_ERROR_READ_FAILURE));
+                container.setRecord(new Record(flag));
             }
-            return null;
-        } catch (TimeoutException e) {
-            logger.debug("Timeout while reading from device: " + e);
-            for (ChannelRecordContainer container : containers) {
-                container.setRecord(new Record(Flag.TIMEOUT));
-            }
-            throw new ConnectionException("Read timed out: " + e.getMessage());
-        }
-
-        long time = System.currentTimeMillis();
-        for (Iec62056DataSet dataSet : dataSets) {
-            if (dataSetsById.containsKey(dataSet.getId())) {
-                String value = dataSet.getValue();
-                if (value != null) {
-                    ChannelRecordContainer container = dataSetsById.get(dataSet.getId());
-                    try {
-                        container.setRecord(new Record(new DoubleValue(Double.parseDouble(dataSet.getValue())), time));
-                    } catch (NumberFormatException e) {
-                        container.setRecord(new Record(new StringValue(dataSet.getValue()), time));
-                    }
-                }
-                break;
-            }
+            connection.close();
+        	
+            throw new ConnectionException("read failed: " + e.getMessage());
         }
         return null;
     }
