@@ -90,7 +90,7 @@ public class DriverInfo {
             }
         }
         else {
-            logger.warn("river info options resource not found");
+            logger.warn("Driver info options resource not found");
         }
     }
     

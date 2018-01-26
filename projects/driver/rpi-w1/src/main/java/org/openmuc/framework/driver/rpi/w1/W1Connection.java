@@ -101,10 +101,12 @@ public class W1Connection implements Connection {
                             value = new DoubleValue(temperature);
                     	}
                     	else {
-                    		// Don't skip the reading, if the latest value read in the last 10 minutes was also above 80
+                    		// Don't skip the reading, if the latest value read was longer than 15 minutes ago or above 80
                         	Record lastRecord = container.getChannel().getLatestRecord();
-                        	if (lastRecord.getFlag() == Flag.VALID) {
-                        		if (lastRecord.getValue().asDouble() >= 80 && samplingTime - lastRecord.getTimestamp() <= 600000) {
+                        	if (lastRecord != null && lastRecord.getFlag() == Flag.VALID) {
+                        		if (samplingTime - lastRecord.getTimestamp() >= 900000 || 
+                        				lastRecord.getValue().asDouble() >= 80) {
+                        			
                                     value = new DoubleValue(temperature);
                         		}
                         	}
