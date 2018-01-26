@@ -61,6 +61,9 @@ public interface ConfigService {
     void scanForDevices(String driverId, String settings, DeviceScanListener scanListener)
             throws DriverNotAvailableException;
 
+    void scanForDevicesAsync(String driverId, String settings, DeviceScanListener scanListener)
+            throws DriverNotAvailableException;
+
     void interruptDeviceScan(String driverId) throws DriverNotAvailableException, UnsupportedOperationException;
 
     List<ChannelScanInfo> scanForChannels(String deviceId, String settings)

@@ -1174,6 +1174,16 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     }
 
     @Override
+    public void scanForDevicesAsync(String driverId, String settings, DeviceScanListener scanListener)
+            throws DriverNotAvailableException {
+        DriverService driver = activeDrivers.get(driverId);
+        if (driver == null) {
+            throw new DriverNotAvailableException();
+        }
+        executor.execute(new ScanForDevicesAsyncTask(driver, settings, scanListener));
+    }
+
+    @Override
     public void interruptDeviceScan(String driverId) throws DriverNotAvailableException, UnsupportedOperationException {
         DriverService driver = activeDrivers.get(driverId);
         if (driver == null) {

@@ -175,7 +175,19 @@ public class DriverResourceServlet extends GenericServlet {
                             deviceScanInfoList = scanForAllDrivers(driverID, settings, scanListener, response);
                             json.addDeviceScanInfoList(deviceScanInfoList);
                         }
+                        else if (pathInfoArray[1].equalsIgnoreCase(Const.START_SCAN)) {
+                            List<DeviceScanInfo> deviceScanInfoList = new ArrayList<>();
+                            scanListener = new DeviceScanListenerImplementation(deviceScanInfoList);
 
+                            String settings = request.getParameter(Const.SETTINGS);
+                            deviceScanInfoList = scanForAllDriversAsync(driverID, settings, scanListener, response);
+                            json.addDeviceScanInfoList(deviceScanInfoList);
+                            json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
+                        }
+                        else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_PROGRESS)) {
+                            json.addDeviceScanInfoList(scanListener.getScannedDevicesList());
+                            json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
+                        }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_PROGRESS_INFO)) {
                             json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
                         }
@@ -492,6 +504,26 @@ public class DriverResourceServlet extends GenericServlet {
 
         try {
             configService.scanForDevices(driverID, settings, scanListener);
+            scannedDevicesList = scanListener.getScannedDevicesList();
+
+        } catch (UnsupportedOperationException e) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
+                    "Driver does not support scanning.", " driverID = ", driverID);
+        } catch (DriverNotAvailableException e) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                    "Requested rest driver is not available.", " driverID = ", driverID);
+        }
+
+        return scannedDevicesList;
+    }
+
+    private List<DeviceScanInfo> scanForAllDriversAsync(String driverID, String settings,
+            DeviceScanListenerImplementation scanListener, HttpServletResponse response) {
+
+        List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
+
+        try {
+            configService.scanForDevicesAsync(driverID, settings, scanListener);
             scannedDevicesList = scanListener.getScannedDevicesList();
 
         } catch (UnsupportedOperationException e) {
