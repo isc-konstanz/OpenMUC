@@ -36,24 +36,26 @@ sudo chown ctrl:root -R /opt/emonmuc
 
 ## 2.1 Emonmuc settings
 
-For some configurations, the settings may be necessary to be adjusted. All settings can be found in the *system.properties*
+For some configurations, the settings may be necessary to be adjusted. All settings can be found in *emoncms.conf*.  
+This file needs to be copied from the provided default config first:  
 ~~~
-nano /opt/emonmuc/conf/system.properties
+cp /opt/emonmuc/conf/emoncms.default.conf /opt/emonmuc/conf/emoncms.conf
+nano /opt/emonmuc/conf/emoncms.conf
 ~~~
 
-- The web servers location may be updated. By default, it is commented and points to an emoncms sever at localhost, e.g. VPN addresses or the remote emoncms.org server can be a valid selection though.
+- The web servers location may be updated. By default, it is commented and points to an emoncms sever at localhost, e.g. VPN addresses or the remote emoncms.org server can be a valid selection though.  
    >     # URL of emoncms web server, used to post data
-   >     org.openmuc.framework.datalogger.emoncms.url = https://emoncms.org/
+   >     address = https://emoncms.org/
 
 - A default authentication for emoncms may be configured. While each data channel can be configured to have its own credentials, it may be preferable to group them with the same authentication, as this improves bulk posting and hence reduced traffic.  
 To do this, **uncomment the lines** related to authorization and authentication, and enter the users Write Api Key  
    >     # API Key credentials to authorize communication with the emoncms webserver
-   >     org.openmuc.framework.datalogger.emoncms.authorization = WRITE
-   >     org.openmuc.framework.datalogger.emoncms.authentication = YOUR_API_KEY
+   >     authorization = WRITE
+   >     authentication = <apiKey>
 
-- The maximum allowed threads for the emoncms logger to post values simultaniously to the specified webserver may be configured, if the configured server and the platform supports or needs higher traffic
+- The maximum allowed threads for the emoncms logger to post values simultaniously to the specified webserver may be configured, if the configured server and the platform supports or needs higher traffic  
    >     # Set the maximum amount of IPC threads running synchronously. Default is 1
-   >     org.openmuc.framework.datalogger.emoncms.maxThreads = 10
+   >     maxThreads = 10
 
 ## 2.2 Emoncms module
 
@@ -66,16 +68,42 @@ sudo ln -s /opt/emonmuc/projects/emoncms/Modules/muc /var/www/emoncms/Modules/mu
 Then, check for Database upates in the Administration pane for the necessary tables to be created.
 
 
-## 2.3 System script
+## 2.3 System service
 
-Emonmuc provides a run-script, allowing the framework to be configured, started and stopped comfortably.
+To provide the comfortable starting, stopping or automatic execution at boot, a systemd service is provided to install:
+~~~
+sudo chmod ugo+x /opt/emonmuc/bin/emonmuc
+sudo cp /opt/emonmuc/bin/emonmuc.service /lib/systemd/system/emonmuc.service
+sudo systemctl enable emonmuc.service
+~~~
+
+With `/var/run/emonmuc` being located in a tmpfs and not created automatically at boot, this needs to be taken care of, for the service to work properly.
+This will be handled by systemds' service **tmpfiles**, which can be configured in `/usr/lib/tmpfiles.d/`:
+
+Create the configuration file *emonmuc.conf*
+~~~
+sudo nano /usr/lib/tmpfiles.d/emonmuc.conf
+~~~
+and add the line
+>     d /var/run/emonmuc 0755 ctrl root -
+
+The application will now start at boot and can be started with
+~~~
+sudo systemctl start emonmuc
+~~~
+as well as other systemctl commands *[start|restart|stop|status]*
+
+
+## 2.4 System script
+
+Emonmuc provides a run-script, allowing the framework to be configured, started and stopped comfortably via bash shell commands.
 
 Configure this script to be part of the the users environment variable *path* in `~/.bashrc`:
 ~~~
 export PATH=$PATH:/opt/emonmuc/bin
 ~~~
 
-After a reboot, several basic commands to the framework are available:
+**After a reboot or logout**, several basic commands are available:
 
  - Start the framework: `emonmuc start`
  - Stop the framework: `emonmuc stop`
@@ -90,7 +118,7 @@ emonmuc start -fg
 Further, the script allows the configuration of apps, drivers, or other bundles, registered to the framework.
 
 
-### 2.3.1 Protocol drivers
+### 2.4.1 Protocol drivers
 
 By default, no drivers are enabled. As a first step, a set of protocol drivers ought to be used should be selected.  
 This can be done with their unique ID, e.g. to enable the **CSV** driver:
@@ -121,32 +149,6 @@ Several drivers can be enabled at once, while each needs to be selected individu
  - **snmp**: SNMP
  
 Details about most drivers and specific information about their usage and configuration may be found in the [OpenMUC User Guide](https://www.openmuc.org/openmuc/user-guide/).
-
-
-## 2.4 System service
-
-To provide the comfortable starting, stopping or automatic execution at boot, a systemd service is provided to install:
-~~~
-sudo chmod ugo+x /opt/emonmuc/bin/emonmuc
-sudo cp /opt/emonmuc/bin/emonmuc.service /lib/systemd/system/emonmuc.service
-sudo systemctl enable emonmuc.service
-~~~
-
-With `/var/run/emonmuc` being located in a tmpfs and not created automatically at boot, this needs to be taken care of, for the service to work properly.
-This will be handled by systemds' service **tmpfiles**, which can be configured in `/usr/lib/tmpfiles.d/`:
-
-Create the configuration file *emonmuc.conf*
-~~~
-sudo nano /usr/lib/tmpfiles.d/emonmuc.conf
-~~~
-and add the line
->     d /var/run/emonmuc 0755 ctrl root -
-
-The application will now start at boot and can be started with
-~~~
-sudo systemctl start emonmuc
-~~~
-as well as other systemctl commands *[start|restart|stop|status]*
 
 
 ---------------
