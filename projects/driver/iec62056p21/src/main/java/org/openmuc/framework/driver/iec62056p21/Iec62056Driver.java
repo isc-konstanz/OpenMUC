@@ -136,8 +136,10 @@ public final class Iec62056Driver implements DriverService {
         synchronized(connection) {
             try {
                 connection.open();
-                connection.read(settings);
                 
+                if (settings.hasVerification()) {
+                    connection.read(settings);
+                }
             } catch (IOException | TimeoutException e) {
             	connection.close();
             	
