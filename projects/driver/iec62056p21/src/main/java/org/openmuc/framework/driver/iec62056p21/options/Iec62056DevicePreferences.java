@@ -35,6 +35,9 @@ public class Iec62056DevicePreferences {
     protected static final String TIMEOUT_KEY = "timeout";
     protected static final int TIMEOUT_DEFAULT = 5000;
     
+    protected static final String VERIFY_KEY = "verify";
+    protected static final boolean VERIFY_DEFAULT = true;
+    
     protected static final String HANDLE_ECHO_KEY = "handleEcho";
     protected static final boolean HANDLE_ECHO_DEFAULT = false;
     
@@ -99,6 +102,14 @@ public class Iec62056DevicePreferences {
         }
 
         return TIMEOUT_DEFAULT;
+    }
+
+    public boolean hasVerification() {
+        if (settings.contains(VERIFY_KEY)) {
+            return settings.getBoolean(VERIFY_KEY);
+        }
+
+        return VERIFY_DEFAULT;
     }
 
     public boolean hasEchoHandling() {

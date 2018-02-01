@@ -59,6 +59,17 @@
         <type>INTEGER</type>
         <default>5000</default>
       </option>
+      <option id="verify">
+        <name>Verify connection</name>
+        <description><![CDATA[
+            Verify if data can be read from the device, when opening the connection.<br>
+            This may cause problems, for instable connections.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>true</default>
+      </option>
       <option id="handleEcho">
         <name>Handle echo</name>
         <description><![CDATA[
