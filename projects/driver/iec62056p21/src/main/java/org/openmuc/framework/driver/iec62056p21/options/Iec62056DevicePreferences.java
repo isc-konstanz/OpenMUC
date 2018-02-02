@@ -25,6 +25,7 @@ import org.openmuc.framework.driver.iec62056p21.serial.SerialSettings;
 
 import gnu.io.SerialPort;
 
+
 public class Iec62056DevicePreferences {
 
     protected static final String PORT_KEY = "serialPort";
@@ -33,6 +34,9 @@ public class Iec62056DevicePreferences {
     
     protected static final String TIMEOUT_KEY = "timeout";
     protected static final int TIMEOUT_DEFAULT = 5000;
+    
+    protected static final String VERIFY_KEY = "verify";
+    protected static final boolean VERIFY_DEFAULT = true;
     
     protected static final String HANDLE_ECHO_KEY = "handleEcho";
     protected static final boolean HANDLE_ECHO_DEFAULT = false;
@@ -66,7 +70,6 @@ public class Iec62056DevicePreferences {
     }
 
     public String getSerialPort() {
-        
         if (address.contains(PORT_KEY)) {
             return address.getString(PORT_KEY);
         }
@@ -74,9 +77,13 @@ public class Iec62056DevicePreferences {
     }
 
     public String getAddress() {
-        
         if (address.contains(ADDRESS_KEY)) {
-            return address.getString(ADDRESS_KEY);
+        	// Address strings length must by divisible by 4
+        	String addressStr = address.getString(ADDRESS_KEY);
+        	for (int i=0; i<addressStr.length() % 4; i++) {
+        		addressStr = '0' + addressStr;
+        	}
+            return addressStr;
         }
         return "";
     }
@@ -95,6 +102,14 @@ public class Iec62056DevicePreferences {
         }
 
         return TIMEOUT_DEFAULT;
+    }
+
+    public boolean hasVerification() {
+        if (settings.contains(VERIFY_KEY)) {
+            return settings.getBoolean(VERIFY_KEY);
+        }
+
+        return VERIFY_DEFAULT;
     }
 
     public boolean hasEchoHandling() {

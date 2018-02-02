@@ -24,7 +24,7 @@
           ]]>
         </description>
         <mandatory>true</mandatory>
-        <type>String</type>
+        <type>STRING</type>
       </option>
       <option id="address">
         <name>Device address</name>
@@ -58,6 +58,17 @@
         <mandatory>false</mandatory>
         <type>INTEGER</type>
         <default>5000</default>
+      </option>
+      <option id="verify">
+        <name>Verify connection</name>
+        <description><![CDATA[
+            Verify if data can be read from the device, when opening the connection.<br>
+            This may cause problems, for instable connections.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>true</default>
       </option>
       <option id="handleEcho">
         <name>Handle echo</name>
@@ -183,7 +194,7 @@
         <separator>;</separator>
       </syntax>
       <option id="identification">
-        <name>Inverted state logic</name>
+        <name>Identification</name>
         <description><![CDATA[
             The ID is usually an OBIS code of the format A-B:C.D.E*F or an older EDIS code of the format C.D.E. 
             that specifies exactly what the value of this data set represents.<br>
@@ -192,7 +203,7 @@
           ]]>
         </description>
         <mandatory>true</mandatory>
-        <type>String</type>
+        <type>STRING</type>
       </option>
     </channelAddress>
   </driver>
