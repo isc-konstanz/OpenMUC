@@ -1,8 +1,8 @@
 {
-    "name": "DRS110M",
+    "name": "AS1440",
     "category": "Energy meters",
-    "group": "B+G E-TECH",
-    "description": "<b>Energy Meter DRS110M</b>:<br>Current: 10(100)A<br>Voltage : 230V<br>50(60)Hz",
+    "group": "Elster",
+    "description": "Energy Meter AS1440",
     
     "prefix": "name",
     
@@ -10,7 +10,7 @@
         {
             "driver": "iec62056p21",
             "description": "Energy Meter",
-            "settings": "password:00000000,baudrate:9600"
+            "settings": "baudrate:9600"
         }
     ],
     
@@ -28,7 +28,7 @@
             "name": "Device address",
             "description": "The address to uniquely identify a device, representing an IEC62056-21 slave.<br>For many devices, this is a number that can be read off a label on the meter.<br><br><i>If left empty, a single meter can be addressed without an identifier.<i>",
             "type": "text",
-            "mandatory": true,
+            "mandatory": false,
             "syntax": "deviceAddress"
         }
     ],
@@ -36,9 +36,9 @@
     "channels": [
         {
             "name": "energy",
-            "address": "00000010",
+            "address": "1.8.0",
             "logging": {"loggingInterval": 15000, "loggingMaxInterval": 900000},
-            "configs": {"samplingInterval": 15000, "scalingFactor": 0.001, "unit": "kWh", "valueType":"DOUBLE"},
+            "configs": {"samplingInterval": 15000, "unit": "kWh", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "log_to_feed",
