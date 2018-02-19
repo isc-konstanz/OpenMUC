@@ -89,34 +89,33 @@ public class Iec62056Device implements Connection {
     @Override
     public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
             throws UnsupportedOperationException, ConnectionException {
-
-        Map<String, ChannelRecordContainer> dataSetsById = new HashMap<String, ChannelRecordContainer>();
+    	
+        Map<String, ChannelRecordContainer> containersById = new HashMap<String, ChannelRecordContainer>();
         for (ChannelRecordContainer container : containers) {
-            dataSetsById.put(container.getChannelAddress(), container);
+            containersById.put(container.getChannelAddress(), container);
         }
         
         List<Iec62056DataSet> dataSets = null;
         try {
             synchronized(connection) {
-                dataSets = connection.read(settings, dataSetsById.keySet());
+                dataSets = connection.read(settings, containersById.keySet());
             }
-
             if (dataSets == null) {
                 throw new TimeoutException("No data sets received.");
             }
+            
 	        long time = System.currentTimeMillis();
 	        for (Iec62056DataSet dataSet : dataSets) {
-	            if (dataSetsById.containsKey(dataSet.getId())) {
+	            if (containersById.containsKey(dataSet.getId())) {
 	                String value = dataSet.getValue();
 	                if (value != null) {
-	                    ChannelRecordContainer container = dataSetsById.get(dataSet.getId());
+	                    ChannelRecordContainer container = containersById.get(dataSet.getId());
 	                    try {
 	                        container.setRecord(new Record(new DoubleValue(Double.parseDouble(dataSet.getValue())), time));
 	                    } catch (NumberFormatException e) {
 	                        container.setRecord(new Record(new StringValue(dataSet.getValue()), time));
 	                    }
 	                }
-	                break;
 	            }
 	        }
         } catch (IOException | TimeoutException e) {
