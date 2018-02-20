@@ -113,10 +113,6 @@
                     "arguments": {"type": "ProcessArg::VALUE", "value": "1000"}
                 },
                 {
-                    "process": "if_gt_skip",
-                    "arguments": {"type": "ProcessArg::VALUE", "value": "0"}
-                },
-                {
                     "process": "add_feed",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "solar_power"}
                 },
