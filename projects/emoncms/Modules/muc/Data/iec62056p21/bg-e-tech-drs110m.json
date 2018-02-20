@@ -37,8 +37,8 @@
         {
             "name": "energy",
             "address": "00000010",
-            "logging": {"loggingInterval": 15000, "loggingMaxInterval": 900000},
-            "configs": {"samplingInterval": 15000, "scalingFactor": 0.001, "unit": "kWh", "valueType":"DOUBLE"},
+            "logging": {"loggingInterval": 60000, "loggingMaxInterval": 180000},
+            "configs": {"samplingInterval": 60000, "scalingFactor": 0.001, "unit": "kWh", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "log_to_feed",

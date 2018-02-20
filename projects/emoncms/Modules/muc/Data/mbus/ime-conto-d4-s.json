@@ -37,8 +37,8 @@
         {
             "name": "energy",
             "address": "06:fd61",
-            "logging": {"loggingInterval": 900000},
-            "configs": {"samplingInterval": 900000, "unit": "kWh", "valueType":"DOUBLE"},
+            "logging": {"loggingInterval": 60000, "loggingMaxInterval": 180000},
+            "configs": {"samplingInterval": 60000, "unit": "kWh", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "log_to_feed",
