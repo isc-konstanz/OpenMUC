@@ -75,7 +75,7 @@ public final class HouseholdApp implements PowerCallbacks {
 
     protected Channel initializeChannel(String id) throws IllegalArgumentException {
         Channel channel = dataAccessService.getChannel(id);
-        if (pv == null) {
+        if (channel == null) {
             throw new IllegalArgumentException("Unable to find Channel for id: " + id);
         }
         return channel;
