@@ -21,8 +21,8 @@
             "description": "One of Two provided demonstration CSV files.",
             "type": "selection",
             "select": [
-                { "name": "Home 1", "value": "./lib/csv/home1.csv" },
-                { "name": "Home 2", "value": "./lib/csv/home2.csv" }
+                { "name": "Home 1", "value": "./lib/driver/csv/home1.csv" },
+                { "name": "Home 2", "value": "./lib/driver/csv/home2.csv" }
             ],
             "mandatory": true,
             "syntax": "deviceAddress"
