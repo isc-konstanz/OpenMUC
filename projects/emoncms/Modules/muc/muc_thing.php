@@ -15,6 +15,8 @@ require_once "Modules/device/device_thing.php";
 
 class MucThing extends DeviceThing
 {
+    const DATA = "/opt/emonmuc/lib/device/";
+
     protected $ctrl;
     protected $channel;
 
@@ -30,7 +32,7 @@ class MucThing extends DeviceThing
     }
     
     public function get_item_list($device) {
-        $file = "Modules/muc/Data/".$device['type'].".json";
+        $file = self::DATA.$device['type'].".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
         } else {

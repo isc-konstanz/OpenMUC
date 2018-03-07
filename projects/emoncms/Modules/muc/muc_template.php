@@ -15,13 +15,15 @@ require_once "Modules/device/device_template.php";
 
 class MucTemplate extends DeviceTemplate
 {
+    const DATA = "/opt/emonmuc/lib/device/";
+
     protected function load_template_list($userid) {
         $list = array();
         
-        $it = new RecursiveDirectoryIterator("Modules/muc/Data");
+        $it = new RecursiveDirectoryIterator(self::DATA);
         foreach (new RecursiveIteratorIterator($it) as $file) {
             if ($file->getExtension() == "json") {
-                $type = pathinfo(substr(strstr($file, "Modules/muc/Data"), 17), PATHINFO_DIRNAME).'/'.pathinfo($file, PATHINFO_FILENAME);
+                $type = pathinfo(substr(strstr($file, self::DATA), 24), PATHINFO_DIRNAME).'/'.pathinfo($file, PATHINFO_FILENAME);
                 $list[$type] = $this->get_template($userid, $type);
             }
         }
@@ -29,8 +31,8 @@ class MucTemplate extends DeviceTemplate
     }
 
     public function get_template($userid, $type) {
-        if (file_exists("Modules/muc/Data/$type.json")) {
-            $template = json_decode(file_get_contents("Modules/muc/Data/$type.json"));
+        if (file_exists(self::DATA.$type.".json")) {
+            $template = json_decode(file_get_contents(self::DATA.$type.".json"));
             if (is_object($template)) {
                 if (empty($template->options)) {
                     $template->options = array();

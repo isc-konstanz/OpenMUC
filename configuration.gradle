@@ -1,6 +1,6 @@
 project.ext {
 
-  cfgVersion = "1.2.0"
+  cfgVersion = "1.2.1"
 
   cfgGroup = "org.openmuc.framework"
 
@@ -13,6 +13,7 @@ project.ext {
   jarDefaultImportPackageVersion=";version=0"
 
   distributionProjects = javaProjects.findAll {
+    it.getPath() == ":openmuc-app-household" ||
     it.getPath() == ":openmuc-app-simpledemo" ||
     it.getPath() == ":openmuc-core-api" ||
     it.getPath() == ":openmuc-core-datamanager" ||
