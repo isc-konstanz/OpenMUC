@@ -15,15 +15,15 @@ require_once "Modules/device/device_template.php";
 
 class MucTemplate extends DeviceTemplate
 {
-    const DATA = "/opt/emonmuc/lib/device/";
+    const DEFAULT_DIR = "/opt/emonmuc/";
 
     protected function load_template_list($userid) {
         $list = array();
         
-        $it = new RecursiveDirectoryIterator(self::DATA);
+        $it = new RecursiveDirectoryIterator($this->get_template_dir());
         foreach (new RecursiveIteratorIterator($it) as $file) {
             if ($file->getExtension() == "json") {
-                $type = pathinfo(substr(strstr($file, self::DATA), 24), PATHINFO_DIRNAME).'/'.pathinfo($file, PATHINFO_FILENAME);
+                $type = pathinfo(substr(strstr($file, $this->get_template_dir()), 24), PATHINFO_DIRNAME).'/'.pathinfo($file, PATHINFO_FILENAME);
                 $list[$type] = $this->get_template($userid, $type);
             }
         }
@@ -31,8 +31,9 @@ class MucTemplate extends DeviceTemplate
     }
 
     public function get_template($userid, $type) {
-        if (file_exists(self::DATA.$type.".json")) {
-            $template = json_decode(file_get_contents(self::DATA.$type.".json"));
+        $file = $this->get_template_dir().$type.".json";
+        if (file_exists($file)) {
+            $template = json_decode($file);
             if (is_object($template)) {
                 if (empty($template->options)) {
                     $template->options = array();
@@ -41,6 +42,20 @@ class MucTemplate extends DeviceTemplate
             }
         }
         return array('success'=>false, 'message'=>'Error while reading template: '.$type);
+    }
+
+    protected function get_template_dir() {
+        global $muc_dir;
+        if (isset($muc_dir) && $muc_dir !== "") {
+            $muc_template_dir = $muc_dir;
+        }
+        else {
+            $muc_template_dir = self::DEFAULT_DIR;
+        }
+        if (substr($muc_template_dir, -1) !== "/") {
+            $muc_template_dir .= "/";
+        }
+        return $muc_template_dir."lib/device/";
     }
 
     public function get_template_options($userid, $type) {
