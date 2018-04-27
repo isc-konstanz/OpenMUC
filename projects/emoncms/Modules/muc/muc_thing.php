@@ -15,7 +15,7 @@ require_once "Modules/device/device_thing.php";
 
 class MucThing extends DeviceThing
 {
-    const DATA = "/opt/emonmuc/lib/device/";
+    const DEFAULT_DIR = "/opt/emonmuc/";
 
     protected $ctrl;
     protected $channel;
@@ -30,9 +30,9 @@ class MucThing extends DeviceThing
         require_once "Modules/muc/Models/channel.php";
         $this->channel = new Channel($this->ctrl, $this->mysqli, $this->redis);
     }
-    
+
     public function get_item_list($device) {
-        $file = self::DATA.$device['type'].".json";
+        $file = $this->get_template_dir().$type.".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
         } else {
@@ -115,6 +115,20 @@ class MucThing extends DeviceThing
             return array('success'=>true, 'message'=>"Item value set");
         }
         return array('success'=>false, 'message'=>"Error while seting item value");
+    }
+
+    protected function get_template_dir() {
+        global $muc_dir;
+        if (isset($muc_dir) && $muc_dir !== "") {
+            $muc_template_dir = $muc_dir;
+        }
+        else {
+            $muc_template_dir = self::DEFAULT_DIR;
+        }
+        if (substr($muc_template_dir, -1) !== "/") {
+            $muc_template_dir .= "/";
+        }
+        return $muc_template_dir."lib/device/";
     }
 
     protected function get_ctrl_id($userid, $name, $driver) {
