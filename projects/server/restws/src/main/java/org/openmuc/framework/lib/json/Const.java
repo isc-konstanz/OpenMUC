@@ -46,7 +46,6 @@ public class Const {
     public static final String DETAILS = "details";
     public static final String INFOS = "infos";
     public static final String SCAN = "scan";
-    public static final String START_SCAN = "startScan";
     public static final String WRITE = "write";
     public static final String HISTORY = "history";
     public static final String SETTINGS = "settings";
@@ -65,6 +64,7 @@ public class Const {
     public static final String CHANNEL = "channel";
     public static final String DEVICE = "device";
     public static final String DRIVER = "driver";
+    public static final String SCAN_START = "startScan";
     public static final String SCAN_PROGRESS_INFO = "scanProgressInfo";
     public static final String SCAN_PROGRESS = "scanProgress";
     public static final String SCAN_FINISHED = "scanFinished";
