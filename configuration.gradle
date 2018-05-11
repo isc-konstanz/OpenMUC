@@ -6,7 +6,7 @@ project.ext {
 
   cfgCopyDependencies = false
 
-  cfgCopyToRoot = false
+  cfgCopyToRoot = true
 
   javaProjects = subprojects
 
