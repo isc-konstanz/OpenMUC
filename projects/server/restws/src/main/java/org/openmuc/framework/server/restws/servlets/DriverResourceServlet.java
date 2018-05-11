@@ -172,20 +172,20 @@ public class DriverResourceServlet extends GenericServlet {
                             scanListener = new DeviceScanListenerImplementation(deviceScanInfoList);
 
                             String settings = request.getParameter(Const.SETTINGS);
-                            deviceScanInfoList = scanForAllDrivers(driverID, settings, scanListener, response);
+                            deviceScanInfoList = scanForAllDevices(driverID, settings, scanListener, response);
                             json.addDeviceScanInfoList(deviceScanInfoList);
                         }
-                        else if (pathInfoArray[1].equalsIgnoreCase(Const.START_SCAN)) {
+                        else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_START)) {
                             List<DeviceScanInfo> deviceScanInfoList = new ArrayList<>();
                             scanListener = new DeviceScanListenerImplementation(deviceScanInfoList);
 
                             String settings = request.getParameter(Const.SETTINGS);
-                            deviceScanInfoList = scanForAllDriversAsync(driverID, settings, scanListener, response);
-                            json.addDeviceScanInfoList(deviceScanInfoList);
+                            scanAsyncForAllDevices(driverID, settings, scanListener, response);
+                            json.addDeviceScanInfoList(scanListener.getRestScanDeviceList());
                             json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_PROGRESS)) {
-                            json.addDeviceScanInfoList(scanListener.getScannedDevicesList());
+                            json.addDeviceScanInfoList(scanListener.getRestScanDeviceList());
                             json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_PROGRESS_INFO)) {
@@ -497,7 +497,7 @@ public class DriverResourceServlet extends GenericServlet {
         }
     }
 
-    private List<DeviceScanInfo> scanForAllDrivers(String driverID, String settings,
+    private List<DeviceScanInfo> scanForAllDevices(String driverID, String settings,
             DeviceScanListenerImplementation scanListener, HttpServletResponse response) {
 
         List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
@@ -517,14 +517,10 @@ public class DriverResourceServlet extends GenericServlet {
         return scannedDevicesList;
     }
 
-    private List<DeviceScanInfo> scanForAllDriversAsync(String driverID, String settings,
+    private void scanAsyncForAllDevices(String driverID, String settings,
             DeviceScanListenerImplementation scanListener, HttpServletResponse response) {
-
-        List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
-
         try {
-            configService.scanForDevicesAsync(driverID, settings, scanListener);
-            scannedDevicesList = scanListener.getScannedDevicesList();
+            configService.scanForDevices(driverID, settings, scanListener);
 
         } catch (UnsupportedOperationException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
@@ -533,11 +529,9 @@ public class DriverResourceServlet extends GenericServlet {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
                     "Requested rest driver is not available.", " driverID = ", driverID);
         }
-
-        return scannedDevicesList;
     }
 
-    private List<DeviceScanInfo> scanForAllDrivers(String driverID, String settings, HttpServletResponse response) {
+    private List<DeviceScanInfo> scanForAllDevices(String driverID, String settings, HttpServletResponse response) {
 
         List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
 
