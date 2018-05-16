@@ -57,12 +57,13 @@ To do this, **uncomment the lines** related to authorization and authentication,
    >     # Set the maximum amount of IPC threads running synchronously. Default is 1
    >     maxThreads = 10
 
+
 ## 2.2 Emoncms module
 
 Inside the projects direcotry is the designated emoncms module, needed to be linked to the emoncms dir
 ~~~
-sudo chown www-data:root -R /opt/emonmuc/projects/emoncms/Modules
-sudo ln -s /opt/emonmuc/projects/emoncms/Modules/muc /var/www/emoncms/Modules/muc
+sudo chown www-data:root -R /opt/emonmuc/web/Modules
+sudo ln -s /opt/emonmuc/web/Modules/muc /var/www/html/emoncms/Modules/muc
 ~~~
 
 Then, check for Database upates in the Administration pane for the necessary tables to be created.
