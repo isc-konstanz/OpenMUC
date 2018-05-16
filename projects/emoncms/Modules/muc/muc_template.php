@@ -20,10 +20,11 @@ class MucTemplate extends DeviceTemplate
     protected function load_template_list($userid) {
         $list = array();
         
-        $it = new RecursiveDirectoryIterator($this->get_template_dir());
+        $dir = $this->get_template_dir();
+        $it = new RecursiveDirectoryIterator($dir);
         foreach (new RecursiveIteratorIterator($it) as $file) {
             if ($file->getExtension() == "json") {
-                $type = pathinfo(substr(strstr($file, $this->get_template_dir()), 24), PATHINFO_DIRNAME).'/'.pathinfo($file, PATHINFO_FILENAME);
+                $type = substr(pathinfo($file, PATHINFO_DIRNAME), strlen($dir)).'/'.pathinfo($file, PATHINFO_FILENAME);
                 $list[$type] = $this->get_template($userid, $type);
             }
         }
@@ -33,7 +34,7 @@ class MucTemplate extends DeviceTemplate
     public function get_template($userid, $type) {
         $file = $this->get_template_dir().$type.".json";
         if (file_exists($file)) {
-            $template = json_decode($file);
+            $template = json_decode(file_get_contents($file));
             if (is_object($template)) {
                 if (empty($template->options)) {
                     $template->options = array();

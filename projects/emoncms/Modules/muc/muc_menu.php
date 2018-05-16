@@ -1,6 +1,6 @@
 <?php
     $domain = "messages";
-    bindtextdomain($domain, "Modules/feed/locale");
+    bindtextdomain($domain, "Modules/muc/locale");
     bind_textdomain_codeset($domain, 'UTF-8');
 
     $menu_dropdown_config[] = array(
