@@ -32,7 +32,7 @@ class MucThing extends DeviceThing
     }
 
     public function get_item_list($device) {
-        $file = $this->get_template_dir().$type.".json";
+        $file = $this->get_template_dir().$device['type'].".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
         } else {
