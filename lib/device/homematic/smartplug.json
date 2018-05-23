@@ -36,7 +36,20 @@
             ],
             "mandatory": true,
             "syntax": "deviceSettings"
+        },
+        {
+            "id": "defaultState",
+            "name": "Default State",
+            "description": "Default State of the Homematic Device after Connection",
+            "type": "selection",
+            "select": [
+                { "name": "On", "value": "true" },
+                { "name": "Off", "value": "false" }
+            ],
+            "mandatory": false,
+            "syntax": "deviceSettings"
         }
+        
     ],
     
     "items": [
