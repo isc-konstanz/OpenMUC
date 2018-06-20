@@ -1,6 +1,5 @@
 package org.openmuc.framework.driver.csv;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,15 +9,16 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.options.Preferences;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.driver.csv.channel.ChannelFactory;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
+import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
+import org.openmuc.framework.driver.csv.settings.DeviceSettings;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -27,45 +27,42 @@ import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Holds complete data of the CSV file.
+ */
 public class CsvDeviceConnection implements Connection {
 
-    private final static Logger logger = LoggerFactory.getLogger(CsvDeviceConnection.class);
-//    private static final String COMMENT = "#";
+    private static final Logger logger = LoggerFactory.getLogger(CsvDeviceConnection.class);
 
-    private HashMap<String, CsvChannel> channelMap = new HashMap<String, CsvChannel>();
+    /** Map holds all data of the csv file */
+    private HashMap<String, CsvChannel> channelMap = new HashMap<>();
 
-    /** Key = column name, Value = List of all values */
-    private Map<String, List<String>> data;
-    private Preferences settings;
+    /** Map containing 'column name' as key and 'list of all column data' as value */
+    private final Map<String, List<String>> data;
+
+    private final DeviceSettings settings;
 
     public CsvDeviceConnection(String deviceAddress, String deviceSettings)
             throws ConnectionException, ArgumentSyntaxException {
 
-        logger.debug("#### deviceAddress: " + deviceAddress);
-        settings = CsvDriver.info.parseDeviceSettings(deviceSettings);
-
-        try {
-            data = CsvFileReader.readCsvFile(deviceAddress);
-            channelMap = ChannelFactory.createChannelMap(data, settings);
-        } catch (IOException e) {
-            throw new ConnectionException(e);
-        }
-
+        this.settings = new DeviceSettings(CsvDriver.info.parseDeviceSettings(deviceSettings));
+        this.data = CsvFileReader.readCsvFile(deviceAddress);
+        this.channelMap = ChannelFactory.createChannelMap(data, settings);
     }
 
     @Override
     public List<ChannelScanInfo> scanForChannels(String settings)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
 
-        logger.debug("#### scan for channels called. settings: " + settings);
+        logger.info("Scan for channels called. Settings: " + settings);
 
-        List<ChannelScanInfo> channels = new ArrayList<ChannelScanInfo>();
+        List<ChannelScanInfo> channels = new ArrayList<>();
         String channelId;
         Iterator<String> keys = data.keySet().iterator();
 
         while (keys.hasNext()) {
-            channelId = (String) keys.next();
-            ChannelScanInfo channel = new ChannelScanInfo(channelId, channelId, ValueType.DOUBLE, null);
+            channelId = keys.next();
+            final ChannelScanInfo channel = new ChannelScanInfo(channelId, channelId, ValueType.DOUBLE, null);
             channels.add(channel);
         }
 
@@ -85,26 +82,11 @@ public class CsvDeviceConnection implements Connection {
             }
             else {
 
-                // TODO nicht für jeden channel prüfen (gilt für device
-
                 double value = Double.NaN;
-                
-                ESampleMode samplingMode = ESampleMode.valueOf(settings.getString("samplingmode").toUpperCase());
-                try {
-                    if (samplingMode.equals(ESampleMode.HHMMSS)) {
-                        value = channel.readValue(samplingTime);
-                    }
-                    else if (samplingMode.equals(ESampleMode.UNIXTIMESTAMP)) {
-                        value = channel.readValue(samplingTime);
-                    }
-                    else if (samplingMode.equals(ESampleMode.LINE)) {
-                        value = channel.readValue(samplingTime);
-                    }
-                    else {
-                        throw new ConnectionException(
-                                "SamplingMode: '" + samplingMode + "' not supported yet!");
-                    }
 
+                try {
+
+                    value = channel.readValue(samplingTime);
                     container.setRecord(new Record(new DoubleValue(value), samplingTime, Flag.VALID));
 
                 } catch (NoValueReceivedYetException e) {
@@ -115,7 +97,7 @@ public class CsvDeviceConnection implements Connection {
                     container.setRecord(
                             new Record(new DoubleValue(value), samplingTime, Flag.DRIVER_ERROR_READ_FAILURE));
                 } catch (CsvException e) {
-                    logger.error("TimeTravelException", e);
+                    logger.error("CsvException", e);
                     container.setRecord(
                             new Record(new DoubleValue(value), samplingTime, Flag.DRIVER_THREW_UNKNOWN_EXCEPTION));
                 }
@@ -129,20 +111,18 @@ public class CsvDeviceConnection implements Connection {
     @Override
     public void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
             throws UnsupportedOperationException, ConnectionException {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Object write(List<ChannelValueContainer> containers, Object containerListHandle)
             throws UnsupportedOperationException, ConnectionException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void disconnect() {
-
+        // nothing to do here, no open file stream since complete file is read during connection.
     }
 
 }

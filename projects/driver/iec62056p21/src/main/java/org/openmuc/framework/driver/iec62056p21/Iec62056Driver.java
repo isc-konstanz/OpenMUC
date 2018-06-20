@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -21,92 +21,112 @@
 package org.openmuc.framework.driver.iec62056p21;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.driver.iec62056p21.options.Iec62056DevicePreferences;
-import org.openmuc.framework.driver.iec62056p21.options.Iec62056DeviceScanPreferences;
-import org.openmuc.framework.driver.iec62056p21.options.Iec62056DriverInfo;
-import org.openmuc.framework.driver.iec62056p21.serial.SerialSettings;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
+import org.openmuc.j62056.DataMessage;
+import org.openmuc.j62056.DataSet;
+import org.openmuc.j62056.Iec21Port;
+import org.openmuc.j62056.Iec21Port.Builder;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
 public final class Iec62056Driver implements DriverService {
-    private final static Logger logger = LoggerFactory.getLogger(Iec62056Driver.class);
-    private final Iec62056DriverInfo info = Iec62056DriverInfo.getInfo();
 
-    private final Map<String, Iec62056Connection> connections = new HashMap<String, Iec62056Connection>();
-    
-    public Iec62056Driver() {
-        logger.debug("IEC 62056 part 21 Driver instantiated. Expecting rxtxserial.so in: " + 
-                System.getProperty("java.library.path") + " for serial connections.");
-    }
+    private static final Logger logger = LoggerFactory.getLogger(Iec62056Driver.class);
+
+    private static final String BAUD_RATE_CHANGE_DELAY = "-d";
+    private static final String TIMEOUT_PARAM = "-t";
+    private static final String RETRIES_PARAM = "-r";
+    private static final String INITIAL_BAUD_RATE = "-bd";
+    private static final String DEVICE_ADDRESS = "-a";
+    private static final String FIXED_BAUD_RATE = "-fbd";
+    private static final String REQUEST_START_CHARACTER = "-rsc";
+    private static final String READ_STANDARD = "-rs";
+
+    private String serialPortName = "";
+    private int baudRateChangeDelay = 0;
+    private int timeout = 2000;
+    private int retries = 1;
+    private int initialBaudRate = -1;
+    private boolean fixedBaudRate = false;
+    private static final boolean VERBOSE = false;
+    private String deviceAddress = "";
+    private String requestStartCharacter = "";
+    private boolean readStandard = false;
+
+    private static final String DRIVER_ID = "iec62056p21";
+    private static final String DRIVER_DESCRIPTION = "This driver can read meters using IEC 62056-21 Mode A, B and C.";
+    private static final String DEVICE_ADDRESS_SYNTAX = "Synopsis: <serial_port>\nExamples: /dev/ttyS0 (Unix), COM1 (Windows)";
+
+    private static final String SETTINGS = "[" + BAUD_RATE_CHANGE_DELAY + " <baud_rate_change_delay>] [" + TIMEOUT_PARAM
+            + " <timeout>] [" + RETRIES_PARAM + " <number_of_read_retries>] [" + INITIAL_BAUD_RATE
+            + " <initial_baud_rate>] [" + DEVICE_ADDRESS + " <device_address>] [" + FIXED_BAUD_RATE + "] ["
+            + REQUEST_START_CHARACTER + " <request_message_start_character>]\n" + BAUD_RATE_CHANGE_DELAY
+            + " sets the waiting time between a baude rate change, default: 0; \n" + TIMEOUT_PARAM
+            + " sets the response timeout, default: 2000\n" + INITIAL_BAUD_RATE
+            + " sets a initial baud rate e.g. for devices with modem configuration, default: 300\n" + DEVICE_ADDRESS
+            + " is mostly needed for devices with RS485, default: empty\n" + FIXED_BAUD_RATE
+            + " activates fixed baud rate, default: deactivated\n" + REQUEST_START_CHARACTER
+            + " Used for manufacture specific request messages\n" + READ_STANDARD
+            + " Reads the standard message and the manufacture specific message. Only if " + REQUEST_START_CHARACTER
+            + " is setetd\n";
+    private static final String SETTINGS_SYNTAX = "Synopsis: " + SETTINGS;
+    private static final String CHANNEL_ADDRESS_SYNTAX = "Synopsis: <data_set_id>";
+    private static final String DEVICE_SCAN_SETTINGS_SYNTAX = "Synopsis: <serial_port> " + SETTINGS;
+
+    private static final DriverInfo INFO = new DriverInfo(DRIVER_ID, DRIVER_DESCRIPTION, DEVICE_ADDRESS_SYNTAX,
+            SETTINGS_SYNTAX, CHANNEL_ADDRESS_SYNTAX, DEVICE_SCAN_SETTINGS_SYNTAX);
 
     @Override
     public DriverInfo getInfo() {
-        return info;
+        return INFO;
     }
 
     @Override
-    public void scanForDevices(String settingsStr, DriverDeviceScanListener listener)
+    public void scanForDevices(String settings, DriverDeviceScanListener listener)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
-        
-        Iec62056DeviceScanPreferences settings = info.getDeviceScanPreferences(settingsStr);
+        handleParameter(settings, true);
 
-        SerialSettings serialSettings = settings.getSerialSettings();
-        
-        Iec62056Connection connection;
-        synchronized(connections) {
-            if (connections.containsKey(serialSettings.getPort())) {
-                connection = connections.get(serialSettings.getPort());
-            }
-            else {
-                connection = new Iec62056Connection(serialSettings);
-                connections.put(serialSettings.getPort(), connection);
-            }
+        Iec21Port iec21Port = null;
+        Builder iec21PortBuilder = getConfiguredBuilder();
+
+        try {
+            iec21Port = iec21PortBuilder.buildAndOpen();
+        } catch (IOException e) {
+            logger.error("Failed to open serial port: " + e.getMessage());
+            System.exit(1);
         }
 
-        logger.debug("Scanning for devices at {}", serialSettings.getPort());
-        synchronized(connection) {
-            try {
-                if (connection.open()) {
-                    Integer timeout = settings.getTimeout();
-                    if (timeout != null && timeout != connection.getTimeout()) {
-                        connection.setTimeout(timeout);
-                    }
-                    
-                    List<Iec62056DataSet> dataSets = connection.read(settings);
-                    
-                    listener.deviceFound(new DeviceScanInfo("", settingsStr,
-                            dataSets.get(0).getId().replaceAll("\\p{Cntrl}", "")));
-                }
-            } catch (IOException e) {
-                logger.debug("Scanning channels for device \"{}\" at {} failed: {}", 
-                		settings.getAddress(), serialSettings.getPort(), e.getMessage());
+        try {
+            DataMessage dataMessage = iec21Port.read();
+            List<DataSet> dataSets = dataMessage.getDataSets();
+            StringBuilder deviceSettings = new StringBuilder();
 
-                throw new ScanException(e);
-            } catch (TimeoutException e) {
-                logger.debug("Timeout while scanning channels for device \"{}\" at {} failed: {}", 
-                		settings.getAddress(), serialSettings.getPort(), e.getMessage());
-                
-                throw new ScanException(e);
-            } finally {
-                connection.close();
+            if (baudRateChangeDelay > 0) {
+                deviceSettings.append(' ').append(BAUD_RATE_CHANGE_DELAY).append(' ').append(baudRateChangeDelay);
             }
+            String deviceSettingsString = deviceSettings.toString().trim();
+
+            listener.deviceFound(new DeviceScanInfo(serialPortName, deviceSettingsString,
+                    dataSets.get(0).getAddress().replaceAll("\\p{Cntrl}", "")));
+
+        } catch (IOException e) {
+            throw new ScanException(e);
+        } finally {
+            iec21Port.close();
         }
+
     }
 
     @Override
@@ -115,39 +135,106 @@ public final class Iec62056Driver implements DriverService {
     }
 
     @Override
-    public Connection connect(String addressStr, String settingsStr)
+    public Connection connect(String deviceAddress, String settings)
             throws ArgumentSyntaxException, ConnectionException {
+        serialPortName = deviceAddress;
+        handleParameter(settings, false);
+        Builder configuredBuilder = getConfiguredBuilder();
+        return new Iec62056Connection(configuredBuilder, retries, readStandard, requestStartCharacter);
+    }
 
-        Iec62056DevicePreferences settings = info.getDevicePreferences(addressStr, settingsStr);
+    private Builder getConfiguredBuilder() {
+        return new Iec21Port.Builder(serialPortName).setBaudRateChangeDelay(baudRateChangeDelay)
+                .setTimeout(timeout)
+                .enableFixedBaudrate(fixedBaudRate)
+                .setInitialBaudrate(initialBaudRate)
+                .setDeviceAddress(deviceAddress)
+                .enableVerboseMode(VERBOSE)
+                .setRequestStartCharacters(requestStartCharacter);
+    }
 
-        SerialSettings serialSettings = settings.getSerialSettings();
-        
-        Iec62056Connection connection;
-        synchronized(connections) {
-            if (connections.containsKey(serialSettings.getPort())) {
-                connection = connections.get(serialSettings.getPort());
+    private void handleParameter(String settings, boolean isScan) throws ArgumentSyntaxException {
+        if (isScan && settings.isEmpty()) {
+            throw new ArgumentSyntaxException("No parameter given. At least serial port is needed");
+        }
+
+        String[] args = settings.split("\\s+", 0);
+
+        if (isScan) {
+            serialPortName = args[0];
+            if (serialPortName.isEmpty()) {
+                throw new ArgumentSyntaxException("The <serial_port> has to be specified in the settings");
+            }
+        }
+
+        parseArguments(args);
+        if (requestStartCharacter.isEmpty()) {
+            readStandard = false;
+        }
+
+    }
+
+    private void parseArguments(String[] args) throws ArgumentSyntaxException {
+        for (int i = 0; i < args.length; i++) {
+
+            if (args[i].equals(BAUD_RATE_CHANGE_DELAY)) {
+                ++i;
+                baudRateChangeDelay = getIntValue(args, i, BAUD_RATE_CHANGE_DELAY);
+            }
+            else if (args[i].equals(RETRIES_PARAM)) {
+                ++i;
+                retries = getIntValue(args, i, RETRIES_PARAM);
+            }
+            else if (args[i].equals(TIMEOUT_PARAM)) {
+                ++i;
+                timeout = getIntValue(args, i, TIMEOUT_PARAM);
+            }
+            else if (args[i].equals(INITIAL_BAUD_RATE)) {
+                ++i;
+                initialBaudRate = getIntValue(args, i, INITIAL_BAUD_RATE);
+            }
+            else if (args[i].equals(DEVICE_ADDRESS)) {
+                ++i;
+                deviceAddress = getStringValue(args, i, DEVICE_ADDRESS);
+            }
+            else if (args[i].equals(FIXED_BAUD_RATE)) {
+                fixedBaudRate = true;
+            }
+            else if (args[i].equals(REQUEST_START_CHARACTER)) {
+                ++i;
+                requestStartCharacter = getStringValue(args, i, REQUEST_START_CHARACTER);
+            }
+            else if (args[i].equals(READ_STANDARD)) {
+                readStandard = true;
             }
             else {
-                connection = new Iec62056Connection(serialSettings);
-                connections.put(serialSettings.getPort(), connection);
+                throw new ArgumentSyntaxException("Found unknown argument in settings: " + args[i]);
             }
         }
-        
-        synchronized(connection) {
-            try {
-                connection.open();
-                
-                if (settings.hasVerification()) {
-                    connection.read(settings);
-                }
-            } catch (IOException | TimeoutException e) {
-            	connection.close();
-            	
-                throw new ConnectionException("Failed to open local serial port \"" +serialSettings.getPort() + "\": " + e.getMessage(), e);
-            }
-            logger.debug("Connected to device \"{}\" at {}", settings.getAddress(), serialSettings.getPort());
+    }
+
+    private int getIntValue(String[] args, int i, String parameter) throws ArgumentSyntaxException {
+        int ret;
+        checkParameter(args, i, parameter);
+        try {
+            ret = Integer.parseInt(args[i]);
+        } catch (NumberFormatException e) {
+            throw new ArgumentSyntaxException("Specified value of parameter'" + parameter + "' is not an integer");
         }
-        return new Iec62056Device(connection, settings);
+        return ret;
+    }
+
+    private String getStringValue(String[] args, int i, String parameter) throws ArgumentSyntaxException {
+        String ret;
+        checkParameter(args, i, parameter);
+        ret = args[i];
+        return ret;
+    }
+
+    private void checkParameter(String[] args, int i, String parameter) throws ArgumentSyntaxException {
+        if (i == args.length) {
+            throw new ArgumentSyntaxException("No value was specified after the " + parameter + " parameter");
+        }
     }
 
 }

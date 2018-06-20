@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -23,24 +23,23 @@ package org.openmuc.framework.core.datamanager;
 
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.WriteValueContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 
 public final class WriteValueContainerImpl implements WriteValueContainer, ChannelValueContainer {
 
-    ChannelImpl channel;
+    private final ChannelImpl channel;
     private Value value = null;
     private Flag flag = Flag.DRIVER_ERROR_UNSPECIFIED;
-    Object channelHandle;
-    String channelAddress;
-    String channelSettings;
+    private Object channelHandle;
+    private final String channelAddress;
+    private final String channelSettings;
 
     public WriteValueContainerImpl(ChannelImpl channel) {
         this.channel = channel;
-        channelAddress = channel.config.channelAddress;
-        channelSettings = channel.config.channelSettings;
-        channelHandle = channel.handle;
+        this.channelAddress = channel.config.getChannelAddress();
+        this.channelSettings = channel.config.getChannelSettings();
+        this.channelHandle = channel.handle;
     }
 
     @Override
@@ -59,7 +58,7 @@ public final class WriteValueContainerImpl implements WriteValueContainer, Chann
     }
 
     @Override
-    public Channel getChannel() {
+    public ChannelImpl getChannel() {
         return channel;
     }
 

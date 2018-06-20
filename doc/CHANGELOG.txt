@@ -1,27 +1,71 @@
+v0.17.0 27-02-2018
+------------------
+- OpenMUC now requires Java 1.8 instead of Java 1.7
+- driver Modbus:
+  * changed to j2mod
+  * added Modbus RTU over TCP
+  * fixed bugs
+  * new debug messages
+  * supports more data types
+  * replaced int and short with int16, int32, uint16 and uint32
+- driver IEC 68070:
+  * added writing
+  * more supported data types 
+  * in sampling/read mode only general interrogation command is possible, yet
+- driver EHZ:
+  * can read FNN Basiszaehler
+  * updated libraries
+  * added scan progress
+  * added listening
+- driver DLMS:
+  * updated to new jDLMS
+  * complete refactoring
+  * supports:
+    + more data types
+    + read, write and channel scanning
+    + HLS5 authentication
+    + AES encryption
+    + TCP wrapper
+    + HDLC with serial and TCP communication
+    + LN and SN referencing
+- driver M-Bus / wireless M-Bus:
+  * changed OpenMUC value type to DoubleValue by M-Bus date value type
+- driver IEC 62056:
+  * custom request message possible
+  * added option for reading standard and manufacture specific at "once"
+  * added read retries 
+- REST API:
+  * authentication is mandatory also in HTTP
+  * added get single record field
+  * added get driverId and deviceId from channel
+- WebUI:
+  * plotter: can plot timeseries
+  * channel configurator:
+    + added channel address information in "edit" and "new channel"
+    + fixed "only integer is possible" in set scaling factor
+  * base:
+    + fixed bugs in authentication if username changed
+  * channel access tool:
+    + adds set record button
+- updated OSGi bundles
+- updated libraries of mostly all driver
+- added Modbus server
+- several fixes in Asciilogger, OpenMUC-Core, ...
+
 v0.16.0 10-Oct-2016
 -------------------
-
 - Demo Framework:
-
   * Added sophisticated run script for Linux/Unix that enables start,
     stop, reload etc.
-
   * moved all configuration files to "conf" folder
-
   * Sample app moved to main projects folder
-
   * Dummy driver replaced by general CSV driver
-
 - Several smaller improvements to WebUI and REST server for more
   convenience and better performance
-
 - M-Bus driver now support secondary address reading
-
 - Modbus driver: added support for RTU over TCP
-
 - components.xml of several projects is now generated automatically from
   annotations
-
 - Various minor fixes. Among others to the KNX driver (thanks to
   Daniel Lechner) and the SNMP driver (thanks to Epfianio Ticona).
 
