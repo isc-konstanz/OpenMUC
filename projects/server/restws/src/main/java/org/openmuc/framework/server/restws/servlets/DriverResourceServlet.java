@@ -444,7 +444,8 @@ public class DriverResourceServlet extends GenericServlet {
         return scannedDevicesList;
     }
 
-    private List<DeviceScanInfo> scanForAllDrivers(String driverID, String settings, HttpServletResponse response) {
+    @SuppressWarnings("unused")
+	private List<DeviceScanInfo> scanForAllDrivers(String driverID, String settings, HttpServletResponse response) {
         List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
 
         try {

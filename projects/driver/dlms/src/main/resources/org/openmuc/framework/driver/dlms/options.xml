@@ -153,8 +153,6 @@
       </option>
     </deviceSettings>
     
-    <deviceScanSettings><disabled>true</disabled></deviceScanSettings>
-    
     <channelAddress>
       <syntax>
         <keyValue>false</keyValue>
@@ -191,7 +189,5 @@
         <type>INTEGER</type>
       </option>
     </channelAddress>
-    
-    <channelScanSettings><disabled>true</disabled></channelScanSettings>
   </driver>
 </configuration>

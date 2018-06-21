@@ -65,7 +65,5 @@
         <default>CELSIUS</default>
       </option>
     </channelSettings>
-    
-    <channelScanSettings><disabled>true</disabled></channelScanSettings>
   </driver>
 </configuration>

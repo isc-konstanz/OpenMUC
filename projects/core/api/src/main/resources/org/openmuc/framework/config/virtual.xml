@@ -6,13 +6,5 @@
         Virtual driver, potentially used by applications, without implementing a protocol on its own.
       ]]>
     </description>
-    
-    <deviceAddress><disabled>true</disabled></deviceAddress>
-    <deviceSettings><disabled>true</disabled></deviceSettings>
-    <deviceScanSettings><disabled>true</disabled></deviceScanSettings>
-    
-    <channelAddress><disabled>true</disabled></channelAddress>
-    <channelSettings><disabled>true</disabled></channelSettings>
-    <channelScanSettings><disabled>true</disabled></channelScanSettings>
   </driver>
 </configuration>

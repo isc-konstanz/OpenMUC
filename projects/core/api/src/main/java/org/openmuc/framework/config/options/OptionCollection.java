@@ -52,7 +52,6 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
     private String assignment = ASSIGNMENT_DEFAULT;
     private boolean keyValue = KEY_VAL_DEFAULT;
     private Locale locale = Locale.ENGLISH;
-    private boolean disabled = false;
 
     private int mandatoryOptCount = 0;
 
@@ -108,18 +107,6 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
 
     public void setLocale(Locale locale) {
         this.locale = locale;
-    }
-
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(boolean enable) {
-        this.disabled = enable;
-    }
-
-    public void disable() {
-        this.disabled = true;
     }
 
 	@Override
@@ -298,18 +285,6 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
             String childNodeName = childNode.getNodeName();
             if (childNodeName.equals("#text")) {
                 continue;
-            }
-            else if (childNodeName.equals("disabled")) {
-                String disabledString = childNode.getTextContent().trim().toLowerCase();
-                if (disabledString.equals("true")) {
-                    collection.setDisabled(true);
-                }
-                else if (disabledString.equals("false")) {
-                    collection.setDisabled(false);
-                }
-                else {
-                    throw new ParseException("Option \"disabled\" contains neither \"true\" nor \"false\"");
-                }
             }
             else if (childNodeName.equals("syntax")) {
                 NodeList syntaxNodes = childNode.getChildNodes();
