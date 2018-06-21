@@ -1,33 +1,30 @@
 package org.openmuc.framework.driver.dlms.settings;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.MessageFormat;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openmuc.framework.config.PreferenceType;
+import org.openmuc.framework.config.Preferences;
 
-public class DeviceAddress extends GenericSetting {
+public class DeviceAddress extends Preferences {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeviceAddress.class);
+	public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
 
-    @Option(value = "t", mandatory = true, range = "serial|tcp")
+    @Option("t")
     private String connectionType = null;
 
-    @Option(value = "h", range = "inet_address")
+    @Option("h")
     private InetAddress hostAddress = null;
 
-    @Option(value = "p", range = "int")
+    @Option("p")
     private int port = 4059;
 
-    @Option(value = "hdlc", range = "boolean")
+    @Option("hdlc")
     private boolean useHdlc = false;
 
-    @Option(value = "sp")
+    @Option("sp")
     private String serialPort = "";
 
-    @Option(value = "bd", range = "int")
+    @Option("bd")
     private int baudrate = 9600;
 
     @Option("d")
@@ -42,32 +39,10 @@ public class DeviceAddress extends GenericSetting {
     @Option("pd")
     private int physicalDeviceAddress = 0;
 
-    public DeviceAddress(String deviceAddress) throws ArgumentSyntaxException {
-        int addressLength = parseFields(deviceAddress);
-        if (connectionType.equalsIgnoreCase("tcp")) {
-            if (addressLength == 1) {
-                logger.info(MessageFormat.format(
-                        "No device address setted in configuration, default values will be used: host address = localhost; port = {0}",
-                        port));
-            }
-            if (hostAddress == null) {
-                try {
-                    hostAddress = InetAddress.getLocalHost();
-                } catch (UnknownHostException e) {
-                    throw new ArgumentSyntaxException("Could not set default host address: localhost");
-                }
-            }
-        }
-        else if (connectionType.equalsIgnoreCase("serial")) {
-            if (serialPort.isEmpty()) {
-                throw new ArgumentSyntaxException("No serial port given. e.g. Linux: /dev/ttyUSB0 or Windows: COM12 ");
-            }
-        }
-        else {
-            throw new ArgumentSyntaxException(
-                    "Only 'tcp' and 'serial' are supported connection types, given is: " + connectionType);
-        }
-    }
+	@Override
+	public PreferenceType getPreferenceType() {
+		return TYPE;
+	}
 
     public String getConnectionType() {
         return connectionType;

@@ -1,10 +1,13 @@
 package org.openmuc.framework.driver.dlms.settings;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.PreferenceType;
+import org.openmuc.framework.config.Preferences;
 
-public class DeviceSettings extends GenericSetting {
+public class DeviceSettings extends Preferences {
 
-    @Option(value = "ld", range = "int")
+	public static final PreferenceType TYPE = PreferenceType.SETTINGS_DEVICE;
+
+    @Option("ld")
     private int logicalDeviceAddress = 1;
 
     @Option("cid")
@@ -40,9 +43,10 @@ public class DeviceSettings extends GenericSetting {
     @Option("did")
     private long deviceId = 1;
 
-    public DeviceSettings(String settings) throws ArgumentSyntaxException {
-        super.parseFields(settings);
-    }
+	@Override
+	public PreferenceType getPreferenceType() {
+		return TYPE;
+	}
 
     public int getLogicalDeviceAddress() {
         return logicalDeviceAddress;

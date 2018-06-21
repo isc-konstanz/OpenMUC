@@ -28,7 +28,7 @@ import com.pi4j.io.gpio.PinState;
 
 public class DeviceSettings extends Preferences {
 
-	public static final PreferenceType TYPE_PREF = PreferenceType.SETTINGS_DEVICE;
+	public static final PreferenceType TYPE = PreferenceType.SETTINGS_DEVICE;
 
 	@Option
     private PinState shutdownState;
@@ -44,7 +44,7 @@ public class DeviceSettings extends Preferences {
 
 	@Override
 	public PreferenceType getPreferenceType() {
-		return TYPE_PREF;
+		return TYPE;
 	}
 
     public PinState getShutdownState() {

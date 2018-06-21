@@ -27,14 +27,14 @@ import com.pi4j.temperature.TemperatureScale;
 
 public class ChannelSettings extends Preferences {
 
-	public static final PreferenceType TYPE_PREF = PreferenceType.SETTINGS_CHANNEL;
+	public static final PreferenceType TYPE = PreferenceType.SETTINGS_CHANNEL;
 
 	@Option
     private TemperatureScale unit = TemperatureScale.CELSIUS;
 
 	@Override
 	public PreferenceType getPreferenceType() {
-		return TYPE_PREF;
+		return TYPE;
 	}
 
     public TemperatureScale getUnit() {

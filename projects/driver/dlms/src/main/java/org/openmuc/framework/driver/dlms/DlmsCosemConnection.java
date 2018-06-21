@@ -27,6 +27,8 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
+import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.driver.dlms.settings.DeviceAddress;
 import org.openmuc.framework.driver.dlms.settings.DeviceSettings;
@@ -57,8 +59,10 @@ class DlmsCosemConnection implements Connection {
 
     public DlmsCosemConnection(String deviceAddress, String settings)
             throws ArgumentSyntaxException, ConnectionException {
-        this.deviceAddress = new DeviceAddress(deviceAddress);
-        this.deviceSettings = new DeviceSettings(settings);
+
+        DriverInfo info = DriverInfoFactory.getPreferences(DlmsCosemConnection.class);
+        this.deviceAddress = info.parse(deviceAddress, DeviceAddress.class);
+        this.deviceSettings = info.parse(settings, DeviceSettings.class);
 
         this.dlmsConnection = Connector.buildDlmsConection(this.deviceAddress, deviceSettings);
 

@@ -38,7 +38,7 @@ public class DlmsCosemDriver implements DriverService {
 
     private static final Logger logger = LoggerFactory.getLogger(DlmsCosemDriver.class);
 
-    private final DriverInfo info = DriverInfoFactory.getInfo(DlmsCosemDriver.class);
+    private final DriverInfo info = DriverInfoFactory.getPreferences(DlmsCosemDriver.class);
 
     public DlmsCosemDriver() {
         logger.debug("DLMS Driver instantiated. Expecting rxtxserial.so in: " + System.getProperty("java.library.path")

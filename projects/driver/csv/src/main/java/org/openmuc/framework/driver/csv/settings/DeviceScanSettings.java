@@ -8,14 +8,14 @@ import org.openmuc.framework.config.Preferences;
 
 public class DeviceScanSettings extends Preferences {
 
-	public static final PreferenceType TYPE_PREF = PreferenceType.SETTINGS_SCAN_DEVICE;
+	public static final PreferenceType TYPE = PreferenceType.SETTINGS_SCAN_DEVICE;
 
 	@Option
 	private String path;
 
 	@Override
 	public PreferenceType getPreferenceType() {
-		return TYPE_PREF;
+		return TYPE;
 	}
 
     public File[] listFiles() throws ArgumentSyntaxException {

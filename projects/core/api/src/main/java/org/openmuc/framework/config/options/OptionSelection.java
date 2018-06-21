@@ -22,7 +22,6 @@ package org.openmuc.framework.config.options;
 
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ParseException;
@@ -40,18 +39,18 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class OptionSelection {
+public class OptionSelection extends LinkedHashMap<Value, String>{
+	private static final long serialVersionUID = 2163129000924486706L;
 
-    private static String DELIMITER = ",";
+	private static String DELIMITER = ",";
     private static String KEY_VAL_SEP = ":";
 
-    private final Map<Value, String> options;
     private final ValueType type;
     
     private boolean validate = true;
 
     public OptionSelection(ValueType type) {
-        this.options = new LinkedHashMap<Value, String>();
+    	super();
         this.type = type;
     }
 
@@ -102,7 +101,7 @@ public class OptionSelection {
                     throw new ArgumentSyntaxException(MessageFormat.format("Selection value \"{0}\" is not of type: {1}.", 
                             selection, type.name().toLowerCase()));
                 }
-                options.put(val, desc);
+                put(val, desc);
             }
             else {
                 throw new ArgumentSyntaxException("Selection is not a key value par of type "
@@ -113,7 +112,7 @@ public class OptionSelection {
 
     public boolean contains(Value value) {
         if (value != null) {
-            for (Value option : options.keySet()) {
+            for (Value option : keySet()) {
                 switch (this.type) {
                 case BOOLEAN:
                     if (option.asBoolean() == value.asBoolean()) {
@@ -172,7 +171,7 @@ public class OptionSelection {
     }
 
     public void addValue(Value value, String description) {
-        this.options.put(value, description);
+        this.put(value, description);
     }
 
     public void addBoolean(boolean value, String description) {
@@ -205,15 +204,6 @@ public class OptionSelection {
 
     public void addString(String value, String description) {
         this.addValue(new StringValue(value), description);
-    }
-    
-    public Map<Value, String> getOptions() {
-        return options;
-    }
-
-    @Override
-    public String toString() {
-        return options.toString();
     }
 
     static OptionSelection getFromDomNode(Node node, ValueType type) throws ParseException {

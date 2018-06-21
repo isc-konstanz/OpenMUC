@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.DriverInfoFactory;
+import org.openmuc.framework.config.DriverPreferences;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -30,6 +32,8 @@ class ReadHandle {
 
     private static final Logger logger = LoggerFactory.getLogger(ReadHandle.class);
 
+    private final DriverPreferences prefs = DriverInfoFactory.getPreferences(DlmsCosemConnection.class);
+
     private final DlmsConnection dlmsConnection;
 
     public ReadHandle(DlmsConnection dlmsConnection) {
@@ -51,7 +55,7 @@ class ReadHandle {
         List<AttributeAddress> getParams = new ArrayList<>(readList.size());
         for (ChannelRecordContainer recordContainer : readList) {
             try {
-                ChannelAddress channelAddress = new ChannelAddress(recordContainer.getChannelAddress());
+                ChannelAddress channelAddress = prefs.get(recordContainer.getChannelAddress(), ChannelAddress.class);
                 getParams.add(channelAddress.getAttributeAddress());
             } catch (ArgumentSyntaxException e) {
                 throw new ConnectionException(e);

@@ -13,8 +13,6 @@ import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.Map;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.openmuc.framework.data.Value;
 
 
@@ -92,7 +90,7 @@ public abstract class Preferences {
             return value.asString();
         }
         else if (type.isAssignableFrom(byte[].class)) {
-            return extractByteArray(value);
+            return value.asByteArray();
         }
         else if (type.isAssignableFrom(InetAddress.class)) {
             return extractInetAddress(value);
@@ -100,19 +98,6 @@ public abstract class Preferences {
         else {
         	return extractValueOf(type, value);
         }
-    }
-
-    private byte[] extractByteArray(Value value) throws ArgumentSyntaxException {
-        if (!value.asString().startsWith("0x")) {
-            return value.asByteArray();
-        }
-
-        try {
-            return DatatypeConverter.parseHexBinary(value.asString().substring(2).trim());
-        } catch (IllegalArgumentException e) {
-            throw argumentSyntaxException(value, byte[].class.getSimpleName());
-        }
-
     }
 
     private InetAddress extractInetAddress(Value value) throws ArgumentSyntaxException {

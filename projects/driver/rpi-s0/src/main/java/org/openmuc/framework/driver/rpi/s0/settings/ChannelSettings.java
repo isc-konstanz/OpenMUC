@@ -25,7 +25,7 @@ import org.openmuc.framework.config.Preferences;
 
 public class ChannelSettings extends Preferences {
 
-	public static final PreferenceType TYPE_PREF = PreferenceType.SETTINGS_CHANNEL;
+	public static final PreferenceType TYPE = PreferenceType.SETTINGS_CHANNEL;
 
 	@Option
     private int impulses;
@@ -38,7 +38,7 @@ public class ChannelSettings extends Preferences {
 
 	@Override
 	public PreferenceType getPreferenceType() {
-		return TYPE_PREF;
+		return TYPE;
 	}
 
     public int getImpulses() {

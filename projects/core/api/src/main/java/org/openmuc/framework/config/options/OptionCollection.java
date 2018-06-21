@@ -20,14 +20,18 @@
  */
 package org.openmuc.framework.config.options;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.BooleanValue;
+import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.FloatValue;
@@ -208,12 +212,6 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
         
         Value value;
         switch (type) {
-        case BOOLEAN:
-            value = new BooleanValue(Boolean.valueOf(valueStr));
-            break;
-        case BYTE:
-            value = new ByteValue(Byte.valueOf(valueStr));
-            break;
         case DOUBLE:
             value = new DoubleValue(Double.valueOf(valueStr));
             break;
@@ -228,6 +226,26 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
             break;
         case SHORT:
             value = new ShortValue(Short.valueOf(valueStr));
+            break;
+        case BYTE:
+            value = new ByteValue(Byte.valueOf(valueStr));
+            break;
+        case BOOLEAN:
+            value = new BooleanValue(Boolean.valueOf(valueStr));
+            break;
+        case BYTE_ARRAY:
+        	byte[] arr;
+            if (!valueStr.startsWith("0x")) {
+            	arr = valueStr.getBytes(StandardCharsets.US_ASCII);
+            }
+            else {
+                try {
+                    arr = DatatypeConverter.parseHexBinary(valueStr.substring(2).trim());
+                } catch (IllegalArgumentException e) {
+                    throw new ArgumentSyntaxException("Unable to parse value as byte array: " + valueStr);
+                }
+            }
+            value = new ByteArrayValue(arr);
             break;
         case STRING:
             value = new StringValue(valueStr);
@@ -251,14 +269,33 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                 boolean mandatory = option.isMandatory();
                 String key = option.getKey();
                 
-                String syntax;
-                if (keyValue) {
-                    syntax = key + assignment + '<' + key.toLowerCase(locale) + '>';
+                String value;
+                int i = 0;
+                if (option.getValueSelection() != null) {
+                	StringBuilder ssb = new StringBuilder();
+                	for (Value val : option.getValueSelection().keySet()) {
+                		if (i>0) ssb.append('/');
+                		i++;
+                		
+                		ssb.append(val.asString());
+                	}
+                	value = ssb.toString();
+                }
+                else if (keyValue) {
+                	value = option.getType().name().replace('_', ' ').toLowerCase(locale);
                 }
                 else {
-                    syntax = '<' + key + '>';
+                	value = key;
                 }
-
+                
+                String syntax;
+                if (keyValue) {
+                    syntax = key + assignment + '<' + value + '>';
+                }
+                else {
+                    syntax = '<' + value + '>';
+                }
+                
                 if (!mandatory) sb.append('[');
                 if (!first) {
                     sb.append(separator);

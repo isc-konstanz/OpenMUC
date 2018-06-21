@@ -25,7 +25,7 @@ import org.openmuc.framework.config.Preferences;
 
 public class DeviceAddress extends Preferences {
 
-	public static final PreferenceType TYPE_PREF = PreferenceType.ADDRESS_DEVICE;
+	public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
 
 	@Option
     private int pin;
@@ -35,7 +35,7 @@ public class DeviceAddress extends Preferences {
 
 	@Override
 	public PreferenceType getPreferenceType() {
-		return TYPE_PREF;
+		return TYPE;
 	}
 
     public int getPin() {
