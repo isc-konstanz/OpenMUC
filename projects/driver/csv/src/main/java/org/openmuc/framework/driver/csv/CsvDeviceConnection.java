@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
+import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
@@ -40,12 +42,12 @@ public class CsvDeviceConnection implements Connection {
     /** Map containing 'column name' as key and 'list of all column data' as value */
     private final Map<String, List<String>> data;
 
-    private final DeviceSettings settings;
-
     public CsvDeviceConnection(String deviceAddress, String deviceSettings)
             throws ConnectionException, ArgumentSyntaxException {
-
-        this.settings = new DeviceSettings(CsvDriver.info.parseDeviceSettings(deviceSettings));
+    	
+    	DriverInfo info = DriverInfoFactory.getInfo(CsvDeviceConnection.class);
+    	DeviceSettings settings = info.parse(deviceSettings, DeviceSettings.class);
+    	
         this.data = CsvFileReader.readCsvFile(deviceAddress);
         this.channelMap = ChannelFactory.createChannelMap(data, settings);
     }

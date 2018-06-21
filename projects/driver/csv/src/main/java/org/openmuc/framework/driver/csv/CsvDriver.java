@@ -1,11 +1,11 @@
 package org.openmuc.framework.driver.csv;
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.csv.settings.DeviceScanSettings;
@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
 @Component
 public class CsvDriver implements DriverService {
 
-    final static DriverInfo info = new DriverInfo(CsvDriver.class.getResourceAsStream("options.xml"));
-
     private final static Logger logger = LoggerFactory.getLogger(CsvDriver.class);
 
-    private static final String DEFAULT_DEVICE_SETTINGS = DeviceSettings.SAMPLINGMODE_KEY + "="
+    private final DriverInfo info = DriverInfoFactory.getInfo(CsvDriver.class);
+
+    private static final String DEFAULT_DEVICE_SETTINGS = DeviceSettings.SAMPLING_MODE + "="
             + ESamplingMode.LINE.toString();
 
     private boolean isDeviceScanInterrupted = false;
@@ -54,8 +54,8 @@ public class CsvDriver implements DriverService {
 
         resetDeviceScanInterrupted();
 
-        final DeviceScanSettings settings = new DeviceScanSettings(info.parseDeviceScanSettings(scanSettings));
-        final File[] listOfFiles = settings.path().listFiles();
+        final DeviceScanSettings settings = info.parse(scanSettings, DeviceScanSettings.class);
+        final File[] listOfFiles = settings.listFiles();
 
         if (listOfFiles != null) {
 

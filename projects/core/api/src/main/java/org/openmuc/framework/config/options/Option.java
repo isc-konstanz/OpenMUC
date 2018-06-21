@@ -141,13 +141,13 @@ public class Option {
                     continue;
                 }
                 else if (childNodeName.equals("name")) {
-                    option.name = childNode.getTextContent();
+                    option.name = childNode.getTextContent().trim();
                 }
                 else if (childNodeName.equals("description")) {
                     option.description = DriverInfo.trimTextFromDomNode(childNode);
                 }
                 else if (childNodeName.equals("mandatory")) {
-                    String mandatoryString = childNode.getTextContent().toLowerCase();
+                    String mandatoryString = childNode.getTextContent().trim().toLowerCase();
                     if (mandatoryString.equals("true")) {
                         option.mandatory = true;
                     }
@@ -159,7 +159,7 @@ public class Option {
                     }
                 }
                 else if (childNodeName.equals("type")) {
-                    String valueTypeString = childNode.getTextContent().toUpperCase();
+                    String valueTypeString = childNode.getTextContent().trim().toUpperCase();
 
                     try {
                         option.type = ValueType.valueOf(valueTypeString);
@@ -181,7 +181,7 @@ public class Option {
                 option.name = id;
             }
             if (valueDefaultNode != null) {
-                Value valueDefault = new StringValue(valueDefaultNode.getTextContent());
+                Value valueDefault = new StringValue(valueDefaultNode.getTextContent().trim());
                 
                 // Verify default values to be of the specified value type
                 switch (option.type) {

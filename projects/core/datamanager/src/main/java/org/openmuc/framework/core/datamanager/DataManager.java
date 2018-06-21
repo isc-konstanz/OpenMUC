@@ -56,6 +56,7 @@ import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DeviceScanListener;
 import org.openmuc.framework.config.DriverConfig;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.DriverNotAvailableException;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.config.RootConfig;
@@ -1245,7 +1246,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 availableDrivers.add(activeDriverName);
             }
         }
-        availableDrivers.add(DriverInfo.VIRTUAL);
+        availableDrivers.add(DriverInfoFactory.VIRTUAL);
         
         return availableDrivers;
     }
@@ -1343,8 +1344,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
     @Override
     public DriverInfo getDriverInfo(String driverId) throws DriverNotAvailableException {
-    	if (driverId.equals(DriverInfo.VIRTUAL)) {
-    		return DriverInfo.getVirtualDriverInfo();
+    	if (driverId.equals(DriverInfoFactory.VIRTUAL)) {
+    		return DriverInfoFactory.getVirtualInfo();
     	}
         DriverService driver = activeDrivers.get(driverId);
         if (driver == null) {

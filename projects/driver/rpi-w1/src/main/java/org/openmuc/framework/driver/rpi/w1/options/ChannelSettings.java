@@ -20,32 +20,25 @@
  */
 package org.openmuc.framework.driver.rpi.w1.options;
 
-import org.openmuc.framework.config.options.Preferences;
+import org.openmuc.framework.config.PreferenceType;
+import org.openmuc.framework.config.Preferences;
 
 import com.pi4j.temperature.TemperatureScale;
 
-public class W1ChannelPreferences {
+public class ChannelSettings extends Preferences {
 
-    public static final String UNIT_KEY = "unit";
-    public static final TemperatureScale UNIT_DEFAULT = TemperatureScale.CELSIUS;
+	public static final PreferenceType TYPE_PREF = PreferenceType.SETTINGS_CHANNEL;
 
-    private final String settingsStr;
-    private final Preferences settings;
+	@Option
+    private TemperatureScale unit = TemperatureScale.CELSIUS;
 
-    public W1ChannelPreferences(String settingsStr, Preferences settings) {
-        this.settingsStr = settingsStr;
-        this.settings = settings;
-    }
-
-    public boolean equals(String settingsStr) {
-        return this.settingsStr.equals(settingsStr);
-    }
+	@Override
+	public PreferenceType getPreferenceType() {
+		return TYPE_PREF;
+	}
 
     public TemperatureScale getUnit() {
-        if (settings.contains(UNIT_KEY)) {
-            return TemperatureScale.valueOf(settings.getString(UNIT_KEY).toUpperCase());
-        }
-        return UNIT_DEFAULT;
+        return unit;
     }
 
 }

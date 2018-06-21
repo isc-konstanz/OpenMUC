@@ -24,13 +24,14 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
+import org.openmuc.framework.config.DriverPreferences;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.w1.options.W1ChannelPreferences;
-import org.openmuc.framework.driver.rpi.w1.options.W1DriverInfo;
+import org.openmuc.framework.driver.rpi.w1.options.ChannelSettings;
 import org.openmuc.framework.driver.rpi.w1.options.W1Type;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
@@ -48,7 +49,7 @@ import com.pi4j.io.w1.W1Device;
 @Component
 public class W1Connection implements Connection {
     private final static Logger logger = LoggerFactory.getLogger(W1Connection.class);
-    private final W1DriverInfo info = W1DriverInfo.getInfo();
+    private final DriverPreferences prefs = DriverInfoFactory.getPreferences(W1Connection.class);
 
     /**
      * Interface used by {@link W1Connection} to notify the {@link W1Driver} about events
@@ -87,13 +88,13 @@ public class W1Connection implements Connection {
 
         for (ChannelRecordContainer container : containers) {
             try {
-                W1ChannelPreferences prefs = info.getChannelPreferences(container);
-
+                ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
+                
                 Value value = null;
                 switch(type) {
                 case TEMPERATURE_SENSOR:
                     TemperatureSensor sensor = (TemperatureSensor) device;
-                    Double temperature = sensor.getTemperature(prefs.getUnit());
+                    Double temperature = sensor.getTemperature(settings.getUnit());
                     
                     if (temperature != null) {
                         // Skip temperature readings of exactly 85, as they are commonly missreadings

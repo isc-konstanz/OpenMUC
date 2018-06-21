@@ -18,26 +18,32 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.w1.options;
+package org.openmuc.framework.driver.rpi.gpio.settings;
 
-import org.openmuc.framework.config.options.Preferences;
+import org.openmuc.framework.config.PreferenceType;
+import org.openmuc.framework.config.Preferences;
 
-public class W1ScanPreferences {
+public class DeviceAddress extends Preferences {
 
-    public static final String IGNORE_KEY = "id";
-    public static final boolean IGNORE_DEFAULT = true;
+	public static final PreferenceType TYPE_PREF = PreferenceType.ADDRESS_DEVICE;
 
-    private final Preferences settings;
+	@Option
+    private int pin;
 
-    public W1ScanPreferences(Preferences settings) {
-        this.settings = settings;
+	@Option
+	private boolean broadcomScheme;
+
+	@Override
+	public PreferenceType getPreferenceType() {
+		return TYPE_PREF;
+	}
+
+    public int getPin() {
+        return pin;
     }
 
-    public boolean ignoreExisting() {
-        if (settings.contains(IGNORE_KEY)) {
-            return settings.getBoolean(IGNORE_KEY);
-        }
-        return IGNORE_DEFAULT;
+    public boolean useBroadcomScheme() {
+        return broadcomScheme;
     }
 
 }

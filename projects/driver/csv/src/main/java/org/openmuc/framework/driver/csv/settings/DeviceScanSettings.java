@@ -3,25 +3,27 @@ package org.openmuc.framework.driver.csv.settings;
 import java.io.File;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.options.Preferences;
+import org.openmuc.framework.config.PreferenceType;
+import org.openmuc.framework.config.Preferences;
 
-public class DeviceScanSettings {
+public class DeviceScanSettings extends Preferences {
 
-	public final static String PATH_KEY = "path";
+	public static final PreferenceType TYPE_PREF = PreferenceType.SETTINGS_SCAN_DEVICE;
 
-    private File file;
+	@Option
+	private String path;
 
-    public DeviceScanSettings(Preferences settings) throws ArgumentSyntaxException {
-        String path = settings.getString(PATH_KEY);
-        
-        file = new File(path);
-        if (!file.isDirectory()) {
+	@Override
+	public PreferenceType getPreferenceType() {
+		return TYPE_PREF;
+	}
+
+    public File[] listFiles() throws ArgumentSyntaxException {
+    	File dir = new File(path);
+        if (!dir.isDirectory()) {
             throw new ArgumentSyntaxException("<path> argument must point to a directory.");
         }
-    }
-
-    public File path() {
-        return file;
+        return dir.listFiles();
     }
 
 }

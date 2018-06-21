@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.snmp.implementation.SnmpDevice;
@@ -41,7 +42,7 @@ import org.osgi.service.component.annotations.Component;
 public class SnmpDriver implements DriverService {
 //    private final static Logger logger = LoggerFactory.getLogger(SnmpDriver.class);
 
-    private final static DriverInfo info = new DriverInfo(SnmpDriver.class.getResourceAsStream("options.xml"));
+    private final DriverInfo info = DriverInfoFactory.getPreferences(SnmpDriver.class);
 
     // AUTHENTICATIONPASSPHRASE is the same COMMUNITY word in SNMP V2c
     public enum SnmpDriverSettingVariableNames {

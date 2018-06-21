@@ -26,11 +26,12 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.rpi.s0.S0Connection.S0ConnectionCallbacks;
-import org.openmuc.framework.driver.rpi.s0.options.S0DevicePreferences;
-import org.openmuc.framework.driver.rpi.s0.options.S0DriverInfo;
+import org.openmuc.framework.driver.rpi.s0.settings.DeviceAddress;
+import org.openmuc.framework.driver.rpi.s0.settings.DeviceSettings;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -53,7 +54,7 @@ import com.pi4j.wiringpi.GpioUtil;
 @Component
 public class S0Driver implements DriverService, S0ConnectionCallbacks {
     private final static Logger logger = LoggerFactory.getLogger(S0Driver.class);
-    private final S0DriverInfo info = S0DriverInfo.getInfo();
+    private final DriverInfo info = DriverInfoFactory.getPreferences(S0Connection.class);
 
     private final List<GpioPin> pins;
 
@@ -121,25 +122,26 @@ public class S0Driver implements DriverService, S0ConnectionCallbacks {
     public Connection connect(String addressStr, String settingsStr) throws ArgumentSyntaxException, ConnectionException {
         
         logger.trace("Connect Raspberry Pi device address \"{}\": {}", addressStr, settingsStr);
-        S0DevicePreferences prefs = info.getDevicePreferences(addressStr, settingsStr);
+        DeviceAddress address = info.parse(addressStr, DeviceAddress.class);
+        DeviceSettings settings = info.parse(settingsStr, DeviceSettings.class);
         
         try {
             Pin pin;
-            if (prefs.useBroadcomScheme()) {
-                pin = RCMPin.getPinByAddress(prefs.getPin());
+            if (address.useBroadcomScheme()) {
+                pin = RCMPin.getPinByAddress(address.getPin());
             }
             else {
-                pin = RaspiPin.getPinByAddress(prefs.getPin());
+                pin = RaspiPin.getPinByAddress(address.getPin());
             }
             if (pin == null) {
-                throw new ConnectionException("Unable to configure GPIO pin: " + prefs.getPin());
+                throw new ConnectionException("Unable to configure GPIO pin: " + address.getPin());
             }
             
-            PinPullResistance pullResistance = prefs.getPullResistance();
+            PinPullResistance pullResistance = settings.getPullResistance();
             GpioPinDigitalInput gpioPin = gpio.provisionDigitalInputPin(pin, pullResistance);
-            gpioPin.setShutdownOptions(true, prefs.getShutdownState(), pullResistance);
+            gpioPin.setShutdownOptions(true, settings.getShutdownState(), pullResistance);
             
-            return new S0Connection(this, gpioPin, pullResistance, prefs.getBounceTime());
+            return new S0Connection(this, gpioPin, pullResistance, settings.getBounceTime());
 
         } catch (IllegalArgumentException e) {
             throw new ArgumentSyntaxException("Unable to configure GPIO pin: " + e.getMessage());

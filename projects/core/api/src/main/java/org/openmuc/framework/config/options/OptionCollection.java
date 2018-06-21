@@ -20,6 +20,7 @@
  */
 package org.openmuc.framework.config.options;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
@@ -42,19 +43,20 @@ import org.w3c.dom.NodeList;
 
 public class OptionCollection extends LinkedList<Option> implements OptionInfo {
     private static final long serialVersionUID = -8478314560466205212L;
-    
+
     public static final String SEPARATOR_DEFAULT = ",";
     public static final String ASSIGNMENT_DEFAULT = ":";
     public static final boolean KEY_VAL_DEFAULT = true;
-    
+
     private String separator = SEPARATOR_DEFAULT;
     private String assignment = ASSIGNMENT_DEFAULT;
     private boolean keyValue = KEY_VAL_DEFAULT;
     private Locale locale = Locale.ENGLISH;
     private boolean disabled = false;
-    
+
     private int mandatoryOptCount = 0;
-    
+
+
     @Override
     public boolean add(Option option) {
         if (option.isMandatory()) mandatoryOptCount++;
@@ -120,10 +122,10 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
         this.disabled = true;
     }
 
-    @Override
-    public Preferences parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
+	@Override
+    public Map<String, Value> parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
         if (settingsStr != null) {
-            Preferences settings = new Preferences();
+        	Map<String, Value> settings = new HashMap<>();
             
             if (!settingsStr.trim().isEmpty()) {
                 String[] settingsArray = settingsStr.trim().split(separator);
@@ -141,7 +143,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                                     if (keyValue[0].trim().equalsIgnoreCase(key)) {
                                         mandatoryOptMissing = false;
                                         
-                                        value = parseValue(option.getType(), keyValue[1]);
+                                        value = parseValue(option.getType(), keyValue[1].trim());
                                     }
                                 }
                                 else {
@@ -159,9 +161,11 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                                         && !option.getValueSelection().contains(value)) {
                                     throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
                                 }
-                                
-                                settings.parameters.put(key, value);
                             }
+                            else if (option.getValueDefault() != null) {
+                            	value = option.getValueDefault();
+                            }
+                            settings.put(key, value);
                         }
                     }
                     else {
@@ -169,24 +173,31 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                         
                         int i = 0;
                         for (Option option : this) {
+                            Value value = null;
+                            
                             if (i >= settingsArray.length) {
                                 break;
                             }
                             else if (option.isMandatory() || mandatoryOptCount+optionalOptCount < settingsArray.length) {
-                                
-                                Value value = parseValue(option.getType(), settingsArray[i]);
-                                if (option.getValueSelection() != null 
-                                        && option.getValueSelection().hasValidation() 
-                                        && !option.getValueSelection().contains(value)) {
-                                    throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
-                                }
-                                settings.parameters.put(option.getKey(), value);
+                                value = parseValue(option.getType(), settingsArray[i].trim());
                                 
                                 if (!option.isMandatory()) {
                                     optionalOptCount++;
                                 }
                                 i++;
                             }
+                            
+                            if (value != null) {
+                                if (option.getValueSelection() != null 
+                                        && option.getValueSelection().hasValidation() 
+                                        && !option.getValueSelection().contains(value)) {
+                                    throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
+                                }
+                            }
+                            else if (option.getValueDefault() != null) {
+                            	value = option.getValueDefault();
+                            }
+                            settings.put(option.getKey(), value);
                         }
                     }
                 }
@@ -203,7 +214,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
             
             return settings;
         }
-        else throw new ArgumentSyntaxException("Null value passed to be parsed as Settings");
+        throw new ArgumentSyntaxException("Null value passed to be parsed as settings");
     }
     
     private Value parseValue(ValueType type, String valueStr) throws ArgumentSyntaxException {
@@ -289,7 +300,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                 continue;
             }
             else if (childNodeName.equals("disabled")) {
-                String disabledString = childNode.getTextContent().toLowerCase();
+                String disabledString = childNode.getTextContent().trim().toLowerCase();
                 if (disabledString.equals("true")) {
                     collection.setDisabled(true);
                 }
@@ -310,7 +321,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                         continue;
                     }
                     else if (syntaxNodeName.equals("keyValue")) {
-                        String keyValString = syntaxNode.getTextContent().toLowerCase();
+                        String keyValString = syntaxNode.getTextContent().trim().toLowerCase();
                         if (keyValString.equals("true")) {
                             collection.setKeyValuePairs(true);
                         }
@@ -324,11 +335,11 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                         NamedNodeMap attributes = syntaxNode.getAttributes();
                         Node nameAttribute = attributes.getNamedItem("assignment");
                         if (nameAttribute != null) {
-                            collection.setAssignmentOperator(nameAttribute.getTextContent());
+                            collection.setAssignmentOperator(nameAttribute.getTextContent().trim());
                         }
                     }
                     else if (syntaxNodeName.equals("separator")) {
-                        collection.setSeparator(syntaxNode.getTextContent());
+                        collection.setSeparator(syntaxNode.getTextContent().trim());
                     }
                     else {
                         throw new ParseException("Unknown tag found:" + syntaxNodeName);
@@ -341,7 +352,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                 if (nameAttribute == null) {
                     throw new ParseException("Option has no id attribute");
                 }
-                String id = nameAttribute.getTextContent();
+                String id = nameAttribute.getTextContent().trim();
                 
                 Option option;
                 if (options != null && options.containsKey(id)) {

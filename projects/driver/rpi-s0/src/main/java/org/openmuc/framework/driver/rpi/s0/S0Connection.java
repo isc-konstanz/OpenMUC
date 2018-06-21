@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
+import org.openmuc.framework.config.DriverPreferences;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
@@ -33,8 +35,7 @@ import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.driver.rpi.s0.options.S0ChannelPreferences;
-import org.openmuc.framework.driver.rpi.s0.options.S0DriverInfo;
+import org.openmuc.framework.driver.rpi.s0.settings.ChannelSettings;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -50,7 +51,7 @@ import com.pi4j.io.gpio.PinPullResistance;
 @Component
 public class S0Connection implements Connection {
     private final static Logger logger = LoggerFactory.getLogger(S0Connection.class);
-    private final S0DriverInfo info = S0DriverInfo.getInfo();
+    private final DriverPreferences prefs = DriverInfoFactory.getPreferences(S0Connection.class);
 
     /**
      * Interface used by {@link S0Connection} to notify the {@link S0Driver} about events
@@ -96,10 +97,10 @@ public class S0Connection implements Connection {
 
         for (ChannelRecordContainer container : containers) {
             try {
-                S0ChannelPreferences prefs = info.getChannelPreferences(container);
+                ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
                 
                 Value value = null;
-                if (prefs.isDerivative() || prefs.isCountInterval()) {
+                if (settings.isDerivative() || settings.isCountInterval()) {
                 	Channel channel = container.getChannel();
                     String channelId = channel.getId();
                     Record lastRecord = null;
@@ -111,9 +112,9 @@ public class S0Connection implements Connection {
                     else {
                         lastVal = 0;
                     }
-                    double counterDelta = (newVal - lastVal)/(double) prefs.getImpulses();
+                    double counterDelta = (newVal - lastVal)/(double) settings.getImpulses();
                     
-                    if (prefs.isDerivative()) {
+                    if (settings.isDerivative()) {
                     	if (lastRecord != null) {
                         	double timeDelta = (samplingTime - lastRecord.getTimestamp())/3600000.0;
                         	if (timeDelta > 0) {
@@ -128,7 +129,7 @@ public class S0Connection implements Connection {
                     counters.put(channelId, new Record(new IntValue(newVal), samplingTime));
                 }
                 else {
-                    value = new DoubleValue(newVal/(double) prefs.getImpulses());
+                    value = new DoubleValue(newVal/(double) settings.getImpulses());
                 }
                 if (value != null) {
                     container.setRecord(new Record(value, samplingTime, Flag.VALID));

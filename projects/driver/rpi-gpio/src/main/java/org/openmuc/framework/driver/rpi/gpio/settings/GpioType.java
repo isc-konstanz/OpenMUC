@@ -18,36 +18,27 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.w1.options;
+package org.openmuc.framework.driver.rpi.gpio.settings;
 
-import org.openmuc.framework.config.options.Preferences;
+public enum GpioType {
 
-public class W1DevicePreferences {
+    INPUT,
+    OUTPUT;
 
-    public static final String ID_KEY = "id";
-
-    public static final String TYPE_KEY = "type";
-
-    private final Preferences address;
-    private final Preferences settings;
-
-    public W1DevicePreferences(Preferences address, Preferences settings) {
-        this.address = address;
-        this.settings = settings;
+    @Override
+    public String toString() {
+        return name().toLowerCase();
     }
-
-    public String getId() {
-        if (address.contains(ID_KEY)) {
-            return address.getString(ID_KEY);
+    
+    public static GpioType newType(String type) throws IllegalArgumentException {
+        
+        switch(type.trim().toLowerCase()) {
+        case "input":
+            return GpioType.INPUT;
+        case "output":
+            return GpioType.OUTPUT;
+        default:
+            throw new IllegalArgumentException("Unknown GPIO type: " + type);
         }
-        return null;
     }
-
-    public W1Type getType() {
-        if (settings.contains(TYPE_KEY)) {
-            return W1Type.newType(settings.getString(TYPE_KEY));
-        }
-        return null;
-    }
-
 }

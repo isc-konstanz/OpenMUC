@@ -24,13 +24,14 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
+import org.openmuc.framework.config.DriverPreferences;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.gpio.options.GpioChannelPreferences;
-import org.openmuc.framework.driver.rpi.gpio.options.GpioDriverInfo;
+import org.openmuc.framework.driver.rpi.gpio.settings.ChannelSettings;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -50,8 +51,9 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 @Component
 public class GpioConnection implements Connection {
     private final static Logger logger = LoggerFactory.getLogger(GpioConnection.class);
-    private final GpioDriverInfo info = GpioDriverInfo.getInfo();
-    
+
+    private final DriverPreferences prefs = DriverInfoFactory.getPreferences(GpioDriver.class);
+
     /**
      * Interface used by {@link GpioConnection} to notify the {@link GpioDriver} about events
      */
@@ -91,11 +93,11 @@ public class GpioConnection implements Connection {
 
         for (ChannelRecordContainer container : containers) {
             try {
-                GpioChannelPreferences prefs = info.getChannelPreferences(container);
+            	ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
 
                 PinState state = pin.getState();
                 Value value;
-                if (!prefs.isInverted()) {
+                if (!settings.isInverted()) {
                     value = new BooleanValue(state.isHigh());
                 }
                 else {
@@ -126,14 +128,14 @@ public class GpioConnection implements Connection {
         for (ChannelValueContainer container : containers) {
             Value value = container.getValue();
             try {
-                GpioChannelPreferences prefs = info.getChannelPreferences(container);
+            	ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
                 
                 if (value != null) {
                     if (pin instanceof GpioPinDigitalOutput) {
                         logger.debug("Write value to GPIO pin {}: {}", pin.getName(), value);
 
                         PinState state;
-                        if (!prefs.isInverted()) {
+                        if (!settings.isInverted()) {
                             state = PinState.getState(value.asBoolean());
                         }
                         else {
@@ -183,11 +185,11 @@ public class GpioConnection implements Connection {
 
             for (ChannelRecordContainer container : containers) {
                 try {
-                    GpioChannelPreferences prefs = info.getChannelPreferences(container);
-
+                	ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
+                	
                     PinState state = pin.getState();
                     Value value;
-                    if (!prefs.isInverted()) {
+                    if (!settings.isInverted()) {
                         value = new BooleanValue(state.isHigh());
                     }
                     else {

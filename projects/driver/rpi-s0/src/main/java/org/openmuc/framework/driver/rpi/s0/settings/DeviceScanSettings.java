@@ -18,27 +18,25 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.gpio.options;
+package org.openmuc.framework.driver.rpi.s0.settings;
 
-public enum GpioType {
+import org.openmuc.framework.config.PreferenceType;
+import org.openmuc.framework.config.Preferences;
 
-    INPUT,
-    OUTPUT;
+public class DeviceScanSettings extends Preferences {
 
-    @Override
-    public String toString() {
-        return name().toLowerCase();
+	public static final PreferenceType TYPE_PREF = PreferenceType.SETTINGS_SCAN_DEVICE;
+
+	@Option
+	private boolean broadcomScheme;
+
+	@Override
+	public PreferenceType getPreferenceType() {
+		return TYPE_PREF;
+	}
+
+    public boolean useBroadcomScheme() {
+        return broadcomScheme;
     }
-    
-    public static GpioType newType(String type) throws IllegalArgumentException {
-        
-        switch(type.trim().toLowerCase()) {
-        case "input":
-            return GpioType.INPUT;
-        case "output":
-            return GpioType.OUTPUT;
-        default:
-            throw new IllegalArgumentException("Unknown GPIO type: " + type);
-        }
-    }
+
 }

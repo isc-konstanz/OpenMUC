@@ -1,32 +1,25 @@
 package org.openmuc.framework.driver.csv.settings;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.options.Preferences;
+import org.openmuc.framework.config.PreferenceType;
+import org.openmuc.framework.config.Preferences;
 import org.openmuc.framework.driver.csv.ESamplingMode;
 
-public class DeviceSettings {
+public class DeviceSettings extends Preferences {
 
-	public final static String SAMPLINGMODE_KEY = "samplingmode";
-	public final static String REWIND_KEY = "rewind";
+	public static final PreferenceType TYPE_PREF = PreferenceType.SETTINGS_DEVICE;
 
-    private final ESamplingMode samplingMode;
-    private final boolean rewind;
+	public static final String SAMPLING_MODE = "samplingmode";
 
-    public DeviceSettings(Preferences settings) throws ArgumentSyntaxException {
-    	if (settings.contains(SAMPLINGMODE_KEY)) {
-        	samplingMode = ESamplingMode.valueOf(settings.getString(SAMPLINGMODE_KEY).toUpperCase());
-    	}
-    	else {
-    		samplingMode = ESamplingMode.LINE;
-    	}
+	@Option(SAMPLING_MODE)
+    private ESamplingMode samplingMode;
 
-    	if (settings.contains(REWIND_KEY)) {
-        	rewind = settings.getBoolean(REWIND_KEY);
-    	}
-    	else {
-    		rewind = false;
-    	}
-    }
+	@Option
+    private boolean rewind;
+
+	@Override
+	public PreferenceType getPreferenceType() {
+		return TYPE_PREF;
+	}
 
     public ESamplingMode samplingMode() {
         return samplingMode;

@@ -229,7 +229,7 @@ public class OptionSelection {
                     continue;
                 }
                 else if (childNodeName.equals("validate")) {
-                    String validateString = childNode.getTextContent().toLowerCase();
+                    String validateString = childNode.getTextContent().trim().toLowerCase();
                     if (validateString.equals("true")) {
                         selection.validate = true;
                     }
@@ -246,8 +246,8 @@ public class OptionSelection {
                     if (nameAttribute == null) {
                         throw new ParseException("Selection item has no value attribute");
                     }
-                    String item = nameAttribute.getTextContent();
-                    String description = childNode.getTextContent();
+                    String item = nameAttribute.getTextContent().trim();
+                    String description = childNode.getTextContent().trim();
                     
                     switch (type) {
                     case FLOAT:

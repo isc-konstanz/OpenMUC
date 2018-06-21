@@ -39,7 +39,7 @@ public class SamplingModeTest {
 
         } catch (UnsupportedOperationException | ConnectionException | ArgumentSyntaxException e) {
             logger.error("", e);
-            Assert.assertTrue(false);
+            Assert.assertTrue(e.getMessage(), false);
         }
 
     }
@@ -64,7 +64,7 @@ public class SamplingModeTest {
 
         } catch (UnsupportedOperationException | ConnectionException | ArgumentSyntaxException e) {
             logger.error("", e);
-            Assert.assertTrue(false);
+            Assert.assertTrue(e.getMessage(), false);
         }
 
     }

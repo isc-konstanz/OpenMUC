@@ -18,27 +18,32 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.s0.options;
+package org.openmuc.framework.driver.rpi.s0.settings;
 
-import org.openmuc.framework.config.options.Preferences;
+import org.openmuc.framework.config.PreferenceType;
+import org.openmuc.framework.config.Preferences;
 
-public class S0DeviceScanPreferences {
+public class DeviceAddress extends Preferences {
 
-    private static final String BROADCOM_SCHEME_KEY = "broadcomScheme";
-    private static final boolean BROADCOM_SCHEME_DEFAULT = false;
+	public static final PreferenceType TYPE_PREF = PreferenceType.ADDRESS_DEVICE;
 
-    private final Preferences settings;
+	@Option
+    private int pin;
 
-    public S0DeviceScanPreferences(Preferences settings) {
-        this.settings = settings;
+	@Option
+	private boolean broadcomScheme;
+
+	@Override
+	public PreferenceType getPreferenceType() {
+		return TYPE_PREF;
+	}
+
+    public int getPin() {
+        return pin;
     }
 
     public boolean useBroadcomScheme() {
-        
-        if (settings.contains(BROADCOM_SCHEME_KEY)) {
-            return settings.getBoolean(BROADCOM_SCHEME_KEY);
-        }
-        return BROADCOM_SCHEME_DEFAULT;
+        return broadcomScheme;
     }
 
 }

@@ -22,11 +22,9 @@ package org.openmuc.framework.driver.dlms;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.driver.dlms.settings.ChannelAddress;
-import org.openmuc.framework.driver.dlms.settings.DeviceAddress;
-import org.openmuc.framework.driver.dlms.settings.DeviceSettings;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -40,7 +38,7 @@ public class DlmsCosemDriver implements DriverService {
 
     private static final Logger logger = LoggerFactory.getLogger(DlmsCosemDriver.class);
 
-    private final static DriverInfo info = new DriverInfo(DlmsCosemDriver.class.getResourceAsStream("options.xml"));
+    private final DriverInfo info = DriverInfoFactory.getInfo(DlmsCosemDriver.class);
 
     public DlmsCosemDriver() {
         logger.debug("DLMS Driver instantiated. Expecting rxtxserial.so in: " + System.getProperty("java.library.path")
