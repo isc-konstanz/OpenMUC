@@ -228,6 +228,15 @@ public class OptionSelection {
                 if (childNodeName.equals("#text")) {
                     continue;
                 }
+                else if (childNodeName.equals("default")) {
+                    String validateString = childNode.getTextContent().trim().toLowerCase();
+                    if (validateString.equals("time")) {
+                    	return OptionSelection.getDefaultTimes();
+                    }
+                    else {
+                        throw new ParseException("Selection \"default\" contains no known selection");
+                    }
+                }
                 else if (childNodeName.equals("validate")) {
                     String validateString = childNode.getTextContent().trim().toLowerCase();
                     if (validateString.equals("true")) {
@@ -286,6 +295,47 @@ public class OptionSelection {
         } catch (IllegalArgumentException e) {
             throw new ParseException(e);
         }
+        
+        return selection;
+    }
+
+    static OptionSelection getDefaultTimes() {
+        OptionSelection selection = new OptionSelection(ValueType.INTEGER);
+        
+        selection.validate = false;
+        
+        selection.addInteger(0, "None");
+        selection.addInteger(100, "100 milliseconds");
+        selection.addInteger(200, "200 milliseconds");
+        selection.addInteger(300, "300 milliseconds");
+        selection.addInteger(400, "400 milliseconds");
+        selection.addInteger(500, "500 milliseconds");
+        selection.addInteger(1000, "1 second");
+        selection.addInteger(2000, "2 second");
+        selection.addInteger(3000, "3 second");
+        selection.addInteger(4000, "4 second");
+        selection.addInteger(5000, "5 seconds");
+        selection.addInteger(10000, "10 seconds");
+        selection.addInteger(15000, "15 seconds");
+        selection.addInteger(20000, "20 seconds");
+        selection.addInteger(25000, "25 seconds");
+        selection.addInteger(30000, "30 seconds");
+        selection.addInteger(35000, "35 seconds");
+        selection.addInteger(40000, "40 seconds");
+        selection.addInteger(45000, "45 seconds");
+        selection.addInteger(50000, "50 seconds");
+        selection.addInteger(55000, "55 seconds");
+        selection.addInteger(60000, "1 minute");
+        selection.addInteger(120000, "2 minutes");
+        selection.addInteger(180000, "3 minutes");
+        selection.addInteger(240000, "4 minutes");
+        selection.addInteger(300000, "5 minutes");
+        selection.addInteger(600000, "10 minutes");
+        selection.addInteger(900000, "15 minutes");
+        selection.addInteger(1800000, "30 minutes");
+        selection.addInteger(2700000, "45 minutes");
+        selection.addInteger(3600000, "1 hour");
+        selection.addInteger(86400000, "1 day");
         
         return selection;
     }
