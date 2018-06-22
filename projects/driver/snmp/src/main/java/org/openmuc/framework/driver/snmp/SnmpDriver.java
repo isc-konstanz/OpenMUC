@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.snmp.implementation.SnmpDevice;
@@ -37,20 +38,15 @@ import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
-/**
- * 
- * @author Mehran Shakeri
- * 
- */
 @Component
 public class SnmpDriver implements DriverService {
 //    private final static Logger logger = LoggerFactory.getLogger(SnmpDriver.class);
 
-    private final static DriverInfo info = new DriverInfo(SnmpDriver.class.getResourceAsStream("options.xml"));
+    private final DriverInfo info = DriverInfoFactory.getPreferences(SnmpDriver.class);
 
     // AUTHENTICATIONPASSPHRASE is the same COMMUNITY word in SNMP V2c
     public enum SnmpDriverSettingVariableNames {
-        SNMPVersion,
+        SNMP_VERSION,
         USERNAME,
         SECURITYNAME,
         AUTHENTICATIONPASSPHRASE,
@@ -59,7 +55,7 @@ public class SnmpDriver implements DriverService {
 
     // AUTHENTICATIONPASSPHRASE is the same COMMUNITY word in SNMP V2c
     public enum SnmpDriverScanSettingVariableNames {
-        SNMPVersion,
+        SNMP_VERSION,
         USERNAME,
         SECURITYNAME,
         AUTHENTICATIONPASSPHRASE,
@@ -69,13 +65,13 @@ public class SnmpDriver implements DriverService {
     };
 
     // exception messages
-    private final static String nullDeviceAddressException = "No device address found in config. Please specify one [eg. \"1.1.1.1/161\"].";
-    private final static String nullSettingsException = "No device settings found in config. Please specify settings.";
-    private final static String incorrectSettingsFormatException = "Format of setting string is invalid! \n Please use this format: "
+    private static final String NULL_DEVICE_ADDRESS_EXCEPTION = "No device address found in config. Please specify one [eg. \"1.1.1.1/161\"].";
+    private static final String NULL_SETTINGS_EXCEPTION = "No device settings found in config. Please specify settings.";
+    private static final String INCORRECT_SETTINGS_FORMAT_EXCEPTION = "Format of setting string is invalid! \n Please use this format: "
             + "USERNAME=username:SECURITYNAME=securityname:AUTHENTICATIONPASSPHRASE=password:PRIVACYPASSPHRASE=privacy";
-    private final static String incorrectSNMPVersionException = "Incorrect snmp version value. "
+    private static final String INCORRECT_SNMP_VERSION_EXCEPTION = "Incorrect snmp version value. "
             + "Please choose proper version. Possible values are defined in SNMPVersion enum";
-    private final static String nullSNMPVersionException = "Snmp version is not defined. "
+    private static final String NULL_SNMP_VERSION_EXCEPTION = "Snmp version is not defined. "
             + "Please choose proper version. Possible values are defined in SNMPVersion enum";
 
     @Override
@@ -116,7 +112,8 @@ public class SnmpDriver implements DriverService {
         SnmpDriverDiscoveryListener discoveryListener = new SnmpDriverDiscoveryListener(listener);
         snmpScanner.addEventListener(discoveryListener);
         String[] communityWords = settingMapper
-                .get(SnmpDriverScanSettingVariableNames.AUTHENTICATIONPASSPHRASE.toString()).split(",");
+                .get(SnmpDriverScanSettingVariableNames.AUTHENTICATIONPASSPHRASE.toString())
+                .split(",");
         snmpScanner.scanSnmpV2cEnabledDevices(settingMapper.get(SnmpDriverScanSettingVariableNames.STARTIP.toString()),
                 settingMapper.get(SnmpDriverScanSettingVariableNames.ENDIP.toString()), communityWords);
 
@@ -147,10 +144,10 @@ public class SnmpDriver implements DriverService {
 
         // check arguments
         if (deviceAddress == null || deviceAddress.equals("")) {
-            throw new ArgumentSyntaxException(nullDeviceAddressException);
+            throw new ArgumentSyntaxException(NULL_DEVICE_ADDRESS_EXCEPTION);
         }
         else if (settings == null || settings.equals("")) {
-            throw new ArgumentSyntaxException(nullSettingsException);
+            throw new ArgumentSyntaxException(NULL_SETTINGS_EXCEPTION);
         }
         else {
 
@@ -158,11 +155,11 @@ public class SnmpDriver implements DriverService {
 
             try {
                 snmpVersion = SNMPVersion
-                        .valueOf(mappedSettings.get(SnmpDriverSettingVariableNames.SNMPVersion.toString()));
+                        .valueOf(mappedSettings.get(SnmpDriverSettingVariableNames.SNMP_VERSION.toString()));
             } catch (IllegalArgumentException e) {
-                throw new ArgumentSyntaxException(incorrectSNMPVersionException);
+                throw new ArgumentSyntaxException(INCORRECT_SNMP_VERSION_EXCEPTION);
             } catch (NullPointerException e) {
-                throw new ArgumentSyntaxException(nullSNMPVersionException);
+                throw new ArgumentSyntaxException(NULL_SNMP_VERSION_EXCEPTION);
             }
 
             // create SnmpDevice object based on SNMP version
@@ -181,7 +178,7 @@ public class SnmpDriver implements DriverService {
                 break;
 
             default:
-                throw new ArgumentSyntaxException(incorrectSNMPVersionException);
+                throw new ArgumentSyntaxException(INCORRECT_SNMP_VERSION_EXCEPTION);
             }
 
         }
@@ -212,7 +209,7 @@ public class SnmpDriver implements DriverService {
                 settingsMaper.put(keyValue[0], keyValue[1]);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArgumentSyntaxException(incorrectSettingsFormatException);
+            throw new ArgumentSyntaxException(INCORRECT_SETTINGS_FORMAT_EXCEPTION);
         }
         return settingsMaper;
     }

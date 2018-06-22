@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -51,7 +51,7 @@ import org.openmuc.framework.lib.json.FromJson;
 import org.openmuc.framework.lib.json.ToJson;
 import org.openmuc.framework.lib.json.exceptions.MissingJsonObjectException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
-import org.openmuc.framework.lib.json.restObjects.RestDriverDetail;
+import org.openmuc.framework.lib.json.rest.objects.RestDriverDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,8 +61,14 @@ import com.google.gson.JsonSyntaxException;
 
 public class DriverResourceServlet extends GenericServlet {
 
+    private static final String REQUESTED_REST_PATH_IS_NOT_AVAILABLE = "Requested rest path is not available.";
+    private static final String REST_PATH = " Rest Path = ";
+    private static final String PATH_INFO = " Path Info = ";
+    private static final String DRIVER_ID = " DriverID = ";
+    private static final String APPLICATION_JSON = "application/json";
     private static final long serialVersionUID = -2223282905555493215L;
-    private final static Logger logger = LoggerFactory.getLogger(DriverResourceServlet.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(DriverResourceServlet.class);
 
     private DataAccessService dataAccess;
     private ConfigService configService;
@@ -72,8 +78,7 @@ public class DriverResourceServlet extends GenericServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        response.setContentType("application/json");
+        response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
 
         if (pathAndQueryString != null) {
@@ -95,22 +100,22 @@ public class DriverResourceServlet extends GenericServlet {
             if (pathInfo.equals("/")) {
                 json.addStringList(Const.DRIVERS, driversList);
             }
+            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.REGISTERED)) {
+                doGetRegisteredList(json);
+            }
             else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
-                json.addDriverConfigList(new ArrayList<DriverConfig>(rootConfig.getDrivers()));
+            	doGetConfigsList(json);
             }
             else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.DETAILS)) {
-                doGetDetailsList(json);
-            }
-            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.RUNNING)) {
-                doGetRunningList(json);
+                doGetDetailsList(json, response);
             }
             else {
-                String driverID = pathInfoArray[0].replace("/", "");
-                
+                String driverId = pathInfoArray[0].replace("/", "");
+
                 if (pathInfoArray[1].equalsIgnoreCase(Const.INFOS)) {
                     DriverInfo driverInfo;
                     try {
-                        driverInfo = configService.getDriverInfo(driverID);
+                        driverInfo = configService.getDriverInfo(driverId);
                         if (pathInfoArray.length == 3 && pathInfoArray[2].equalsIgnoreCase(Const.DETAILS)) {
                             json.addDriverInfoFull(driverInfo);
                         }
@@ -139,21 +144,18 @@ public class DriverResourceServlet extends GenericServlet {
                         throw new IOException(e);
                     }
                 }
-                else if (driversList.contains(driverID)) {
+                else if (driversList.contains(driverId)) {
+                    DriverConfig drv = rootConfig.getDriver(driverId);
 
-                    List<Channel> driverChannelsList;
                     List<String> driverDevicesList = new ArrayList<>();
-
+                    Collection<DeviceConfig> deviceConfigList = drv.getDevices();
                     Collection<ChannelConfig> channelConfigList = new ArrayList<>();
-                    Collection<DeviceConfig> deviceConfigList;
-                    DriverConfig drv = rootConfig.getDriver(driverID);
-
-                    deviceConfigList = drv.getDevices();
                     setDriverDevicesListAndChannelConfigList(driverDevicesList, channelConfigList, deviceConfigList);
-                    driverChannelsList = getDriverChannelList(channelConfigList);
+                    
+                    List<Channel> driverChannelsList = getDriverChannelList(channelConfigList);
 
                     response.setStatus(HttpServletResponse.SC_OK);
-                    boolean driverIsRunning = configService.getIdsOfRunningDrivers().contains(driverID);
+                    boolean driverIsRunning = configService.getIdsOfRunningDrivers().contains(driverId);
 
                     if (pathInfoArray.length > 1) {
                         if (pathInfoArray[1].equalsIgnoreCase(Const.CHANNELS)) {
@@ -172,7 +174,7 @@ public class DriverResourceServlet extends GenericServlet {
                             scanListener = new DeviceScanListenerImplementation(deviceScanInfoList);
 
                             String settings = request.getParameter(Const.SETTINGS);
-                            deviceScanInfoList = scanForAllDrivers(driverID, settings, scanListener, response);
+                            deviceScanInfoList = scanForAllDrivers(driverId, settings, scanListener, response);
                             json.addDeviceScanInfoList(deviceScanInfoList);
                         }
 
@@ -180,17 +182,17 @@ public class DriverResourceServlet extends GenericServlet {
                             json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS) && pathInfoArray.length == 2) {
-                            doGetConfigs(json, driverID, response);
+                            doGetConfigs(json, driverId, response);
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS) && pathInfoArray.length == 3) {
-                            doGetConfigField(json, driverID, pathInfoArray[2], response);
+                            doGetConfigField(json, driverId, pathInfoArray[2], response);
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.DETAILS) && pathInfoArray.length == 2) {
-                            doGetDetails(json, driverID, response);
+                            doGetDetails(json, driverId, response);
                         }
                         else {
                             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                                    "Requested rest path is not available.", " Path Info = ", request.getPathInfo());
+                                    REQUESTED_REST_PATH_IS_NOT_AVAILABLE, PATH_INFO, request.getPathInfo());
                         }
                     }
                     else if (pathInfoArray.length == 1) {
@@ -199,62 +201,66 @@ public class DriverResourceServlet extends GenericServlet {
                     }
                     else {
                         ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                                "Requested rest path is not available.", " Path Info = ", request.getPathInfo());
+                                REQUESTED_REST_PATH_IS_NOT_AVAILABLE, PATH_INFO, request.getPathInfo());
                     }
+
                 }
                 else {
-                    ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                            "Requested rest driver is not available.", " driverID = ", driverID);
+                    driverNotAvailable(response, driverId);
                 }
             }
             sendJson(json, response);
         }
     }
 
+    private static void driverNotAvailable(HttpServletResponse response, String driverId) {
+        ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                "Requested rest driver is not available.", DRIVER_ID, driverId);
+    }
+
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        response.setContentType("application/json");
+        response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
 
-        if (pathAndQueryString != null) {
+        if (pathAndQueryString == null) {
+            return;
+        }
 
-            setConfigAccess();
+        setConfigAccess();
 
-            String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
+        String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
 
-            String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            String driverID = pathInfoArray[0].replace("/", "");
+        String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
+        String driverId = pathInfoArray[0].replace("/", "");
 
-            String json = ServletLib.getJsonText(request);
+        String json = ServletLib.getJsonText(request);
 
-            if (pathInfoArray.length < 1) {
-                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Requested rest path is not available.", " Rest Path = ", request.getPathInfo());
+        if (pathInfoArray.length < 1) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                    REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
+        }
+        else {
+            DriverConfig driverConfig = rootConfig.getDriver(driverId);
+
+            if (driverConfig != null && pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
+                setAndWriteDriverConfig(driverId, response, json);
+            }
+            else if (driverConfig != null && pathInfoArray.length == 2
+                    && pathInfoArray[1].equalsIgnoreCase(Const.SCAN_INTERRUPT)) {
+                interruptScanProcess(driverId, response, json);
             }
             else {
-                DriverConfig driverConfig = rootConfig.getDriver(driverID);
-
-                if (driverConfig != null && pathInfoArray.length == 2
-                        && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
-                    setAndWriteDriverConfig(driverID, response, json, true);
-                }
-                else if (driverConfig != null && pathInfoArray.length == 2
-                        && pathInfoArray[1].equalsIgnoreCase(Const.SCAN_INTERRUPT)) {
-                    interruptScanProcess(driverID, response, json);
-                }
-                else {
-                    ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                            "Requested rest path is not available.", " Rest Path = ", request.getPathInfo());
-                }
+                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
             }
         }
+
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        response.setContentType("application/json");
+        response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
 
         if (pathAndQueryString != null) {
@@ -264,28 +270,28 @@ public class DriverResourceServlet extends GenericServlet {
             String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
 
             String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            String driverID = pathInfoArray[0].replace("/", "");
+            String driverId = pathInfoArray[0].replace("/", "");
 
             String json = ServletLib.getJsonText(request);
 
             if (pathInfoArray.length != 1) {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Requested rest path is not available.", " Rest Path = ", request.getPathInfo());
+                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
             }
             else {
                 try {
-                    rootConfig.addDriver(driverID);
+                    rootConfig.addDriver(driverId);
                     configService.setConfig(rootConfig);
                     configService.writeConfigToFile();
 
-                    setAndWriteDriverConfig(driverID, response, json, false);
+                    setAndWriteDriverConfig(driverId, response, json);
 
                 } catch (IdCollisionException e) {
                     ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_CONFLICT, logger,
-                            "Driver \"" + driverID + "\" already exist");
+                            "Driver \"" + driverId + "\" already exist");
                 } catch (ConfigWriteException e) {
                     ServletLib.sendHTTPErrorAndLogErr(response, HttpServletResponse.SC_CONFLICT, logger,
-                            "Could not write driver \"", driverID, "\".");
+                            "Could not write driver \"", driverId, "\".");
                     e.printStackTrace();
                 }
             }
@@ -295,8 +301,7 @@ public class DriverResourceServlet extends GenericServlet {
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        response.setContentType("application/json");
+        response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
 
         if (pathAndQueryString != null) {
@@ -304,20 +309,20 @@ public class DriverResourceServlet extends GenericServlet {
             setConfigAccess();
 
             String pathInfo = pathAndQueryString[0];
-            String driverID = null;
+            String driverId = null;
 
             String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            driverID = pathInfoArray[0].replace("/", "");
+            driverId = pathInfoArray[0].replace("/", "");
 
-            DriverConfig driverConfig = rootConfig.getDriver(driverID);
+            DriverConfig driverConfig = rootConfig.getDriver(driverId);
 
             if (pathInfoArray.length != 1) {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Requested rest path is not available", " Path Info = ", request.getPathInfo());
+                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, PATH_INFO, request.getPathInfo());
             }
             else if (driverConfig == null) {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Driver \"" + driverID + "\" does not exist.");
+                        "Driver \"" + driverId + "\" does not exist.");
             }
             else {
                 try {
@@ -325,12 +330,12 @@ public class DriverResourceServlet extends GenericServlet {
                     configService.setConfig(rootConfig);
                     configService.writeConfigToFile();
 
-                    if (rootConfig.getDriver(driverID) == null) {
+                    if (rootConfig.getDriver(driverId) == null) {
                         response.setStatus(HttpServletResponse.SC_OK);
                     }
                     else {
                         ServletLib.sendHTTPErrorAndLogErr(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                logger, "Not able to delete driver ", driverID);
+                                logger, "Not able to delete driver ", driverId);
                     }
                 } catch (ConfigWriteException e) {
                     ServletLib.sendHTTPErrorAndLogErr(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
@@ -341,17 +346,15 @@ public class DriverResourceServlet extends GenericServlet {
         }
     }
 
-    private boolean setAndWriteDriverConfig(String driverID, HttpServletResponse response, String json,
-            boolean isHTTPPut) {
-
+    private boolean setAndWriteDriverConfig(String driverId, HttpServletResponse response, String json) {
         boolean ok = false;
 
         try {
-            DriverConfig driverConfig = rootConfig.getDriver(driverID);
+            DriverConfig driverConfig = rootConfig.getDriver(driverId);
             if (driverConfig != null) {
                 try {
                     FromJson fromJson = new FromJson(json);
-                    fromJson.setDriverConfig(driverConfig, driverID);
+                    fromJson.setDriverConfig(driverConfig, driverId);
                 } catch (IdCollisionException e) {
 
                 }
@@ -362,7 +365,7 @@ public class DriverResourceServlet extends GenericServlet {
             }
             else {
                 ServletLib.sendHTTPErrorAndLogErr(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                        "Not able to access to driver ", driverID);
+                        "Not able to access to driver ", driverId);
             }
         } catch (JsonSyntaxException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_CONFLICT, logger,
@@ -371,8 +374,8 @@ public class DriverResourceServlet extends GenericServlet {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger, e.getMessage());
         } catch (ConfigWriteException e) {
             ServletLib.sendHTTPErrorAndLogErr(response, HttpServletResponse.SC_CONFLICT, logger,
-                    "Could not write driver \"", driverID, "\".");
-            e.printStackTrace();
+                    "Could not write driver \"", driverId, "\".");
+            logger.debug(e.getMessage());
         } catch (RestConfigIsNotCorrectException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_ACCEPTABLE, logger,
                     "Not correct formed driver config json.", " JSON = ", json);
@@ -382,52 +385,20 @@ public class DriverResourceServlet extends GenericServlet {
         return ok;
     }
 
-    private void doGetRunningList(ToJson json) throws IOException {
-        
-        List<DriverInfo> driverInfos = new LinkedList<DriverInfo>();
-        try {
-            for (String driverId : configService.getIdsOfRunningDrivers()) {
-                driverInfos.add(configService.getDriverInfo(driverId));
-            }
-            json.addDriverDescriptionList(driverInfos);
-            
-        } catch (DriverNotAvailableException e) {
-            throw new IOException(e);
-        }
-    }
-
-    private void doGetDetailsList(ToJson json) throws IOException {
-
-    	List<RestDriverDetail> driverDetails = new LinkedList<RestDriverDetail>();
-        try {
-            Collection<DriverConfig> driverConfigs = rootConfig.getDrivers();
-            for (DriverConfig config : driverConfigs) {
-                driverDetails.add(RestDriverDetail.getRestDriverDetail(configService.getDriverInfo(config.getId()), config));
-            }
-            json.addDriverDetailList(driverDetails);
-            
-        } catch (DriverNotAvailableException e) {
-            throw new IOException(e);
-        }
-    }
-
-    private void doGetConfigs(ToJson json, String drvId, HttpServletResponse response) throws IOException {
-
-        DriverConfig driverConfig = rootConfig.getDriver(drvId);
+    private void doGetConfigs(ToJson json, String driverId, HttpServletResponse response) {
+        DriverConfig driverConfig = rootConfig.getDriver(driverId);
 
         if (driverConfig != null) {
             json.addDriverConfig(driverConfig);
         }
         else {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest driver is not available.", " driverID = ", drvId);
+            driverNotAvailable(response, driverId);
         }
     }
 
-    private void doGetConfigField(ToJson json, String drvId, String configField, HttpServletResponse response)
+    private void doGetConfigField(ToJson json, String driverId, String configField, HttpServletResponse response)
             throws IOException {
-
-        DriverConfig driverConfig = rootConfig.getDriver(drvId);
+        DriverConfig driverConfig = rootConfig.getDriver(driverId);
 
         if (driverConfig != null) {
             JsonObject jsoConfigAll = ToJson.getDriverConfigAsJsonObject(driverConfig);
@@ -450,90 +421,113 @@ public class DriverResourceServlet extends GenericServlet {
             }
         }
         else {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest driver is not available.", " driverID = ", drvId);
+            driverNotAvailable(response, driverId);
         }
     }
 
-    private void doGetDetails(ToJson json, String drvId, HttpServletResponse response) throws IOException {
+    private void doGetDetails(ToJson json, String driverId, HttpServletResponse response) throws IOException {
+        DriverConfig driverConfig = rootConfig.getDriver(driverId);
+        if (driverConfig != null) {
+	        try {
+	            json.addDriverDetail(configService.getDriverInfo(driverId), driverConfig);
+		        
+	            return;
+	        } catch (DriverNotAvailableException e) {
+	        }
+        }
+        driverNotAvailable(response, driverId);
+    }
 
-        DriverConfig driverConfig = rootConfig.getDriver(drvId);
+    private void doGetRegisteredList(ToJson json) throws IOException {
+        List<DriverInfo> driverInfos = new LinkedList<DriverInfo>();
         try {
-            if (driverConfig != null) {
-                json.addDriverDetail(RestDriverDetail.getRestDriverDetail(configService.getDriverInfo(drvId), driverConfig));
+            for (String driverId : configService.getIdsOfRunningDrivers()) {
+                driverInfos.add(configService.getDriverInfo(driverId));
             }
-            else {
-                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Requested rest driver is not available.", " driverID = ", drvId);
-            }
+            json.addDriverDescriptionList(driverInfos);
             
         } catch (DriverNotAvailableException e) {
             throw new IOException(e);
         }
     }
 
-    private void interruptScanProcess(String driverID, HttpServletResponse response, String json) {
+    private void doGetConfigsList(ToJson json) {
+    	List<DriverConfig> driverConfigs = new ArrayList<DriverConfig>(rootConfig.getDrivers());
+        json.addDriverConfigList(driverConfigs);
+    }
+
+    private void doGetDetailsList(ToJson json, HttpServletResponse response) {
+    	List<RestDriverDetail> driverDetails = new LinkedList<RestDriverDetail>();
+        Collection<DriverConfig> driverConfigs = rootConfig.getDrivers();
+        for (DriverConfig config : driverConfigs) {
+            try {
+            	driverDetails.add(RestDriverDetail.getRestDriverDetail(configService.getDriverInfo(config.getId()), config));
+
+            } catch (DriverNotAvailableException e) {
+                driverNotAvailable(response, config.getId());
+                return;
+            }
+        }
+        json.addDriverDetailList(driverDetails);
+    }
+
+    private void interruptScanProcess(String driverId, HttpServletResponse response, String json) {
         try {
-            configService.interruptDeviceScan(driverID);
+            configService.interruptDeviceScan(driverId);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (UnsupportedOperationException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Driver does not support scan interrupting.", " driverID = ", driverID);
+                    "Driver does not support scan interrupting.", DRIVER_ID, driverId);
         } catch (DriverNotAvailableException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest driver is not available.", " driverID = ", driverID);
+            driverNotAvailable(response, driverId);
         }
     }
 
-    private List<DeviceScanInfo> scanForAllDrivers(String driverID, String settings,
+    private List<DeviceScanInfo> scanForAllDrivers(String driverId, String settings,
             DeviceScanListenerImplementation scanListener, HttpServletResponse response) {
-
         List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
 
         try {
-            configService.scanForDevices(driverID, settings, scanListener);
+            configService.scanForDevices(driverId, settings, scanListener);
             scannedDevicesList = scanListener.getScannedDevicesList();
 
         } catch (UnsupportedOperationException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Driver does not support scanning.", " driverID = ", driverID);
+                    "Driver does not support scanning.", DRIVER_ID, driverId);
         } catch (DriverNotAvailableException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest driver is not available.", " driverID = ", driverID);
+            driverNotAvailable(response, driverId);
         }
 
         return scannedDevicesList;
     }
 
-    private List<DeviceScanInfo> scanForAllDrivers(String driverID, String settings, HttpServletResponse response) {
-
+    @SuppressWarnings("unused")
+	private List<DeviceScanInfo> scanForAllDrivers(String driverId, String settings, HttpServletResponse response) {
         List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
 
         try {
-            scannedDevicesList = configService.scanForDevices(driverID, settings);
+            scannedDevicesList = configService.scanForDevices(driverId, settings);
 
         } catch (UnsupportedOperationException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Driver does not support scanning.", " driverID = ", driverID);
+                    "Driver does not support scanning.", DRIVER_ID, driverId);
         } catch (DriverNotAvailableException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest driver is not available.", " driverID = ", driverID);
+            driverNotAvailable(response, driverId);
         } catch (ArgumentSyntaxException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_ACCEPTABLE, logger,
-                    "Argument syntax was wrong.", " driverID = ", driverID, " Settings = ", settings);
+                    "Argument syntax was wrong.", DRIVER_ID, driverId, " Settings = ", settings);
         } catch (ScanException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Error while scan driver devices", " driverID = ", driverID, " Settings = ", settings);
+                    "Error while scan driver devices", DRIVER_ID, driverId, " Settings = ", settings);
         } catch (ScanInterruptedException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Scan interrupt occured", " driverID = ", driverID, " Settings = ", settings);
+                    "Scan interrupt occured", DRIVER_ID, driverId, " Settings = ", settings);
         }
 
         return scannedDevicesList;
     }
 
     private List<Channel> getDriverChannelList(Collection<ChannelConfig> channelConfig) {
-
         List<Channel> driverChannels = new ArrayList<>();
 
         for (ChannelConfig chCf : channelConfig) {
@@ -545,7 +539,6 @@ public class DriverResourceServlet extends GenericServlet {
 
     private void setDriverDevicesListAndChannelConfigList(List<String> driverDevices,
             Collection<ChannelConfig> channelConfig, Collection<DeviceConfig> deviceConfig) {
-
         for (DeviceConfig dvCf : deviceConfig) {
             driverDevices.add(dvCf.getId());
             channelConfig.addAll(dvCf.getChannels());

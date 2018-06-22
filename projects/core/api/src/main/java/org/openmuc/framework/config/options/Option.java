@@ -20,9 +20,12 @@
  */
 package org.openmuc.framework.config.options;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.BooleanValue;
+import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.FloatValue;
@@ -37,7 +40,7 @@ import org.w3c.dom.NodeList;
 
 public class Option {
 
-    public static final boolean MANDATORY_DEFAULT = true;
+    public static final boolean MANDATORY_DEFAULT = false;
     public static final ValueType TYPE_DEFAULT = ValueType.DOUBLE;
 
     protected final String key;
@@ -45,7 +48,7 @@ public class Option {
     protected String description = null;
     protected boolean mandatory = MANDATORY_DEFAULT;
     protected ValueType type = TYPE_DEFAULT;
-    
+
     protected Value valueDefault = null;
     protected OptionSelection valueSelection = null;
 
@@ -141,13 +144,13 @@ public class Option {
                     continue;
                 }
                 else if (childNodeName.equals("name")) {
-                    option.name = childNode.getTextContent();
+                    option.name = childNode.getTextContent().trim();
                 }
                 else if (childNodeName.equals("description")) {
                     option.description = DriverInfo.trimTextFromDomNode(childNode);
                 }
                 else if (childNodeName.equals("mandatory")) {
-                    String mandatoryString = childNode.getTextContent().toLowerCase();
+                    String mandatoryString = childNode.getTextContent().trim().toLowerCase();
                     if (mandatoryString.equals("true")) {
                         option.mandatory = true;
                     }
@@ -159,7 +162,7 @@ public class Option {
                     }
                 }
                 else if (childNodeName.equals("type")) {
-                    String valueTypeString = childNode.getTextContent().toUpperCase();
+                    String valueTypeString = childNode.getTextContent().trim().toUpperCase();
 
                     try {
                         option.type = ValueType.valueOf(valueTypeString);
@@ -181,7 +184,7 @@ public class Option {
                 option.name = id;
             }
             if (valueDefaultNode != null) {
-                Value valueDefault = new StringValue(valueDefaultNode.getTextContent());
+                Value valueDefault = new StringValue(valueDefaultNode.getTextContent().trim());
                 
                 // Verify default values to be of the specified value type
                 switch (option.type) {
@@ -202,6 +205,20 @@ public class Option {
                     break;
                 case BYTE:
                     option.valueDefault = new ByteValue(valueDefault.asByte());
+                    break;
+                case BYTE_ARRAY:
+                	byte[] arr;
+                    if (!valueDefault.asString().startsWith("0x")) {
+                    	arr = valueDefault.asByteArray();
+                    }
+                    else {
+                        try {
+                            arr = DatatypeConverter.parseHexBinary(valueDefault.asString().substring(2).trim());
+                        } catch (IllegalArgumentException e) {
+                            throw new ParseException(e);
+                        }
+                    }
+                    option.valueDefault = new ByteArrayValue(arr);
                     break;
                 case BOOLEAN:
                     option.valueDefault = new BooleanValue(valueDefault.asBoolean());
