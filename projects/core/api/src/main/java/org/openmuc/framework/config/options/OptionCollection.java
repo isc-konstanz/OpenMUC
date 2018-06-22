@@ -268,8 +268,8 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
             for (Option option : this) {
                 boolean mandatory = option.isMandatory();
                 String key = option.getKey();
+                String value = null;
                 
-                String value;
                 int i = 0;
                 if (option.getValueSelection() != null) {
                 	StringBuilder ssb = new StringBuilder();
@@ -284,16 +284,13 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                 else if (keyValue) {
                 	value = option.getType().name().replace('_', ' ').toLowerCase(locale);
                 }
-                else {
-                	value = key;
-                }
                 
                 String syntax;
                 if (keyValue) {
                     syntax = key + assignment + '<' + value + '>';
                 }
                 else {
-                    syntax = '<' + value + '>';
+                    syntax = '<' + key + '>';
                 }
                 
                 if (!mandatory) sb.append('[');

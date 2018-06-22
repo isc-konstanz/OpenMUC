@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configuration>
   <driver id="iec62056p21">
-    <name>IEC 62056 part 21</name>
-    <description><![CDATA[
-        This driver implements the communication with metering devices as an IEC 62056-21 mode A-D master, 
-        which can register one or several slaves such as gas, water, heat, or electricity meters.<br>
-        To uniquely identify a channel, representing single registers, an OBIS code of the format A-B:C.D.E*F 
-        or an older EDIS code of the format C.D.E is used.<br><br>
-        For a list of all valid identifiers, consult the list of standardized OBIS codes administered by the 
-        DLMS UA <a href='http://dlms.com/documentation/listofstandardobiscodesandmaintenanceproces/index.html'>here</a>.
-      ]]>
-    </description>
+    <name>IEC 62056-21</name>
+    <description>This driver can read meters using IEC 62056-21 Mode A, B and C.</description>
     
     <deviceAddress>
-      <option id="serialPort">
+      <syntax>
+        <keyValue>false</keyValue>
+      </syntax>
+      <option id="serial_port">
         <name>Serial port</name>
         <description><![CDATA[
             The physical device address to uniquely identify a physical smart meter.<br><br>
@@ -26,180 +21,103 @@
         <mandatory>true</mandatory>
         <type>STRING</type>
       </option>
-      <option id="address">
-        <name>Device address</name>
-        <description><![CDATA[
-            The address to uniquely identify a device, representing an IEC62056-21 slave.<br>
-            For many devices, this is a number that can be read off a label on the meter.<br><br>
-            <i>If left empty, a single meter can be addressed without an identifier.<i>
-          ]]>
-        </description>
-        <mandatory>false</mandatory>
-        <type>STRING</type>
-      </option>
     </deviceAddress>
     
     <deviceSettings>
-      <option id="password">
-        <name>Password</name>
+      <syntax>
+        <keyValue assignment=" ">true</keyValue>
+        <separator> </separator>
+      </syntax>
+      <option id="-d">
+        <name>Baud rate change delay</name>
         <description><![CDATA[
-            Authorization password to access the meters programmable mode.
+            The baud rate change delay sets the waiting time in milliseconds between a baud rate change.<br>
+            Default is a delay of 0ms.
           ]]>
         </description>
-        <mandatory>false</mandatory>
-        <type>STRING</type>
+        <type>INTEGER</type>
+        <default>0</default>
       </option>
-      <option id="timeout">
+      <option id="-t">
         <name>Timeout</name>
         <description><![CDATA[
-            The timeout, after which the blocking call to read from the serial port will be canceled.
+            The timeout in milliseconds, after which the blocking call to read from the serial port will be canceled.<br>
+            Default is a timeout of 2000ms.
           ]]>
         </description>
-        <mandatory>false</mandatory>
         <type>INTEGER</type>
-        <default>5000</default>
+        <default>2000</default>
       </option>
-      <option id="verify">
-        <name>Verify connection</name>
+      <option id="-r">
+        <name>Number of read retries</name>
         <description><![CDATA[
-            Verify if data can be read from the device, when opening the connection.<br>
-            This may cause problems, for instable connections.
+            Defines the maximum of read retries.<br>
+            Default is 0.
           ]]>
         </description>
-        <mandatory>false</mandatory>
-        <type>BOOLEAN</type>
-        <default>true</default>
-      </option>
-      <option id="handleEcho">
-        <name>Handle echo</name>
-        <description><![CDATA[
-            Tell the connection, to throw away echos of received messages.<br><br>
-            Echos are caused by some optical transceivers.
-          ]]>
-        </description>
-        <mandatory>false</mandatory>
-        <type>BOOLEAN</type>
-        <default>false</default>
-      </option>
-      <option id="handshake">
-        <name>Handshake</name>
-        <description><![CDATA[
-            Use initial handshake to negotiate baud rate.
-          ]]>
-        </description>
-        <mandatory>false</mandatory>
-        <type>BOOLEAN</type>
-        <default>true</default>
-      </option>
-      <option id="baudrateChangeDelay">
-        <name>Baudrate change delay</name>
-        <description><![CDATA[
-            This parameter can usually be set to zero for regular serial ports. 
-            If a USB to serial converter is used, you might have to use a delay of around 250ms, 
-            as otherwise the baud rate may be changed before the previous message 
-            (i.e. the acknowledgment) has been completely sent.<br><br>
-            Only used, if an initial handshake will be performed.
-          ]]>
-        </description>
-        <mandatory>false</mandatory>
         <type>INTEGER</type>
-        <default>250</default>
+        <default>0</default>
       </option>
-      <option id="baudrateMax">
-        <name>Baudrate maximum</name>
+      <option id="-bd">
+        <name>Baud rate</name>
         <description><![CDATA[
-            Maximum supported baud rate for the meter.<br><br>
-            Only used, if an initial handshake will be performed.
+            Sets an initial baud rate e.g. for devices with modem configuration.<br>
+            Default is 300bd.
           ]]>
         </description>
-        <mandatory>false</mandatory>
-        <type>INTEGER</type>
-      </option>
-      <option id="baudrate">
-        <name>Baudrate</name>
-        <description><![CDATA[
-            The baud rate for the serial communication.<br>
-            Defaults are 300bd 7E1
-          ]]>
-        </description>
-        <mandatory>false</mandatory>
         <type>INTEGER</type>
         <default>300</default>
       </option>
-      <option id="databits">
-        <name>Databits</name>
+      <option id="-fbd">
+        <name>Fixed baud rate</name>
         <description><![CDATA[
-            The data bits for the serial communication.<br>
-            Defaults are 300bd 7E1
+            Activates a fixed baud rate.<br>
+            Default is deactivated.
           ]]>
         </description>
-        <mandatory>false</mandatory>
-        <type>INTEGER</type>
-        <selection>
-          <item value="5">5</item>
-          <item value="6">6</item>
-          <item value="7">7</item>
-          <item value="8">8</item>
-        </selection>
-        <default>7</default>
+        <type>BOOLEAN</type>
+        <default>false</default>
       </option>
-      <option id="stopbits">
-        <name>Stopbits</name>
+      <option id="-a">
+        <name>Device address</name>
         <description><![CDATA[
-            The stop bits for the serial communication.<br>
-            Defaults are 300bd 7E1
+            The device address is mostly needed for devices with RS485.<br>
+            Default is to not have a device address configured.
           ]]>
         </description>
-        <mandatory>false</mandatory>
-        <type>INTEGER</type>
-        <selection>
-          <item value="1">1</item>
-          <item value="2">2</item>
-          <item value="3">1.5</item>
-        </selection>
-        <default>1</default>
+        <type>STRING</type>
       </option>
-      <option id="parity">
-        <name>Parity</name>
+      <option id="-rsc">
+        <name>Request message start character</name>
         <description><![CDATA[
-            The parity check for the serial communication.<br>
-            Defaults are 300bd 7E1
+            The request message start character is used for manufacture specific request messages.<br>
+            With this option you can change the default start character.
           ]]>
         </description>
-        <mandatory>false</mandatory>
-        <type>INTEGER</type>
-        <selection>
-          <item value="0">None</item>
-          <item value="1">Odd</item>
-          <item value="2">Even</item>
-          <item value="3">Mark</item>
-          <item value="4">Space</item>
-        </selection>
-        <default>2</default>
+        <type>STRING</type>
+      </option>
+      <option id="-rs">
+        <name>Fixed baud rate</name>
+        <description><![CDATA[
+             Reads the standard message and the manufacture specific message.<br>
+             This options has only an affect if the Request message start character is changed.
+          ]]>
+        </description>
+        <type>BOOLEAN</type>
+        <default>false</default>
       </option>
     </deviceSettings>
-    
-    <deviceScanSettings>
-      <option id="serialPort"></option>
-      <option id="timeout"></option>
-      <option id="baudrate"></option>
-      <option id="databits"></option>
-      <option id="stopbits"></option>
-      <option id="parity"></option>
-    </deviceScanSettings>
     
     <channelAddress>
       <syntax>
         <keyValue>false</keyValue>
-        <separator>;</separator>
       </syntax>
-      <option id="identification">
-        <name>Identification</name>
+      <option id="data_set_id">
+        <name>Id of the data set</name>
         <description><![CDATA[
-            The ID is usually an OBIS code of the format A-B:C.D.E*F or an older EDIS code of the format C.D.E. 
-            that specifies exactly what the value of this data set represents.<br>
-            C is the type of the measured quantity (e.g 1 = positive active power), D describes the measurement 
-            mode and E is the tariff (e.g. 0 for total or 1 for tariff 1 only) associated with this value.
+            The id of the data set is usually an OBIS code of the format A-B:C.D.E*F 
+            or on older EDIS code of the format C.D.E. that specifies exactly what the value 
+            of this data set represents.
           ]]>
         </description>
         <mandatory>true</mandatory>
