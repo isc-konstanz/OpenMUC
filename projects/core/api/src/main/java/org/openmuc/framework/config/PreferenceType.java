@@ -18,7 +18,6 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.openmuc.framework.config;
 
 public enum PreferenceType {

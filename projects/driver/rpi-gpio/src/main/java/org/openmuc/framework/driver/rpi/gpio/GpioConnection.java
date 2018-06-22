@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -93,7 +93,7 @@ public class GpioConnection implements Connection {
 
         for (ChannelRecordContainer container : containers) {
             try {
-            	ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
+                ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
 
                 PinState state = pin.getState();
                 Value value;
@@ -128,7 +128,7 @@ public class GpioConnection implements Connection {
         for (ChannelValueContainer container : containers) {
             Value value = container.getValue();
             try {
-            	ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
+                ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
                 
                 if (value != null) {
                     if (pin instanceof GpioPinDigitalOutput) {
@@ -185,8 +185,8 @@ public class GpioConnection implements Connection {
 
             for (ChannelRecordContainer container : containers) {
                 try {
-                	ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
-                	
+                    ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
+                    
                     PinState state = pin.getState();
                     Value value;
                     if (!settings.isInverted()) {

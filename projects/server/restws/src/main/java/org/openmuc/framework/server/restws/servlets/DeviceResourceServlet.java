@@ -327,7 +327,7 @@ public class DeviceResourceServlet extends GenericServlet {
 
     private void doGetConfigsList(ToJson json) {
 
-    	List<DeviceConfig> deviceConfigs = getConfigsList();
+        List<DeviceConfig> deviceConfigs = getConfigsList();
         json.addDeviceConfigList(deviceConfigs);
     }
 
@@ -336,10 +336,10 @@ public class DeviceResourceServlet extends GenericServlet {
         try {
             Collection<DeviceConfig> deviceConfigs = getConfigsList();
             for (DeviceConfig config : deviceConfigs) {
-            	RestDeviceDetail restDetails = RestDeviceDetail.getRestDeviceDetail(
-            			configService.getDeviceState(config.getId()), config, 
+                RestDeviceDetail restDetails = RestDeviceDetail.getRestDeviceDetail(
+                        configService.getDeviceState(config.getId()), config, 
                         configService.getDriverInfo(config.getDriver().getId()));
-            	
+                
                 deviceDetails.add(restDetails);
             }
             json.addDeviceDetailList(deviceDetails);

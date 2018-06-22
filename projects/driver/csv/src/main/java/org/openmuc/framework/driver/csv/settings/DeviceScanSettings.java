@@ -1,3 +1,23 @@
+/*
+ * Copyright 2011-18 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.openmuc.framework.driver.csv.settings;
 
 import java.io.File;
@@ -8,18 +28,18 @@ import org.openmuc.framework.config.Preferences;
 
 public class DeviceScanSettings extends Preferences {
 
-	public static final PreferenceType TYPE = PreferenceType.SETTINGS_SCAN_DEVICE;
+    public static final PreferenceType TYPE = PreferenceType.SETTINGS_SCAN_DEVICE;
 
-	@Option
-	private String path;
+    @Option
+    private String path;
 
-	@Override
-	public PreferenceType getPreferenceType() {
-		return TYPE;
-	}
+    @Override
+    public PreferenceType getPreferenceType() {
+        return TYPE;
+    }
 
     public File[] listFiles() throws ArgumentSyntaxException {
-    	File dir = new File(path);
+        File dir = new File(path);
         if (!dir.isDirectory()) {
             throw new ArgumentSyntaxException("<path> argument must point to a directory.");
         }

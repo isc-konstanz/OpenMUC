@@ -64,7 +64,7 @@ public class DriverInfo {
      *            resource stream, containing all driver info as XML nodes
      */
     DriverInfo(Class<?> driver) {
-    	this(driver.getResourceAsStream("options.xml"));
+        this(driver.getResourceAsStream("options.xml"));
     }
 
     /**
@@ -152,62 +152,62 @@ public class DriverInfo {
 
     public <P extends Preferences> P parse(String str, Class<P> type) throws ArgumentSyntaxException {
         try {
-        	P preferences = type.getConstructor().newInstance();
-        	preferences.parseFields(parse(str, preferences.getPreferenceType()));
-        	
-			return preferences;
-			
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-	        throw new ArgumentSyntaxException(MessageFormat.format("Error parsing settings to class \"{0}\": {1}", 
-	                type.getSimpleName(), e.getMessage()));
-		}
+            P preferences = type.getConstructor().newInstance();
+            preferences.parseFields(parse(str, preferences.getPreferenceType()));
+            
+            return preferences;
+            
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            throw new ArgumentSyntaxException(MessageFormat.format("Error parsing settings to class \"{0}\": {1}", 
+                    type.getSimpleName(), e.getMessage()));
+        }
     }
 
     public Map<String, Value> parse(String str, PreferenceType type) throws ArgumentSyntaxException {
-    	switch(type) {
-		case ADDRESS_DEVICE:
-			return deviceAddress.parse(str);
-		case SETTINGS_DEVICE:
-			return deviceSettings.parse(str);
-		case SETTINGS_SCAN_DEVICE:
-			return deviceScanSettings.parse(str);
-		case ADDRESS_CHANNEL:
-			return channelAddress.parse(str);
-		case SETTINGS_CHANNEL:
-			return channelSettings.parse(str);
-		case SETTINGS_SCAN_CHANNEL:
-			return channelScanSettings.parse(str);
-		default:
-	    	throw new ArgumentSyntaxException("Unknown preference type");
-    	}
+        switch(type) {
+        case ADDRESS_DEVICE:
+            return deviceAddress.parse(str);
+        case SETTINGS_DEVICE:
+            return deviceSettings.parse(str);
+        case SETTINGS_SCAN_DEVICE:
+            return deviceScanSettings.parse(str);
+        case ADDRESS_CHANNEL:
+            return channelAddress.parse(str);
+        case SETTINGS_CHANNEL:
+            return channelSettings.parse(str);
+        case SETTINGS_SCAN_CHANNEL:
+            return channelScanSettings.parse(str);
+        default:
+            throw new ArgumentSyntaxException("Unknown preference type");
+        }
     }
 
     public <P extends Preferences> String syntax(Class<P> type) {
-    	try {
-	    	P preferences = type.getConstructor().newInstance();
+        try {
+            P preferences = type.getConstructor().newInstance();
 
-	    	switch(preferences.getPreferenceType()) {
-			case ADDRESS_DEVICE:
-				return deviceAddress.getSyntax();
-			case SETTINGS_DEVICE:
-				return deviceSettings.getSyntax();
-			case SETTINGS_SCAN_DEVICE:
-				return deviceScanSettings.getSyntax();
-			case ADDRESS_CHANNEL:
-				return channelAddress.getSyntax();
-			case SETTINGS_CHANNEL:
-				return channelSettings.getSyntax();
-			case SETTINGS_SCAN_CHANNEL:
-				return channelScanSettings.getSyntax();
-			default:
-		    	break;
-	    	}
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-	        // Return null if errors occurred
-		}
-    	return null;
+            switch(preferences.getPreferenceType()) {
+            case ADDRESS_DEVICE:
+                return deviceAddress.getSyntax();
+            case SETTINGS_DEVICE:
+                return deviceSettings.getSyntax();
+            case SETTINGS_SCAN_DEVICE:
+                return deviceScanSettings.getSyntax();
+            case ADDRESS_CHANNEL:
+                return channelAddress.getSyntax();
+            case SETTINGS_CHANNEL:
+                return channelSettings.getSyntax();
+            case SETTINGS_SCAN_CHANNEL:
+                return channelScanSettings.getSyntax();
+            default:
+                break;
+            }
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            // Return null if errors occurred
+        }
+        return null;
     }
 
     public OptionInfo getDriverConfig() throws ParseException, IOException {

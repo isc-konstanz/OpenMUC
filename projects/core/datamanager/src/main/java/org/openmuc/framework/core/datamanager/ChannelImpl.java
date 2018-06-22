@@ -160,12 +160,12 @@ public final class ChannelImpl implements Channel {
 
     @Override
     public String getLoggingSettings() {
-        return config.loggingSettings;
+        return config.getLoggingSettings();
     }
 
     @Override
     public String getDriverName() {
-        return config.deviceParent.driverParent.id;
+        return config.deviceParent.driverParent.getId();
     }
 
     @Override
@@ -384,8 +384,8 @@ public final class ChannelImpl implements Channel {
         Double scalingFactor = config.getScalingFactor();
 
         if (valueOffset != null) {
-        	Double adjustedDouble = adjustedValue.asDouble() - valueOffset;
-        	switch (config.getValueType()) {
+            Double adjustedDouble = adjustedValue.asDouble() - valueOffset;
+            switch (config.getValueType()) {
             case FLOAT:
                 adjustedValue = new FloatValue(adjustedDouble.floatValue());
                 break;
@@ -401,11 +401,11 @@ public final class ChannelImpl implements Channel {
             default:
                 adjustedValue = new DoubleValue(adjustedDouble);
                 break;
-        	}
+            }
         }
         if (scalingFactor != null) {
-        	Double adjustedDouble = adjustedValue.asDouble() / scalingFactor;
-        	switch (config.getValueType()) {
+            Double adjustedDouble = adjustedValue.asDouble() / scalingFactor;
+            switch (config.getValueType()) {
             case FLOAT:
                 adjustedValue = new FloatValue(adjustedDouble.floatValue());
                 break;
@@ -421,7 +421,7 @@ public final class ChannelImpl implements Channel {
             default:
                 adjustedValue = new DoubleValue(adjustedDouble);
                 break;
-        	}
+            }
         }
         writeValueContainer.setValue(adjustedValue);
 

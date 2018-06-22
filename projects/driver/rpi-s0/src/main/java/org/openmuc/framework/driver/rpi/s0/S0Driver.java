@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -71,7 +71,7 @@ public class S0Driver implements DriverService, S0ConnectionCallbacks {
             GpioUtil.enableNonPrivilegedAccess();
         }
         else {
-        	logger.warn("Privileged access is required on this system to access GPIO pins");
+            logger.warn("Privileged access is required on this system to access GPIO pins");
         }
         gpio = GpioFactory.getInstance();
     }

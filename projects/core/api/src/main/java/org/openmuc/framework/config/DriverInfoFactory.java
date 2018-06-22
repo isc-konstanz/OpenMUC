@@ -27,36 +27,36 @@ public class DriverInfoFactory {
 
     public static final String VIRTUAL = "virtual";
 
-	private static final Map<String, DriverInfo> singletonMap = new HashMap<>();
+    private static final Map<String, DriverInfo> singletonMap = new HashMap<>();
 
     public static DriverInfo getInfo(Class<?> driver) {
-    	String name = driver.getName();
-    	DriverInfo info;
-    	if (singletonMap.containsKey(name)) {
-    		info = singletonMap.get(name);
-    	}
-    	else {
-        	info = new DriverInfo(driver);
-        	singletonMap.put(name, info);
-    	}
-    	return info;
+        String name = driver.getName();
+        DriverInfo info;
+        if (singletonMap.containsKey(name)) {
+            info = singletonMap.get(name);
+        }
+        else {
+            info = new DriverInfo(driver);
+            singletonMap.put(name, info);
+        }
+        return info;
     }
 
     public static DriverPreferences getPreferences(Class<?> driver) {
-    	String name = driver.getName();
-    	DriverPreferences prefs = null;
-    	if (singletonMap.containsKey(name)) {
-    		prefs = (DriverPreferences) singletonMap.get(name);
-    	}
-    	if (prefs == null || !(prefs instanceof DriverPreferences)) {
-    		prefs = new DriverPreferences(driver);
-        	singletonMap.put(name, prefs);
-    	}
-    	return prefs;
+        String name = driver.getName();
+        DriverPreferences prefs = null;
+        if (singletonMap.containsKey(name)) {
+            prefs = (DriverPreferences) singletonMap.get(name);
+        }
+        if (prefs == null || !(prefs instanceof DriverPreferences)) {
+            prefs = new DriverPreferences(driver);
+            singletonMap.put(name, prefs);
+        }
+        return prefs;
     }
 
     public static DriverInfo getVirtualInfo() {
-    	return new DriverInfo(DriverInfo.class.getResourceAsStream("virtual.xml"));
+        return new DriverInfo(DriverInfo.class.getResourceAsStream("virtual.xml"));
     }
 
 }

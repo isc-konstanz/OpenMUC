@@ -32,10 +32,10 @@ public class DriverPreferences extends DriverInfo {
     }
 
     @SuppressWarnings("unchecked")
-	public <P extends Preferences> P get(String str, Class<P> type) throws ArgumentSyntaxException {
-    	String key = type.getName();
+    public <P extends Preferences> P get(String str, Class<P> type) throws ArgumentSyntaxException {
+        String key = type.getName();
         if (!prefs.containsKey(key)) {
-        	prefs.put(key, new ParsedPreferences<P>(this));
+            prefs.put(key, new ParsedPreferences<P>(this));
         }
         return ((ParsedPreferences<P>) prefs.get(key)).get(str, type);
     }
@@ -52,7 +52,7 @@ public class DriverPreferences extends DriverInfo {
             this.prefs = prefs;
         }
 
-		public P get(String str, Class<P> type) throws ArgumentSyntaxException {
+        public P get(String str, Class<P> type) throws ArgumentSyntaxException {
             P parsed;
             if (containsKey(str)) {
                 parsed = get(str);

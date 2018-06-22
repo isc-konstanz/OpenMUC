@@ -313,7 +313,7 @@ public class ToJson {
 
     public void addDriverDetail(DriverInfo info, DriverConfig config) {
 
-    	RestDriverDetail restDetail = RestDriverDetail.getRestDriverDetail(info, config);
+        RestDriverDetail restDetail = RestDriverDetail.getRestDriverDetail(info, config);
         jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestDriverDetail.class).getAsJsonObject());
     }
 
@@ -346,7 +346,7 @@ public class ToJson {
 
     public void addDeviceDetail(DeviceState state, DeviceConfig config, DriverInfo info) {
 
-    	RestDeviceDetail restDetail = RestDeviceDetail.getRestDeviceDetail(state, config, info);
+        RestDeviceDetail restDetail = RestDeviceDetail.getRestDeviceDetail(state, config, info);
         jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestDeviceDetail.class).getAsJsonObject());
     }
 
@@ -379,7 +379,7 @@ public class ToJson {
 
     public void addChannelDetail(Channel channel, ChannelConfig config) {
 
-    	RestChannelDetail restDetail = RestChannelDetail.getRestChannelDetail(channel, config);
+        RestChannelDetail restDetail = RestChannelDetail.getRestChannelDetail(channel, config);
         jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestChannelDetail.class).getAsJsonObject());
     }
 

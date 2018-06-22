@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -27,15 +27,15 @@ import com.pi4j.temperature.TemperatureScale;
 
 public class ChannelSettings extends Preferences {
 
-	public static final PreferenceType TYPE = PreferenceType.SETTINGS_CHANNEL;
+    public static final PreferenceType TYPE = PreferenceType.SETTINGS_CHANNEL;
 
-	@Option
+    @Option
     private TemperatureScale unit = TemperatureScale.CELSIUS;
 
-	@Override
-	public PreferenceType getPreferenceType() {
-		return TYPE;
-	}
+    @Override
+    public PreferenceType getPreferenceType() {
+        return TYPE;
+    }
 
     public TemperatureScale getUnit() {
         return unit;

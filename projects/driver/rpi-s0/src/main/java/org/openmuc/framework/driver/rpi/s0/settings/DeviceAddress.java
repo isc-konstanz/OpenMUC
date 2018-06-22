@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,18 +25,18 @@ import org.openmuc.framework.config.Preferences;
 
 public class DeviceAddress extends Preferences {
 
-	public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
+    public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
 
-	@Option
+    @Option
     private int pin;
 
-	@Option
-	private boolean broadcomScheme;
+    @Option
+    private boolean broadcomScheme;
 
-	@Override
-	public PreferenceType getPreferenceType() {
-		return TYPE;
-	}
+    @Override
+    public PreferenceType getPreferenceType() {
+        return TYPE;
+    }
 
     public int getPin() {
         return pin;

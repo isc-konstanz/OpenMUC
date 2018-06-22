@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,21 +25,21 @@ import org.openmuc.framework.config.Preferences;
 
 public class ChannelSettings extends Preferences {
 
-	public static final PreferenceType TYPE = PreferenceType.SETTINGS_CHANNEL;
+    public static final PreferenceType TYPE = PreferenceType.SETTINGS_CHANNEL;
 
-	@Option
+    @Option
     private int impulses;
 
-	@Option
+    @Option
     private boolean derivative;
 
-	@Option
+    @Option
     private boolean countInterval;
 
-	@Override
-	public PreferenceType getPreferenceType() {
-		return TYPE;
-	}
+    @Override
+    public PreferenceType getPreferenceType() {
+        return TYPE;
+    }
 
     public int getImpulses() {
         return impulses;

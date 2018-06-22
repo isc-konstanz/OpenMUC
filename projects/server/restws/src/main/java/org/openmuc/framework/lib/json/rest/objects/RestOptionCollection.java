@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,10 +28,10 @@ import org.openmuc.framework.config.options.OptionCollection;
 import org.openmuc.framework.data.ValueType;
 
 public class RestOptionCollection {
-	
-	public final static String ADDRESS = "address";
-	public final static String SETTINGS = "settings";
-	public final static String SCAN_SETTINGS = "scanSettings";
+    
+    public final static String ADDRESS = "address";
+    public final static String SETTINGS = "settings";
+    public final static String SCAN_SETTINGS = "scanSettings";
     
     private List<RestOption> options = null;
     private RestOptionSyntax syntax = null;
@@ -74,17 +74,17 @@ public class RestOptionCollection {
         String name;
         switch(id) {
         case ADDRESS:
-        	name = "Address";
-        	break;
+            name = "Address";
+            break;
         case SETTINGS:
-        	name = "Settings";
-        	break;
+            name = "Settings";
+            break;
         case SCAN_SETTINGS:
-        	name = "Scan settings";
-        	break;
+            name = "Scan settings";
+            break;
         default:
-        	name = id;
-        	break;
+            name = id;
+            break;
         }
         
         List<Option> options = new ArrayList<Option>();

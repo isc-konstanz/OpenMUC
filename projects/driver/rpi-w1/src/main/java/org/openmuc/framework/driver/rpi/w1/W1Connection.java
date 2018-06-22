@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -98,20 +98,20 @@ public class W1Connection implements Connection {
                     
                     if (temperature != null) {
                         // Skip temperature readings of exactly 85, as they are commonly missreadings
-                    	if (temperature < 85) {
+                        if (temperature < 85) {
                             value = new DoubleValue(temperature);
-                    	}
-                    	else {
-                    		// Don't skip the reading, if the latest value read was longer than 15 minutes ago or above 80
-                        	Record lastRecord = container.getChannel().getLatestRecord();
-                        	if (lastRecord != null && lastRecord.getFlag() == Flag.VALID) {
-                        		if (samplingTime - lastRecord.getTimestamp() >= 900000 || 
-                        				lastRecord.getValue().asDouble() >= 80) {
-                        			
+                        }
+                        else {
+                            // Don't skip the reading, if the latest value read was longer than 15 minutes ago or above 80
+                            Record lastRecord = container.getChannel().getLatestRecord();
+                            if (lastRecord != null && lastRecord.getFlag() == Flag.VALID) {
+                                if (samplingTime - lastRecord.getTimestamp() >= 900000 || 
+                                        lastRecord.getValue().asDouble() >= 80) {
+                                    
                                     value = new DoubleValue(temperature);
-                        		}
-                        	}
-                    	}
+                                }
+                            }
+                        }
                     }
                     break;
                 default:
@@ -146,7 +146,7 @@ public class W1Connection implements Connection {
     @Override
     public Object write(List<ChannelValueContainer> containers, Object containerListHandle)
             throws UnsupportedOperationException, ConnectionException {
-    	
+        
         throw new UnsupportedOperationException("Writing to 1-Wire devices not supported for type: " + type.getName());
     }
 

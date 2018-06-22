@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -207,9 +207,9 @@ public class Option {
                     option.valueDefault = new ByteValue(valueDefault.asByte());
                     break;
                 case BYTE_ARRAY:
-                	byte[] arr;
+                    byte[] arr;
                     if (!valueDefault.asString().startsWith("0x")) {
-                    	arr = valueDefault.asByteArray();
+                        arr = valueDefault.asByteArray();
                     }
                     else {
                         try {

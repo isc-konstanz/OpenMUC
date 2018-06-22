@@ -60,7 +60,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     private String samplingGroup = null;
     private Integer loggingInterval = null;
     private Integer loggingTimeOffset = null;
-	private String loggingSettings = null;
+    private String loggingSettings = null;
     private Boolean disabled = null;
     private List<ServerMapping> serverMappings = null;
 
@@ -249,15 +249,15 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         this.loggingTimeOffset = loggingTimeOffset;
     }
 
-	@Override
-	public String getLoggingSettings() {
-		return loggingSettings;
-	}
+    @Override
+    public String getLoggingSettings() {
+        return loggingSettings;
+    }
 
-	@Override
-	public void setLoggingSettings(String settings) {
-		loggingSettings = settings;
-	}
+    @Override
+    public void setLoggingSettings(String settings) {
+        loggingSettings = settings;
+    }
 
     @Override
     public Boolean isDisabled() {
@@ -396,9 +396,9 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 else if (childName.equals("loggingTimeOffset")) {
                     config.setLoggingTimeOffset(timeStringToMillis(childNode.getTextContent()));
                 }
-				else if (childName.equals("loggingSettings")) {
-					config.setLoggingSettings(childNode.getTextContent());
-				}
+                else if (childName.equals("loggingSettings")) {
+                    config.setLoggingSettings(childNode.getTextContent());
+                }
                 else if (childName.equals("disabled")) {
                     config.setDisabled(Boolean.parseBoolean(childNode.getTextContent()));
                 }
@@ -512,11 +512,11 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
-		if (loggingSettings != null) {
-			childElement = document.createElement("loggingSettings");
-			childElement.setTextContent(loggingSettings);
-			parentElement.appendChild(childElement);
-		}
+        if (loggingSettings != null) {
+            childElement = document.createElement("loggingSettings");
+            childElement.setTextContent(loggingSettings);
+            parentElement.appendChild(childElement);
+        }
 
         if (disabled != null) {
             childElement = document.createElement("disabled");
@@ -545,7 +545,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         configClone.samplingGroup = samplingGroup;
         configClone.loggingInterval = loggingInterval;
         configClone.loggingTimeOffset = loggingTimeOffset;
-		configClone.loggingSettings = loggingSettings;
+        configClone.loggingSettings = loggingSettings;
         configClone.disabled = disabled;
 
         return configClone;
@@ -674,12 +674,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             configClone.loggingTimeOffset = loggingTimeOffset;
         }
 
-		if (loggingSettings == null) {
-			configClone.loggingSettings = ChannelConfig.LOGGING_SETTINGS_DEFAULT;
-		}
-		else {
-			configClone.loggingSettings = loggingSettings;
-		}
+        if (loggingSettings == null) {
+            configClone.loggingSettings = ChannelConfig.LOGGING_SETTINGS_DEFAULT;
+        }
+        else {
+            configClone.loggingSettings = loggingSettings;
+        }
 
         if (disabled == null) {
             configClone.disabled = clonedParentConfig.isDisabled();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -274,62 +274,62 @@ public class RestChannelDetail {
         rcd.setDriver(c.getDriverName());
         rcd.setDevice(c.getDeviceName());
         if (c.getLatestRecord() != null) {
-        	Record rc = c.getLatestRecord();
-        	
-        	rcd.setTimestamp(rc.getTimestamp());
-        	
+            Record rc = c.getLatestRecord();
+            
+            rcd.setTimestamp(rc.getTimestamp());
+            
             Flag flag = rc.getFlag();
             Value value = rc.getValue();
             if (value != null) {
                 switch (c.getValueType()) {
                 case FLOAT:
                     if (Float.isInfinite(value.asFloat())) {
-                    	flag = Flag.VALUE_IS_INFINITY;
+                        flag = Flag.VALUE_IS_INFINITY;
                     }
                     else if (Float.isNaN(value.asFloat())) {
-                    	flag = Flag.VALUE_IS_NAN;
+                        flag = Flag.VALUE_IS_NAN;
                     }
-                	rcd.setValue(value.asFloat());
+                    rcd.setValue(value.asFloat());
                     break;
                 case DOUBLE:
                     if (Double.isInfinite(value.asDouble())) {
-                    	flag = Flag.VALUE_IS_INFINITY;
+                        flag = Flag.VALUE_IS_INFINITY;
                     }
                     else if (Double.isNaN(value.asDouble())) {
-                    	flag = Flag.VALUE_IS_NAN;
+                        flag = Flag.VALUE_IS_NAN;
                     }
-                	rcd.setValue(value.asDouble());
+                    rcd.setValue(value.asDouble());
                     break;
                 case SHORT:
-                	rcd.setValue(value.asShort());
+                    rcd.setValue(value.asShort());
                     break;
                 case INTEGER:
-                	rcd.setValue(value.asInt());
+                    rcd.setValue(value.asInt());
                     break;
                 case LONG:
-                	rcd.setValue(value.asLong());
+                    rcd.setValue(value.asLong());
                     break;
                 case BYTE:
-                	rcd.setValue(value.asByte());
+                    rcd.setValue(value.asByte());
                     break;
                 case BOOLEAN:
-                	rcd.setValue(value.asBoolean());
+                    rcd.setValue(value.asBoolean());
                     break;
                 case BYTE_ARRAY:
-                	rcd.setValue(value.asByteArray());
+                    rcd.setValue(value.asByteArray());
                     break;
                 case STRING:
-                	rcd.setValue(value.asString());
+                    rcd.setValue(value.asString());
                     break;
                 default:
-                	rcd.setValue(null);
+                    rcd.setValue(null);
                     break;
                 }
             }
             else {
-            	rcd.setValue(null);
+                rcd.setValue(null);
             }
-        	rcd.setFlag(flag);
+            rcd.setFlag(flag);
         }
         rcd.setState(c.getChannelState());
         

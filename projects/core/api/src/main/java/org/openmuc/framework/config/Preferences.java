@@ -1,3 +1,23 @@
+/*
+ * Copyright 2011-18 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.openmuc.framework.config;
 
 import java.lang.annotation.Documented;
@@ -32,7 +52,7 @@ public abstract class Preferences {
             }
             String id = option.value();
             if (id.isEmpty() || id.equals(Option.FIELD_NAME)) {
-            	id = field.getName();
+                id = field.getName();
             }
 
             Value value = settings.get(id);
@@ -96,7 +116,7 @@ public abstract class Preferences {
             return extractInetAddress(value);
         }
         else {
-        	return extractValueOf(type, value);
+            return extractValueOf(type, value);
         }
     }
 
@@ -109,32 +129,32 @@ public abstract class Preferences {
     }
 
     private Object extractValueOf(Class<?> type, Value value) throws ArgumentSyntaxException, NoSuchFieldException {
-    	Method method = null;
-		try {
-			method = type.getMethod("valueOf", String.class);
-	    	
-		} catch (NoSuchMethodException | SecurityException e) {
-			// check if method is null and procees
-		}
-		if (method == null) {
+        Method method = null;
+        try {
+            method = type.getMethod("valueOf", String.class);
+            
+        } catch (NoSuchMethodException | SecurityException e) {
+            // check if method is null and procees
+        }
+        if (method == null) {
             throw new NoSuchFieldException(
                     type + "  Driver implementation error not supported data type. Report driver developer\n");
-		}
-		
-    	try {
-    		if (type.isEnum()) {
-    			return method.invoke(null, value.asString().toUpperCase());
-    		}
-			return method.invoke(null, value.asString());
-			
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        }
+        
+        try {
+            if (type.isEnum()) {
+                return method.invoke(null, value.asString().toUpperCase());
+            }
+            return method.invoke(null, value.asString());
+            
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw argumentSyntaxException(value, type.getSimpleName());
-		}
+        }
     }
 
     private ArgumentSyntaxException argumentSyntaxException(Value value, String type) {
         return new ArgumentSyntaxException(MessageFormat.format("Value of {0} in {1} is not type of {2}.", 
-        		value.asString(), this.getClass().getSimpleName(), type));
+                value.asString(), this.getClass().getSimpleName(), type));
     }
 
     @Documented
@@ -142,7 +162,7 @@ public abstract class Preferences {
     @Target(ElementType.FIELD)
     public @interface Option {
 
-    	public final static String FIELD_NAME = "FIELD_NAME";
+        public final static String FIELD_NAME = "FIELD_NAME";
 
         String value() default FIELD_NAME;
     }

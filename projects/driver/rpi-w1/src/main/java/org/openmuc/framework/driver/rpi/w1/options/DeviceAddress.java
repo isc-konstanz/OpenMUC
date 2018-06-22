@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,17 +25,17 @@ import org.openmuc.framework.config.Preferences;
 
 public class DeviceAddress extends Preferences {
 
-	public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
+    public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
 
-	public static final String ID_KEY = "id";
+    public static final String ID_KEY = "id";
 
-	@Option
+    @Option
     private String id;
 
-	@Override
-	public PreferenceType getPreferenceType() {
-		return TYPE;
-	}
+    @Override
+    public PreferenceType getPreferenceType() {
+        return TYPE;
+    }
 
     public String getId() {
         return id;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -84,7 +84,7 @@ public class S0Listener implements GpioPinListenerDigital {
             
             if (lastSamplingTime == null || samplingTime - lastSamplingTime > bounceTime) {
                 synchronized (this.counter) {
-                	
+                    
                     this.counter++;
                     
                     if (listener != null && containers != null) {
@@ -94,16 +94,16 @@ public class S0Listener implements GpioPinListenerDigital {
                                 
                                 Value value = null;
                                 if (settings.isDerivative()) {
-                                	if (lastSamplingTime != null) {
-                                    	double counterDelta = 1.0/(double) settings.getImpulses();
-                                    	double timeDelta = (samplingTime - lastSamplingTime)/3600000.0;
-                                    	if (timeDelta > 0) {
+                                    if (lastSamplingTime != null) {
+                                        double counterDelta = 1.0/(double) settings.getImpulses();
+                                        double timeDelta = (samplingTime - lastSamplingTime)/3600000.0;
+                                        if (timeDelta > 0) {
                                             value = new DoubleValue(counterDelta/timeDelta);
-                                    	}
-                                	}
+                                        }
+                                    }
                                 }
                                 else {
-                                	value = new DoubleValue(this.counter/(double) settings.getImpulses());
+                                    value = new DoubleValue(this.counter/(double) settings.getImpulses());
                                 }
                                 if (value != null) {
                                     container.setRecord(new Record(value, samplingTime, Flag.VALID));

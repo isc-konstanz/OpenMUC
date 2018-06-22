@@ -287,7 +287,7 @@ public class FromJson {
                 String metadata = getString(jso.get(Const.METADATA));
 
                 returnValue.add(new ChannelScanInfo(channelAddress, channelSettings, description, valueType, valueTypeLength, 
-                		readable, writeable, metadata));
+                        readable, writeable, metadata));
             }
         }
         else {

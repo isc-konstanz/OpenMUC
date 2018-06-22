@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,27 +28,27 @@ import com.pi4j.io.gpio.PinState;
 
 public class DeviceSettings extends Preferences {
 
-	public static final PreferenceType TYPE = PreferenceType.SETTINGS_DEVICE;
+    public static final PreferenceType TYPE = PreferenceType.SETTINGS_DEVICE;
 
-	@Option
+    @Option
     private GpioType type;
 
-	@Option
+    @Option
     private PinState defaultState;
 
-	@Option
+    @Option
     private PinState shutdownState;
 
-	@Option
+    @Option
     private PinPullResistance pullResistance;
 
-	@Option
+    @Option
     private PinPullResistance shutdownPullResistance;
 
-	@Override
-	public PreferenceType getPreferenceType() {
-		return TYPE;
-	}
+    @Override
+    public PreferenceType getPreferenceType() {
+        return TYPE;
+    }
 
     public GpioType getType() {
         return type;

@@ -104,7 +104,7 @@ public class DriverResourceServlet extends GenericServlet {
                 doGetRegisteredList(json);
             }
             else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
-            	doGetConfigsList(json);
+                doGetConfigsList(json);
             }
             else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.DETAILS)) {
                 doGetDetailsList(json, response);
@@ -428,12 +428,12 @@ public class DriverResourceServlet extends GenericServlet {
     private void doGetDetails(ToJson json, String driverId, HttpServletResponse response) throws IOException {
         DriverConfig driverConfig = rootConfig.getDriver(driverId);
         if (driverConfig != null) {
-	        try {
-	            json.addDriverDetail(configService.getDriverInfo(driverId), driverConfig);
-		        
-	            return;
-	        } catch (DriverNotAvailableException e) {
-	        }
+            try {
+                json.addDriverDetail(configService.getDriverInfo(driverId), driverConfig);
+                
+                return;
+            } catch (DriverNotAvailableException e) {
+            }
         }
         driverNotAvailable(response, driverId);
     }
@@ -452,16 +452,16 @@ public class DriverResourceServlet extends GenericServlet {
     }
 
     private void doGetConfigsList(ToJson json) {
-    	List<DriverConfig> driverConfigs = new ArrayList<DriverConfig>(rootConfig.getDrivers());
+        List<DriverConfig> driverConfigs = new ArrayList<DriverConfig>(rootConfig.getDrivers());
         json.addDriverConfigList(driverConfigs);
     }
 
     private void doGetDetailsList(ToJson json, HttpServletResponse response) {
-    	List<RestDriverDetail> driverDetails = new LinkedList<RestDriverDetail>();
+        List<RestDriverDetail> driverDetails = new LinkedList<RestDriverDetail>();
         Collection<DriverConfig> driverConfigs = rootConfig.getDrivers();
         for (DriverConfig config : driverConfigs) {
             try {
-            	driverDetails.add(RestDriverDetail.getRestDriverDetail(configService.getDriverInfo(config.getId()), config));
+                driverDetails.add(RestDriverDetail.getRestDriverDetail(configService.getDriverInfo(config.getId()), config));
 
             } catch (DriverNotAvailableException e) {
                 driverNotAvailable(response, config.getId());
@@ -502,7 +502,7 @@ public class DriverResourceServlet extends GenericServlet {
     }
 
     @SuppressWarnings("unused")
-	private List<DeviceScanInfo> scanForAllDrivers(String driverId, String settings, HttpServletResponse response) {
+    private List<DeviceScanInfo> scanForAllDrivers(String driverId, String settings, HttpServletResponse response) {
         List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
 
         try {

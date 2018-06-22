@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -101,12 +101,12 @@ public class S0Connection implements Connection {
                 
                 Value value = null;
                 if (settings.isDerivative() || settings.isCountInterval()) {
-                	Channel channel = container.getChannel();
+                    Channel channel = container.getChannel();
                     String channelId = channel.getId();
                     Record lastRecord = null;
                     int lastVal;
                     if (counters.containsKey(channelId)) {
-                    	lastRecord = counters.get(channelId);
+                        lastRecord = counters.get(channelId);
                         lastVal = lastRecord.getValue().asInt();
                     }
                     else {
@@ -115,12 +115,12 @@ public class S0Connection implements Connection {
                     double counterDelta = (newVal - lastVal)/(double) settings.getImpulses();
                     
                     if (settings.isDerivative()) {
-                    	if (lastRecord != null) {
-                        	double timeDelta = (samplingTime - lastRecord.getTimestamp())/3600000.0;
-                        	if (timeDelta > 0) {
+                        if (lastRecord != null) {
+                            double timeDelta = (samplingTime - lastRecord.getTimestamp())/3600000.0;
+                            if (timeDelta > 0) {
                                 value = new DoubleValue(counterDelta/timeDelta);
-                        	}
-                    	}
+                            }
+                        }
                     }
                     else {
                         value = new DoubleValue(counterDelta);

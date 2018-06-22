@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -78,7 +78,7 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
         double size = devices.size();
         if (size > 0) {
             logger.debug("Scan discovered {} 1-Wire devices: {}", size, devices.toString());
-    		this.devices.clear();
+            this.devices.clear();
             
             double counter = 0;
             for (W1Device device : devices) {
@@ -95,7 +95,7 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
                     String scanSettings = DeviceSettings.TYPE_KEY + ":" + type.getName();
                     
                     listener.deviceFound(new DeviceScanInfo(name.toLowerCase()+"_"+id, 
-                    		scanAddress, scanSettings, "1-Wire "+ type.getName() +": "+ name));
+                            scanAddress, scanSettings, "1-Wire "+ type.getName() +": "+ name));
                 }
                 this.devices.put(id, device);
                 
@@ -120,30 +120,30 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
         
         W1Connection connection = null;
         try {
-        	W1Device device = null;
-        	if (devices.containsKey(address.getId())) {
-        		device = devices.get(address.getId());
-        	}
-        	else {
-        		devices.clear();
-        		
+            W1Device device = null;
+            if (devices.containsKey(address.getId())) {
+                device = devices.get(address.getId());
+            }
+            else {
+                devices.clear();
+                
                 List<W1Device> devices = master.getDevices();
                 for (W1Device d : devices) {
-                	String id = d.getId().trim().replace("\n", "").replace("\r", "");
+                    String id = d.getId().trim().replace("\n", "").replace("\r", "");
                     if (address.getId().equals(id)) {
                         device = d;
                     }
                     this.devices.put(id, d);
                 }
-        	}
-        	if (device != null) {
+            }
+            if (device != null) {
                 W1Type type = W1Type.newType(device);
                 if (type == settings.getType()) {
                     connection = new W1Connection(this, device, type);
                     
                     connectedDevices.add(address.getId());
                 }
-        	}
+            }
         } catch (IllegalArgumentException e) {
             throw new ArgumentSyntaxException("Unable to configure 1-Wire device: " + e.getMessage());
         }
@@ -154,10 +154,10 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
         return connection;
     }
 
-	@Override
-	public void onDisconnect(String id) {
-		if (connectedDevices.contains(id)) {
-			connectedDevices.remove(id);
-		}
-	}
+    @Override
+    public void onDisconnect(String id) {
+        if (connectedDevices.contains(id)) {
+            connectedDevices.remove(id);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -113,10 +113,10 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
         this.locale = locale;
     }
 
-	@Override
+    @Override
     public Map<String, Value> parse(String settingsStr) throws UnsupportedOperationException, ArgumentSyntaxException {
         if (settingsStr != null) {
-        	Map<String, Value> settings = new HashMap<>();
+            Map<String, Value> settings = new HashMap<>();
             
             if (!settingsStr.trim().isEmpty()) {
                 String[] settingsArray = settingsStr.trim().split(separator);
@@ -154,7 +154,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                                 }
                             }
                             else if (option.getValueDefault() != null) {
-                            	value = option.getValueDefault();
+                                value = option.getValueDefault();
                             }
                             settings.put(key, value);
                         }
@@ -186,7 +186,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                                 }
                             }
                             else if (option.getValueDefault() != null) {
-                            	value = option.getValueDefault();
+                                value = option.getValueDefault();
                             }
                             settings.put(option.getKey(), value);
                         }
@@ -234,9 +234,9 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
             value = new BooleanValue(Boolean.valueOf(valueStr));
             break;
         case BYTE_ARRAY:
-        	byte[] arr;
+            byte[] arr;
             if (!valueStr.startsWith("0x")) {
-            	arr = valueStr.getBytes(StandardCharsets.US_ASCII);
+                arr = valueStr.getBytes(StandardCharsets.US_ASCII);
             }
             else {
                 try {
@@ -272,17 +272,17 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                 
                 int i = 0;
                 if (option.getValueSelection() != null) {
-                	StringBuilder ssb = new StringBuilder();
-                	for (Value val : option.getValueSelection().keySet()) {
-                		if (i>0) ssb.append('/');
-                		i++;
-                		
-                		ssb.append(val.asString());
-                	}
-                	value = ssb.toString();
+                    StringBuilder ssb = new StringBuilder();
+                    for (Value val : option.getValueSelection().keySet()) {
+                        if (i>0) ssb.append('/');
+                        i++;
+                        
+                        ssb.append(val.asString());
+                    }
+                    value = ssb.toString();
                 }
                 else if (keyValue) {
-                	value = option.getType().name().replace('_', ' ').toLowerCase(locale);
+                    value = option.getType().name().replace('_', ' ').toLowerCase(locale);
                 }
                 
                 String syntax;

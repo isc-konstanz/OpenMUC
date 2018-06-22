@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -40,9 +40,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class OptionSelection extends LinkedHashMap<Value, String>{
-	private static final long serialVersionUID = 2163129000924486706L;
+    private static final long serialVersionUID = 2163129000924486706L;
 
-	private static String DELIMITER = ",";
+    private static String DELIMITER = ",";
     private static String KEY_VAL_SEP = ":";
 
     private final ValueType type;
@@ -50,7 +50,7 @@ public class OptionSelection extends LinkedHashMap<Value, String>{
     private boolean validate = true;
 
     public OptionSelection(ValueType type) {
-    	super();
+        super();
         this.type = type;
     }
 
@@ -221,7 +221,7 @@ public class OptionSelection extends LinkedHashMap<Value, String>{
                 else if (childNodeName.equals("default")) {
                     String validateString = childNode.getTextContent().trim().toLowerCase();
                     if (validateString.equals("time")) {
-                    	return OptionSelection.getDefaultTimes();
+                        return OptionSelection.getDefaultTimes();
                     }
                     else {
                         throw new ParseException("Selection \"default\" contains no known selection");
