@@ -9,17 +9,7 @@ buildscript {
   }
 }
 
-plugins {
-  id "com.github.hierynomus.license" version "0.14.0"
-}
-
 apply from: "configuration.gradle"
-
-license {
-  header = rootProject.file("LICENSE_HEADER.txt")
-  strictCheck false
-  include "*.java"
-}
 
 configure(allprojects) {
   version = cfgVersion
