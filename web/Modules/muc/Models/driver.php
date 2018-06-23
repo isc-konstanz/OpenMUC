@@ -63,7 +63,7 @@ class Driver
 	public function get_available($ctrlid) {
 		$ctrlid = intval($ctrlid);
 
-		$response = $this->ctrl->request($ctrlid, 'drivers/running', 'GET', null);
+		$response = $this->ctrl->request($ctrlid, 'drivers/registered', 'GET', null);
 		if (isset($response["success"]) && !$response["success"]) {
 			return $response;
 		}
