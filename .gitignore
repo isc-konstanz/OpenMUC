@@ -46,8 +46,10 @@ build/
 # Framework
 log
 cache
-conf/emoncms.conf
 conf/bundles.conf
+conf/config.properties
+conf/system.properties
+conf/emoncms.conf
 conf/channels.xml
 conf/shadow
 bundle-enabled/*
