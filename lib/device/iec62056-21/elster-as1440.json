@@ -1,14 +1,14 @@
 {
-    "name": "AS1440 (Import/Export)",
+    "name": "AS1440",
     "category": "Energy meters",
     "group": "Elster",
-    "description": "Energy Meter AS1440 Import/Export",
+    "description": "Energy Meter AS1440",
     
     "prefix": "name",
     
     "devices": [
         {
-            "driver": "iec62056p21",
+            "driver": "iec62056-21",
             "description": "Energy Meter",
             "settings": "baudrate:9600"
         }
@@ -35,34 +35,18 @@
     
     "channels": [
         {
-            "name": "import_energy",
+            "name": "energy",
             "address": "1.8.0",
             "logging": {"loggingInterval": 60000, "loggingMaxInterval": 180000},
             "configs": {"samplingInterval": 60000, "unit": "kWh", "valueType":"DOUBLE"},
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "import_energy"}
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "energy"}
                 },
                 {
                     "process": "kwh_to_power",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "import_power"}
-                }
-            ]
-        },
-        {
-            "name": "export_energy",
-            "address": "2.8.0",
-            "logging": {"loggingInterval": 60000, "loggingMaxInterval": 180000},
-            "configs": {"samplingInterval": 60000, "unit": "kWh", "valueType":"DOUBLE"},
-            "processList": [
-                {
-                    "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "export_energy"}
-                },
-                {
-                    "process": "kwh_to_power",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "export_power"}
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "power"}
                 }
             ]
         }
@@ -70,25 +54,13 @@
     
     "feeds": [
         {
-            "name": "import_energy",
+            "name": "energy",
             "tag": "Energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES"
         },
         {
-            "name": "import_power",
-            "tag": "Power",
-            "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
-        },
-        {
-            "name": "export_energy",
-            "tag": "Energy",
-            "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
-        },
-        {
-            "name": "export_power",
+            "name": "power",
             "tag": "Power",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES"

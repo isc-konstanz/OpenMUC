@@ -8,7 +8,7 @@
     
     "devices": [
         {
-            "driver": "iec62056p21",
+            "driver": "iec62056-21",
             "description": "Energy Meter",
             "settings": "baudrate:9600"
         }

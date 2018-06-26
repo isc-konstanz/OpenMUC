@@ -1,14 +1,14 @@
 {
-    "name": "AS1440",
+    "name": "A1500",
     "category": "Energy meters",
     "group": "Elster",
-    "description": "Energy Meter AS1440",
+    "description": "Energy Meter A1500",
     
     "prefix": "name",
     
     "devices": [
         {
-            "driver": "iec62056p21",
+            "driver": "iec62056-21",
             "description": "Energy Meter",
             "settings": "baudrate:9600"
         }
