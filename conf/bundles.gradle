@@ -140,7 +140,7 @@ task syncOptionalBundles(type: Sync) {
 
 task copyFelixMain(type: Copy) {
   from configurations.main;
-  into rootDir.getPath() + "./lib/framework"
+  into rootDir.getPath() + "./lib"
   rename (/org.apache.felix.main-.*jar/, "felix.jar")
 }
 
