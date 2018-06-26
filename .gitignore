@@ -47,8 +47,6 @@ build/
 log
 cache
 conf/bundles.conf
-conf/config.properties
-conf/system.properties
 conf/emoncms.conf
 conf/channels.xml
 conf/shadow

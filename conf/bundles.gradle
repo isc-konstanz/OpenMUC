@@ -4,7 +4,7 @@ repositories {
   
   flatDir {
     dirs rootDir.getPath() + "/../emonjava/build/libs", 
-		rootDir.getPath() + "/../OpenPCharge/build/libs"
+        rootDir.getPath() + "/../OpenPCharge/build/libs"
   }
 }
 
@@ -16,15 +16,25 @@ configurations.core.transitive = false;
 configurations.optional.transitive = false;
 
 dependencies {
-  main group: "org.apache.felix", name: "org.apache.felix.main", version: "5.6.8"
-
-  core group: "org.emoncms", name: "openmuc-datalogger-emoncms", version: "1.1.4"
+  main group:     "org.apache.felix",         name: "org.apache.felix.main",            version: "5.6.10"
 
   core project(":openmuc-core-api")
   core project(":openmuc-core-spi")
   core project(":openmuc-core-datamanager")
 
   core project(":openmuc-server-restws")
+  optional project(":openmuc-server-modbus")
+
+  optional project(":openmuc-webui-spi")
+  optional project(":openmuc-webui-base")
+  optional project(":openmuc-webui-channelconfigurator")
+  optional project(":openmuc-webui-channelaccesstool")
+  optional project(":openmuc-webui-userconfigurator")
+  optional project(":openmuc-webui-dataexporter")
+  optional project(":openmuc-webui-dataplotter")
+  optional project(":openmuc-webui-mediaviewer")
+
+  core group:     "org.emoncms",              name: "openmuc-datalogger-emoncms",       version: "1.1.4"
 
   optional project(":openmuc-datalogger-ascii")
   optional project(":openmuc-datalogger-slotsdb")
@@ -47,31 +57,23 @@ dependencies {
   optional project(":openmuc-driver-snmp")
   optional project(":openmuc-driver-wmbus")
 
-  optional group: "org.openmuc.framework", name: "openmuc-app-pcharge", version: "0.2.1"
-  optional group: "org.openmuc.framework", name: "openmuc-driver-pcharge", version: "0.2.1"
+  optional group: "org.openmuc.framework",    name: "openmuc-driver-pcharge",           version: "0.2.1"
+  optional group: "org.openmuc.framework",    name: "openmuc-app-pcharge",              version: "0.2.1"
   optional project(":openmuc-app-household")
   optional project(":openmuc-app-simpledemo")
-
-  optional project(":openmuc-webui-spi")
-  optional project(":openmuc-webui-base")
-  optional project(":openmuc-webui-channelconfigurator")
-  optional project(":openmuc-webui-channelaccesstool")
-  optional project(":openmuc-webui-userconfigurator")
-  optional project(":openmuc-webui-dataexporter")
-  optional project(":openmuc-webui-dataplotter")
-  optional project(":openmuc-webui-mediaviewer")
 
   //--------------------------------------------------------------------------------------------------
   // RXTX is a native interface to serial ports in java.
   //--------------------------------------------------------------------------------------------------
-  core group: "org.openmuc", name: "jrxtx", version: "1.0.0"
+  core group:     "org.openmuc",              name: "jrxtx",                            version: "1.0.1"
 
   //--------------------------------------------------------------------------------------------------
   // The Apache Felix Gogo standard shell for OSGi (http://felix.apache.org/site/apache-felix-gogo.html)
   //--------------------------------------------------------------------------------------------------
-  core group: "org.apache.felix", name: "org.apache.felix.gogo.runtime", version: "1.0.10"
-  core group: "org.apache.felix", name: "org.apache.felix.gogo.command", version: "1.0.2"
-  core group: "org.apache.felix", name: "org.apache.felix.gogo.shell", version: "1.0.0"
+  core group:     "org.apache.felix",         name: "org.apache.felix.gogo.runtime",    version: "1.0.10"
+  core group:     "org.apache.felix",         name: "org.apache.felix.gogo.command",    version: "1.0.2"
+  core group:     "org.apache.felix",         name: "org.apache.felix.gogo.jline",      version: "1.0.10"
+  core group:     "org.jline",                name: "jline",                            version: "3.5.2"
 
   //--------------------------------------------------------------------------------------------------
   // Adds a telnet server so that the Felix Gogo Shell can be accessed
@@ -79,37 +81,46 @@ dependencies {
   // localhost port 6666. Therefor you can on only access it from the
   // same host on which felix is running.
   //--------------------------------------------------------------------------------------------------
-  core group: "org.apache.felix", name: "org.apache.felix.shell.remote", version: "1.2.0"
+  core group:     "org.apache.felix",         name: "org.apache.felix.shell.remote",    version: "1.2.0"
 
   //--------------------------------------------------------------------------------------------------
   // Apache Felix Service Component Runtime that implements the OSGi Declarative Services Specification
   // the OpenMUC core bundles use declarative services and thus depend on them
   //--------------------------------------------------------------------------------------------------
-  core group: "org.apache.felix", name: "org.apache.felix.scr", version: "2.0.12"
+  core group:     "org.apache.felix",         name: "org.apache.felix.scr",             version: "2.0.14"
 
   //--------------------------------------------------------------------------------------------------
   // An implementation of the OSGi HTTP Service Specification, needed by the WebUI bundles
   //--------------------------------------------------------------------------------------------------
-  core group: "org.apache.felix", name: "org.apache.felix.http.servlet-api", version: "1.1.2"
-  core group: "org.apache.felix", name: "org.apache.felix.http.api", version: "3.0.0"
-  core group: "org.apache.felix", name: "org.apache.felix.http.jetty", version: "3.4.6"
+  core group:     "org.apache.felix",        name: "org.apache.felix.http.servlet-api", version: "1.1.2"
+  core group:     "org.apache.felix",        name: "org.apache.felix.http.api",         version: "3.0.0"
+  core group:     "org.apache.felix",        name: "org.apache.felix.http.jetty",       version: "3.4.8"
 
   //--------------------------------------------------------------------------------------------------
   // Implementations of the OSGi Event Admin, Configuration Admin and MetaType services, needed by jetty
   //--------------------------------------------------------------------------------------------------
-  core group: "org.apache.felix", name: "org.apache.felix.eventadmin", version: "1.4.10"
-  core group: "org.apache.felix", name: "org.apache.felix.configadmin", version: "1.8.16"
-  core group: "org.apache.felix", name: "org.apache.felix.metatype", version: "1.1.6"
+  core group:     "org.apache.felix",        name: "org.apache.felix.eventadmin",       version: "1.4.10"
+  core group:     "org.apache.felix",        name: "org.apache.felix.configadmin",      version: "1.8.16"
+  core group:     "org.apache.felix",        name: "org.apache.felix.metatype",         version: "1.1.6"
 
   //--------------------------------------------------------------------------------------------------
-  // Message logging libraries, SLF4J is a light-weight logging API,
+  // Adds a web console for felix bundle management
+  // http://localhost:8080/system/console/httpservice
+  // https://localhost:8443/system/console/httpservice
+  //--------------------------------------------------------------------------------------------------
+  core group:     "org.apache.felix",        name: "org.apache.felix.webconsole",       version: "4.3.4"
+  core group:     'org.apache.felix',        name: 'org.apache.felix.log',              version: '1.0.1'
+  core group:     'commons-io',              name: 'commons-io',                        version: '2.6'
+  core group:     'commons-fileupload',      name: 'commons-fileupload',                version: '1.3.3'
+
+  //--------------------------------------------------------------------------------------------------
+  // message logging libraries, SLF4J is a light-weight logging API,
   // Logback is a message logger implementation that implements SLF4J
   // natively
   //--------------------------------------------------------------------------------------------------
-  core group: "org.slf4j", name: "slf4j-api", version: "1.7.25"
-  core group: "ch.qos.logback", name: "logback-classic", version: "1.2.3"
-  core group: "ch.qos.logback", name: "logback-core", version: "1.2.3"
-
+  core group:     "org.slf4j",               name: "slf4j-api",                         version: "1.7.25"
+  core group:     "ch.qos.logback",          name: "logback-classic",                   version: "1.2.3"
+  core group:     "ch.qos.logback",          name: "logback-core",                      version: "1.2.3"
 }
 
 task cleanBundles(type: Delete) {
@@ -129,7 +140,7 @@ task syncOptionalBundles(type: Sync) {
 
 task copyFelixMain(type: Copy) {
   from configurations.main;
-  into rootDir.getPath() + "./bin"
+  into rootDir.getPath() + "./lib/framework"
   rename (/org.apache.felix.main-.*jar/, "felix.jar")
 }
 
