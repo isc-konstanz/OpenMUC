@@ -73,11 +73,11 @@ class DeviceScanListenerImplementation implements DeviceScanListener {
         return restScanProgressInfo;
     }
 
-    List<DeviceScanInfo> getRestScanDeviceList() {
+    synchronized List<DeviceScanInfo> getScannedDevicesList() {
         return scannedDevicesList;
     }
 
-    synchronized List<DeviceScanInfo> getScannedDevicesList() {
+    synchronized List<DeviceScanInfo> getScannedDevicesResult() {
         while (!restScanProgressInfo.isScanFinished() && !restScanProgressInfo.isScanInterrupted()
                 && restScanProgressInfo.getScanError() == null) {
             try {
@@ -86,7 +86,7 @@ class DeviceScanListenerImplementation implements DeviceScanListener {
                 Thread.currentThread().interrupt();
             }
         }
-        return getRestScanDeviceList();
+        return scannedDevicesList;
     }
 
 }
