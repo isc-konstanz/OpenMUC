@@ -28,7 +28,6 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -52,7 +51,7 @@ public final class HouseholdApp implements PowerCallbacks {
     private Record gridImportLast;
 
     @Activate
-    protected void activate(ComponentContext context) {
+    private void activate() {
         logger.info("Activating Household App");
         try {
             HouseholdConfig config = new HouseholdConfig();
@@ -88,7 +87,7 @@ public final class HouseholdApp implements PowerCallbacks {
     }
 
     @Deactivate
-    protected void deactivate(ComponentContext context) {
+    private void deactivate() {
         logger.info("Deactivating Household App");
     }
 
