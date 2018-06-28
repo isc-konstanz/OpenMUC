@@ -91,6 +91,30 @@
         </selection>
         <default>PULL_DOWN</default>
       </option>
+      <option id="counter">
+        <name>Edge counter</name>
+        <description><![CDATA[
+            Enable the counting of detected edges.
+            <br><br>
+            <i>This setting is only applicable for input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="bounceTime">
+        <name>Bounce avoidance time</name>
+        <description><![CDATA[
+            The amount of miliseconds waited, until a new edge detection will be accepted as a received impulse, to avoid bouncing.
+            <br><br>
+            <i>This setting is only applicable for edge counting input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+        <default>60</default>
+      </option>
     </deviceSettings>
     
     <deviceScanSettings>
@@ -116,6 +140,47 @@
         <mandatory>false</mandatory>
         <type>BOOLEAN</type>
         <default>false</default>
+      </option>
+      <option id="impulses">
+        <name>imp./unit</name>
+        <description><![CDATA[
+            The amount of impulses corresponding to one unit.
+            <br><br>
+            <i>This setting is only applicable for edge counting input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+        <default>1</default>
+      </option>
+      <option id="countInterval">
+        <name>Count pulses per interval</name>
+        <description><![CDATA[
+            Count the amount of pulses during a sampling interval, instead of a global counter.
+            <br><br>
+            <i>This setting is only applicable for edge counting input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="derivativeTime">
+        <name>Time derivative</name>
+        <description><![CDATA[
+            Calculate the time derivative of counted pulses by the time unit.
+            <br><br>
+            <i>This setting is only applicable for edge counting input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+        <selection>
+          <item value="1">Millisecond</item>
+          <item value="1000">Second</item>
+          <item value="60000">Minute</item>
+          <item value="3600000">Hour</item>
+        </selection>
       </option>
     </channelSettings>
   </driver>

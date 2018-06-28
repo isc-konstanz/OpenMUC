@@ -52,7 +52,6 @@ dependencies {
   optional project(":openmuc-driver-modbus")
   optional project(":openmuc-driver-rest")
   optional project(":openmuc-driver-rpi-gpio")
-  optional project(":openmuc-driver-rpi-s0")
   optional project(":openmuc-driver-rpi-w1")
   optional project(":openmuc-driver-snmp")
   optional project(":openmuc-driver-wmbus")

@@ -23,7 +23,8 @@ package org.openmuc.framework.driver.rpi.gpio.settings;
 public enum GpioType {
 
     INPUT,
-    OUTPUT;
+    OUTPUT,
+    UNKNOWN;
 
     @Override
     public String toString() {

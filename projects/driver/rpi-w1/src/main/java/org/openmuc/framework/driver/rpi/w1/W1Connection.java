@@ -23,10 +23,8 @@ package org.openmuc.framework.driver.rpi.w1;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.DriverPreferences;
-import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
@@ -34,21 +32,17 @@ import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.rpi.w1.options.ChannelSettings;
 import org.openmuc.framework.driver.rpi.w1.options.W1Type;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
-import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.RecordsReceivedListener;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.pi4j.component.temperature.TemperatureSensor;
 import com.pi4j.io.w1.W1Device;
 
-
-@Component
 public class W1Connection implements Connection {
     private final static Logger logger = LoggerFactory.getLogger(W1Connection.class);
+
     private final DriverPreferences prefs = DriverInfoFactory.getPreferences(W1Connection.class);
 
     /**
@@ -71,13 +65,6 @@ public class W1Connection implements Connection {
         this.callbacks = callbacks;
         this.device = device;
         this.type = type;
-    }
-
-    @Override
-    public List<ChannelScanInfo> scanForChannels(String settingsStr)
-            throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
-
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -134,20 +121,6 @@ public class W1Connection implements Connection {
         }
         
         return null;
-    }
-
-    @Override
-    public void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
-            throws UnsupportedOperationException, ConnectionException {
-        
-        throw new UnsupportedOperationException("Listening for 1-Wire devices not supported for type: " + type.getName());
-    }
-
-    @Override
-    public Object write(List<ChannelValueContainer> containers, Object containerListHandle)
-            throws UnsupportedOperationException, ConnectionException {
-        
-        throw new UnsupportedOperationException("Writing to 1-Wire devices not supported for type: " + type.getName());
     }
 
     @Override

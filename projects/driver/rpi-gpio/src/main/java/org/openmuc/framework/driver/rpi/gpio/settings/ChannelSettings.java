@@ -28,7 +28,16 @@ public class ChannelSettings extends Preferences {
     public static final PreferenceType TYPE = PreferenceType.SETTINGS_CHANNEL;
 
     @Option
-    private boolean inverted;
+    private boolean inverted = false;
+
+    @Option
+    private int impulses = 1;
+
+    @Option
+    private boolean intervalCount = false;
+
+    @Option
+    private Integer derivativeTime = null;
 
     @Override
     public PreferenceType getPreferenceType() {
@@ -37,6 +46,25 @@ public class ChannelSettings extends Preferences {
 
     public boolean isInverted() {
         return inverted;
+    }
+
+    public double getImpulses() {
+        return (double) impulses;
+    }
+
+    public boolean isIntervalCount() {
+        return intervalCount;
+    }
+
+    public boolean isDerivative() {
+    	if (derivativeTime != null) {
+    		return true;
+    	}
+        return false;
+    }
+
+    public double getDerivariveTime() {
+        return derivativeTime.doubleValue();
     }
 
 }

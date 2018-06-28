@@ -73,16 +73,6 @@
         </selection>
         <default>PULL_DOWN</default>
       </option>
-      <option id="bounceTime">
-        <name>Bounce avoidance time</name>
-        <description><![CDATA[
-            The amount of miliseconds waited, until a new edge detection will be accepted as a received impulse, to avoid bouncing.
-          ]]>
-        </description>
-        <mandatory>false</mandatory>
-        <type>INTEGER</type>
-        <default>60</default>
-      </option>
     </deviceSettings>
     
     <deviceScanSettings>
@@ -127,6 +117,16 @@
         <mandatory>false</mandatory>
         <type>BOOLEAN</type>
         <default>false</default>
+      </option>
+      <option id="bounceTime">
+        <name>Bounce avoidance time</name>
+        <description><![CDATA[
+            The amount of miliseconds waited, until a new edge detection will be accepted as a received impulse, to avoid bouncing.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+        <default>60</default>
       </option>
     </channelSettings>
   </driver>
