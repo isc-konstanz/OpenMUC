@@ -34,7 +34,7 @@ dependencies {
   optional project(":openmuc-webui-dataplotter")
   optional project(":openmuc-webui-mediaviewer")
 
-  core group:     "org.emoncms",              name: "openmuc-datalogger-emoncms",       version: "1.1.4"
+  core group:     "org.emoncms",              name: "openmuc-datalogger-emoncms",       version: "1.1.5"
 
   optional project(":openmuc-datalogger-ascii")
   optional project(":openmuc-datalogger-slotsdb")
@@ -57,8 +57,8 @@ dependencies {
   optional project(":openmuc-driver-snmp")
   optional project(":openmuc-driver-wmbus")
 
-  optional group: "org.openmuc.framework",    name: "openmuc-driver-pcharge",           version: "0.2.1"
-  optional group: "org.openmuc.framework",    name: "openmuc-app-pcharge",              version: "0.2.1"
+  optional group: "org.openmuc.framework",    name: "openmuc-driver-pcharge",           version: "0.2.2"
+  optional group: "org.openmuc.framework",    name: "openmuc-app-pcharge",              version: "0.2.2"
   optional project(":openmuc-app-household")
   optional project(":openmuc-app-simpledemo")
 
