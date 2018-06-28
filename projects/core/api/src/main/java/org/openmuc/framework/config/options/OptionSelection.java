@@ -54,9 +54,9 @@ public class OptionSelection extends LinkedHashMap<Value, String>{
         this.type = type;
     }
 
-    public OptionSelection(ValueType type, boolean verify) {
+    public OptionSelection(ValueType type, boolean validate) {
         this(type);
-        this.validate = verify;
+        this.validate = validate;
     }
 
     public OptionSelection(ValueType type, String selectionStr) throws ArgumentSyntaxException {

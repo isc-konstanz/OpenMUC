@@ -57,8 +57,8 @@ dependencies {
   optional project(":openmuc-driver-snmp")
   optional project(":openmuc-driver-wmbus")
 
-  optional group: "org.openmuc.framework",    name: "openmuc-driver-pcharge",           version: "0.2.2"
-  optional group: "org.openmuc.framework",    name: "openmuc-app-pcharge",              version: "0.2.2"
+  optional group: "org.openmuc.framework",    name: "openmuc-driver-pcharge",           version: "0.2.3"
+  optional group: "org.openmuc.framework",    name: "openmuc-app-pcharge",              version: "0.2.3"
   optional project(":openmuc-app-household")
   optional project(":openmuc-app-simpledemo")
 
