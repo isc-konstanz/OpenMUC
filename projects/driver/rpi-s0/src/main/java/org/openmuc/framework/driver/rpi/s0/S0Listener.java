@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -23,12 +23,13 @@ package org.openmuc.framework.driver.rpi.s0;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.DriverInfoFactory;
+import org.openmuc.framework.config.DriverPreferences;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.s0.options.S0ChannelPreferences;
-import org.openmuc.framework.driver.rpi.s0.options.S0DriverInfo;
+import org.openmuc.framework.driver.rpi.s0.settings.ChannelSettings;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.osgi.service.component.annotations.Component;
@@ -44,7 +45,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 @Component
 public class S0Listener implements GpioPinListenerDigital {
     private final static Logger logger = LoggerFactory.getLogger(S0Listener.class);
-    private final S0DriverInfo info = S0DriverInfo.getInfo();
+    private final DriverPreferences prefs = DriverInfoFactory.getPreferences(S0Connection.class);
 
     private List<ChannelRecordContainer> containers = null;
     private RecordsReceivedListener listener = null;
@@ -83,26 +84,26 @@ public class S0Listener implements GpioPinListenerDigital {
             
             if (lastSamplingTime == null || samplingTime - lastSamplingTime > bounceTime) {
                 synchronized (this.counter) {
-                	
+                    
                     this.counter++;
                     
                     if (listener != null && containers != null) {
                         for (ChannelRecordContainer container : containers) {
                             try {
-                                S0ChannelPreferences prefs = info.getChannelPreferences(container);
+                                ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
                                 
                                 Value value = null;
-                                if (prefs.isDerivative()) {
-                                	if (lastSamplingTime != null) {
-                                    	double counterDelta = 1.0/(double) prefs.getImpulses();
-                                    	double timeDelta = (samplingTime - lastSamplingTime)/3600000.0;
-                                    	if (timeDelta > 0) {
+                                if (settings.isDerivative()) {
+                                    if (lastSamplingTime != null) {
+                                        double counterDelta = 1.0/(double) settings.getImpulses();
+                                        double timeDelta = (samplingTime - lastSamplingTime)/3600000.0;
+                                        if (timeDelta > 0) {
                                             value = new DoubleValue(counterDelta/timeDelta);
-                                    	}
-                                	}
+                                        }
+                                    }
                                 }
                                 else {
-                                	value = new DoubleValue(this.counter/(double) prefs.getImpulses());
+                                    value = new DoubleValue(this.counter/(double) settings.getImpulses());
                                 }
                                 if (value != null) {
                                     container.setRecord(new Record(value, samplingTime, Flag.VALID));

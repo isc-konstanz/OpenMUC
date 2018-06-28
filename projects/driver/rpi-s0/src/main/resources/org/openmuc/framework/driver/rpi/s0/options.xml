@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+  <driver id="rpi-s0">
+    <name>S0 (Raspberry Pi)</name>
+    <description><![CDATA[
+        The S0 Driver enables the GPIO pins of the Raspberry Pi platform to read the output from 
+        metering devices that give pulses proportional to the amount of e.g. consumed energy. 
+        Devices represent the "General-purpose inputs/outputs (GPIOs) of the Raspberry Pi as inputs,
+        with their channels counting registered pulses from the connected meters.
+      ]]>
+    </description>
+    
+    <deviceAddress>
+      <option id="pin">
+        <name>Pin</name>
+        <description><![CDATA[
+            The pin number, according to the <a href='http://pi4j.com/pin-numbering-scheme.html'>WiringPi Pin Numbering Scheme</a>.
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>INTEGER</type>
+      </option>
+      <option id="broadcomScheme">
+        <name>Broadcom Pin Numbering Scheme</name>
+        <description><![CDATA[
+            Use the Broadcom Pin Numbering Scheme.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>true</default>
+      </option>
+    </deviceAddress>
+    
+    <deviceSettings>
+      <option id="shutdownState">
+        <name>Shutdown state</name>
+        <description><![CDATA[
+            The default state of the configured pin, set at shutdown of the driver.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="pullResistance">
+        <name>Pull resistance</name>
+        <description><![CDATA[
+            The pull resistance of the configured pin, immediately set at startup of the driver.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="PULL_UP">Pull-up</item>
+          <item value="PULL_DOWN">Pull-down</item>
+          <item value="OFF">Off</item>
+        </selection>
+        <default>PULL_DOWN</default>
+      </option>
+      <option id="shutdownPullResistance">
+        <name>Shutdown pull resistance</name>
+        <description><![CDATA[
+            The default pull resistance of the configured pin, set at shutdown of the driver.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="PULL_UP">Pull-up</item>
+          <item value="PULL_DOWN">Pull-down</item>
+          <item value="OFF">Off</item>
+        </selection>
+        <default>PULL_DOWN</default>
+      </option>
+    </deviceSettings>
+    
+    <deviceScanSettings>
+      <option id="broadcomScheme">
+        <name>Broadcom Pin Numbering Scheme</name>
+        <description><![CDATA[
+            Use the Broadcom Pin Numbering Scheme.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>true</default>
+      </option>
+    </deviceScanSettings>
+    
+    <channelSettings>
+      <option id="impulses">
+        <name>imp./kWh</name>
+        <description><![CDATA[
+            The amount of impulses corresponding to one kWh.
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>INTEGER</type>
+      </option>
+      <option id="derivative">
+        <name>Time derivative</name>
+        <description><![CDATA[
+            Calculate the time derivative of counted pulses by the hour.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="countInterval">
+        <name>Count pulses per interval</name>
+        <description><![CDATA[
+            Count the amount of pulses during a sampling interval, instead of a global counter.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="bounceTime">
+        <name>Bounce avoidance time</name>
+        <description><![CDATA[
+            The amount of miliseconds waited, until a new edge detection will be accepted as a received impulse, to avoid bouncing.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+        <default>60</default>
+      </option>
+    </channelSettings>
+  </driver>
+</configuration>

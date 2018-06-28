@@ -3,12 +3,7 @@
   <driver id="mbus">
     <name>M-Bus (wired)</name>
     <description><![CDATA[
-        The Meter-Bus "M-Bus" (wired) is a protocol to read out metering device clients, communicating with 
-        the master over a serial connection. The driver, acting as the master, can register one or several 
-        slaves such as gas, water, heat, or electricity meters.<br>
-        A channel references data records (sometimes called variable data blocks), which contain the measured data. 
-        Each data record is made up of a data information block (DIB), a value information block (VIB) and a value. 
-        Similar to OBIS codes DIBs and VIBs code information such as the meaning of a value.
+        M-Bus (wired) is a protocol to read out meters.
       ]]>
     </description>
     
@@ -17,13 +12,13 @@
         <keyValue>false</keyValue>
         <separator>:</separator>
       </syntax>
-      <option id="serialPort">
+      <option id="serial_port">
         <name>Serial port</name>
         <description>The serial port should be given that connects to the M-Bus converter. (e.g. /dev/ttyS0, /dev/ttyUSB0 on Linux).</description>
         <mandatory>true</mandatory>
         <type>STRING</type>
       </option>
-      <option id="mBusAddress">
+      <option id="mbus_address">
         <name>M-Bus address</name>
         <description><![CDATA[
             The M-Bus adress can either be the the primary address or secondary address of the meter.<br>
@@ -43,7 +38,7 @@
         <keyValue>false</keyValue>
         <separator>:</separator>
       </syntax>
-      <option id="baudrate">
+      <option id="baud_rate">
         <name>Baudrate</name>
         <description><![CDATA[
             The baud rate for the serial communication. <br>
@@ -84,8 +79,29 @@
         <keyValue>false</keyValue>
         <separator>:</separator>
       </syntax>
-      <option id="serialPort"></option>
-      <option id="baudrate"></option>
+      <option id="serial_port"></option>
+      <option id="baud_rate"></option>
+      <option id="scan_timeout">
+        <name>Timeout</name>
+        <description><![CDATA[
+            Defines the scan timeout in ms. Default is 2500 ms.<br><br>
+            <b>Example:</b> t5000 for a timeout of 5 seconds.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <default>t2500</default>
+      </option>
+      <option id="s">
+        <name>Secondary Address Scan</name>
+        <description>Enables the secondary address scan</description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="">Disabled</item>
+          <item value="s">Enabled</item>
+        </selection>
+      </option>
     </deviceScanSettings>
     
     <channelAddress>
@@ -104,6 +120,8 @@
               <li><b>Tariff</b> – Indicates the tariff number of this data field. The data of tariff 0 is usually the sum of all other tariffs.</li>
               <li><b>Subunit</b> – Can be used by a slave to distinguish several subunits of the metering device.</li>
             </ol>
+            <br>
+            <i>If the code starts with an X then the specific data record will be selected for readout before reading it.</i>
           ]]>
         </description>
         <mandatory>true</mandatory>

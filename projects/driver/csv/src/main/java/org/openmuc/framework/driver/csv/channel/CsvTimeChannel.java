@@ -1,8 +1,28 @@
+/*
+ * Copyright 2011-18 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.openmuc.framework.driver.csv.channel;
 
 import java.util.List;
 
-import org.openmuc.framework.driver.csv.CsvException;
+import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
 import org.slf4j.Logger;
@@ -10,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class CsvTimeChannel implements CsvChannel {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(CsvTimeChannel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CsvTimeChannel.class);
 
     /** remember index of last valid sampled value */
     protected int lastReadIndex = 0;

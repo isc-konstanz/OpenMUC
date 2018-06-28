@@ -1,3 +1,23 @@
+/*
+ * Copyright 2011-18 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.openmuc.framework.server.restws.servlets;
 
 import java.util.ArrayList;
@@ -5,7 +25,7 @@ import java.util.List;
 
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DeviceScanListener;
-import org.openmuc.framework.lib.json.restObjects.RestScanProgressInfo;
+import org.openmuc.framework.lib.json.rest.objects.RestScanProgressInfo;
 
 class DeviceScanListenerImplementation implements DeviceScanListener {
     private final RestScanProgressInfo restScanProgressInfo = new RestScanProgressInfo();
@@ -32,20 +52,20 @@ class DeviceScanListenerImplementation implements DeviceScanListener {
     }
 
     @Override
-    synchronized public void scanFinished() {
-        notify();
+    public synchronized void scanFinished() {
+        notifyAll();
         restScanProgressInfo.setScanFinished(true);
     }
 
     @Override
-    synchronized public void scanInterrupted() {
-        notify();
+    public synchronized void scanInterrupted() {
+        notifyAll();
         restScanProgressInfo.setScanInterrupted(true);
     }
 
     @Override
-    synchronized public void scanError(String message) {
-        notify();
+    public synchronized void scanError(String message) {
+        notifyAll();
         restScanProgressInfo.setScanError(message);
     }
 
@@ -63,6 +83,7 @@ class DeviceScanListenerImplementation implements DeviceScanListener {
             try {
                 wait();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
         return getRestScanDeviceList();

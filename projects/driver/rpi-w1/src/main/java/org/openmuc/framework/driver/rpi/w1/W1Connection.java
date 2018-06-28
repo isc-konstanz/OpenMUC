@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -23,32 +23,27 @@ package org.openmuc.framework.driver.rpi.w1;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.ChannelScanInfo;
-import org.openmuc.framework.config.ScanException;
+import org.openmuc.framework.config.DriverInfoFactory;
+import org.openmuc.framework.config.DriverPreferences;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.w1.options.W1ChannelPreferences;
-import org.openmuc.framework.driver.rpi.w1.options.W1DriverInfo;
+import org.openmuc.framework.driver.rpi.w1.options.ChannelSettings;
 import org.openmuc.framework.driver.rpi.w1.options.W1Type;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
-import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.RecordsReceivedListener;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.pi4j.component.temperature.TemperatureSensor;
 import com.pi4j.io.w1.W1Device;
 
-
-@Component
 public class W1Connection implements Connection {
     private final static Logger logger = LoggerFactory.getLogger(W1Connection.class);
-    private final W1DriverInfo info = W1DriverInfo.getInfo();
+
+    private final DriverPreferences prefs = DriverInfoFactory.getPreferences(W1Connection.class);
 
     /**
      * Interface used by {@link W1Connection} to notify the {@link W1Driver} about events
@@ -73,13 +68,6 @@ public class W1Connection implements Connection {
     }
 
     @Override
-    public List<ChannelScanInfo> scanForChannels(String settingsStr)
-            throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
-
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
             throws UnsupportedOperationException, ConnectionException {
 
@@ -87,30 +75,30 @@ public class W1Connection implements Connection {
 
         for (ChannelRecordContainer container : containers) {
             try {
-                W1ChannelPreferences prefs = info.getChannelPreferences(container);
-
+                ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
+                
                 Value value = null;
                 switch(type) {
                 case TEMPERATURE_SENSOR:
                     TemperatureSensor sensor = (TemperatureSensor) device;
-                    Double temperature = sensor.getTemperature(prefs.getUnit());
+                    Double temperature = sensor.getTemperature(settings.getUnit());
                     
                     if (temperature != null) {
                         // Skip temperature readings of exactly 85, as they are commonly missreadings
-                    	if (temperature < 85) {
+                        if (temperature < 85) {
                             value = new DoubleValue(temperature);
-                    	}
-                    	else {
-                    		// Don't skip the reading, if the latest value read was longer than 15 minutes ago or above 80
-                        	Record lastRecord = container.getChannel().getLatestRecord();
-                        	if (lastRecord != null && lastRecord.getFlag() == Flag.VALID) {
-                        		if (samplingTime - lastRecord.getTimestamp() >= 900000 || 
-                        				lastRecord.getValue().asDouble() >= 80) {
-                        			
+                        }
+                        else {
+                            // Don't skip the reading, if the latest value read was longer than 15 minutes ago or above 80
+                            Record lastRecord = container.getChannel().getLatestRecord();
+                            if (lastRecord != null && lastRecord.getFlag() == Flag.VALID) {
+                                if (samplingTime - lastRecord.getTimestamp() >= 900000 || 
+                                        lastRecord.getValue().asDouble() >= 80) {
+                                    
                                     value = new DoubleValue(temperature);
-                        		}
-                        	}
-                    	}
+                                }
+                            }
+                        }
                     }
                     break;
                 default:
@@ -133,20 +121,6 @@ public class W1Connection implements Connection {
         }
         
         return null;
-    }
-
-    @Override
-    public void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
-            throws UnsupportedOperationException, ConnectionException {
-        
-        throw new UnsupportedOperationException("Listening for 1-Wire devices not supported for type: " + type.getName());
-    }
-
-    @Override
-    public Object write(List<ChannelValueContainer> containers, Object containerListHandle)
-            throws UnsupportedOperationException, ConnectionException {
-    	
-        throw new UnsupportedOperationException("Writing to 1-Wire devices not supported for type: " + type.getName());
     }
 
     @Override

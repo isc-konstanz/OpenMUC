@@ -12,7 +12,7 @@ The project provides detailed installation guides for several platforms. Recomme
 
 - [Ubuntu / Debian Linux via git](https://github.com/emoncms/emoncms/blob/master/docs/LinuxInstall.md)
 
-- [Raspbian Jessie](https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/readme.md)
+- [Raspbian Stretch](https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/readme.md)
 
 
 ---------------
@@ -20,17 +20,20 @@ The project provides detailed installation guides for several platforms. Recomme
 # 2 Install emonmuc
 
 First, create some necessary directories for the installation and data and set the right permissions
+
 ~~~
 sudo mkdir /var/{lib,log,run}/emonmuc
-sudo chown ctrl:root /var/{lib,log,run}/emonmuc
+sudo chown pi /var/{lib,log,run}/emonmuc
 ~~~
 
 Now, the emonmuc application can be installed either via git or simply copied in a subdirection */opt/emonmuc*.
 
 Git is a source code management and revision control system but at this stage it is just used to download and update the emoncms application. After downloading, the right permissions need to be set:
+
 ~~~
 sudo git clone -b stable https://github.com/isc-konstanz/emonmuc.git /opt/emonmuc
-sudo chown ctrl:root -R /opt/emonmuc
+sudo chown pi -R /opt/emonmuc
+sudo chown www-data -R /opt/emonmuc/web
 ~~~
 
 
@@ -38,6 +41,7 @@ sudo chown ctrl:root -R /opt/emonmuc
 
 For some configurations, the settings may be necessary to be adjusted. All settings can be found in *emoncms.conf*.  
 This file needs to be copied from the provided default config first:  
+
 ~~~
 cp /opt/emonmuc/conf/emoncms.default.conf /opt/emonmuc/conf/emoncms.conf
 nano /opt/emonmuc/conf/emoncms.conf
@@ -54,15 +58,24 @@ To do this, **uncomment the lines** related to authorization and authentication,
    >     authentication = <apiKey>
 
 - The maximum allowed threads for the emoncms logger to post values simultaniously to the specified webserver may be configured, if the configured server and the platform supports or needs higher traffic  
-   >     # Set the maximum amount of IPC threads running synchronously. Default is 1
+   >     # Set the maximum amount of HTTP requests running asynchronously. Default is 1
    >     maxThreads = 10
 
-## 2.2 Emoncms module
 
-Inside the projects direcotry is the designated emoncms module, needed to be linked to the emoncms dir
+## 2.2 Emoncms modules
+
+Inside the projects direcotry is the designated emoncms module, needed to be linked to the emoncms modules dir
+
 ~~~
-sudo chown www-data:root -R /opt/emonmuc/projects/emoncms/Modules
-sudo ln -s /opt/emonmuc/projects/emoncms/Modules/muc /var/www/emoncms/Modules/muc
+sudo chown www-data:root -R /opt/emonmuc/web/Modules
+sudo -u www-data ln -s /opt/emonmuc/web/Modules/muc /var/www/emoncms/Modules/muc
+~~~
+
+It is strongly recommended to improve the overall experience by using the additional device module.  
+Download it from its official repository to the emoncms modules dir
+
+~~~
+sudo -u www-data git clone https://github.com/emoncms/device.git /var/www/emoncms/Modules/device
 ~~~
 
 Then, check for Database upates in the Administration pane for the necessary tables to be created.
@@ -71,9 +84,10 @@ Then, check for Database upates in the Administration pane for the necessary tab
 ## 2.3 System service
 
 To provide the comfortable starting, stopping or automatic execution at boot, a systemd service is provided to install:
+
 ~~~
 sudo chmod ugo+x /opt/emonmuc/bin/emonmuc
-sudo cp /opt/emonmuc/bin/emonmuc.service /lib/systemd/system/emonmuc.service
+sudo ln -s /opt/emonmuc/lib/systemd/emonmuc.service /lib/systemd/system/emonmuc.service
 sudo systemctl enable emonmuc.service
 ~~~
 
@@ -81,16 +95,20 @@ With `/var/run/emonmuc` being located in a tmpfs and not created automatically a
 This will be handled by systemds' service **tmpfiles**, which can be configured in `/usr/lib/tmpfiles.d/`:
 
 Create the configuration file *emonmuc.conf*
+
 ~~~
 sudo nano /usr/lib/tmpfiles.d/emonmuc.conf
 ~~~
+
 and add the line
->     d /var/run/emonmuc 0755 ctrl root -
+>     d /var/run/emonmuc 0755 pi root -
 
 The application will now start at boot and can be started with
+
 ~~~
 sudo systemctl start emonmuc
 ~~~
+
 as well as other systemctl commands *[start|restart|stop|status]*
 
 
@@ -98,9 +116,10 @@ as well as other systemctl commands *[start|restart|stop|status]*
 
 Emonmuc provides a run-script, allowing the framework to be configured, started and stopped comfortably via bash shell commands.
 
-Configure this script to be part of the the users environment variable *path* in `~/.bashrc`:
+Link this script to the systems binaries to be executed comfortably:
+
 ~~~
-export PATH=$PATH:/opt/emonmuc/bin
+sudo ln -s /opt/emonmuc/bin/emonmuc /usr/local/bin/emonmuc
 ~~~
 
 **After a reboot or logout**, several basic commands are available:
@@ -111,6 +130,7 @@ export PATH=$PATH:/opt/emonmuc/bin
  - Reload configuration: `emonmuc reload`
 
 If desired, the framework may be started in the foreground, by passing the option **-fg**
+
 ~~~
 emonmuc start -fg
 ~~~
@@ -122,11 +142,13 @@ Further, the script allows the configuration of apps, drivers, or other bundles,
 
 By default, no drivers are enabled. As a first step, a set of protocol drivers ought to be used should be selected.  
 This can be done with their unique ID, e.g. to enable the **CSV** driver:
+
 ~~~
 emonmuc enable driver csv
 ~~~
 
 To disable the driver, use
+
 ~~~
 emonmuc disable driver csv
 ~~~

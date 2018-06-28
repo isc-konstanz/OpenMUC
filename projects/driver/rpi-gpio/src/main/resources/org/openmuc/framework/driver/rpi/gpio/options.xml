@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+  <driver id="rpi-gpio">
+    <name>GPIO (Raspberry Pi)</name>
+    <description><![CDATA[
+        This driver enables the access to the variety of pins of the Raspberry Pi platform. 
+        Devices represent the "General-purpose inputs/outputs (GPIOs) of the Raspberry Pi, 
+        generic pins to be used either as input or output.
+      ]]>
+    </description>
+    
+    <deviceAddress>
+      <option id="pin">
+        <name>Pin</name>
+        <description><![CDATA[
+            The pin number, according to the <a href='http://pi4j.com/pin-numbering-scheme.html'>WiringPi Pin Numbering Scheme</a>.
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>INTEGER</type>
+      </option>
+      <option id="broadcomScheme">
+        <name>Broadcom Pin Numbering Scheme</name>
+        <description><![CDATA[
+            Use the Broadcom Pin Numbering Scheme.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>true</default>
+      </option>
+    </deviceAddress>
+    
+    <deviceSettings>
+      <option id="type">
+        <name>I/O type</name>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="input">Input</item>
+          <item value="output">Output</item>
+        </selection>
+      </option>
+      <option id="defaultState">
+        <name>Default state</name>
+        <description><![CDATA[
+            The default state of the configured pin, immediately set at startup of the driver.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="shutdownState">
+        <name>Shutdown state</name>
+        <description><![CDATA[
+            The default state of the configured pin, set at shutdown of the driver.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="pullResistance">
+        <name>Pull resistance</name>
+        <description><![CDATA[
+            The pull resistance of the configured pin, immediately set at startup of the driver.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="PULL_UP">Pull-up</item>
+          <item value="PULL_DOWN">Pull-down</item>
+          <item value="OFF">Off</item>
+        </selection>
+        <default>PULL_DOWN</default>
+      </option>
+      <option id="shutdownPullResistance">
+        <name>Shutdown pull resistance</name>
+        <description><![CDATA[
+            The default pull resistance of the configured pin, set at shutdown of the driver.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="PULL_UP">Pull-up</item>
+          <item value="PULL_DOWN">Pull-down</item>
+          <item value="OFF">Off</item>
+        </selection>
+        <default>PULL_DOWN</default>
+      </option>
+      <option id="counter">
+        <name>Edge counter</name>
+        <description><![CDATA[
+            Enable the counting of detected edges.
+            <br><br>
+            <i>This setting is only applicable for input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="bounceTime">
+        <name>Bounce avoidance time</name>
+        <description><![CDATA[
+            The amount of miliseconds waited, until a new edge detection will be accepted as a received impulse, to avoid bouncing.
+            <br><br>
+            <i>This setting is only applicable for edge counting input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+        <default>60</default>
+      </option>
+    </deviceSettings>
+    
+    <deviceScanSettings>
+      <option id="broadcomScheme">
+        <name>Broadcom Pin Numbering Scheme</name>
+        <description><![CDATA[
+            Use the Broadcom Pin Numbering Scheme.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>true</default>
+      </option>
+    </deviceScanSettings>
+    
+    <channelSettings>
+      <option id="inverted">
+        <name>Inverted state logic</name>
+        <description><![CDATA[
+            Use an inverted pin state logic.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="impulses">
+        <name>imp./unit</name>
+        <description><![CDATA[
+            The amount of impulses corresponding to one unit.
+            <br><br>
+            <i>This setting is only applicable for edge counting input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+        <default>1</default>
+      </option>
+      <option id="countInterval">
+        <name>Count pulses per interval</name>
+        <description><![CDATA[
+            Count the amount of pulses during a sampling interval, instead of a global counter.
+            <br><br>
+            <i>This setting is only applicable for edge counting input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="derivativeTime">
+        <name>Time derivative</name>
+        <description><![CDATA[
+            Calculate the time derivative of counted pulses by the time unit.
+            <br><br>
+            <i>This setting is only applicable for edge counting input pins</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+        <selection>
+          <item value="1">Millisecond</item>
+          <item value="1000">Second</item>
+          <item value="60000">Minute</item>
+          <item value="3600000">Hour</item>
+        </selection>
+      </option>
+    </channelSettings>
+  </driver>
+</configuration>

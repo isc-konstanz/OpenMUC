@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+  <driver id="iec62056p21">
+    <name>IEC 62056-21</name>
+    <description>This driver can read meters using IEC 62056-21 Mode A, B and C.</description>
+    
+    <deviceAddress>
+      <syntax>
+        <keyValue>false</keyValue>
+      </syntax>
+      <option id="serial_port">
+        <name>Serial port</name>
+        <description><![CDATA[
+            The physical device address to uniquely identify a physical smart meter.<br><br>
+            <b>Example:</b><ol>
+              <li><b>Linux</b>: /dev/ttyS0 or /dev/ttyUSB0</li>
+              <li><b>Windows</b>: COM1</li>
+            </ol>
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+      </option>
+    </deviceAddress>
+    
+    <deviceSettings>
+      <syntax>
+        <keyValue assignment=" ">true</keyValue>
+        <separator> </separator>
+      </syntax>
+      <option id="-d">
+        <name>Baud rate change delay</name>
+        <description><![CDATA[
+            The baud rate change delay sets the waiting time in milliseconds between a baud rate change.<br>
+            Default is a delay of 0ms.
+          ]]>
+        </description>
+        <type>INTEGER</type>
+        <default>0</default>
+      </option>
+      <option id="-t">
+        <name>Timeout</name>
+        <description><![CDATA[
+            The timeout in milliseconds, after which the blocking call to read from the serial port will be canceled.<br>
+            Default is a timeout of 2000ms.
+          ]]>
+        </description>
+        <type>INTEGER</type>
+        <default>2000</default>
+      </option>
+      <option id="-r">
+        <name>Number of read retries</name>
+        <description><![CDATA[
+            Defines the maximum of read retries.<br>
+            Default is 0.
+          ]]>
+        </description>
+        <type>INTEGER</type>
+        <default>0</default>
+      </option>
+      <option id="-bd">
+        <name>Baud rate</name>
+        <description><![CDATA[
+            Sets an initial baud rate e.g. for devices with modem configuration.<br>
+            Default is 300bd.
+          ]]>
+        </description>
+        <type>INTEGER</type>
+        <default>300</default>
+      </option>
+      <option id="-fbd">
+        <name>Fixed baud rate</name>
+        <description><![CDATA[
+            Activates a fixed baud rate.<br>
+            Default is deactivated.
+          ]]>
+        </description>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+      <option id="-a">
+        <name>Device address</name>
+        <description><![CDATA[
+            The device address is mostly needed for devices with RS485.<br>
+            Default is to not have a device address configured.
+          ]]>
+        </description>
+        <type>STRING</type>
+      </option>
+      <option id="-rsc">
+        <name>Request message start character</name>
+        <description><![CDATA[
+            The request message start character is used for manufacture specific request messages.<br>
+            With this option you can change the default start character.
+          ]]>
+        </description>
+        <type>STRING</type>
+      </option>
+      <option id="-rs">
+        <name>Fixed baud rate</name>
+        <description><![CDATA[
+             Reads the standard message and the manufacture specific message.<br>
+             This options has only an affect if the Request message start character is changed.
+          ]]>
+        </description>
+        <type>BOOLEAN</type>
+        <default>false</default>
+      </option>
+    </deviceSettings>
+    
+    <channelAddress>
+      <syntax>
+        <keyValue>false</keyValue>
+      </syntax>
+      <option id="data_set_id">
+        <name>Id of the data set</name>
+        <description><![CDATA[
+            The id of the data set is usually an OBIS code of the format A-B:C.D.E*F 
+            or on older EDIS code of the format C.D.E. that specifies exactly what the value 
+            of this data set represents.
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+      </option>
+    </channelAddress>
+  </driver>
+</configuration>

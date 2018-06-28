@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -24,6 +24,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +35,7 @@ import org.openmuc.framework.config.options.Option;
 import org.openmuc.framework.config.options.OptionCollection;
 import org.openmuc.framework.config.options.OptionInfo;
 import org.openmuc.framework.config.options.OptionSyntax;
-import org.openmuc.framework.config.options.Preferences;
+import org.openmuc.framework.data.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -42,27 +44,36 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class DriverInfo {
-    private final static Logger logger = LoggerFactory.getLogger(DriverInfo.class);
+    private static final Logger logger = LoggerFactory.getLogger(DriverInfo.class);
 
-    public final static String VIRTUAL = "virtual";
+    String id;
+    String name = null;
+    String description = null;
+    OptionInfo deviceAddress = null;
+    OptionInfo deviceSettings = null;
+    OptionInfo deviceScanSettings = null;
+    OptionInfo channelAddress = null;
+    OptionInfo channelSettings = null;
+    OptionInfo channelScanSettings = null;
 
-    private String id;
-    private String name = null;
-    private String description = null;
-    private OptionInfo deviceAddress = null;
-    private OptionInfo deviceSettings = null;
-    private OptionInfo deviceScanSettings = null;
-    private OptionInfo channelAddress = null;
-    private OptionInfo channelSettings = null;
-    private OptionInfo channelScanSettings = null;
-    
+    /**
+     * Constructor to set driver info
+     * 
+     * @param driver
+     *            the driver class, used to read the options.xml
+     *            resource stream, containing all driver info as XML nodes
+     */
+    DriverInfo(Class<?> driver) {
+        this(driver.getResourceAsStream("options.xml"));
+    }
+
     /**
      * Constructor to set driver info
      * 
      * @param is
      *            resource stream, containing all driver info as XML nodes
      */
-    public DriverInfo(InputStream is) {
+    DriverInfo(InputStream is) {
         if (is != null) {
             DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
             docBFac.setIgnoringComments(true);
@@ -93,7 +104,7 @@ public class DriverInfo {
             logger.warn("Driver info options resource not found");
         }
     }
-    
+
     /**
      * Constructor to set driver info
      * 
@@ -139,28 +150,64 @@ public class DriverInfo {
         return description;
     }
 
-    public Preferences parseDeviceAddress(String addressStr) throws ArgumentSyntaxException {
-        return deviceAddress.parse(addressStr);
+    public <P extends Preferences> P parse(String str, Class<P> type) throws ArgumentSyntaxException {
+        try {
+            P preferences = type.getConstructor().newInstance();
+            preferences.parseFields(parse(str, preferences.getPreferenceType()));
+            
+            return preferences;
+            
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            throw new ArgumentSyntaxException(MessageFormat.format("Error parsing settings to class \"{0}\": {1}", 
+                    type.getSimpleName(), e.getMessage()));
+        }
     }
 
-    public Preferences parseDeviceSettings(String settingsStr) throws ArgumentSyntaxException {
-        return deviceSettings.parse(settingsStr);
+    public Map<String, Value> parse(String str, PreferenceType type) throws ArgumentSyntaxException {
+        switch(type) {
+        case ADDRESS_DEVICE:
+            return deviceAddress.parse(str);
+        case SETTINGS_DEVICE:
+            return deviceSettings.parse(str);
+        case SETTINGS_SCAN_DEVICE:
+            return deviceScanSettings.parse(str);
+        case ADDRESS_CHANNEL:
+            return channelAddress.parse(str);
+        case SETTINGS_CHANNEL:
+            return channelSettings.parse(str);
+        case SETTINGS_SCAN_CHANNEL:
+            return channelScanSettings.parse(str);
+        default:
+            throw new ArgumentSyntaxException("Unknown preference type");
+        }
     }
 
-    public Preferences parseDeviceScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
-        return deviceScanSettings.parse(scanSettingsStr);
-    }
+    public <P extends Preferences> String syntax(Class<P> type) {
+        try {
+            P preferences = type.getConstructor().newInstance();
 
-    public Preferences parseChannelAddress(String addressStr) throws ArgumentSyntaxException {
-        return channelAddress.parse(addressStr);
-    }
-
-    public Preferences parseChannelSettings(String settingsStr) throws ArgumentSyntaxException {
-        return channelSettings.parse(settingsStr);
-    }
-
-    public Preferences parseChannelScanSettings(String scanSettingsStr) throws ArgumentSyntaxException {
-        return channelScanSettings.parse(scanSettingsStr);
+            switch(preferences.getPreferenceType()) {
+            case ADDRESS_DEVICE:
+                return deviceAddress.getSyntax();
+            case SETTINGS_DEVICE:
+                return deviceSettings.getSyntax();
+            case SETTINGS_SCAN_DEVICE:
+                return deviceScanSettings.getSyntax();
+            case ADDRESS_CHANNEL:
+                return channelAddress.getSyntax();
+            case SETTINGS_CHANNEL:
+                return channelSettings.getSyntax();
+            case SETTINGS_SCAN_CHANNEL:
+                return channelScanSettings.getSyntax();
+            default:
+                break;
+            }
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            // Return null if errors occurred
+        }
+        return null;
     }
 
     public OptionInfo getDriverConfig() throws ParseException, IOException {
@@ -270,7 +317,7 @@ public class DriverInfo {
             }
         }
     }
-    
+
     public static String trimTextFromDomNode(Node node) {
         BufferedReader reader = new BufferedReader(new StringReader(node.getTextContent()));
         StringBuffer result = new StringBuffer();
@@ -284,10 +331,6 @@ public class DriverInfo {
             logger.info("Error while trimming text: {}", e.getMessage());
         }
         return null;
-    }
-
-    public static DriverInfo getVirtualDriverInfo() {
-    	return new DriverInfo(DriverInfo.class.getResourceAsStream("virtual.xml"));
     }
 
 }

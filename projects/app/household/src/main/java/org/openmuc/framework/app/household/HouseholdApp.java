@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,7 +28,6 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -40,6 +39,7 @@ import org.slf4j.LoggerFactory;
 public final class HouseholdApp implements PowerCallbacks {
     private static final Logger logger = LoggerFactory.getLogger(HouseholdApp.class);
 
+    @Reference
     private DataAccessService dataAccessService;
 
     private Channel pv;
@@ -51,7 +51,7 @@ public final class HouseholdApp implements PowerCallbacks {
     private Record gridImportLast;
 
     @Activate
-    protected void activate(ComponentContext context) {
+    private void activate() {
         logger.info("Activating Household App");
         try {
             HouseholdConfig config = new HouseholdConfig();
@@ -87,17 +87,8 @@ public final class HouseholdApp implements PowerCallbacks {
     }
 
     @Deactivate
-    protected void deactivate(ComponentContext context) {
+    private void deactivate() {
         logger.info("Deactivating Household App");
-    }
-
-    @Reference
-    protected void bindDataAccessService(DataAccessService dataAccessService) {
-        this.dataAccessService = dataAccessService;
-    }
-
-    protected void unbindDataAccessService(DataAccessService dataAccessService) {
-        this.dataAccessService = null;
     }
 
     @Override

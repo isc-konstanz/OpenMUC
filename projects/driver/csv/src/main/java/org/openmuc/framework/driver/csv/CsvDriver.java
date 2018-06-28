@@ -1,3 +1,23 @@
+/*
+ * Copyright 2011-18 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.openmuc.framework.driver.csv;
 
 import java.io.File;
@@ -5,9 +25,11 @@ import java.io.File;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.config.options.Preferences;
+import org.openmuc.framework.driver.csv.settings.DeviceScanSettings;
+import org.openmuc.framework.driver.csv.settings.DeviceSettings;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -16,61 +38,54 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//TODO wo legen wir die csv dateien ab damit sie im release zugänglich sind?
-//a) in treiber integrieren (die wären dann fix) (settings leer lassen?)
-//b) nutzer könnten über settings anderes verzeichnis angeben
-
-// datei mit chronologisch aufsteigenden zeitstempeln oder ohne zeitstempel
+/**
+ * Driver to read data from CSV file.
+ * <p>
+ * Three sampling modes are available:
+ * <ul>
+ * <li>LINE: starts from begin of file. With every sampling it reads the next line. Timestamps ignored</li>
+ * <li>UNIXTIMESTAMP: With every sampling it reads the line with the closest unix timestamp regarding to sampling
+ * timestamp</li>
+ * <li>HHMMSS: With every sampling it reads the line with the closest time HHMMSS regarding to sampling timestamp</li>
+ * </ul>
+ */
 @Component
 public class CsvDriver implements DriverService {
 
     private final static Logger logger = LoggerFactory.getLogger(CsvDriver.class);
-    
-    final static DriverInfo info = new DriverInfo(CsvDriver.class.getResourceAsStream("options.xml"));
-    
-    // Settings mode realtime, nextline-rewind, nextline
-    // Settings separator = ;
-    // Settings comment = #
-    final static String DEFAULT_SETTINGS = "samplingmode=line";
-    
+
+    private final DriverInfo info = DriverInfoFactory.getInfo(CsvDriver.class);
+
+    private static final String DEFAULT_DEVICE_SETTINGS = DeviceSettings.SAMPLING_MODE + "="
+            + ESamplingMode.LINE.toString();
+
     private boolean isDeviceScanInterrupted = false;
-    
+
     @Override
     public DriverInfo getInfo() {
         return info;
     }
-    
+
     @Override
-    public void scanForDevices(String settings, DriverDeviceScanListener listener)
+    public void scanForDevices(String scanSettings, DriverDeviceScanListener listener)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
 
-        logger.info("Scan for CSV files. Settings: " + settings);
+        logger.info("Scan for CSV files. Settings: " + scanSettings);
 
-        // reset interrupted flag on start of scan
-        isDeviceScanInterrupted = false;
+        resetDeviceScanInterrupted();
 
-        Preferences deviceScanSettings = info.parseDeviceScanSettings(settings);
-        String path = deviceScanSettings.getString("path");
-        File[] listOfFiles;
-        if (!path.isEmpty()) {
-            File file = new File(path);
-            if (!file.isDirectory()) {
-                throw new ArgumentSyntaxException("<path> argument must point to a directory.");
-            }
-            listOfFiles = file.listFiles();
-        }
-        else {
-            throw new ArgumentSyntaxException("<path> argument must point to a directory.");
-        }
+        final DeviceScanSettings settings = info.parse(scanSettings, DeviceScanSettings.class);
+        final File[] listOfFiles = settings.listFiles();
 
         if (listOfFiles != null) {
 
-            double numberOfFiles = listOfFiles.length;
+            final double numberOfFiles = listOfFiles.length;
             double fileCounter = 0;
-
             int idCounter = 0;
 
             for (File file : listOfFiles) {
+
+                // check if device scan was interrupted
                 if (isDeviceScanInterrupted) {
                     break;
                 }
@@ -81,7 +96,7 @@ public class CsvDriver implements DriverService {
                         String deviceId = "csv_device_" + idCounter;
 
                         listener.deviceFound(new DeviceScanInfo(deviceId, file.getAbsolutePath(),
-                                DEFAULT_SETTINGS.toLowerCase(), file.getName()));
+                                DEFAULT_DEVICE_SETTINGS.toLowerCase(), file.getName()));
                     } // else: do nothing, non csv files are ignored
                 } // else: do nothing, folders are ignored
 
@@ -92,17 +107,21 @@ public class CsvDriver implements DriverService {
         }
     }
 
+    private void resetDeviceScanInterrupted() {
+        isDeviceScanInterrupted = false;
+    }
+
     @Override
     public void interruptDeviceScan() throws UnsupportedOperationException {
         isDeviceScanInterrupted = true;
     }
 
     @Override
-    public Connection connect(String deviceAddress, String settings)
+    public Connection connect(String deviceAddress, String deviceSettings)
             throws ArgumentSyntaxException, ConnectionException {
 
-        CsvDeviceConnection csvConnection = new CsvDeviceConnection(deviceAddress, settings);
-        logger.debug("csv driver connected");
+        CsvDeviceConnection csvConnection = new CsvDeviceConnection(deviceAddress, deviceSettings);
+        logger.debug("CSV driver connected");
         return csvConnection;
     }
 

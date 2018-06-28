@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -22,7 +22,6 @@ package org.openmuc.framework.config.options;
 
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ParseException;
@@ -40,24 +39,24 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class OptionSelection {
+public class OptionSelection extends LinkedHashMap<Value, String>{
+    private static final long serialVersionUID = 2163129000924486706L;
 
     private static String DELIMITER = ",";
     private static String KEY_VAL_SEP = ":";
 
-    private final Map<Value, String> options;
     private final ValueType type;
     
     private boolean validate = true;
 
     public OptionSelection(ValueType type) {
-        this.options = new LinkedHashMap<Value, String>();
+        super();
         this.type = type;
     }
 
-    public OptionSelection(ValueType type, boolean verify) {
+    public OptionSelection(ValueType type, boolean validate) {
         this(type);
-        this.validate = verify;
+        this.validate = validate;
     }
 
     public OptionSelection(ValueType type, String selectionStr) throws ArgumentSyntaxException {
@@ -102,7 +101,7 @@ public class OptionSelection {
                     throw new ArgumentSyntaxException(MessageFormat.format("Selection value \"{0}\" is not of type: {1}.", 
                             selection, type.name().toLowerCase()));
                 }
-                options.put(val, desc);
+                put(val, desc);
             }
             else {
                 throw new ArgumentSyntaxException("Selection is not a key value par of type "
@@ -113,7 +112,7 @@ public class OptionSelection {
 
     public boolean contains(Value value) {
         if (value != null) {
-            for (Value option : options.keySet()) {
+            for (Value option : keySet()) {
                 switch (this.type) {
                 case BOOLEAN:
                     if (option.asBoolean() == value.asBoolean()) {
@@ -172,7 +171,7 @@ public class OptionSelection {
     }
 
     public void addValue(Value value, String description) {
-        this.options.put(value, description);
+        this.put(value, description);
     }
 
     public void addBoolean(boolean value, String description) {
@@ -206,15 +205,6 @@ public class OptionSelection {
     public void addString(String value, String description) {
         this.addValue(new StringValue(value), description);
     }
-    
-    public Map<Value, String> getOptions() {
-        return options;
-    }
-
-    @Override
-    public String toString() {
-        return options.toString();
-    }
 
     static OptionSelection getFromDomNode(Node node, ValueType type) throws ParseException {
         OptionSelection selection = new OptionSelection(type);
@@ -228,8 +218,17 @@ public class OptionSelection {
                 if (childNodeName.equals("#text")) {
                     continue;
                 }
+                else if (childNodeName.equals("default")) {
+                    String validateString = childNode.getTextContent().trim().toLowerCase();
+                    if (validateString.equals("time")) {
+                        return OptionSelection.getDefaultTimes();
+                    }
+                    else {
+                        throw new ParseException("Selection \"default\" contains no known selection");
+                    }
+                }
                 else if (childNodeName.equals("validate")) {
-                    String validateString = childNode.getTextContent().toLowerCase();
+                    String validateString = childNode.getTextContent().trim().toLowerCase();
                     if (validateString.equals("true")) {
                         selection.validate = true;
                     }
@@ -246,8 +245,8 @@ public class OptionSelection {
                     if (nameAttribute == null) {
                         throw new ParseException("Selection item has no value attribute");
                     }
-                    String item = nameAttribute.getTextContent();
-                    String description = childNode.getTextContent();
+                    String item = nameAttribute.getTextContent().trim();
+                    String description = childNode.getTextContent().trim();
                     
                     switch (type) {
                     case FLOAT:
@@ -286,6 +285,47 @@ public class OptionSelection {
         } catch (IllegalArgumentException e) {
             throw new ParseException(e);
         }
+        
+        return selection;
+    }
+
+    static OptionSelection getDefaultTimes() {
+        OptionSelection selection = new OptionSelection(ValueType.INTEGER);
+        
+        selection.validate = false;
+        
+        selection.addInteger(0, "None");
+        selection.addInteger(100, "100 milliseconds");
+        selection.addInteger(200, "200 milliseconds");
+        selection.addInteger(300, "300 milliseconds");
+        selection.addInteger(400, "400 milliseconds");
+        selection.addInteger(500, "500 milliseconds");
+        selection.addInteger(1000, "1 second");
+        selection.addInteger(2000, "2 second");
+        selection.addInteger(3000, "3 second");
+        selection.addInteger(4000, "4 second");
+        selection.addInteger(5000, "5 seconds");
+        selection.addInteger(10000, "10 seconds");
+        selection.addInteger(15000, "15 seconds");
+        selection.addInteger(20000, "20 seconds");
+        selection.addInteger(25000, "25 seconds");
+        selection.addInteger(30000, "30 seconds");
+        selection.addInteger(35000, "35 seconds");
+        selection.addInteger(40000, "40 seconds");
+        selection.addInteger(45000, "45 seconds");
+        selection.addInteger(50000, "50 seconds");
+        selection.addInteger(55000, "55 seconds");
+        selection.addInteger(60000, "1 minute");
+        selection.addInteger(120000, "2 minutes");
+        selection.addInteger(180000, "3 minutes");
+        selection.addInteger(240000, "4 minutes");
+        selection.addInteger(300000, "5 minutes");
+        selection.addInteger(600000, "10 minutes");
+        selection.addInteger(900000, "15 minutes");
+        selection.addInteger(1800000, "30 minutes");
+        selection.addInteger(2700000, "45 minutes");
+        selection.addInteger(3600000, "1 hour");
+        selection.addInteger(86400000, "1 day");
         
         return selection;
     }

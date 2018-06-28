@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-16 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -26,14 +26,13 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.driver.rpi.gpio.GpioConnection.GpioConnectionCallbacks;
-import org.openmuc.framework.driver.rpi.gpio.options.GpioDevicePreferences;
-import org.openmuc.framework.driver.rpi.gpio.options.GpioDriverInfo;
+import org.openmuc.framework.driver.rpi.gpio.count.EdgeCounter;
+import org.openmuc.framework.driver.rpi.gpio.settings.DeviceAddress;
+import org.openmuc.framework.driver.rpi.gpio.settings.DeviceSettings;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -51,7 +50,8 @@ import com.pi4j.wiringpi.GpioUtil;
 @Component
 public class GpioDriver implements DriverService, GpioConnectionCallbacks {
     private final static Logger logger = LoggerFactory.getLogger(GpioDriver.class);
-    private final GpioDriverInfo info = GpioDriverInfo.getInfo();
+
+    private final DriverInfo info = DriverInfoFactory.getPreferences(GpioDriver.class);
 
     private final List<GpioPin> pins;
 
@@ -68,7 +68,7 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
             GpioUtil.enableNonPrivilegedAccess();
         }
         else {
-        	logger.warn("Privileged access is required on this system to access GPIO pins");
+            logger.warn("Privileged access is required on this system to access GPIO pins");
         }
         gpio = GpioFactory.getInstance();
     }
@@ -79,47 +79,11 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
     }
 
     @Override
-    public void scanForDevices(String settingsStr, DriverDeviceScanListener listener)
-            throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
-
-        logger.info("Scan for Raspberry Pi GPIO pins.");
-//        Parameters settings = DEVICE_OPTIONS.parseScanSettings(settingsStr);
-
-        // TODO: retrieve information about the platform and change results accordingly
-
-//        List<RpiConnetorInfo> infos = new ArrayList<RpiConnetorInfo>();
-//        infos.add(W1Connector.getInfo());
-//        infos.add(GpioConnector.getInfo());
-//
-//        double counter = 0;
-//        for (RpiConnetorInfo info : infos) {
-//            if (isDeviceScanInterrupted) {
-//                break;
-//            }
-//            
-//            String address = "";
-//            String settings = GpioDeviceOptions.TYPE_KEY + "=" + info.getType().getName();
-//            
-//            listener.deviceFound(new DeviceScanInfo("rpi_device_"+info.getId(), 
-//                    address, settings, info.getDescription()));
-//            
-//            listener.scanProgressUpdate((int) (counter / infos.size() * 100.0));
-//            
-//            counter++;
-//        }
-        
-    }
-
-    @Override
-    public void interruptDeviceScan() throws UnsupportedOperationException {
-//        isDeviceScanInterrupted = true;
-    }
-
-    @Override
     public Connection connect(String addressStr, String settingsStr) throws ArgumentSyntaxException, ConnectionException {
         
         logger.trace("Connect Raspberry Pi device address \"{}\": {}", addressStr, settingsStr);
-        GpioDevicePreferences prefs = info.getDevicePreferences(addressStr, settingsStr);
+        DeviceAddress address = info.parse(addressStr, DeviceAddress.class);
+        DeviceSettings settings = info.parse(settingsStr, DeviceSettings.class);
         
         try {
             synchronized(pins) {
@@ -127,34 +91,44 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
                     gpio = GpioFactory.getInstance();
                 }
             }
+            GpioConnection connection;
             
             Pin pin;
-            if (prefs.useBroadcomScheme()) {
-                pin = RCMPin.getPinByAddress(prefs.getPin());
+            if (address.useBroadcomScheme()) {
+                pin = RCMPin.getPinByAddress(address.getPin());
             }
             else {
-                pin = RaspiPin.getPinByAddress(prefs.getPin());
+                pin = RaspiPin.getPinByAddress(address.getPin());
             }
             if (pin == null) {
-                throw new ConnectionException("Unable to configure GPIO pin: " + prefs.getPin());
+                throw new ConnectionException("Unable to configure GPIO pin: " + address.getPin());
             }
             
             GpioPinDigital gpioPin = null;
-            switch(prefs.getType()) {
+            switch(settings.getType()) {
             case INPUT:
-                gpioPin = gpio.provisionDigitalInputPin(pin, prefs.getPullResistance());
+                gpioPin = gpio.provisionDigitalInputPin(pin, settings.getPullResistance());
+                
+                if (settings.isCounter()) {
+                    connection = new EdgeCounter(this, gpioPin, settings.getPullResistance(), settings.getBounceTime());
+                }
+                else {
+                    connection = new InputPin(this, gpioPin);
+                }
                 break;
             case OUTPUT:
-                gpioPin = gpio.provisionDigitalOutputPin(pin, prefs.getDefaultState());
+                gpioPin = gpio.provisionDigitalOutputPin(pin, settings.getDefaultState());
+
+                connection = new OutputPin(this, gpioPin);
                 break;
             default:
-                throw new UnsupportedOperationException("GPIO pins not supported for type: " + prefs.getType());
+                throw new ArgumentSyntaxException("GPIO pins not supported for type: " + settings.getPreferenceType());
             }
-            gpioPin.setShutdownOptions(true, prefs.getShutdownState(), prefs.getShutdownPullResistance());
+            gpioPin.setShutdownOptions(true, settings.getShutdownState(), settings.getShutdownPullResistance());
             
             pins.add(gpioPin);
             
-            return new GpioConnection(this, gpioPin);
+            return connection;
 
         } catch (IllegalArgumentException e) {
             throw new ArgumentSyntaxException("Unable to configure GPIO pin: " + e.getMessage());
