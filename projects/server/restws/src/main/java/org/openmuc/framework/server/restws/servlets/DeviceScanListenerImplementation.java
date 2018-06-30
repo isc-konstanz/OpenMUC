@@ -78,10 +78,11 @@ class DeviceScanListenerImplementation implements DeviceScanListener {
     }
 
     synchronized List<DeviceScanInfo> getScannedDevicesResult() {
-        while (!restScanProgressInfo.isScanFinished() && !restScanProgressInfo.isScanInterrupted()
-                && restScanProgressInfo.getScanError() == null) {
+        while (restScanProgressInfo.getScanError() == null
+        		&& !restScanProgressInfo.isScanInterrupted() && !restScanProgressInfo.isScanFinished() ) {
             try {
                 wait();
+                
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

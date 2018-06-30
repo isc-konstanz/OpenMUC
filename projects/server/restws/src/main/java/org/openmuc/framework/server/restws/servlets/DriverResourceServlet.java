@@ -181,6 +181,7 @@ public class DriverResourceServlet extends GenericServlet {
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_PROGRESS)) {
                             json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
+                            json.addDeviceScanInfoList(scanListener.getScannedDevicesList());
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_PROGRESS_INFO)) {
                             json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
@@ -488,12 +489,9 @@ public class DriverResourceServlet extends GenericServlet {
     }
 
     private void scanForAllDevicesAsync(String driverId, String settings, HttpServletResponse response) {
-        List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
-        
         try {
-            scanListener = new DeviceScanListenerImplementation(scannedDevicesList);
+            scanListener = new DeviceScanListenerImplementation(new ArrayList<>());
             configService.scanForDevices(driverId, settings, scanListener);
-            scannedDevicesList = scanListener.getScannedDevicesResult();
             
         } catch (UnsupportedOperationException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
