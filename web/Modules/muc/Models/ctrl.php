@@ -75,15 +75,18 @@ class Controller
 		// TODO: Add ports to be configurable in settings
 		$url = 'http://'.$address.':8080/rest/users';
 		$data = array('id' => 'emoncms', 
-				'password' => $password);
+        		'password' => $password,
+                'groups' => array(),
+                'description' => 'Emoncms admin user'
+		);
 		
-		$response = $this->sendHttpRequest(null, null, $url, 'POST', array('configs' => $data));
+		$response = $this->sendHttpRequest('admin', 'admin', $url, 'POST', array('configs' => $data));
 		if (isset($response["success"]) && !$response["success"]) {
 			return $response;
 		}
 		
 		// Try to delete default admin account if still existing
-		$this->sendHttpRequest(null, null, $url, 'DELETE', array('configs' => array('id' => 'admin', 'password' => 'admin')));
+		$this->sendHttpRequest('admin', 'admin', $url, 'DELETE', array('configs' => array('id' => 'admin', 'password' => 'admin')));
 		
 		return array('success'=>true, 'id'=>$id, 'message'=>'MUC successfully registered');
 	}

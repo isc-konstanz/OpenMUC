@@ -112,7 +112,7 @@ public class DriverResourceServlet extends GenericServlet {
             else {
                 String driverId = pathInfoArray[0].replace("/", "");
 
-                if (pathInfoArray[1].equalsIgnoreCase(Const.INFOS)) {
+                if (pathInfoArray.length > 1 && pathInfoArray[1].equalsIgnoreCase(Const.INFOS)) {
                     DriverInfo driverInfo;
                     try {
                         driverInfo = configService.getDriverInfo(driverId);

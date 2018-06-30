@@ -24,12 +24,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class RestUserConfig {
 
-    private final String id;
+    private String id;
     @SerializedName("password")
-    private final String pass;
+    private String pass;
     private String oldPasswd;
-    private final String[] groups;
-    private final String description;
+    private String[] groups;
+    private String description;
+
+    public RestUserConfig() {
+        this("");
+    }
 
     public RestUserConfig(String id) {
         this.id = id;
