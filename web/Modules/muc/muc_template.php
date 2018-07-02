@@ -66,7 +66,7 @@ class MucTemplate extends DeviceTemplate
         }
         $options = array();
         
-        require_once "Modules/muc/Models/ctrl.php";
+        require_once "Modules/muc/muc_model.php";
         $ctrl = new Controller($this->mysqli, $this->redis);
         
         $ctrls = $ctrl->get_list($userid);
@@ -178,10 +178,10 @@ class MucTemplate extends DeviceTemplate
             return array('success'=>false, 'message'=>'Bad device template. Undefined devices');
         }
         
-        require_once "Modules/muc/Models/ctrl.php";
+        require_once "Modules/muc/muc_model.php";
         $ctrl = new Controller($this->mysqli, $this->redis);
         
-        require_once "Modules/muc/Models/device.php";
+        require_once "Modules/muc/Models/device_model.php";
         $device = new DeviceConnection($ctrl, $this->mysqli, $this->redis);
         
         foreach ($devices as $d) {
@@ -207,10 +207,10 @@ class MucTemplate extends DeviceTemplate
 
     // Create the channels
     protected function create_channels($userid, $ctrlid, $deviceid, $options, $channels) {
-        require_once "Modules/muc/Models/ctrl.php";
+        require_once "Modules/muc/muc_model.php";
         $ctrl = new Controller($this->mysqli, $this->redis);
         
-        require_once "Modules/muc/Models/channel.php";
+        require_once "Modules/muc/Models/channel_model.php";
         $channel = new Channel($ctrl, $this->mysqli, $this->redis);
         
         foreach($channels as $c) {

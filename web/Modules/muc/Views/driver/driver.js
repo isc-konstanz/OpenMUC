@@ -1,58 +1,72 @@
 var driver = {
 
-	'create':function(ctrlid, id, configs)
-	{
-		var result = {};
-		$.ajax({ url: path+"muc/driver/create.json", data: "ctrlid="+ctrlid+"&id="+id+"&configs="+JSON.stringify(configs), dataType: 'json', async: false, success: function(data){result = data;} });
-		return result;
-	},
+    'create':function(ctrlid, id, configs, callback) {
+        return $.ajax({
+            url: path+"muc/driver/create.json",
+            data: "ctrlid="+ctrlid+"&id="+id+"&configs="+JSON.stringify(configs),
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    },
 
-	'list':function()
-	{
-		var result = {};
-		$.ajax({ url: path+"muc/driver/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
-		return result;
-	},
-	
-	'available':function(ctrlid)
-	{
-		var result = {};
-		$.ajax({ url: path+"muc/driver/available.json", data: "ctrlid="+ctrlid, dataType: 'json', async: false, success: function(data) {result = data;} });
-		return result;
-	},
-	
-	'configured':function(ctrlid)
-	{
-		var result = {};
-		$.ajax({ url: path+"muc/driver/configured.json", data: "ctrlid="+ctrlid, dataType: 'json', async: false, success: function(data) {result = data;} });
-		return result;
-	},
+    'list':function(callback) {
+        return $.ajax({
+            url: path+"muc/driver/list.json",
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    },
 
-	'info':function(ctrlid, id)
-	{
-		var result = {};
-		$.ajax({ url: path+"muc/driver/info.json", data: "ctrlid="+ctrlid+"&id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
-		return result;
-	},
+    'unconfigured':function(ctrlid, callback) {
+        return $.ajax({
+            url: path+"muc/driver/unconfigured.json",
+            data: "ctrlid="+ctrlid,
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    },
 
-	'get':function(ctrlid, id)
-	{
-		var result = {};
-		$.ajax({ url: path+"muc/driver/get.json", data: "ctrlid="+ctrlid+"&id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
-		return result;
-	},
+    'info':function(ctrlid, id, callback) {
+        return $.ajax({
+            url: path+"muc/driver/info.json",
+            data: "ctrlid="+ctrlid+"&id="+id,
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    },
 
-	'update':function(ctrlid, id, configs)
-	{
-		var result = {};
-		$.ajax({ url: path+"muc/driver/update.json", data: "ctrlid="+ctrlid+"&id="+id+"&configs="+JSON.stringify(configs), dataType: 'json', async: false, success: function(data){result = data;} });
-		return result;
-	},
+    'get':function(ctrlid, id, callback) {
+        return $.ajax({
+            url: path+"muc/driver/get.json",
+            data: "ctrlid="+ctrlid+"&id="+id,
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    },
 
-	'remove':function(ctrlid, id)
-	{
-		var result = {};
-		$.ajax({ url: path+"muc/driver/delete.json", data: "ctrlid="+ctrlid+"&id="+id, dataType: 'json', async: false, success: function(data){result = data;} });
-		return result;
-	}
+    'update':function(ctrlid, id, configs, callback) {
+        return $.ajax({
+            url: path+"muc/driver/update.json",
+            data: "ctrlid="+ctrlid+"&id="+id+"&configs="+JSON.stringify(configs),
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    },
+
+    'remove':function(ctrlid, id, callback) {
+        return $.ajax({
+            url: path+"muc/driver/delete.json",
+            data: "ctrlid="+ctrlid+"&id="+id,
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    }
+
 }
