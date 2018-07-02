@@ -24,10 +24,10 @@ class MucThing extends DeviceThing
     public function __construct(&$parent) {
         parent::__construct($parent);
         
-        require_once "Modules/muc/Models/ctrl.php";
+        require_once "Modules/muc/muc_model.php";
         $this->ctrl = new Controller($this->mysqli, $this->redis);
         
-        require_once "Modules/muc/Models/channel.php";
+        require_once "Modules/muc/Models/channel_model.php";
         $this->channel = new Channel($this->ctrl, $this->mysqli, $this->redis);
     }
 
@@ -132,7 +132,7 @@ class MucThing extends DeviceThing
     }
 
     protected function get_ctrl_id($userid, $name, $driver) {
-        require_once "Modules/muc/Models/device.php";
+        require_once "Modules/muc/Models/device_model.php";
         $device = new DeviceConnection($this->ctrl, $this->mysqli, $this->redis);
         
         $devices = $device->get_list($userid);
