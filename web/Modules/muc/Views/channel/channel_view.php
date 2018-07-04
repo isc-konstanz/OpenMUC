@@ -99,7 +99,7 @@
     function update() {
         channel.list(function(data, textStatus, xhr) {
             table.data = data;
-			
+            
             table.draw();
             if (table.data.length != 0) {
                 $("#channel-none").hide();
@@ -166,11 +166,11 @@
 
     $("#channel-new").on('click', function () {
         
-    	channel_dialog.loadNew();
+        channel_dialog.loadNew();
     });
 
     $("#channel-scan").on('click', function () {
         
-    	channel_dialog.loadScan();
+        channel_dialog.loadScan();
     });
 </script>

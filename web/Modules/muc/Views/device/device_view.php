@@ -189,7 +189,7 @@
 
             // Do not open dialog, if no corresponding driver exists
             if (device['ctrlid'] > 0 && device['state'] != 'UNAVAILABLE') {
-            	channel_dialog.loadNew(device);
+                channel_dialog.loadNew(device);
             }
         }
     });
@@ -214,6 +214,6 @@
 
     $("#device-scan").on('click', function () {
         
-    	device_dialog.loadScan();
+        device_dialog.loadScan();
     });
 </script>

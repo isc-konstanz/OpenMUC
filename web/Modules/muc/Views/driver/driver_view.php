@@ -193,6 +193,6 @@
 
     $("#driver-new").on('click', function () {
         
-    	driver_dialog.loadNew();
+        driver_dialog.loadNew();
     });
 </script>

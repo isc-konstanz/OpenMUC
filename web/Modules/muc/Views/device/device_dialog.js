@@ -83,7 +83,7 @@ var device_dialog =
                 $('#device-config-overlay').show();
                 $('#device-config-scan').show();
                 
-            	device_dialog.drawDrivers('config');
+                device_dialog.drawDrivers('config');
             }
         }
         device_dialog.registerConfigEvents();
@@ -117,9 +117,9 @@ var device_dialog =
                 }});
             });
             driverSelect.show();
-        	if (modal == 'config') {
+            if (modal == 'config') {
                 $('#device-config-driver').hide();
-        	}
+            }
         });
     },
 
@@ -219,8 +219,8 @@ var device_dialog =
             configs['configs'] = $.extend({}, config.getOptions('configs'));
             
             if (device_dialog.device != null 
-            		&& !(typeof device_dialog.device.scanned !== 'undefined' && !device_dialog.device.scanned)) {
-            	
+                    && !(typeof device_dialog.device.scanned !== 'undefined' && !device_dialog.device.scanned)) {
+                
                 if (device_dialog.device['disabled'] != null) {
                     configs['disabled'] = device_dialog.device['disabled'];
                 }
@@ -284,7 +284,7 @@ var device_dialog =
             $('#device-scan-driver').hide();
             $('#device-scan-overlay').hide();
             
-        	device_dialog.drawPreferences('scan');
+            device_dialog.drawPreferences('scan');
         }
         else {
             $('#device-scan-label').html('Scan Devices');
@@ -292,7 +292,7 @@ var device_dialog =
             $('#device-scan-driver').show();
             $('#device-scan-overlay').show();
             
-        	device_dialog.drawDrivers('scan');
+            device_dialog.drawDrivers('scan');
         }
         device_dialog.registerScanEvents();
     },
@@ -351,7 +351,7 @@ var device_dialog =
         });
 
         $("#device-scan-start").off('click').on('click', function () {
-        	if (device_dialog.driverid == null) {
+            if (device_dialog.driverid == null) {
                 alert('Driver needs to be configured first.');
                 return false;
             }
@@ -420,7 +420,7 @@ var device_dialog =
         $("#device-delete-confirm").off('click').on('click', function() {
             $('#device-delete-loader').show();
             device.remove(device_dialog.device.ctrlid, device_dialog.device.id,
-            		device_dialog.closeDeleteModal);
+                    device_dialog.closeDeleteModal);
             
             if (typeof table !== 'undefined' && row != null) table.remove(row);
         });

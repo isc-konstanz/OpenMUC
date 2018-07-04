@@ -23,7 +23,7 @@
         <div class="modal-container">
             <div id="driver-config-container"></div>
             
-        	<div id="driver-config-overlay" class="modal-overlay"></div>
+            <div id="driver-config-overlay" class="modal-overlay"></div>
         </div>
     </div>
     <div class="modal-footer">
@@ -31,7 +31,7 @@
         <button id="driver-config-delete" class="btn btn-danger" style="display:none; cursor:pointer;"><i class="icon-trash icon-white"></i> <?php echo _('Delete'); ?></button>
         <button id="driver-config-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
-	<div id="driver-config-loader" class="ajax-loader" style="display:none"></div>
+    <div id="driver-config-loader" class="ajax-loader" style="display:none"></div>
 </div>
 
 <div id="driver-delete-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="driver-delete-label" aria-hidden="true" data-backdrop="static">
