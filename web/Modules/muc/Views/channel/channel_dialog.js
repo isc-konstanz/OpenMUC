@@ -103,14 +103,14 @@ var channel_dialog = {
                 });
             }
             else {
-            	deviceSelect.prop('disabled', true);
+                deviceSelect.prop('disabled', true);
                 alert('Unable to find configured devices');
             }
             
             deviceSelect.show();
-        	if (modal == 'config') {
+            if (modal == 'config') {
                 $('#channel-config-device').hide();
-        	}
+            }
         });
     },
 
@@ -176,10 +176,10 @@ var channel_dialog = {
         });
 
         $('#channel-config-device-select').off('change').on('change', function() {
-        	channel_dialog.ctrlid = $('option:selected', this).attr('ctrlid');
-        	channel_dialog.driverid = $('option:selected', this).attr('driverid');
-        	channel_dialog.deviceid = this.value;
-        	channel_dialog.channel = null;
+            channel_dialog.ctrlid = $('option:selected', this).attr('ctrlid');
+            channel_dialog.driverid = $('option:selected', this).attr('driverid');
+            channel_dialog.deviceid = this.value;
+            channel_dialog.channel = null;
             
             channel_dialog.drawPreferences('config');
 
@@ -209,8 +209,8 @@ var channel_dialog = {
             configs['configs'] = $.extend({}, config.getOptions('configs'));
             
             if (channel_dialog.channel != null 
-            		&& !(typeof channel_dialog.channel.scanned !== 'undefined' && !channel_dialog.channel.scanned)) {
-            	
+                    && !(typeof channel_dialog.channel.scanned !== 'undefined' && !channel_dialog.channel.scanned)) {
+                
                 if (channel_dialog.channel['disabled'] != null) {
                     configs['disabled'] = channel_dialog.channel['disabled'];
                 }
@@ -220,8 +220,8 @@ var channel_dialog = {
                         channel_dialog.closeConfigModal);
             }
             else {
-            	channel.create(channel_dialog.ctrlid, channel_dialog.deviceid, configs,
-            			channel_dialog.closeConfigModal);
+                channel.create(channel_dialog.ctrlid, channel_dialog.deviceid, configs,
+                        channel_dialog.closeConfigModal);
             }
         });
 
@@ -343,7 +343,7 @@ var channel_dialog = {
         });
 
         $("#channel-scan-start").off('click').on('click', function () {
-        	if (channel_dialog.deviceid == null) {
+            if (channel_dialog.deviceid == null) {
                 alert('Device needs to be configured first.');
                 return false;
             }
@@ -412,7 +412,7 @@ var channel_dialog = {
         $("#channel-delete-confirm").off('click').on('click', function() {
             $('#channel-delete-loader').show();
             channel.remove(channel_dialog.channel.ctrlid, channel_dialog.channel.id,
-            		channel_dialog.closeDeleteModal);
+                    channel_dialog.closeDeleteModal);
             
             if (typeof table !== 'undefined' && row != null) table.remove(row);
         });

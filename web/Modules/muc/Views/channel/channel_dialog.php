@@ -118,7 +118,7 @@
 
 <script>
     $('#channel-config-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-	$('#channel-scan-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
+    $('#channel-scan-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
 
     $(window).resize(function() {
         channel_dialog.adjustConfigModal();
