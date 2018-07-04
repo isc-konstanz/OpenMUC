@@ -2,7 +2,7 @@
     global $path;
 ?>
 
-<link href="<?php echo $path; ?>Modules/muc/Lib/dialog.css" rel="stylesheet">
+<link href="<?php echo $path; ?>Modules/muc/Views/muc.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/muc/Lib/tablejs/muc-table-fields.js"></script>

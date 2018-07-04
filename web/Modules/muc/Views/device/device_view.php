@@ -2,7 +2,7 @@
     global $path;
 ?>
 
-<link href="<?php echo $path; ?>Modules/muc/Lib/dialog.css" rel="stylesheet">
+<link href="<?php echo $path; ?>Modules/muc/Views/muc.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/muc/Lib/tablejs/muc-table-fields.js"></script>
@@ -34,7 +34,10 @@
 </style>
 
 <div>
-    <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Device connections API Help'); ?></a></div>
+    <div style="float:right">
+        <span id="api-help-header"><a href="api"><?php echo _('Device API Help'); ?></a></span>
+        <a href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
+    </div>
     <div id="local-header"><h2><?php echo _('Device connections'); ?></h2></div>
 
     <div id="table"><div align='center'></div></div>
@@ -109,9 +112,11 @@
             if (table.data.length != 0) {
                 $("#device-none").hide();
                 $("#local-header").show();
+                $("#api-help-header").show();
             } else {
                 $("#device-none").show();
                 $("#local-header").hide();
+                $("#api-help-header").hide();
             }
             $('#device-loader').hide();
         });

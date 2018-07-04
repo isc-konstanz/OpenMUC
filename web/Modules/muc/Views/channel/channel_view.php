@@ -2,7 +2,7 @@
     global $path;
 ?>
 
-<link href="<?php echo $path; ?>Modules/muc/Lib/dialog.css" rel="stylesheet">
+<link href="<?php echo $path; ?>Modules/muc/Views/muc.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/muc/Lib/tablejs/muc-table-fields.js"></script>
@@ -18,7 +18,7 @@
     #table td:nth-of-type(2) { width:10%; }
     #table td:nth-of-type(3) { width:5%; }
     #table td:nth-of-type(4) { width:10%; }
-    #table td:nth-of-type(5) { width:10%; }
+    #table td:nth-of-type(5) { width:20%; }
     #table td:nth-of-type(6), th:nth-of-type(6) { text-align: right; }
     #table td:nth-of-type(7), th:nth-of-type(7) { width:15%; text-align: right; }
     #table td:nth-of-type(8) { width:14px; text-align: center; }
@@ -30,7 +30,10 @@
 </style>
 
 <div>
-    <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Channels API Help'); ?></a></div>
+    <div style="float:right">
+        <span id="api-help-header"><a href="api"><?php echo _('Channel API Help'); ?></a></span>
+        <a href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
+    </div>
     <div id="local-header"><h2><?php echo _('Channels'); ?></h2></div>
 
     <div id="table"><div align='center'></div></div>
@@ -104,9 +107,11 @@
             if (table.data.length != 0) {
                 $("#channel-none").hide();
                 $("#local-header").show();
+                $("#api-help-header").show();
             } else {
                 $("#channel-none").show();
                 $("#local-header").hide();
+                $("#api-help-header").hide();
             }
             $('#channel-loader').hide();
         });
