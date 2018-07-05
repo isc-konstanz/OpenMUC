@@ -38,17 +38,15 @@
 
     <div id="table"><div align='center'></div></div>
 
-    <div id="channel-none" class="hide">
-        <div class="alert alert-block">
-            <h4 class="alert-heading"><?php echo _('No channels'); ?></h4><br>
-            <p>
-                <?php echo _('Channels are used to configure e.g. different registers of metering units.'); ?>
-                <br><br>
-                <?php echo _('Several channels may be registered for a device, imlementing the communication to corresponding metering units (see the devices tab).'); ?>
-                <br>
-                <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Channel API helper'); ?></a>
-            </p>
-        </div>
+    <div id="channel-none" class="alert alert-block hide">
+        <h4 class="alert-heading"><?php echo _('No channels'); ?></h4><br>
+        <p>
+            <?php echo _('Channels are used to configure e.g. different registers of metering units.'); ?>
+            <br><br>
+            <?php echo _('Several channels may be registered for a device, imlementing the communication to corresponding metering units (see the devices tab).'); ?>
+            <br>
+            <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Channel API helper'); ?></a>
+        </p>
     </div>
 
     <div id="toolbar-bottom"><hr>

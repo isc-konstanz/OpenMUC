@@ -261,12 +261,13 @@ var device_dialog =
         }
         this.device = null;
         
-        this.scanResults = [];
+        this.scanUpdater = null;
+        this.scanDevices = [];
         this.drawScan();
     },
 
     'drawScan':function() {
-        $("#driver-scan-modal").modal('show');
+        $("#device-scan-modal").modal('show');
         
         device_dialog.adjustScanModal();
         
@@ -274,6 +275,9 @@ var device_dialog =
             scanSettings: "Scan settings"
         };
         config.init($('#device-scan-container'), groups);
+        
+        $('#device-scan-progress').removeClass('progress-default progress-info progress-success progress-warning progress-error').hide();
+        $('#device-scan-progress-bar').css('width', '100%');
         
         $('#device-scan-results').text('');
         $('#device-scan-results-table').hide();
@@ -297,18 +301,26 @@ var device_dialog =
         device_dialog.registerScanEvents();
     },
 
-    'drawScanProgress':function() {
-        if (device_dialog.scanResults.length > 0) {
+    'drawScanProgress':function(progress) {
+    	device_dialog.drawScanProgressBar(progress);
+    	
+    	if (!progress.success) {
+            alert(progress.message);
+    		return;
+    	}
+    	
+    	device_dialog.scanDevices = progress.devices;
+        if (device_dialog.scanDevices.length > 0) {
+        	
             $('#device-scan-results-table').show();
             $('#device-scan-results-none').hide();
             
             var table = '';
-            for (var i = 0; i < device_dialog.scanResults.length; i++) {
-                table += '<tr>'+
-                        '<td><a class="add-device" title="Add" row='+i+'><i class="icon-plus-sign" style="cursor:pointer"></i></a></td>'+
-                        '<td>'+device_dialog.scanResults[i]['description']+'</td>'+
-                        '<td>'+device_dialog.scanResults[i]['address']+'</td>'+
-                        '<td>'+device_dialog.scanResults[i]['settings']+'</td>'+
+            for (var i = 0; i < device_dialog.scanDevices.length; i++) {
+                table += '<tr class="device-scan-row" title="Add" row='+i+'>'+
+                        '<td>'+device_dialog.scanDevices[i]['description']+'</td>'+
+                        '<td>'+device_dialog.scanDevices[i]['address']+'</td>'+
+                        '<td>'+device_dialog.scanDevices[i]['settings']+'</td>'+
                         '</tr>';
             }
             $('#device-scan-results').html(table);
@@ -317,6 +329,62 @@ var device_dialog =
             $('#device-scan-results-table').hide();
             $('#device-scan-results-none').show();
         }
+    },
+
+    'drawScanProgressBar':function(progress) {
+    	var bar = $('#device-scan-progress');
+
+    	var value = 100;
+		var type = 'danger';
+    	if (progress.success) {
+        	value = progress.info.progress;
+        	
+        	if (progress.info.interrupted) {
+        		value = 100;
+        		type = 'warning';
+        	}
+        	else if (progress.info.finished) {
+        		value = 100;
+        		type = 'success';
+        	}
+        	else if (value > 0) {
+            	// If the progress value equals zero, set it to 5%, so the user can see the bar already
+            	if (value == 0) {
+            		value = 5;
+            	}
+        		type = 'info';
+        	}
+        	else {
+        		value = 100;
+        		type = 'default';
+        	}
+    	}
+        $('#device-scan-progress-bar').css('width', value+'%');
+        
+    	if (value < 100 || type == 'default') {
+    		bar.addClass('active');
+    	}
+    	else {
+    		bar.removeClass('active');
+        }
+    	bar.removeClass('progress-default progress-info progress-success progress-warning progress-danger');
+    	bar.addClass('progress-'+type);
+    	bar.show();
+    },
+
+    'scanProgress':function(progress) {
+    	if (device_dialog.scanUpdater != null) {
+    		clearTimeout(device_dialog.scanUpdater);
+    		device_dialog.scanUpdater = null;
+    	}
+    	device_dialog.drawScanProgress(progress);
+    	
+    	// Continue to schedule scan progress requests every second until the scan info signals completion
+    	if (progress.success && !progress.info.finished && !progress.info.interrupted && progress.info.progress < 100) {
+    		
+        	device_dialog.scanUpdater = setTimeout(device.scanProgress(device_dialog.ctrlid, device_dialog.driverid, 
+        			device_dialog.scanProgress), 10000);
+    	}
     },
 
     'adjustScanModal':function() {
@@ -366,26 +434,21 @@ var device_dialog =
             device.scanStart(device_dialog.ctrlid, device_dialog.driverid, settings, function(result) {
                 $('#device-scan-loader').hide();
                 
-                if (typeof result.success !== 'undefined' && !result.success) {
-                    alert('Device scan failed:\n'+result.message);
-                    return false;
-                }
-                device_dialog.scanResults = result;
-                device_dialog.drawScanProgress();
+                device_dialog.scanProgress(result);
                 
                 config.groupShow['scanSettings'] = false;
                 config.draw();
             });
         });
 
-        $('#device-scan-results').on('click', '.add-device', function() {
+        $('#device-scan-results').on('click', '.device-scan-row', function() {
             var row = $(this).attr('row');
-            var device = device_dialog.scanResults[row];
+            var device = device_dialog.scanDevices[row];
             device['driverid'] = device_dialog.driverid;
             device['driver'] = device_dialog.driver;
             device['scanned'] = true;
             
-            $("#driver-scan-modal").modal('hide');
+            $("#device-scan-modal").modal('hide');
             device_dialog.device = device;
             device_dialog.drawConfig();
         });

@@ -38,7 +38,7 @@
 
 <p><b><?php echo _('Device scan actions'); ?></b></p>
 <table class="table">
-    <tr><td><?php echo _('Start scan for devices'); ?></td><td><a href="<?php echo $path; ?>muc/device/scan.json?ctrlid=1&driverid=csv&settings=path=lib/csv-driverid/"><?php echo $path; ?>muc/device/scan.json?ctrlid=1&driverid=csv&settings=path=lib/csv-driverid/</a></td></tr>
-    <tr><td><?php echo _('Get progress information of the running device scan'); ?></td><td><a href="<?php echo $path; ?>muc/device/scanprogress.json?ctrlid=1&driverid=csv"><?php echo $path; ?>muc/device/scanprogress.json?ctrlid=1&driverid=csv</a></td></tr>
-    <tr><td><?php echo _('Cancel the running device scan'); ?></td><td><a href="<?php echo $path; ?>muc/device/scancancel.json?ctrlid=1&driverid=csv"><?php echo $path; ?>muc/device/scancancel.json?ctrlid=1&driverid=csv</a></td></tr>
+    <tr><td><?php echo _('Start scan for devices'); ?></td><td><a href="<?php echo $path; ?>muc/device/scan/start.json?ctrlid=1&driverid=csv&settings=path=lib/driver/"><?php echo $path; ?>muc/device/scan/start.json?ctrlid=1&driverid=csv&settings=path=lib/driver/csv</a></td></tr>
+    <tr><td><?php echo _('Get progress information of the running device scan'); ?></td><td><a href="<?php echo $path; ?>muc/device/scan/progress.json?ctrlid=1&driverid=csv"><?php echo $path; ?>muc/device/scan/progress.json?ctrlid=1&driverid=csv</a></td></tr>
+    <tr><td><?php echo _('Cancel the running device scan'); ?></td><td><a href="<?php echo $path; ?>muc/device/scan/cancel.json?ctrlid=1&driverid=csv"><?php echo $path; ?>muc/device/scan/cancel.json?ctrlid=1&driverid=csv</a></td></tr>
 </table>

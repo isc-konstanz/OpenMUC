@@ -12,9 +12,15 @@
     }
     #device-config-header td:nth-of-type(1) { width:10%; padding-right:8px; }
     #device-config-header td:nth-of-type(2) { width:10%; padding-right:8px; }
+
+    #device-scan-progress {
+        margin-top:-15px;
+        margin-left:-15px;
+        margin-right:-15px;
+        border-radius:0px;
+    }
     
-    #device-scan-results-table td:nth-of-type(1) { width:14px; text-align: center; }
-    #device-scan-results-table td:nth-of-type(2) { width:25%; }
+    #device-scan-results td { cursor: pointer; }
 </style>
 
 <div id="device-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-config-modal" aria-hidden="true" data-backdrop="static">
@@ -55,12 +61,15 @@
     <div id="device-config-loader" class="ajax-loader" style="display:none"></div>
 </div>
 
-<div id="driver-scan-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-scan-label" aria-hidden="true" data-backdrop="static">
+<div id="device-scan-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-scan-label" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="device-scan-label"><?php echo _('Scan Devices'); ?></h3>
     </div>
     <div id="device-scan-body" class="modal-body">
+        <div id="device-scan-progress" class="progress progress-default progress-striped active" style="display:none;">
+            <div id="device-scan-progress-bar" class="bar" style="width:100%;"></div>
+        </div>
         <div id="device-scan-driver">
             <label style="color: #888"><?php echo _('Driver to search devices for: '); ?></label>
             <select id="device-scan-driver-select" class="input-large"></select>
@@ -68,11 +77,8 @@
         <p id="device-scan-info"></p>
         
         <div class="modal-container">
-            <div id="device-scan-container"></div>
-            
             <table id="device-scan-results-table" class="table table-hover" style="display:none">
                 <tr id="device-scan-results-header">
-                    <th colspan="1"></th>
                     <th><?php echo _('Description'); ?></th>
                     <th><?php echo _('Address'); ?></th>
                     <th><?php echo _('Settings'); ?></th>
@@ -80,6 +86,8 @@
                 <tbody id="device-scan-results"></tbody>
             </table>
             <div id="device-scan-results-none" class="alert" style="display:none"><?php echo _('No devices found'); ?></div>
+            
+            <div id="device-scan-container"></div>
             
             <div id="device-scan-overlay" class="modal-overlay"></div>
         </div>

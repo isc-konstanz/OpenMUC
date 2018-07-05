@@ -234,18 +234,41 @@ class DeviceConnection
             $driver->create($ctrlid, $driverid, "{}");
         }
         
-        $response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/scan', 'GET', array('settings' => $settings));
+        $response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/scanStart', 'GET', array('settings' => $settings));
         if (isset($response["success"]) && !$response["success"]) {
             return $response;
         };
+        return $this->parse_scan_progress($ctrlid, $driverid, $response);
+    }
+
+    public function scan_progress($ctrlid, $driverid) {
+        $ctrlid = intval($ctrlid);
+
+        $response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/scanProgress', 'GET', null);
+        if (isset($response["success"]) && !$response["success"]) {
+            return $response;
+        }
+        return $this->parse_scan_progress($ctrlid, $driverid, $response);
+    }
+    
+    private function parse_scan_progress($ctrlid, $driverid, $response) {
+        $meta = $response['scanProgressInfo'];
+        if (isset($meta['scanError'])) {
+            return array('success'=>false, 'message'=>$meta['scanError']);
+        }
+        $info = array(
+            'finished'=>$meta['isScanFinished'],
+            'interrupted'=>$meta['isScanInterrupted'],
+            'progress'=>$meta['scanProgress']
+        );
         
         $devices = array();
         foreach($response['devices'] as $scan) {
-
+            
             $device = array(
-                    'ctrlid'=>$ctrlid,
-                    'driverid'=>$driverid,
-                    'id'=>$scan['id']
+                'ctrlid'=>$ctrlid,
+                'driverid'=>$driverid,
+                'id'=>$scan['id']
             );
             if (isset($scan['description'])) $device['description'] = $scan['description'];
             if (isset($scan['deviceAddress'])) $device['address'] = $scan['deviceAddress'];
@@ -253,17 +276,7 @@ class DeviceConnection
             
             $devices[] = $device;
         }
-        return $devices;
-    }
-
-    public function scan_progress($ctrlid, $driverid) {
-        $ctrlid = intval($ctrlid);
-
-        $response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/scanProgressInfo', 'GET', null);
-        if (isset($response["success"]) && !$response["success"]) {
-            return $response;
-        }
-        return $response['scanProgressInfo'];
+        return array('success'=>true, 'info'=>$info, 'devices'=>$devices);
     }
 
     public function scan_cancel($ctrlid, $driverid) {
@@ -271,4 +284,5 @@ class DeviceConnection
 
         return $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/scanInterrupt', 'PUT', null);
     }
+
 }

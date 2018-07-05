@@ -42,17 +42,15 @@
 
     <div id="table"><div align='center'></div></div>
 
-    <div id="device-none" class="hide">
-        <div class="alert alert-block">
-            <h4 class="alert-heading"><?php echo _('No device connections'); ?></h4><br>
-            <p>
-                <?php echo _('Device connections are used to configure and prepare the communication with different metering units.'); ?>
-                <br><br>
-                <?php echo _('A device configures and prepares inputs, feeds possible device channels, representing e.g. different registers of defined metering units (see the channels tab).'); ?>
-                <br>
-                <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Device API helper'); ?></a>
-            </p>
-        </div>
+    <div id="device-none" class="alert alert-block hide">
+        <h4 class="alert-heading"><?php echo _('No device connections'); ?></h4><br>
+        <p>
+            <?php echo _('Device connections are used to configure and prepare the communication with different metering units.'); ?>
+            <br><br>
+            <?php echo _('A device configures and prepares inputs, feeds possible device channels, representing e.g. different registers of defined metering units (see the channels tab).'); ?>
+            <br>
+            <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Device API helper'); ?></a>
+        </p>
     </div>
 
     <div id="toolbar_bottom"><hr>
