@@ -55,10 +55,12 @@ var device_dialog =
             $('#device-config-overlay').hide();
             
             if (typeof device_dialog.device.scanned !== 'undefined' && !device_dialog.device.scanned) {
+                $('#device-config-back').hide();
                 $('#device-config-scan').show();
                 $('#device-config-delete').hide();
             }
             else {
+                $('#device-config-back').show();
                 $('#device-config-scan').hide();
                 $('#device-config-delete').show();
             }
@@ -68,7 +70,8 @@ var device_dialog =
             $('#device-config-label').html('New Device');
             $('#device-config-name').val('');
             $('#device-config-description').val('');
-
+            
+            $('#device-config-back').hide();
             $('#device-config-delete').hide();
             
             if (device_dialog.driverid != null) {
@@ -235,6 +238,11 @@ var device_dialog =
             }
         });
 
+        $("#device-config-back").off('click').on('click', function () {
+            $('#device-config-modal').modal('hide');
+            $('#device-scan-modal').modal('show');
+        });
+
         $("#device-config-scan").off('click').on('click', function () {
             $('#device-config-modal').modal('hide');
             
@@ -318,9 +326,7 @@ var device_dialog =
             var table = '';
             for (var i = 0; i < device_dialog.scanDevices.length; i++) {
                 table += '<tr class="device-scan-row" title="Add" row='+i+'>'+
-                        '<td>'+device_dialog.scanDevices[i]['description']+'</td>'+
-                        '<td>'+device_dialog.scanDevices[i]['address']+'</td>'+
-                        '<td>'+device_dialog.scanDevices[i]['settings']+'</td>'+
+                        '<td><i class="icon-edit"></i> '+device_dialog.scanDevices[i]['description']+'</td>'+
                         '</tr>';
             }
             $('#device-scan-results').html(table);

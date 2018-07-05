@@ -53,9 +53,10 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="device-config-delete" class="btn btn-danger" style="display:none; cursor:pointer;"><i class="icon-trash icon-white"></i> <?php echo _('Delete'); ?></button>
-        <button id="device-config-scan" class="btn btn-info" style="display:none; cursor:pointer;"><i class="icon-search icon-white"></i> <?php echo _('Scan'); ?></button>
+        <button id="device-config-back" class="btn" style="display:none; float:left"><?php echo _('Back'); ?></button>
+        <button id="device-config-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="device-config-delete" class="btn btn-danger" style="display:none"><i class="icon-trash icon-white"></i> <?php echo _('Delete'); ?></button>
+        <button id="device-config-scan" class="btn btn-info" style="display:none"><i class="icon-search icon-white"></i> <?php echo _('Scan'); ?></button>
         <button id="device-config-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
     <div id="device-config-loader" class="ajax-loader" style="display:none"></div>
@@ -78,11 +79,6 @@
         
         <div class="modal-container">
             <table id="device-scan-results-table" class="table table-hover" style="display:none">
-                <tr id="device-scan-results-header">
-                    <th><?php echo _('Description'); ?></th>
-                    <th><?php echo _('Address'); ?></th>
-                    <th><?php echo _('Settings'); ?></th>
-                </tr>
                 <tbody id="device-scan-results"></tbody>
             </table>
             <div id="device-scan-results-none" class="alert" style="display:none"><?php echo _('No devices found'); ?></div>
@@ -93,7 +89,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="device-scan-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="device-scan-start" class="btn btn-primary" style="border-radius: 4px;"><?php echo _('Scan'); ?></button>
     </div>
     <div id="device-scan-loader" class="ajax-loader" style="display:none"></div>
@@ -115,7 +111,7 @@
         </p>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="device-delete-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="device-delete-confirm" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
     </div>
     <div id="device-delete-loader" class="ajax-loader" style="display:none;"></div>

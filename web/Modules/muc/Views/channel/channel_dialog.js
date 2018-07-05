@@ -55,10 +55,12 @@ var channel_dialog = {
             $('#channel-config-overlay').hide();
             
             if (typeof channel_dialog.channel.scanned !== 'undefined' && !channel_dialog.channel.scanned) {
+                $('#channel-config-back').hide();
                 $('#channel-config-scan').show();
                 $('#channel-config-delete').hide();
             }
             else {
+                $('#channel-config-back').show();
                 $('#channel-config-scan').hide();
                 $('#channel-config-delete').show();
             }
@@ -68,7 +70,8 @@ var channel_dialog = {
             $('#channel-config-label').html('New Channel');
             $('#channel-config-name').val('');
             $('#channel-config-description').val('');
-            
+
+            $('#channel-config-back').hide();
             $('#channel-config-delete').hide();
             
             if (channel_dialog.driverid != null) {
@@ -225,6 +228,11 @@ var channel_dialog = {
             }
         });
 
+        $("#channel-config-back").off('click').on('click', function () {
+            $('#channel-config-modal').modal('hide');
+            $('#channel-scan-modal').modal('show');
+        });
+
         $("#channel-config-scan").off('click').on('click', function () {
             $('#channel-config-modal').modal('hide');
             
@@ -251,7 +259,7 @@ var channel_dialog = {
         }
         this.device = null;
 
-        this.scanResults = [];
+        this.scanChannels = [];
         this.drawScan();
     },
 
@@ -265,8 +273,7 @@ var channel_dialog = {
         };
         config.init($('#channel-scan-container'), groups);
         
-        $('#channel-scan-results').text('');
-        $('#channel-scan-results-table').hide();
+        $('#channel-scan-results').text('').hide();
         
         if (channel_dialog.driverid != null) {
             $('#channel-scan-label').html('Scan Channels: <b>'+channel_dialog.deviceid+'</b>');
@@ -288,25 +295,20 @@ var channel_dialog = {
     },
 
     'drawScanProgress':function() {
-        if (channel_dialog.scanResults.length > 0) {
-            $('#channel-scan-results-table').show();
+        if (channel_dialog.scanChannels.length > 0) {
+            $('#channel-scan-results').show();
             $('#channel-scan-results-none').hide();
             
             var table = '';
-            for (var i = 0; i < channel_dialog.scanResults.length; i++) {
-                table += '<tr>'+
-                        '<td><a class="add-channel" title="Add" row='+i+'><i class="icon-plus-sign" style="cursor:pointer"></i></a></td>'+
-                        '<td>'+channel_dialog.scanResults[i]['description']+'</td>'+
-                        '<td>'+channel_dialog.scanResults[i]['address']+'</td>'+
-                        '<td>'+channel_dialog.scanResults[i]['settings']+'</td>'+
-                        '<td>'+channel_dialog.scanResults[i]['configs']['valueType']+'</td>'+
-                        '<td>'+channel_dialog.scanResults[i]['metadata']+'</td>'+
-                        '</tr>';
+            for (var i = 0; i < channel_dialog.scanChannels.length; i++) {
+                table += '<tr class="channel-scan-row" title="Add" row='+i+'>'+
+		                '<td><i class="icon-edit"></i> '+channel_dialog.scanChannels[i]['description']+'</td>'+
+		                '</tr>';
             }
             $('#channel-scan-results').html(table);
         }
         else {
-            $('#channel-scan-results-table').hide();
+            $('#channel-scan-results').hide();
             $('#channel-scan-results-none').show();
         }
     },
@@ -337,7 +339,7 @@ var channel_dialog = {
             
             channel_dialog.drawPreferences('scan');
             
-            $('#channel-scan-results-table').hide();
+            $('#channel-scan-results').hide();
             $('#channel-scan-results-none').hide();
             $('#channel-scan-overlay').hide();
         });
@@ -362,7 +364,7 @@ var channel_dialog = {
                     alert('Channel scan failed:\n'+result.message);
                     return false;
                 }
-                channel_dialog.scanResults = result;
+                channel_dialog.scanChannels = result;
                 channel_dialog.drawScanProgress();
                 
                 config.groupShow['scanSettings'] = false;
@@ -370,9 +372,9 @@ var channel_dialog = {
             });
         });
 
-        $('#channel-scan-results').on('click', '.add-channel', function() {
+        $('#channel-scan-results').on('click', '.channel-scan-row', function() {
             var row = $(this).attr('row');
-            var channel = channel_dialog.scanResults[row];
+            var channel = channel_dialog.scanChannels[row];
             channel['id'] = channel_dialog.deviceid + '_channel';
             channel['driverid'] = channel_dialog.driverid;
             channel['scanned'] = true;

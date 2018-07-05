@@ -13,9 +13,7 @@
     #channel-config-header td:nth-of-type(1) { width:10%; padding-right:8px; }
     #channel-config-header td:nth-of-type(2) { width:10%; padding-right:8px; }
     
-    #channel-scan-results-table td:nth-of-type(1) { width:14px; text-align: center; }
-    #channel-scan-results-table td:nth-of-type(2) { width:25%; }
-    #channel-scan-results-table td:nth-of-type(5) { width:5%; }
+    #channel-scan-results td { cursor: pointer; }
 </style>
 
 <div id="channel-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="channel-config-modal" aria-hidden="true" data-backdrop="static">
@@ -48,7 +46,8 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="channel-config-back" class="btn" style="display:none; float:left"><?php echo _('Back'); ?></button>
+        <button id="channel-config-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="channel-config-delete" class="btn btn-danger" style="display:none; cursor:pointer;"><i class="icon-trash icon-white"></i> <?php echo _('Delete'); ?></button>
         <button id="channel-config-scan" class="btn btn-info" style="display:none; cursor:pointer;"><i class="icon-search icon-white"></i> <?php echo _('Scan'); ?></button>
         <button id="channel-config-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
@@ -69,26 +68,16 @@
         <p id="channel-scan-info"></p>
         
         <div class="modal-container">
+            <table id="channel-scan-results" class="table table-hover" style="display:none"></table>
+            <div id="channel-scan-results-none" class="alert" style="display:none"><?php echo _('No channels found'); ?></div>
+            
             <div id="channel-scan-container"></div>
             
-            <table id="channel-scan-results-table" class="table table-hover" style="display:none">
-                <tr id="channel-scan-results-header">
-                    <th colspan="1"></th>
-                    <th><?php echo _('Description'); ?></th>
-                    <th><?php echo _('Address'); ?></th>
-                    <th><?php echo _('Settings'); ?></th>
-                    <th><?php echo _('Type'); ?></th>
-                    <th><?php echo _('Meta'); ?></th>
-                </tr>
-                <tbody id="channel-scan-results"></tbody>
-            </table>
-            <div id="channel-scan-results-none" class="alert" style="display:none"><?php echo _('No channels found'); ?></div>
-        
             <div id="channel-scan-overlay" class="modal-overlay"></div>
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="channel-scan-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="channel-scan-start" class="btn btn-primary" style="border-radius: 4px;"><?php echo _('Scan'); ?></button>
     </div>
     <div id="channel-scan-loader" class="ajax-loader" style="display:none"></div>
@@ -111,14 +100,14 @@
         <div id="channel-delete-loader" class="ajax-loader" style="display:none;"></div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="channel-delete-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="channel-delete-confirm" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
     </div>
 </div>
 
 <script>
     $('#channel-config-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-    $('#channel-scan-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
+	$('#channel-scan-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
 
     $(window).resize(function() {
         channel_dialog.adjustConfigModal();
