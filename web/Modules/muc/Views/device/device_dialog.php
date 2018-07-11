@@ -17,10 +17,10 @@
         margin-top:-15px;
         margin-left:-15px;
         margin-right:-15px;
-        border-radius:0px;
+        -webkit-border-radius: 0px;
+           -moz-border-radius: 0px;
+                border-radius: 0px;
     }
-    
-    #device-scan-results td { cursor: pointer; }
 </style>
 
 <div id="device-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-config-modal" aria-hidden="true" data-backdrop="static">
@@ -78,9 +78,7 @@
         <p id="device-scan-info"></p>
         
         <div class="modal-container">
-            <table id="device-scan-results-table" class="table table-hover" style="display:none">
-                <tbody id="device-scan-results"></tbody>
-            </table>
+            <ul id="device-scan-results" class="scan-result" style="display:none"></ul>
             <div id="device-scan-results-none" class="alert" style="display:none"><?php echo _('No devices found'); ?></div>
             
             <div id="device-scan-container"></div>

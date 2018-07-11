@@ -54,14 +54,14 @@ var channel_dialog = {
             
             $('#channel-config-overlay').hide();
             
-            if (typeof channel_dialog.channel.scanned !== 'undefined' && !channel_dialog.channel.scanned) {
-                $('#channel-config-back').hide();
-                $('#channel-config-scan').show();
+            if (typeof channel_dialog.channel.scanned !== 'undefined' && channel_dialog.channel.scanned) {
+                $('#channel-config-back').show();
+                $('#channel-config-scan').hide();
                 $('#channel-config-delete').hide();
             }
             else {
-                $('#channel-config-back').show();
-                $('#channel-config-scan').hide();
+                $('#channel-config-back').hide();
+                $('#channel-config-scan').show();
                 $('#channel-config-delete').show();
             }
             channel_dialog.drawPreferences('config');
@@ -299,13 +299,11 @@ var channel_dialog = {
             $('#channel-scan-results').show();
             $('#channel-scan-results-none').hide();
             
-            var table = '';
+            var list = '';
             for (var i = 0; i < channel_dialog.scanChannels.length; i++) {
-                table += '<tr class="channel-scan-row" title="Add" row='+i+'>'+
-		                '<td><i class="icon-edit"></i> '+channel_dialog.scanChannels[i]['description']+'</td>'+
-		                '</tr>';
+            	list += '<li class="channel-scan-row" title="Add" data-row='+i+'>'+channel_dialog.scanChannels[i]['description']+'</li>';
             }
-            $('#channel-scan-results').html(table);
+            $('#channel-scan-results').html(list);
         }
         else {
             $('#channel-scan-results').hide();
@@ -373,7 +371,7 @@ var channel_dialog = {
         });
 
         $('#channel-scan-results').on('click', '.channel-scan-row', function() {
-            var row = $(this).attr('row');
+            var row = $(this).data('row');
             var channel = channel_dialog.scanChannels[row];
             channel['id'] = channel_dialog.deviceid + '_channel';
             channel['driverid'] = channel_dialog.driverid;

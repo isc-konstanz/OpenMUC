@@ -12,8 +12,6 @@
     }
     #channel-config-header td:nth-of-type(1) { width:10%; padding-right:8px; }
     #channel-config-header td:nth-of-type(2) { width:10%; padding-right:8px; }
-    
-    #channel-scan-results td { cursor: pointer; }
 </style>
 
 <div id="channel-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="channel-config-modal" aria-hidden="true" data-backdrop="static">
@@ -68,7 +66,7 @@
         <p id="channel-scan-info"></p>
         
         <div class="modal-container">
-            <table id="channel-scan-results" class="table table-hover" style="display:none"></table>
+            <ul id="channel-scan-results" class="scan-result" style="display:none"></ul>
             <div id="channel-scan-results-none" class="alert" style="display:none"><?php echo _('No channels found'); ?></div>
             
             <div id="channel-scan-container"></div>

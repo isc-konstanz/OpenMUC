@@ -54,14 +54,14 @@ var device_dialog =
             
             $('#device-config-overlay').hide();
             
-            if (typeof device_dialog.device.scanned !== 'undefined' && !device_dialog.device.scanned) {
-                $('#device-config-back').hide();
-                $('#device-config-scan').show();
+            if (typeof device_dialog.device.scanned !== 'undefined' && device_dialog.device.scanned) {
+                $('#device-config-back').show();
+                $('#device-config-scan').hide();
                 $('#device-config-delete').hide();
             }
             else {
-                $('#device-config-back').show();
-                $('#device-config-scan').hide();
+                $('#device-config-back').hide();
+                $('#device-config-scan').show();
                 $('#device-config-delete').show();
             }
             device_dialog.drawPreferences('config');
@@ -284,11 +284,9 @@ var device_dialog =
         };
         config.init($('#device-scan-container'), groups);
         
-        $('#device-scan-progress').removeClass('progress-default progress-info progress-success progress-warning progress-error').hide();
         $('#device-scan-progress-bar').css('width', '100%');
-        
-        $('#device-scan-results').text('');
-        $('#device-scan-results-table').hide();
+        $('#device-scan-progress').removeClass('progress-default progress-info progress-success progress-warning progress-error').hide();
+        $('#device-scan-results').text('').hide();
         
         if (device_dialog.driverid != null) {
             $('#device-scan-label').html('Scan Devices: <b>'+device_dialog.driver+'</b>');
@@ -320,19 +318,17 @@ var device_dialog =
     	device_dialog.scanDevices = progress.devices;
         if (device_dialog.scanDevices.length > 0) {
         	
-            $('#device-scan-results-table').show();
+            $('#device-scan-results').show();
             $('#device-scan-results-none').hide();
             
-            var table = '';
+            var list = '';
             for (var i = 0; i < device_dialog.scanDevices.length; i++) {
-                table += '<tr class="device-scan-row" title="Add" row='+i+'>'+
-                        '<td><i class="icon-edit"></i> '+device_dialog.scanDevices[i]['description']+'</td>'+
-                        '</tr>';
+            	list += '<li class="device-scan-row" title="Add" data-row='+i+'>'+device_dialog.scanDevices[i]['description']+'</li>';
             }
-            $('#device-scan-results').html(table);
+            $('#device-scan-results').html(list);
         }
         else {
-            $('#device-scan-results-table').hide();
+            $('#device-scan-results').hide();
             $('#device-scan-results-none').show();
         }
     },
@@ -419,7 +415,7 @@ var device_dialog =
             
             device_dialog.drawPreferences('scan');
             
-            $('#device-scan-results-table').hide();
+            $('#device-scan-results').hide();
             $('#device-scan-results-none').hide();
             $('#device-scan-overlay').hide();
         });
@@ -448,7 +444,7 @@ var device_dialog =
         });
 
         $('#device-scan-results').on('click', '.device-scan-row', function() {
-            var row = $(this).attr('row');
+            var row = $(this).data('row');
             var device = device_dialog.scanDevices[row];
             device['driverid'] = device_dialog.driverid;
             device['driver'] = device_dialog.driver;
