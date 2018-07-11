@@ -112,7 +112,7 @@ public class DriverResourceServlet extends GenericServlet {
             else {
                 String driverId = pathInfoArray[0].replace("/", "");
 
-                if (pathInfoArray[1].equalsIgnoreCase(Const.INFOS)) {
+                if (pathInfoArray.length > 1 && pathInfoArray[1].equalsIgnoreCase(Const.INFOS)) {
                     DriverInfo driverInfo;
                     try {
                         driverInfo = configService.getDriverInfo(driverId);
@@ -170,14 +170,19 @@ public class DriverResourceServlet extends GenericServlet {
                             json.addBoolean(Const.RUNNING, driverIsRunning);
                         }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN)) {
-                            List<DeviceScanInfo> deviceScanInfoList = new ArrayList<>();
-                            scanListener = new DeviceScanListenerImplementation(deviceScanInfoList);
-
-                            String settings = request.getParameter(Const.SETTINGS);
-                            deviceScanInfoList = scanForAllDrivers(driverId, settings, scanListener, response);
-                            json.addDeviceScanInfoList(deviceScanInfoList);
+                        	String settings = request.getParameter(Const.SETTINGS);
+                            json.addDeviceScanInfoList(scanForAllDevices(driverId, settings, response));
                         }
-
+                        else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_START)) {
+                        	String settings = request.getParameter(Const.SETTINGS);
+                        	scanForAllDevicesAsync(driverId, settings, response);
+                            json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
+                            json.addDeviceScanInfoList(scanListener.getScannedDevicesList());
+                        }
+                        else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_PROGRESS)) {
+                            json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
+                            json.addDeviceScanInfoList(scanListener.getScannedDevicesList());
+                        }
                         else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN_PROGRESS_INFO)) {
                             json.addDeviceScanProgressInfo(scanListener.getRestScanProgressInfo());
                         }
@@ -483,28 +488,41 @@ public class DriverResourceServlet extends GenericServlet {
         }
     }
 
-    private List<DeviceScanInfo> scanForAllDrivers(String driverId, String settings,
-            DeviceScanListenerImplementation scanListener, HttpServletResponse response) {
-        List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
-
+    private void scanForAllDevicesAsync(String driverId, String settings, HttpServletResponse response) {
         try {
+            scanListener = new DeviceScanListenerImplementation(new ArrayList<>());
             configService.scanForDevices(driverId, settings, scanListener);
-            scannedDevicesList = scanListener.getScannedDevicesList();
-
+            
         } catch (UnsupportedOperationException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
                     "Driver does not support scanning.", DRIVER_ID, driverId);
         } catch (DriverNotAvailableException e) {
             driverNotAvailable(response, driverId);
         }
+    }
 
+    private List<DeviceScanInfo> scanForAllDevices(String driverId, String settings, HttpServletResponse response) {
+        List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
+        
+        try {
+            scanListener = new DeviceScanListenerImplementation(scannedDevicesList);
+            configService.scanForDevices(driverId, settings, scanListener);
+            scannedDevicesList = scanListener.getScannedDevicesResult();
+            
+        } catch (UnsupportedOperationException e) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
+                    "Driver does not support scanning.", DRIVER_ID, driverId);
+        } catch (DriverNotAvailableException e) {
+            driverNotAvailable(response, driverId);
+        }
+        
         return scannedDevicesList;
     }
 
     @SuppressWarnings("unused")
     private List<DeviceScanInfo> scanForAllDrivers(String driverId, String settings, HttpServletResponse response) {
         List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
-
+        
         try {
             scannedDevicesList = configService.scanForDevices(driverId, settings);
 

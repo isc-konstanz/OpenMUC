@@ -70,8 +70,9 @@ public class Const {
     public static final String DEVICE_ID = "deviceId";
     public static final String DRIVER = "driver";
     public static final String DRIVER_ID = "driverId";
-    public static final String SCAN_PROGRESS_INFO = "scanProgressInfo";
+    public static final String SCAN_START = "scanStart";
     public static final String SCAN_PROGRESS = "scanProgress";
+    public static final String SCAN_PROGRESS_INFO = "scanProgressInfo";
     public static final String SCAN_FINISHED = "scanFinished";
     public static final String SCAN_INTERRUPTED = "scanInterrupted";
     public static final String SCAN_ERROR = "scanError";

@@ -15,7 +15,6 @@
     </encoder>
   </appender>
 
- 
   <root level="TRACE">
     <appender-ref ref="STDOUT" />
   </root>
@@ -23,7 +22,6 @@
   <root level="INFO">
     <appender-ref ref="FILE" />
   </root>
-
 
   <logger name="org.eclipse.jetty" level="WARN" />
 

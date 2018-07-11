@@ -35,7 +35,6 @@ In summary, OpenMUC features the following highlights:
     - REST
     - 1-Wire (Raspberry Pi)
     - GPIO (Raspberry Pi)
-    - S0 (Raspberry Pi)
     - SNMP
 
 - **Data logging:** Data can be logged in two formats (ASCII & binary). New data loggers can easily be added through a plug-in interface.

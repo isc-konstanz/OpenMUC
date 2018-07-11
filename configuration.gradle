@@ -1,12 +1,12 @@
 project.ext {
 
-  cfgVersion = "1.2.1"
+  cfgVersion = "2.1.0"
 
   cfgGroup = "org.openmuc.framework"
 
   cfgCopyDependencies = false
 
-  cfgCopyToRoot = false
+  cfgCopyToRoot = true
 
   javaProjects = subprojects
 
@@ -32,7 +32,6 @@ project.ext {
     it.getPath() == ":openmuc-driver-modbus" ||
     it.getPath() == ":openmuc-driver-rest" ||
     it.getPath() == ":openmuc-driver-rpi-gpio" ||
-    it.getPath() == ":openmuc-driver-rpi-s0" ||
     it.getPath() == ":openmuc-driver-rpi-w1" ||
     it.getPath() == ":openmuc-driver-snmp" ||
     it.getPath() == ":openmuc-driver-wmbus" ||

@@ -31,19 +31,25 @@ public class DeviceSettings extends Preferences {
     public static final PreferenceType TYPE = PreferenceType.SETTINGS_DEVICE;
 
     @Option
-    private GpioType type;
+    private GpioType type = GpioType.UNKNOWN;
 
     @Option
-    private PinState defaultState;
+    private boolean defaultState = false;
 
     @Option
-    private PinState shutdownState;
+    private boolean shutdownState = false;
 
     @Option
-    private PinPullResistance pullResistance;
+    private PinPullResistance pullResistance = PinPullResistance.PULL_DOWN;
 
     @Option
-    private PinPullResistance shutdownPullResistance;
+    private PinPullResistance shutdownPullResistance = PinPullResistance.PULL_DOWN;
+
+    @Option
+    private boolean counter = false;
+
+    @Option
+    private int bounceTime = 60;
 
     @Override
     public PreferenceType getPreferenceType() {
@@ -55,11 +61,17 @@ public class DeviceSettings extends Preferences {
     }
 
     public PinState getDefaultState() {
-        return defaultState;
+    	if (defaultState) {
+            return PinState.HIGH;
+    	}
+        return PinState.LOW;
     }
 
     public PinState getShutdownState() {
-        return shutdownState;
+    	if (shutdownState) {
+            return PinState.HIGH;
+    	}
+        return PinState.LOW;
     }
 
     public PinPullResistance getPullResistance() {
@@ -68,6 +80,14 @@ public class DeviceSettings extends Preferences {
 
     public PinPullResistance getShutdownPullResistance() {
         return shutdownPullResistance;
+    }
+
+    public boolean isCounter() {
+    	return counter;
+    }
+
+    public int getBounceTime() {
+    	return bounceTime;
     }
 
 }
