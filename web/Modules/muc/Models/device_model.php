@@ -268,7 +268,10 @@ class DeviceConnection
             $device = array(
                 'ctrlid'=>$ctrlid,
                 'driverid'=>$driverid,
-                'id'=>$scan['id']
+                'id'=>$scan['id'],
+                'description'=>'',
+                'address'=>array(),
+                'settings'=>array()
             );
             if (isset($scan['description'])) $device['description'] = $scan['description'];
             if (isset($scan['deviceAddress'])) $device['address'] = $scan['deviceAddress'];

@@ -546,8 +546,13 @@ class Channel
         foreach($response['channels'] as $scan) {
             
             $channel = array(
-                    'ctrlid'=>$ctrlid,
-                    'deviceid'=>$device
+                'ctrlid'=>$ctrlid,
+                'deviceid'=>$device,
+                'description'=>'',
+                'address'=>array(),
+                'settings'=>array(),
+                'logging'=>array(),
+                'configs'=>array()
             );
             if (isset($scan['description'])) $channel['description'] = $scan['description'];
             if (isset($scan['channelAddress'])) $channel['address'] = $scan['channelAddress'];

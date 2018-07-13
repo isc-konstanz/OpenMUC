@@ -29,12 +29,12 @@ var driver_dialog = {
     'drawConfig':function() {
         $("#driver-config-modal").modal('show');
         
-        driver_dialog.adjustConfigModal();
+        driver_dialog.adjustConfig();
         
         var groups = {
             configs: "Configuration"
         };
-        config.init($('#driver-config-container'), groups);
+        config.load($('#driver-config-container'), groups);
 
         $('#driver-config-description').text('');
         
@@ -43,7 +43,7 @@ var driver_dialog = {
             $('#driver-config-select').hide().text('');
             $("#driver-config-ctrl-select").text('');
             $('#driver-config-ctrl').hide();
-            $('#driver-config-overlay').hide();
+            
             $('#driver-config-delete').show();
             
             driver_dialog.drawPreferences()
@@ -53,7 +53,6 @@ var driver_dialog = {
             $('#driver-config-select').show().prop('disabled', true).empty();
             $("#driver-config-ctrl-select").text('');
             $('#driver-config-ctrl').show();
-            $('#driver-config-overlay').show();
             
             $('#driver-config-delete').hide();
             
@@ -130,13 +129,13 @@ var driver_dialog = {
                     $('#driver-config-description').html('<span style="color:#888">'+result.description+'</span>');
                 }
                 
-                config.load(driver_dialog.driver, result);
+                config.draw(driver_dialog.driver, result);
             }
             $('#driver-config-loader').hide();
         });
     },
 
-    'closeConfigModal':function(result) {
+    'closeConfig':function(result) {
         $('#driver-config-loader').hide();
         
         if (typeof result.success !== 'undefined' && !result.success) {
@@ -147,7 +146,7 @@ var driver_dialog = {
         $('#driver-config-modal').modal('hide');
     },
 
-    'adjustConfigModal':function() {
+    'adjustConfig':function() {
         if ($("#driver-config-modal").length) {
             var h = $(window).height() - $("#driver-config-modal").position().top - 180;
             $("#driver-config-body").height(h);
@@ -183,8 +182,6 @@ var driver_dialog = {
                 driver_dialog.driver = null;
                 
                 driver_dialog.drawPreferences();
-
-                $('#driver-config-overlay').hide();
             }
         });
 
@@ -202,18 +199,18 @@ var driver_dialog = {
             var configs = { 'id': driver_dialog.driverid };
             
             // Make sure JSON.stringify gets passed the right object type
-            configs['configs'] = $.extend({}, config.getOptions('configs'));
+            configs['configs'] = $.extend({}, config.get('configs'));
             
             var result;
             if (driver_dialog.driver != null) {
                 configs['devices'] = $.extend([], driver_dialog.driver.devices);
                 
                 result = driver.update(driver_dialog.driver.ctrlid, driver_dialog.driver.id, configs, 
-                        driver_dialog.closeConfigModal);
+                        driver_dialog.closeConfig);
             }
             else {
                 result = driver.create(driver_dialog.ctrlid, driver_dialog.driverid, configs, 
-                        driver_dialog.closeConfigModal); 
+                        driver_dialog.closeConfig); 
             }
         });
 
@@ -236,7 +233,7 @@ var driver_dialog = {
         this.registerDeleteEvents(tablerow, null);
     },
 
-    'closeDeleteModal':function(result) {
+    'closeDelete':function(result) {
         $('#driver-delete-loader').hide();
         
         if (typeof result.success !== 'undefined' && !result.success) {
@@ -253,7 +250,7 @@ var driver_dialog = {
         $("#driver-delete-confirm").off('click').on('click', function() {
             $('#driver-delete-loader').show();
             driver.remove(driver_dialog.driver.ctrlid, driver_dialog.driver.id, 
-                    driver_dialog.closeDeleteModal);
+                    driver_dialog.closeDelete);
             
             if (typeof table !== 'undefined' && row != null) table.remove(row);
         });

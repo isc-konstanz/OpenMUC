@@ -46,11 +46,7 @@
         </table>
         <p id="device-config-info" style="display:none;"></p>
         
-        <div class="modal-container">
-            <div id="device-config-container"></div>
-            
-            <div id="device-config-overlay" class="modal-overlay"></div>
-        </div>
+        <div id="device-config-container"></div>
     </div>
     <div class="modal-footer">
         <button id="device-config-back" class="btn" style="display:none; float:left"><?php echo _('Back'); ?></button>
@@ -82,8 +78,6 @@
             <div id="device-scan-results-none" class="alert" style="display:none"><?php echo _('No devices found'); ?></div>
             
             <div id="device-scan-container"></div>
-            
-            <div id="device-scan-overlay" class="modal-overlay"></div>
         </div>
     </div>
     <div class="modal-footer">
@@ -116,11 +110,8 @@
 </div>
 
 <script>
-    $('#device-config-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-    $('#device-scan-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-
     $(window).resize(function(){
-        device_dialog.adjustConfigModal();
-        device_dialog.adjustScanModal();
+        device_dialog.adjustConfig();
+        device_dialog.adjustScan();
     });
 </script>

@@ -37,11 +37,7 @@
         </table>
         <p id="channel-config-info" style="display:none;"></p>
         
-        <div class="modal-container">
-            <div id="channel-config-container"></div>
-            
-            <div id="channel-config-overlay" class="modal-overlay"></div>
-        </div>
+        <div id="channel-config-container"></div>
     </div>
     <div class="modal-footer">
         <button id="channel-config-back" class="btn" style="display:none; float:left"><?php echo _('Back'); ?></button>
@@ -70,8 +66,6 @@
             <div id="channel-scan-results-none" class="alert" style="display:none"><?php echo _('No channels found'); ?></div>
             
             <div id="channel-scan-container"></div>
-            
-            <div id="channel-scan-overlay" class="modal-overlay"></div>
         </div>
     </div>
     <div class="modal-footer">
@@ -104,11 +98,8 @@
 </div>
 
 <script>
-    $('#channel-config-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-	$('#channel-scan-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-
     $(window).resize(function() {
-        channel_dialog.adjustConfigModal();
-        channel_dialog.adjustScanModal();
+        channel_dialog.adjustConfig();
+        channel_dialog.adjustScan();
     });
 </script>

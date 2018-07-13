@@ -20,11 +20,7 @@
         <select id="driver-config-select" class="input-large" style="display:none" disabled></select>
         <p id="driver-config-description"></p>
         
-        <div class="modal-container">
-            <div id="driver-config-container"></div>
-            
-            <div id="driver-config-overlay" class="modal-overlay"></div>
-        </div>
+        <div id="driver-config-container"></div>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
@@ -57,9 +53,7 @@
 </div>
 
 <script>
-    $('#driver-config-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-
     $(window).resize(function(){
-        driver_dialog.adjustConfigModal();
+        driver_dialog.adjustConfig();
     });
 </script>
