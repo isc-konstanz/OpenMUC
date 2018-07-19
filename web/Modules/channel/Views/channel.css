@@ -21,7 +21,7 @@
     width: 100%;
 }
 .device-header table td:nth-of-type(1) {
-	white-space: nowrap;
+    white-space: nowrap;
     width: 100%;
     color: #666;
 }
@@ -76,11 +76,11 @@
     text-align: center;
 }
 .channels table td:nth-of-type(2) {
-	white-space: nowrap;
+    white-space: nowrap;
 }
 .channels table td:nth-of-type(3) {
     padding-right: 5px;
-	width: 100%;
+    width: 100%;
     text-align: right;
 }
 .channels table td:nth-of-type(4) {
@@ -99,26 +99,6 @@
     text-align: center;
 }
 
-.channels input[type="checkbox"] {
-    margin: 0px;
-}
-.channels input[type=checkbox]:focus+:before {
-    outline: none !important;
-}
-.channels .checkbox-slider--b-flat input+span {
-    cursor: default !important;
-}
-.channels .checkbox-slider--b-flat {
-    height: 20px;
-    width: 20px;
-    border-radius: 25px;
-    background-color: gainsboro;
-}
-.channels *::before,
-.channels *::after {
-    box-sizing: border-box;
-}
-
 .channels input {
     margin-bottom: 0px;
     text-align: right;
@@ -133,5 +113,42 @@
 .channels input[type=number]::-webkit-inner-spin-button,
 .channels input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
-    margin: 0;
+    margin: 0px;
+}
+
+.channels input[type="checkbox"] {
+    margin: 0px;
+}
+.channels input[type=checkbox]:focus+:before {
+    outline: none !important;
+}
+.checkbox-slider--b-flat input+span {
+    cursor: default !important;
+}
+
+/* Chrome */
+@supports (-webkit-appearance:none ) {
+    .checkbox-slider--b-flat {
+        height: 20px;
+        padding: 0px;
+    }
+}
+
+/* IE */
+@media screen and (-ms-high-contrast: active) , ( -ms-high-contrast : none) {
+    .checkbox-slider--b-flat {
+        height: 20px;
+    }
+}
+
+/* Firefox */
+_:-moz-tree-row(hover), .checkbox-slider--b-flat {
+    height: 20px;
+    width: 20px;
+    border-radius: 25px;
+    background-color: gainsboro;
+}
+
+*::before, *::after {
+    box-sizing: border-box;
 }
