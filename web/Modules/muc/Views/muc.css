@@ -51,16 +51,20 @@
     height: 24px;
 }
 
-.modal-overlay {
-    position: absolute;
-    top: 0; bottom:0; left: 0; right:0;
-    margin: auto;
-    background: rgba(255, 255, 255, .8) center;
+.view-container {
+	padding-top: 8px;
 }
 
 .modal-container {
     position: relative;
     width:100%;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0; bottom:0; left: 0; right:0;
+    margin: auto;
+    background: rgba(255, 255, 255, .8) center;
 }
 
 .modal-adjust {
@@ -165,21 +169,21 @@
 
 /* Chrome */
 @supports (-webkit-appearance:none ) {
-    .table-option .checkbox-slider--b {
+    .table-option .checkbox-slider--b-flat {
         height:20px;    
     }
 }
 
 /* IE */
 @media screen and (-ms-high-contrast: active) , ( -ms-high-contrast : none) {
-    .table-option .checkbox-slider--b {
+    .table-option .checkbox-slider--b-flat {
         height: 20px;
     }
 }
 
 /* Firefox */
 _:-moz-tree-row(hover), 
-.table-option .checkbox-slider--b {
+.table-option .checkbox-slider--b-flat {
     width: 20px;
     border-radius: 25px;
     background-color: gainsboro;

@@ -35,6 +35,9 @@ function channel_controller($format, $action, $subaction, $method) {
         elseif ($action == 'states') {
             if ($session['userid']>0 && $session['write']) $result = $channel->get_states($session['userid']);
         }
+        elseif ($action == 'records') {
+            if ($session['userid']>0 && $session['write']) $result = $channel->get_records($session['userid']);
+        }
         else {
             $ctrlid = (int) get('ctrlid');
             if ($ctrl->exists($ctrlid)) {
@@ -42,7 +45,7 @@ function channel_controller($format, $action, $subaction, $method) {
                 if (isset($session['write']) && $session['write'] && $session['userid'] > 0 
                         && $session['userid'] == $ctrlget['userid']) {
                     
-                    if ($action == "create") $result = $channel->create($session['userid'], $ctrlid, get('deviceid'), get('configs'));
+                    if ($action == "create") $result = $channel->create($session['userid'], $ctrlid, get('driverid'), get('deviceid'), get('configs'));
                     elseif ($action == 'info') $result = $channel->info($session['userid'], $ctrlid, get('driverid'));
                     elseif ($action == 'scan') $result = $channel->scan($ctrlid, get('deviceid'), get('settings'));
                     elseif ($action == "get") $result = $channel->get($ctrlid, get('id'));

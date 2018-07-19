@@ -1,6 +1,12 @@
 <?php global $path, $session, $user; ?>
 <style>
-  a.anchor{display: block; position: relative; top: -50px; visibility: hidden;}
+    a.anchor {
+        display: block;
+        position: relative;
+        top: -50px;
+        visibility: hidden;
+    }
+    .table td:nth-of-type(1) { width:25%; }
 </style>
 
 <h2><?php echo _('Driver API'); ?></h2>

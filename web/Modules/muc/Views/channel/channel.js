@@ -1,10 +1,10 @@
 var channel = {
     states: null,
 
-    'create':function(ctrlid, deviceid, configs, callback) {
+    'create':function(ctrlid, driverid, deviceid, configs, callback) {
         return $.ajax({
             url: path+"muc/channel/create.json",
-            data: "ctrlid="+ctrlid+"&deviceid="+deviceid+"&configs="+JSON.stringify(configs),
+            data: "ctrlid="+ctrlid+"&driverid="+driverid+"&deviceid="+deviceid+"&configs="+JSON.stringify(configs),
             dataType: 'json',
             async: true,
             success: callback

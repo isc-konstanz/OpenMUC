@@ -207,7 +207,7 @@ var channel_dialog = {
             configs['configs'] = $.extend({}, config.get('configs'));
             
             if (channel_dialog.channel != null 
-                    && !(typeof channel_dialog.channel.scanned !== 'undefined' && !channel_dialog.channel.scanned)) {
+                    && !(typeof channel_dialog.channel.scanned !== 'undefined' && channel_dialog.channel.scanned)) {
                 
                 if (channel_dialog.channel['disabled'] != null) {
                     configs['disabled'] = channel_dialog.channel['disabled'];
@@ -218,7 +218,7 @@ var channel_dialog = {
                         channel_dialog.closeConfig);
             }
             else {
-                channel.create(channel_dialog.ctrlid, channel_dialog.deviceid, configs,
+                channel.create(channel_dialog.ctrlid, channel_dialog.driverid, channel_dialog.deviceid, configs,
                         channel_dialog.closeConfig);
             }
         });
@@ -270,7 +270,7 @@ var channel_dialog = {
         
         $('#channel-scan-results').text('').hide();
         
-        if (channel_dialog.driverid != null) {
+        if (channel_dialog.deviceid != null) {
             $('#channel-scan-label').html('Scan Channels: <b>'+channel_dialog.deviceid+'</b>');
             $("#channel-scan-device-select").hide().empty();
             $('#channel-scan-device').hide();

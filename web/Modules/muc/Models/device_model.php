@@ -30,7 +30,16 @@ class DeviceConnection
         
         $configs = (array) json_decode($configs);
         
-        $id = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$configs['id']);
+        if (!ctype_alnum(str_replace(array('.', '_', '-'), '', $configs['id']))) {
+            return array('success'=>false, 'message'=>_("Invalid characters in device key"));
+        }
+        $id = $configs['id'];
+        
+        if (isset($configs['description'])) {
+            if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
+                return array('success'=>false, 'message'=>_("Invalid characters in device description"));
+            }
+        }
         
         // Check if the specified driver is registered already and add it, if necessary
         require_once "Modules/muc/Models/driver_model.php";
@@ -158,7 +167,10 @@ class DeviceConnection
         $device = array('id' => $id);
         
         if (isset($configs['description'])) {
-            $device['description'] = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$configs['description']);
+            if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
+                return array('success'=>false, 'message'=>_("Invalid characters in device description"));
+            }
+            $device['description'] = $configs['description'];
         }
         if (isset($configs['address'])) $device['deviceAddress'] = $configs['address'];
         if (isset($configs['settings'])) $device['settings'] = $configs['settings'];
@@ -199,7 +211,10 @@ class DeviceConnection
 
         $configs = (array) json_decode($configs);
         
-        $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$configs['id']);
+        if (!ctype_alnum(str_replace(array('.', '_', '-'), '', $configs['id']))) {
+            return array('success'=>false, 'message'=>_("Invalid characters in device key"));
+        }
+        $name = $configs['id'];
         $device = $this->parse_device($name, $configs);
         
         $response = $this->ctrl->request($ctrlid, 'devices/'.$id.'/configs', 'PUT', array('configs' => $device));

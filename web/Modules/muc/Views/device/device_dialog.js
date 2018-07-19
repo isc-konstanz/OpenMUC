@@ -216,7 +216,7 @@ var device_dialog =
             configs['configs'] = $.extend({}, config.get('configs'));
             
             if (device_dialog.device != null 
-                    && !(typeof device_dialog.device.scanned !== 'undefined' && !device_dialog.device.scanned)) {
+                    && !(typeof device_dialog.device.scanned !== 'undefined' && device_dialog.device.scanned)) {
                 
                 if (device_dialog.device['disabled'] != null) {
                     configs['disabled'] = device_dialog.device['disabled'];

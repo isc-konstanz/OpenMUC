@@ -34,14 +34,14 @@
     #table th[fieldg="dummy-10"] { width:14px; text-align: center; }
 </style>
 
-<div>
+<div class="view-container">
     <div style="float:right">
         <span id="api-help-header"><a href="api"><?php echo _('Device API Help'); ?></a></span>
         <a href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
     </div>
-    <div id="local-header"><h2><?php echo _('Device connections'); ?></h2></div>
+    <div id="device-header"><h2><?php echo _('Device connections'); ?></h2></div>
 
-    <div id="table"><div align='center'></div></div>
+    <div id="table"></div>
 
     <div id="device-none" class="alert alert-block hide">
         <h4 class="alert-heading"><?php echo _('No device connections'); ?></h4><br>
@@ -110,11 +110,11 @@
             table.draw();
             if (table.data.length != 0) {
                 $("#device-none").hide();
-                $("#local-header").show();
+                $("#device-header").show();
                 $("#api-help-header").show();
             } else {
                 $("#device-none").show();
-                $("#local-header").hide();
+                $("#device-header").hide();
                 $("#api-help-header").hide();
             }
             $('#device-loader').hide();

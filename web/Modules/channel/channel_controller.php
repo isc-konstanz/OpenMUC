@@ -13,12 +13,18 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function channel_controller()
 {
-    global $mysqli, $redis, $user, $session, $route;
+    global $mysqli, $redis, $session, $route;
 
     $result = false;
 
+    require_once "Modules/muc/muc_model.php";
+    $ctrl = new Controller($mysqli, $redis);
+
+    require_once "Modules/muc/Models/channel_model.php";
+    $channel = new Channel($ctrl, $mysqli, $redis);
+
     require_once "Modules/channel/channel_model.php";
-    $channel = new Channel($mysqli,$redis);
+    $cache = new ChannelCache($ctrl, $channel, $redis);
 
     if ($route->format == 'html') {
         if ($route->action == "view" && $session['write']) $result = view("Modules/channel/Views/channel_view.php", array());
@@ -27,9 +33,28 @@ function channel_controller()
 
     if ($route->format == 'json') {
         if ($route->action == 'list') {
-            if ($session['userid']>0 && $session['write']) $result = $channel->get_list($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $cache->get_list($session['userid']);
+        }
+        else if ($route->action == 'load') {
+            if ($session['userid']>0 && $session['write']) $result = $cache->load($session['userid']);
+        }
+        else {
+            $ctrlid = (int) get('ctrlid');
+            if ($ctrl->exists($ctrlid)) {
+                $ctrlget = $ctrl->get($ctrlid);
+                if (isset($session['write']) && $session['write'] && $session['userid'] > 0
+                    && $session['userid'] == $ctrlget['userid']) {
+                        
+                        if ($route->action == "create") $result = $cache->create($session['userid'], $ctrlid, get('driverid'), get('deviceid'), get('configs'));
+                        elseif ($route->action == "get") $result = $cache->get($ctrlid, get('id'));
+                        elseif ($route->action == 'update') $result = $cache->update($session['userid'], $ctrlid, get('nodeid'), get('id'), get('configs'));
+                        elseif ($route->action == "delete") $result = $cache->delete($ctrlid, get('id'));
+                    }
+            }
+            else {
+                $result = array('success'=>false, 'message'=>'Controller does not exist');
+            }
         }
     }
-
     return array('content'=>$result);
 }

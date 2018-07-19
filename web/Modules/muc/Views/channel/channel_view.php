@@ -30,14 +30,14 @@
     #table th[fieldg="dummy-9"] { width:14px; text-align: center; }
 </style>
 
-<div>
+<div class="view-container">
     <div style="float:right">
         <span id="api-help-header"><a href="api"><?php echo _('Channel API Help'); ?></a></span>
         <a href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
     </div>
-    <div id="local-header"><h2><?php echo _('Channels'); ?></h2></div>
+    <div id="channel-header"><h2><?php echo _('Channels'); ?></h2></div>
 
-    <div id="table"><div align='center'></div></div>
+    <div id="table"></div>
 
     <div id="channel-none" class="alert alert-block hide">
         <h4 class="alert-heading"><?php echo _('No channels'); ?></h4><br>
@@ -54,7 +54,7 @@
         <button id="channel-new" class="btn btn-primary btn-small" >&nbsp;<i class="icon-plus-sign icon-white" ></i>&nbsp;<?php echo _('New channel'); ?></button>
         <button id="channel-scan" class="btn btn-info btn-small" >&nbsp;<i class="icon-search icon-white" ></i>&nbsp;<?php echo _('Scan channels'); ?></button>
     </div>
-    
+
     <div id="channel-loader" class="ajax-loader"></div>
 </div>
 
@@ -105,11 +105,11 @@
             table.draw();
             if (table.data.length != 0) {
                 $("#channel-none").hide();
-                $("#local-header").show();
+                $("#channel-header").show();
                 $("#api-help-header").show();
             } else {
                 $("#channel-none").show();
-                $("#local-header").hide();
+                $("#channel-header").hide();
                 $("#api-help-header").hide();
             }
             $('#channel-loader').hide();

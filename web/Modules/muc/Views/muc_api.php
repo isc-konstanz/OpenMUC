@@ -1,6 +1,12 @@
 <?php global $path, $session, $user; ?>
 <style>
-    a.anchor{display: block; position: relative; top: -50px; visibility: hidden;}
+    a.anchor {
+        display: block;
+        position: relative;
+        top: -50px;
+        visibility: hidden;
+    }
+    .table td:nth-of-type(1) { width:25%; }
 </style>
 
 <h2><?php echo _('Multi Utility Communication Controller API'); ?></h2>
@@ -18,10 +24,10 @@
 
 <h3><?php echo _('Available HTML URLs'); ?></h3>
 <table class="table">
-    <tr><td><?php echo _('The Controller list view'); ?></td><td><a href="<?php echo $path; ?>muc/view"><?php echo $path; ?>muc/view</a></td></tr>
-    <tr><td><?php echo _('The Channel list view'); ?></td><td><a href="<?php echo $path; ?>muc/channel/view"><?php echo $path; ?>muc/channel/view</a></td></tr>
-    <tr><td><?php echo _('The Device list view'); ?></td><td><a href="<?php echo $path; ?>muc/device/view"><?php echo $path; ?>muc/device/view</a></td></tr>
-    <tr><td><?php echo _('The Driver list view'); ?></td><td><a href="<?php echo $path; ?>muc/driver/view"><?php echo $path; ?>muc/driver/view</a></td></tr>
+    <tr><td><?php echo _('The MUC configuration view'); ?></td><td><a href="<?php echo $path; ?>muc/view"><?php echo $path; ?>muc/view</a></td></tr>
+    <tr><td><?php echo _('The Driver configuration view'); ?></td><td><a href="<?php echo $path; ?>muc/driver/view"><?php echo $path; ?>muc/driver/view</a></td></tr>
+    <tr><td><?php echo _('The Device configuration view'); ?></td><td><a href="<?php echo $path; ?>muc/device/view"><?php echo $path; ?>muc/device/view</a></td></tr>
+    <tr><td><?php echo _('The Channel configuration view'); ?></td><td><a href="<?php echo $path; ?>muc/channel/view"><?php echo $path; ?>muc/channel/view</a></td></tr>
     <tr><td><?php echo _('This page'); ?></td><td><a href="<?php echo $path; ?>muc/api"><?php echo $path; ?>muc/api</a></td></tr>
 </table>
 

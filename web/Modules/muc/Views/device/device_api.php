@@ -1,6 +1,12 @@
 <?php global $path, $session, $user; ?>
 <style>
-  a.anchor{display: block; position: relative; top: -50px; visibility: hidden;}
+    a.anchor {
+        display: block;
+        position: relative;
+        top: -50px;
+        visibility: hidden;
+    }
+    .table td:nth-of-type(1) { width:25%; }
 </style>
 
 <h2><?php echo _('Device connections API'); ?></h2>
@@ -27,7 +33,7 @@
 
 <p><b><?php echo _('Device actions'); ?></b></p>
 <table class="table">
-    <tr><td><?php echo _('Create new device'); ?></td><td><a href="<?php echo $path; ?>muc/device/create.json?ctrlid=1&driverid=standalone&configs={%22id%22:%22Home%22,%22description%22:%22Virtual%22}"><?php echo $path; ?>muc/device/create.json?ctrlid=1&driverid=csv&configs={"id":"Home","description":"Virtual"}</a></td></tr>
+    <tr><td><?php echo _('Create new device'); ?></td><td><a href="<?php echo $path; ?>muc/device/create.json?ctrlid=1&driverid=virtual&configs={%22id%22:%22Home%22,%22description%22:%22Virtual%22}"><?php echo $path; ?>muc/device/create.json?ctrlid=1&driverid=csv&configs={"id":"Home","description":"Virtual"}</a></td></tr>
     <tr><td><?php echo _('List devices'); ?></td><td><a href="<?php echo $path; ?>muc/device/list.json"><?php echo $path; ?>muc/device/list.json</a></td></tr>
     <tr><td><?php echo _('List device states'); ?></td><td><a href="<?php echo $path; ?>muc/device/states.json"><?php echo $path; ?>muc/device/states.json</a></td></tr>
     <tr><td><?php echo _('Get device information'); ?></td><td><a href="<?php echo $path; ?>muc/device/info.json?ctrlid=1&driverid=csv"><?php echo $path; ?>muc/device/info.json?ctrlid=1&driverid=csv</a></td></tr>

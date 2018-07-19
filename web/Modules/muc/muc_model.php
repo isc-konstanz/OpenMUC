@@ -31,7 +31,10 @@ class Controller
         elseif ($type !== 'HTTP' && $type !== 'HTTPS') {
             return array('success'=>false, 'message'=>'Unknown Controller communication method: '.$type);
         }
-        $description = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$description);
+        
+        if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $description))) {
+            return array('success'=>false, 'message'=>_("Invalid characters in device description"));
+        }
         $password = md5(uniqid(mt_rand(), true));
         
         // Make sure, the defined address is valid

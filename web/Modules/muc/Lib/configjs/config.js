@@ -198,7 +198,7 @@ var config =
         else if (type == 'BOOLEAN') {
             row.append(
                 "<td>" +
-                    "<div class='option option-input checkbox checkbox-slider--b checkbox-slider-info'>" +
+                    "<div class='option option-input checkbox checkbox-slider--b-flat checkbox-slider-info'>" +
                         "<label>" +
                             "<input id='option-"+group+"-"+key+"-input' type='checkbox'><span></span>" +
                         "</label>" +
