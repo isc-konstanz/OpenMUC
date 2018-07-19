@@ -535,6 +535,9 @@ class Channel
         
         $response = $this->ctrl->request($ctrlid, 'channels/'.$id, 'PUT', array('record' => $record));
         if (isset($response["success"]) && !$response["success"]) {
+            if (strpos($response["message"], 'ACCESS_METHOD_NOT_SUPPORTED') !== false) {
+                return array('success'=>false, 'message'=>'Channel writing not supported');
+            }
             return $response;
         }
         return array('success'=>true, 'message'=>'Channel successfully written to');

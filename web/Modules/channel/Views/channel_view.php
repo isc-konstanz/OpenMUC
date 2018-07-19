@@ -35,6 +35,7 @@
 const INTERVAL = 5000;
 var updateTime = new Date().getTime();
 var updater;
+var timeout;
 var path = "<?php echo $path; ?>";
 
 var devices = {};
@@ -95,16 +96,16 @@ function draw(channels) {
         var id = 'device-muc'+channel.ctrlid+'-'+channel.deviceid.replace(/[._]/g, '-');
         if (!device.length || device.attr('id') !== id) {
             var description = "";
-            var key = channel.ctrlid+':'+channel.deviceid;
-            if (typeof devices[key] !== 'undefined' && typeof devices[key].description !== 'undefined') {
-                description = devices[key].description;
+            var devicekey = channel.ctrlid+':'+channel.deviceid;
+            if (typeof devices[devicekey] !== 'undefined' && typeof devices[devicekey].description !== 'undefined') {
+                description = devices[devicekey].description;
             }
             
             list.append(
                 "<div class='device'>" +
                     "<div id='"+id+"-header' class='device-header' data-toggle='collapse' data-target='#"+id+"-body'>" +
                         "<table>" +
-                            "<tr data-key='"+key+"'>" +
+                            "<tr data-id='"+id+"' data-key='"+devicekey+"'>" +
                                 "<td>" +
                                     "<span class='device-name'>"+channel.deviceid+(description.length>0 ? ":" : "")+"</span>" +
                                     "<span class='device-description'>"+description+"</span>" +
@@ -126,6 +127,7 @@ function draw(channels) {
         }
         drawChannel(key, channel, device);
     }
+    registerEvents();
 }
 
 function drawChannel(key, channel, device) {
@@ -152,7 +154,7 @@ function drawChannel(key, channel, device) {
     }
     
     device.append(
-        "<tr data-key:'"+key+"'>" +
+        "<tr data-id='"+id+"' data-key='"+key+"'>" +
             "<td><input class='channel-select select' type='checkbox' "+checked+"></input></td>" +
             "<td>" +
                 "<span class='channel-name'>"+channel.id+"</span>" +
@@ -161,10 +163,10 @@ function drawChannel(key, channel, device) {
             "</td>" +
             "<td id='"+id+"-flag' class='channel-flag'>"+drawRecordFlag(channel.flag)+"</td>" +
             "<td id='"+id+"-time' class='channel-time'>"+drawRecordTime(channel.time)+"</td>" +
-            "<td id='"+id+"-value' class='channel-value'>"+drawRecordValue(id, type, channel.value)+"</td>" +
-            "<td><span class='channel-unit title='Unit'>"+unit+"</span></td>" +
-            "<td><span class='channel-action icon-pencil' title='Add'></span></td>" +
-            "<td><span class='channel-action icon-wrench' title='Configure'></span></td>" +
+            "<td id='"+id+"-sample' class='channel-value'>"+drawRecordValue(id, type, channel.value)+"</td>" +
+            "<td id='"+id+"-unit' class='channel-unit'><span>"+unit+"</span></td>" +
+            "<td id='"+id+"-write' class='channel-action'><span class='icon-pencil' title='Add'></span></td>" +
+            "<td id='"+id+"-config' class='channel-action'><span class='icon-wrench' title='Configure'></span></td>" +
         "</tr>"
     );
 }
@@ -226,43 +228,182 @@ function drawRecordTime(time) {
 function drawRecordValue(id, type, value) {
     var html = "";
     
-	if (typeof value === 'undefined') {
-    	value = "";
-	}
+    if (typeof value === 'undefined') {
+        value = "";
+    }
     if (type == 'BOOLEAN') {
         var checked = "";
-         if (typeof value === 'string' || value instanceof String) {
-             value = (value == 'true');
-         }
-         if (value) {
+        if (typeof value === 'string' || value instanceof String) {
+            value = (value == 'true');
+        }
+        if (value) {
             checked = "checked";
-         }
-        html = "<div id='"+id+"-' class='checkbox checkbox-slider--c'>" +
+        }
+        html = "<div id='"+id+"-value' class='checkbox checkbox-slider--b-flat'>" +
                     "<label>" +
-                        "<input type='checkbox' "+checked+" disabled><span></span></input>" +
+                        "<input type='checkbox' onclick='return false;' "+checked+"><span></span></input>" +
                     "</label>" +
                 "</div>" +
                 "<div id='"+id+"-input' class='checkbox checkbox-slider--b-flat checkbox-slider-info hide'>" +
                     "<label>" +
-                        "<input id='"+id+"-slider' type='checkbox' "+checked+"><span></span></input>" +
+                        "<input id='"+id+"-slider' class='channel-slider' type='checkbox' "+checked+"><span></span></input>" +
                     "</label>" +
                 "</div>";
     }
-    else if (type == 'STRING' || type == 'BYTE' || type == 'BYTE_ARRAY') {
-    	html = "<span id='"+id+"-value'>"+value+"</span>" +
-        		"<input id='"+id+"-input' type='text' class='channel-input input-small hide'></input>";
+    else if (type == 'DOUBLE' || type == 'FLOAT') {
+        if (!isNaN(value)) {
+            value = parseFloat(value);
+            if (Math.abs(value) >= 1000) value = value.toFixed(0);
+            else if (Math.abs(value) >= 100) value = value.toFixed(1);
+            else if (Math.abs(value) >= 10) value = value.toFixed(2);
+        }
+        html = "<span id='"+id+"-value'>"+value+"</span>" +
+                "<input id='"+id+"-input' type='number' step='any' class='channel-input input-small' style='display:none'></input>";
+    }
+    else if (type == 'LONG' || type == 'INTEGER' || type == 'SHORT') {
+        if (!isNaN(value)) {
+            value = parseInt(value).toFixed(0);
+        }
+        html = "<span id='"+id+"-value'>"+value+"</span>" +
+                "<input id='"+id+"-input' type='number' step='1' class='channel-input input-small' style='display:none'></input>";
     }
     else {
-    	if (!isNaN(value)) {
-        	value = parseFloat(value);
-        	if (Math.abs(value) >= 1000) value = value.toFixed(0);
-        	else if (Math.abs(value) >= 100) value = value.toFixed(1);
-        	else if (Math.abs(value) >= 10) value = value.toFixed(2);
-    	}
-    	html = "<span id='"+id+"-value'>"+value+"</span>" +
-        	    "<input id='"+id+"-input' type='number' class='channel-input input-small' style='display:none'></input>";
+        html = "<span id='"+id+"-value'>"+value+"</span>" +
+                "<input id='"+id+"-input' type='text' class='channel-input input-small hide'></input>";
     }
     return html;
+}
+
+function registerEvents() {
+    $(".channel-action").off();
+    $(".channel-action").on("click", ".icon-pencil", function(e) {
+        e.stopPropagation();
+
+        $(this).removeClass('icon-pencil').addClass('icon-remove');
+
+        var row = $(this).closest('tr');
+        var id = row.data('id');
+        var ch = channels[row.data('key')];
+        
+        var type = 'DOUBLE';
+        if (typeof ch.configs !== 'undefined' && typeof ch.configs.valueType !== 'undefined') {
+            type = ch.configs.valueType;
+        }
+        var value = "";
+        if (typeof ch.value !== 'undefined') {
+            value = ch.value;
+        }
+        setChannelInputValue(id, type, value);
+        
+        $('#'+id+'-value').hide();
+        $('#'+id+'-input').fadeIn();
+    });
+
+    $(".channel-action").on("click", ".icon-share-alt", function(e) {
+        e.stopPropagation();
+        
+        $(this).removeClass('icon-share-alt').addClass('icon-pencil');
+
+        var row = $(this).closest('tr');
+        var ch = channels[row.data('key')];
+        
+        var type = 'DOUBLE';
+        if (typeof ch.configs !== 'undefined' && typeof ch.configs.valueType !== 'undefined') {
+            type = ch.configs.valueType;
+        }
+        var value = getChannelInputValue(row.data('id'), type);
+        
+        channel.write(ch.ctrlid, ch.id, value, type, function(result) {
+            if (typeof result.success !== 'undefined' && !result.success) {
+                alert("Error:\n" + result.message);
+            }
+        });
+    });
+
+    $(".channel-action").on("click", ".icon-remove", function(e) {
+        e.stopPropagation();
+        
+        $(this).removeClass('icon-remove').addClass('icon-pencil');
+        
+        var id = $(this).closest('tr').data('id');
+        $('#'+id+'-input').hide();
+        $('#'+id+'-value').fadeIn();
+    });
+
+    $(".channel-action").on("click", ".icon-wrench", function(e) {
+        e.stopPropagation();
+        
+        var id = $(this).closest('tr').data('id');
+    });
+
+    $(".channels").off();
+    $(".channels").on("click", ".channel-slider", function(e) {
+        e.stopPropagation();
+        
+        var row = $(this).closest('tr');
+        
+        var value = channels[row.data('key')].value;
+        if (typeof value === 'string' || value instanceof String) {
+            value = (value == 'true');
+        }
+        if (value !== $(this).is(':checked')) {
+            $('#'+row.data('id')+'-write span').removeClass('icon-remove').addClass('icon-share-alt');
+        }
+        else {
+            $('#'+row.data('id')+'-write span').removeClass('icon-share-alt').addClass('icon-remove');
+        }
+    });
+
+    $(".channels").on("keyup", ".channel-input", function(e) {
+        var self = this;
+        if (timeout != null) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(function() {
+            timeout = null;
+            
+            var row = $(self).closest('tr');
+            
+            var value = channels[row.data('key')].value;
+            if (!isNaN(value)) {
+				value = value.toFixed(3);
+            }
+            var newVal = $(self).val();
+            if (newVal != "" && newVal !== value) {
+                $('#'+row.data('id')+'-write span').removeClass('icon-remove').addClass('icon-share-alt');
+            }
+            else {
+                $('#'+row.data('id')+'-write span').removeClass('icon-share-alt').addClass('icon-remove');
+            }
+        }, 200);
+    });
+}
+
+function getChannelInputValue(id, type) {
+    if (type == 'BOOLEAN') {
+        return $('#'+id+'-slider').is(':checked');
+    }
+    else {
+        return $('#'+id+'-input').val();
+    }
+}
+
+function setChannelInputValue(id, type, value) {
+    if (type == 'BOOLEAN') {
+        if (typeof value === 'string' || value instanceof String) {
+            value = (value == 'true');
+        }
+        $('#'+id+'-slider').prop('checked', value);
+    }
+    else {
+        if (!isNaN(value) && (type == 'DOUBLE' || type == 'FLOAT')) {
+            value = parseFloat(value);
+        }
+        else if (!isNaN(value) && (type == 'LONG' || type == 'INTEGER' || type == 'SHORT')) {
+            value = parseInt(value);
+        }
+        $('#'+id+'-input').val(value);
+    }
 }
 
 function associateById(list) {
