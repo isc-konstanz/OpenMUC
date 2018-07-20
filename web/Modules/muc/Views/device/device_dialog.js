@@ -5,6 +5,8 @@ var device_dialog =
     'driver': null,
     'device': null,
 
+    'drivers': null,
+
     'loadNew': function(driver) {
         if (driver != null) {
             this.ctrlid = driver.ctrlid;
@@ -89,37 +91,32 @@ var device_dialog =
     },
 
     'drawDrivers':function(modal) {
-        muc.list(function(data, textStatus, xhr) {
+    	if (device_dialog.drivers != null) {
             // Append drivers from database to select
             var driverSelect = $('#device-'+modal+'-driver-select');
             driverSelect.append("<option selected hidden='true' value=''>Select a driver</option>");
             
-            $.each(data, function() {
-                var ctrl = this;
-                $.ajax({ url: path+"muc/driver/registered.json", data: "ctrlid="+ctrl.id, dataType: 'json', async: false, success: function(result, textStatus, xhr) {
-                    if (result.length > 0) {
-                        if (device_dialog.ctrlid <= 0) {
-                            driverSelect.append('<optgroup label="'+ctrl.description+'">');
-                        }
-                        
-                        $.each(result, function() {
-                            var driver;
-                            if (typeof this.name !== 'undefined') {
-                                driver = this.name;
-                            }
-                            else {
-                                driver = this.id;
-                            }
-                            driverSelect.append('<option value="'+this.id+'" ctrlid="'+ctrl.id+'">'+driver+'</option>');
-                        });
-                    }
-                }});
-            });
+            var ctrl = null;
+            for (var i in device_dialog.drivers) {
+            	var driver = device_dialog.drivers[i];
+            	
+            	if (ctrl !== driver.ctrlid) {
+            		ctrl = driver.ctrlid;
+                    driverSelect.append('<optgroup label="'+driver.ctrl+'">');
+            	}
+                driverSelect.append('<option value="'+driver.id+'" ctrlid="'+driver.ctrlid+'">'+driver.name+'</option>');
+            }
             driverSelect.show();
             if (modal == 'config') {
                 $('#device-config-driver').hide();
             }
-        });
+    	}
+    	else {
+            $.ajax({ url: path+"muc/driver/registered.json", dataType: 'json', async: true, success: function(result) {
+            	device_dialog.drivers = result;
+            	device_dialog.drawDrivers(modal);
+            }});
+    	}
     },
 
     'drawPreferences':function(modal) {

@@ -32,6 +32,15 @@ function driver_controller($format, $action, $method) {
         if ($action == 'list') {
             if ($session['userid']>0 && $session['write']) $result = $driver->get_list($session['userid']);
         }
+        elseif ($action == "registered") {
+            if ($session['userid']>0 && $session['write']) $result = $driver->get_registered($session['userid'], get('ctrlid'));
+        }
+        elseif ($action == "configured") {
+            if ($session['userid']>0 && $session['write']) $result = $driver->get_configured($session['userid'], get('ctrlid'));
+        }
+        elseif ($action == "unconfigured") {
+            if ($session['userid']>0 && $session['write']) $result = $driver->get_unconfigured($session['userid'], get('ctrlid'));
+        }
         else {
             $ctrlid = intval(get('ctrlid'));
             if ($ctrl->exists($ctrlid)) {
@@ -40,9 +49,6 @@ function driver_controller($format, $action, $method) {
                         && $session['userid'] == $ctrlget['userid']) {
                     
                     if ($action == "create") $result = $driver->create($ctrlid, get('id'), get('configs'));
-                    elseif ($action == "registered") $result = $driver->get_registered($ctrlid);
-                    elseif ($action == "configured") $result = $driver->get_configured($ctrlid);
-                    elseif ($action == "unconfigured") $result = $driver->get_unconfigured($ctrlid);
                     elseif ($action == "info") $result = $driver->info($ctrlid, get('id'));
                     elseif ($action == "get") $result = $driver->get($ctrlid, get('id'));
                     elseif ($action == 'update') $result = $driver->update($ctrlid, get('id'), get('configs'));

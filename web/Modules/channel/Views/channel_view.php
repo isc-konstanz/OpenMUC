@@ -26,9 +26,14 @@
     <div id="channel-header"><h2><?php echo _('Channels'); ?></h2></div>
 
     <div id="channel-list"></div>
-
+    
     <div id="channel-loader" class="ajax-loader"></div>
+    
+    <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device connection'); ?></button>
 </div>
+
+<?php require "Modules/muc/Views/device/device_dialog.php"; ?>
+<?php require "Modules/muc/Views/channel/channel_dialog.php"; ?>
 
 <script>
 
@@ -77,7 +82,7 @@ function updaterStop() {
 //---------------------------------------------------------------------------------------------
 function draw(channels) {
     $('#channel-loader').hide();
-    if (channels.length == 0) {
+    if (Object.keys(channels).length == 0) {
         $("#channel-none").show();
         $("#channel-header").hide();
         $("#api-help-header").hide();
@@ -413,4 +418,15 @@ function associateById(list) {
     }
     return dict;
 }
+
+$.ajax({ url: path+"muc/driver/registered.json", dataType: 'json', async: true, success: function(result) {
+	device_dialog.drivers = result;
+	device_dialog.drawDrivers(model);
+}});
+
+$("#device-new").on('click', function () {
+    
+    device_dialog.loadNew();
+});
+
 </script>
