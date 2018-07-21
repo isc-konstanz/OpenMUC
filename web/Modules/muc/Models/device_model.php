@@ -35,7 +35,7 @@ class DeviceConnection
         }
         $id = $configs['id'];
         
-        if (isset($configs['description'])) {
+        if (!empty($configs['description'])) {
             if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
                 return array('success'=>false, 'message'=>_("Invalid characters in device description"));
             }
@@ -45,7 +45,7 @@ class DeviceConnection
         require_once "Modules/muc/Models/driver_model.php";
         $driver = new Driver($this->ctrl);
         
-        $response = $driver->get_configured($ctrlid);
+        $response = $driver->get_configured(null, $ctrlid);
         if (isset($response["success"]) && !$response["success"]) {
             return $response;
         }
@@ -215,6 +215,12 @@ class DeviceConnection
             return array('success'=>false, 'message'=>_("Invalid characters in device key"));
         }
         $name = $configs['id'];
+        
+        if (!empty($configs['description'])) {
+            if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
+                return array('success'=>false, 'message'=>_("Invalid characters in device description"));
+            }
+        }
         $device = $this->parse_device($name, $configs);
         
         $response = $this->ctrl->request($ctrlid, 'devices/'.$id.'/configs', 'PUT', array('configs' => $device));

@@ -46,7 +46,7 @@ class Channel
         }
         $nodeid = $logging['nodeid'];
         
-        if (isset($configs['description'])) {
+        if (!empty($configs['description'])) {
             if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
                 return array('success'=>false, 'message'=>_("Invalid characters in channel description"));
             }
@@ -211,7 +211,7 @@ class Channel
         $settings = isset($details['channelSettings']) ? $details['channelSettings'] : '';
         $logging = $this->decode_log_settings($details);
         
-        if (isset($details['description'])) {
+        if (!empty($details['description'])) {
             $description = $details['description'];
         }
         else $description = '';
@@ -496,7 +496,7 @@ class Channel
         }
         $newnode = $logging['nodeid'];
         
-        if (isset($configs['description'])) {
+        if (!empty($configs['description'])) {
             if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
                 return array('success'=>false, 'message'=>_("Invalid characters in channel description"));
             }

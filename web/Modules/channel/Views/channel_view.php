@@ -55,21 +55,39 @@ channel.list(function(result) {
 });
 
 function update() {
-    device.list(function(result) {
-        devices = associateById(result);
-        
-        channel.load(function(result) { channels = associateById(result); draw(channels); });
+    device.list(function(result) { devices = associateById('device', result); });
+    channel.load(function(result) {
+        if (result.length > 0) {
+            var wait = function() {
+                if (Object.keys(devices).length == 0) {
+                    setTimeout(wait, 100);
+                    return;
+                }
+                channels = associateById('channel', result);
+                draw(channels);
+            }
+            wait();
+        }
     });
 }
 
 function updateRecords() {
-    channel.records(drawRecords);
+    var time = new Date().getTime();
+    if (time - updateTime >= INTERVAL) {
+        updateTime = time;
+        
+        channel.records(drawRecords);
+    }
+    for (var id in channels) {
+        $('#'+id+'-time').html(drawRecordTime(channels[id].time, time));
+    }
 }
 
 function updaterStart() {
-    clearInterval(updater);
-    updater = null;
-    if (INTERVAL > 0) updater = setInterval(updateRecords, INTERVAL);
+    if (updater != null) {
+        clearInterval(updater);
+    }
+    updater = setInterval(updateRecords, 1000);
 }
 
 function updaterStop() {
@@ -94,52 +112,61 @@ function draw(channels) {
     $("#api-help-header").show();
     
     var list = $("#channel-list").empty();
-    var device = new Object();
-    for (var key in channels) {
-        var channel = channels[key];
+    for (var id in devices) {
+        drawDevice(id, devices[id], list);
+    }
+    for (var id in channels) {
+        var channel = channels[id];
         
-        var id = 'device-muc'+channel.ctrlid+'-'+channel.deviceid.replace(/[._]/g, '-');
-        if (!device.length || device.attr('id') !== id) {
-            var description = "";
-            var devicekey = channel.ctrlid+':'+channel.deviceid;
-            if (typeof devices[devicekey] !== 'undefined' && typeof devices[devicekey].description !== 'undefined') {
-                description = devices[devicekey].description;
-            }
-            
-            list.append(
-                "<div class='device'>" +
-                    "<div id='"+id+"-header' class='device-header' data-toggle='collapse' data-target='#"+id+"-body'>" +
-                        "<table>" +
-                            "<tr data-id='"+id+"' data-key='"+devicekey+"'>" +
-                                "<td>" +
-                                    "<span class='device-name'>"+channel.deviceid+(description.length>0 ? ":" : "")+"</span>" +
-                                    "<span class='device-description'>"+description+"</span>" +
-                                "</td>" +
-                                "<td><span class='device-action icon-search icon-white' title='Scan'></span></td>" +
-                                "<td><span class='device-action icon-plus-sign icon-white' title='Add'></span></td>" +
-                                "<td><span class='device-action icon-wrench icon-white' title='Configure'></span></td>" +
-                            "</tr>" +
-                        "</table>" +
-                    "</div>" +
-                    "<div id='"+id+"-body' class='collapse'>" +
-                        "<div class='channels'>" +
-                            "<table><tbody id='"+id+"'></tbody></table>" +
-                        "</div>" +
-                    "</div>" +
-                "</div>"
-            );
-            device = $('#'+id);
-        }
-        drawChannel(key, channel, device);
+        var deviceid = 'device-muc'+channel.ctrlid+'-'+channel.deviceid.toLowerCase().replace(/[._]/g, '-');
+        var device = drawDevice(deviceid, { 'id': channel.deviceid }, list);
+        
+        drawChannel(id, channel, device);
     }
     registerEvents();
 }
 
-function drawChannel(key, channel, device) {
-    var id = 'channel-muc'+channel.ctrlid+'-'+channel.id.replace(/[._]/g, '-');
+function drawDevice(id, device, devices) {
+    var description;
+    if (typeof device.description !== 'undefined') {
+        description = device.description;
+    }
+    else description = "";
+    
+    var result = $('#'+id);
+    if (!result.length || result.attr('id') !== id) {
+        devices.append(
+            "<div class='device'>" +
+                "<div id='"+id+"-header' class='device-header' data-toggle='collapse' data-target='#"+id+"-body'>" +
+                    "<table>" +
+                        "<tr data-id='"+id+"'>" +
+                            "<td>" +
+                                "<span class='device-name'>"+device.id+(description.length>0 ? ":" : "")+"</span>" +
+                                "<span class='device-description'>"+description+"</span>" +
+                            "</td>" +
+                            "<td class='device-scan'><span class='icon-search icon-white' title='Scan'></span></td>" +
+                            "<td class='device-add'><span class='icon-plus-sign icon-white' title='Add'></span></td>" +
+                            "<td class='device-config'><span class='icon-wrench icon-white' title='Configure'></span></td>" +
+                        "</tr>" +
+                    "</table>" +
+                "</div>" +
+                "<div id='"+id+"-body' class='collapse'>" +
+                    "<div class='channels'>" +
+                        "<table><tbody id='"+id+"'></tbody></table>" +
+                    "</div>" +
+                "</div>" +
+            "</div>"
+        );
+        result = $('#'+id);
+    }
+    return result;
+}
+
+function drawChannel(id, channel, device) {
+    var time = (new Date()).getTime();
     
     var checked = "";
-    if (typeof selected[key] !== 'undefined' && selected[key]) {
+    if (typeof selected[id] !== 'undefined' && selected[id]) {
         checked = "checked";
     }
     
@@ -147,19 +174,23 @@ function drawChannel(key, channel, device) {
     if (typeof channel.description !== 'undefined') {
         description = channel.description;
     }
-
-    var unit = "";
-    if (typeof channel.configs !== 'undefined' && typeof channel.configs.unit !== 'undefined') {
-        unit = channel.configs.unit;
+    
+    if (typeof channel.configs === 'undefined') {
+        channel.configs = {};
     }
     
-    var type = 'DOUBLE';
-    if (typeof channel.configs !== 'undefined' && typeof channel.configs.valueType !== 'undefined') {
-        type = channel.configs.valueType;
+    if (typeof channel.configs.unit === 'undefined') {
+        channel.configs.unit = "";
     }
+    var unit = channel.configs.unit;
+    
+    if (typeof channel.configs.valueType === 'undefined') {
+        channel.configs.valueType = "DOUBLE";
+    }
+    var type = channel.configs.valueType;
     
     device.append(
-        "<tr data-id='"+id+"' data-key='"+key+"'>" +
+        "<tr data-id='"+id+"'>" +
             "<td><input class='channel-select select' type='checkbox' "+checked+"></input></td>" +
             "<td>" +
                 "<span class='channel-name'>"+channel.id+"</span>" +
@@ -167,7 +198,7 @@ function drawChannel(key, channel, device) {
                 "<span class='channel-description'>"+description+"</span>" +
             "</td>" +
             "<td id='"+id+"-flag' class='channel-flag'>"+drawRecordFlag(channel.flag)+"</td>" +
-            "<td id='"+id+"-time' class='channel-time'>"+drawRecordTime(channel.time)+"</td>" +
+            "<td id='"+id+"-time' class='channel-time'>"+drawRecordTime(channel.time, time)+"</td>" +
             "<td id='"+id+"-sample' class='channel-value'>"+drawRecordValue(id, type, channel.value)+"</td>" +
             "<td id='"+id+"-unit' class='channel-unit'><span>"+unit+"</span></td>" +
             "<td id='"+id+"-write' class='channel-action'><span class='icon-pencil' title='Add'></span></td>" +
@@ -177,7 +208,18 @@ function drawChannel(key, channel, device) {
 }
 
 function drawRecords(records) {
-
+    for (var i in records) {
+        var record = records[i];
+        var id = 'channel-muc'+record.ctrlid+'-'+record.id.toLowerCase().replace(/[._]/g, '-');
+        var type = channels[id].configs.valueType;
+        
+        channels[id].flag = record.flag;
+        channels[id].time = record.time;
+        channels[id].flag = record.value;
+        
+        $('#'+id+'-flag').html(drawRecordFlag(record.flag));
+        $('#'+id+'-sample').html(drawRecordValue(id, type, record.value));
+    }
 }
 
 function drawRecordFlag(flag) {
@@ -202,8 +244,7 @@ function drawRecordFlag(flag) {
     return "<span style='color:"+color+"'>"+flag.toLowerCase().replace(/[_]/g, ' ')+"</span><span style='margin-left:1px'>:</span>";
 }
 
-function drawRecordTime(time) {
-    var now = (new Date()).getTime();
+function drawRecordTime(time, now) {
     var update = (new Date(time)).getTime();
     
     var delta = (now - update);
@@ -285,10 +326,9 @@ function registerEvents() {
         e.stopPropagation();
 
         $(this).removeClass('icon-pencil').addClass('icon-remove');
-
-        var row = $(this).closest('tr');
-        var id = row.data('id');
-        var ch = channels[row.data('key')];
+        
+        var id = $(this).closest('tr').data('id');
+        var ch = channels[id];
         
         var type = 'DOUBLE';
         if (typeof ch.configs !== 'undefined' && typeof ch.configs.valueType !== 'undefined') {
@@ -309,14 +349,14 @@ function registerEvents() {
         
         $(this).removeClass('icon-share-alt').addClass('icon-pencil');
 
-        var row = $(this).closest('tr');
-        var ch = channels[row.data('key')];
+        var id = $(this).closest('tr').data('id');
+        var ch = channels[id];
         
         var type = 'DOUBLE';
         if (typeof ch.configs !== 'undefined' && typeof ch.configs.valueType !== 'undefined') {
             type = ch.configs.valueType;
         }
-        var value = getChannelInputValue(row.data('id'), type);
+        var value = getChannelInputValue(id, type);
         
         channel.write(ch.ctrlid, ch.id, value, type, function(result) {
             if (typeof result.success !== 'undefined' && !result.success) {
@@ -337,25 +377,28 @@ function registerEvents() {
 
     $(".channel-action").on("click", ".icon-wrench", function(e) {
         e.stopPropagation();
-        
+
+        // Get channel of clicked row
         var id = $(this).closest('tr').data('id');
+        var channel = channels[id];
+        
+        channel_dialog.loadConfig(channel);
     });
 
     $(".channels").off();
     $(".channels").on("click", ".channel-slider", function(e) {
         e.stopPropagation();
-        
-        var row = $(this).closest('tr');
-        
-        var value = channels[row.data('key')].value;
+
+        var id = $(this).closest('tr').data('id');
+        var value = channels[id].value;
         if (typeof value === 'string' || value instanceof String) {
             value = (value == 'true');
         }
         if (value !== $(this).is(':checked')) {
-            $('#'+row.data('id')+'-write span').removeClass('icon-remove').addClass('icon-share-alt');
+            $('#'+id+'-write span').removeClass('icon-remove').addClass('icon-share-alt');
         }
         else {
-            $('#'+row.data('id')+'-write span').removeClass('icon-share-alt').addClass('icon-remove');
+            $('#'+id+'-write span').removeClass('icon-share-alt').addClass('icon-remove');
         }
     });
 
@@ -367,20 +410,50 @@ function registerEvents() {
         timeout = setTimeout(function() {
             timeout = null;
             
-            var row = $(self).closest('tr');
-            
-            var value = channels[row.data('key')].value;
+            var id = $(this).closest('tr').data('id');
+            var value = channels[id].value;
             if (!isNaN(value)) {
-				value = value.toFixed(3);
+                value = value.toFixed(3);
             }
             var newVal = $(self).val();
             if (newVal != "" && newVal !== value) {
-                $('#'+row.data('id')+'-write span').removeClass('icon-remove').addClass('icon-share-alt');
+                $('#'+id+'-write span').removeClass('icon-remove').addClass('icon-share-alt');
             }
             else {
-                $('#'+row.data('id')+'-write span').removeClass('icon-share-alt').addClass('icon-remove');
+                $('#'+id+'-write span').removeClass('icon-share-alt').addClass('icon-remove');
             }
         }, 200);
+    });
+
+    $(".device").off('click');
+    $(".device").on('click', '.device-config', function(e) {
+        e.stopPropagation();
+        
+        // Get device of clicked row
+        var id = $(this).closest('tr').data('id');
+        var device = devices[id];
+        
+        device_dialog.loadConfig(device);
+    });
+
+    $(".device").on('click', '.device-add', function(e) {
+        e.stopPropagation();
+        
+        // Get device of clicked row
+        var id = $(this).closest('tr').data('id');
+        var device = devices[id];
+        
+        channel_dialog.loadNew(device);
+    });
+
+    $(".device").on('click', '.device-scan', function(e) {
+        e.stopPropagation();
+        
+        // Get device of clicked row
+        var id = $(this).closest('tr').data('id');
+        var device = devices[id];
+        
+        channel_dialog.loadScan(device);
     });
 }
 
@@ -411,17 +484,16 @@ function setChannelInputValue(id, type, value) {
     }
 }
 
-function associateById(list) {
+function associateById(prefix, list) {
     dict = {};
     for (var i in list) {
-        dict[list[i].ctrlid+':'+list[i].id] = list[i];
+        dict[prefix+'-muc'+list[i].ctrlid+'-'+list[i].id.toLowerCase().replace(/[._]/g, '-')] = list[i];
     }
     return dict;
 }
 
 $.ajax({ url: path+"muc/driver/registered.json", dataType: 'json', async: true, success: function(result) {
-	device_dialog.drivers = result;
-	device_dialog.drawDrivers(model);
+    device_dialog.drivers = result;
 }});
 
 $("#device-new").on('click', function () {

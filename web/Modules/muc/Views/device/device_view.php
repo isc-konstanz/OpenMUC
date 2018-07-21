@@ -179,10 +179,7 @@
         // Get device of clicked row
         var device = table.data[$(this).attr('row')];
 
-        // Do not open dialog, if no corresponding driver exists
-        if (device['ctrlid'] > 0 && device['state'] != 'UNAVAILABLE') {
-            channel_dialog.loadScan(device);
-        }
+        channel_dialog.loadScan(device);
     });
 
     $("#table").on('click', '.icon-plus-sign', function() {
@@ -191,10 +188,7 @@
             // Get device of clicked row
             var device = table.data[$(this).attr('row')];
 
-            // Do not open dialog, if no corresponding driver exists
-            if (device['ctrlid'] > 0 && device['state'] != 'UNAVAILABLE') {
-                channel_dialog.loadNew(device);
-            }
+            channel_dialog.loadNew(device);
         }
     });
 

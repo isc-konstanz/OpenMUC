@@ -25,8 +25,8 @@ class ChannelCache
         $this->log = new EmonLogger(__FILE__);
     }
 
-    public function create($userid, $ctrlid, $deviceid, $configs) {
-        $result = $this->channel->create($userid, $ctrlid, $deviceid, $configs);
+    public function create($userid, $ctrlid, $driverid, $deviceid, $configs) {
+        $result = $this->channel->create($userid, $ctrlid, $driverid, $deviceid, $configs);
         if ($this->redis && isset($result["channel"])) {
             $channel = $result['channel'];
             $id = $channel['id'];
