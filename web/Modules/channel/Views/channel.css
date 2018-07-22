@@ -21,21 +21,26 @@
     width: 100%;
 }
 .device-header table td:nth-of-type(1) {
+    width: 14px;
+    padding: 0px 2px 4px 19px;
+    text-align: center;
+}
+.device-header table td:nth-of-type(2) {
     white-space: nowrap;
     width: 100%;
     color: #666;
 }
-.device-header table td:nth-of-type(2),
 .device-header table td:nth-of-type(3),
-.device-header table td:nth-of-type(4) {
+.device-header table td:nth-of-type(4),
+.device-header table td:nth-of-type(5) {
     padding: 10px 16px 10px 16px;
     width: 14px;
     text-align: center;
     border-left: 1px solid #eee;
 }
-.device-header table td:nth-of-type(2):hover,
 .device-header table td:nth-of-type(3):hover,
-.device-header table td:nth-of-type(4):hover {
+.device-header table td:nth-of-type(4):hover,
+.device-header table td:nth-of-type(5):hover {
     background-color: #eaeaea;
 }
 
@@ -149,4 +154,24 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
 
 *::before, *::after {
     box-sizing: border-box;
+}
+
+.channel-header {
+	position: relative;
+    margin-bottom: 5px;
+}
+.channel-header .select {
+	margin: 0px 8px 2px 20px;
+}
+.channel-header span {
+	color: #b3b3b3;
+	font-size: 12px;
+}
+.channel-header .channel-select-action {
+	position: absolute;
+	right: 8px;
+	bottom: 4px;
+}
+.channel-header .channel-select-action .btn {
+	padding: 4px 8px;
 }

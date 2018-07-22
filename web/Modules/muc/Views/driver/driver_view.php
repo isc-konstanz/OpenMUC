@@ -30,7 +30,7 @@
 <div class="view-container">
     <div style="float:right">
         <span id="api-help-header"><a href="api"><?php echo _('Driver API Help'); ?></a></span>
-        <a href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
+        <a style="text-decoration: none;" href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
     </div>
     <div id="driver-header"><h2><?php echo _('Drivers'); ?></h2></div>
 
