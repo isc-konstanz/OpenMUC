@@ -31,8 +31,8 @@ class ChannelCache
             $channel = $result['channel'];
             $id = $channel['id'];
             
-            $this->redis->sAdd("user:muc:$ctrlid", $id);
-            $this->redis->hMSet("channel:muc$ctrlid:$id", $channel);
+            $this->redis->sAdd("muc:channel:$ctrlid", $id);
+            $this->redis->hMSet("channel:$ctrlid:$id", $channel);
         }
         return $result;
     }
@@ -45,7 +45,7 @@ class ChannelCache
         else {
             $channel_exist = false;
             if ($this->redis) {
-                $channel_exist = $this->redis->exists("channel:muc$ctrlid:$id");
+                $channel_exist = $this->redis->exists("channel:$ctrlid:$id");
             }
             else {
                 // Always return true if redis is not enabled
@@ -76,8 +76,8 @@ class ChannelCache
                 $ctrlid = $channel['ctrlid'];
                 $id = $channel['id'];
                 
-                $this->redis->sAdd("user:muc:$ctrlid", $id);
-                $this->redis->hMSet("channel:muc$ctrlid:$id", array(
+                $this->redis->sAdd("muc:channel:$ctrlid", $id);
+                $this->redis->hMSet("channel:$ctrlid:$id", array(
                     'id'=>$id,
                     'userid'=>$userid,
                     'ctrlid'=>$ctrlid,
@@ -105,9 +105,9 @@ class ChannelCache
         foreach($this->ctrl->get_list($userid) as $ctrl) {
             $ctrlid = $ctrl['id'];
             
-            $channelids = $this->redis->sMembers("user:muc:$ctrlid");
+            $channelids = $this->redis->sMembers("muc:channel:$ctrlid");
             foreach ($channelids as $id) {
-                $channel = (array) $this->redis->hGetAll("channel:muc$ctrlid:$id");
+                $channel = (array) $this->redis->hGetAll("channel:$ctrlid:$id");
                 $channel['time'] = null;
                 $channel['value'] = null;
                 $channel['flag'] = 'LOADING';
@@ -127,7 +127,7 @@ class ChannelCache
         if (!$this->redis) {
             return $this->channel->get_list($ctrlid, $id);
         }
-        $channel = (array) $this->redis->hGetAll("channel:muc$ctrlid:$id");
+        $channel = (array) $this->redis->hGetAll("channel:$ctrlid:$id");
         $channel['time'] = null;
         $channel['value'] = null;
         $channel['flag'] = 'LOADING';
@@ -148,12 +148,12 @@ class ChannelCache
             
             $newid = $configs['id'];
             if ($id != $newid) {
-                $this->redis->del("channel:muc$ctrlid:$id");
-                $this->redis->srem("user:muc:$ctrlid", $id);
+                $this->redis->del("channel:$ctrlid:$id");
+                $this->redis->srem("muc:channel:$ctrlid", $id);
                 
-                $this->redis->sAdd("user:muc:$ctrlid", $newid);
+                $this->redis->sAdd("muc:channel:$ctrlid", $newid);
             }
-            $this->redis->hMSet("channel:muc$ctrlid:$newid", array(
+            $this->redis->hMSet("channel:$ctrlid:$newid", array(
                 'id'=>$newid,
                 'userid'=>$userid,
                 'ctrlid'=>$ctrlid,
@@ -169,8 +169,8 @@ class ChannelCache
     public function delete($ctrlid, $id) {
         $result = $this->channel->delete($ctrlid, $id);
         if ($this->redis && isset($result["success"]) && $result["success"]) {
-            $this->redis->del("channel:muc$ctrlid:$id");
-            $this->redis->srem("user:muc:$ctrlid", $id);
+            $this->redis->del("channel:$ctrlid:$id");
+            $this->redis->srem("muc:channel:$ctrlid", $id);
         }
         return $result;
     }

@@ -247,7 +247,7 @@ class DeviceConnection
         require_once "Modules/muc/Models/driver_model.php";
         $driver = new Driver($this->ctrl);
         
-        $response = $driver->get_configured($ctrlid);
+        $response = $driver->get_configured(null, $ctrlid);
         if (isset($response["success"]) && !$response["success"]) {
             return $response;
         }

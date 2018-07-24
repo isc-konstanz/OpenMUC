@@ -134,7 +134,7 @@ class Controller
         $userid = intval($userid);
         
         if (!$this->redis->exists("user:muc:$userid")) $this->load_redis($userid);
-
+        
         $ctrls = array();
         $ctrlids = $this->redis->sMembers("user:muc:$userid");
         foreach ($ctrlids as $id)
@@ -175,7 +175,7 @@ class Controller
         
         $response = $this->request($id, 'drivers', 'GET', null);
         if (isset($response["success"]) && !$response["success"]) {
-            return '';
+            return $response;
         }
         return $response['drivers'];
     }
