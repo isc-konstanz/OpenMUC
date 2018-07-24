@@ -57,7 +57,19 @@ class ChannelCache
     }
 
     public function load($userid) {
-        $channels = $this->channel->get_list($userid);
+        $userid = intval($userid);
+        
+        $channels = array();
+        foreach($this->ctrl->get_list($userid) as $ctrl) {
+            // Get drivers of all registered MUCs and add identifying location description and parse their configuration
+            $result = $this->ctrl->request($ctrl['id'], 'channels/details', 'GET', null);
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
+            foreach($result['details'] as $details) {
+                $channels[] = $this->channel->get_channel($ctrl, $details);
+            }
+        }
         
         if ($this->redis) {
             foreach ($channels as $channel) {

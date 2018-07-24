@@ -83,8 +83,7 @@
     <div id="channel-delete-body" class="modal-body">
         <p><?php echo _('Deleting a channel is permanent.'); ?>
             <br><br>
-            <?php echo _('If the representing channel is active and data gets written to an input, it will no longer be able to post data. '); ?>
-            <?php echo _('The corresponding input and configurations will be removed, while feeds and all historic data is kept. '); ?>
+            <?php echo _('Corresponding input and configurations will be removed, while feeds and all historic data will be kept. '); ?>
             <?php echo _('To remove it, delete them manually afterwards.'); ?>
             <br><br>
             <?php echo _('Are you sure you want to proceed?'); ?>

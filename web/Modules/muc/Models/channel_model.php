@@ -203,7 +203,7 @@ class Channel
         return $this->get_channel($ctrl, $details);
     }
 
-    private function get_channel($ctrl, $details) {
+    public function get_channel($ctrl, $details) {
         $time = isset($details['timestamp']) ? $details['timestamp'] : null;
         $value = isset($details['value']) ? $details['value'] : null;
         

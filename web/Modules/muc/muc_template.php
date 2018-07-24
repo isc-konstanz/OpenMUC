@@ -151,18 +151,16 @@ class MucTemplate extends DeviceTemplate
             }
             
             // Create device connection
-            $result = $this->create_device($ctrlid, $device['name'], $options, $result->devices);
-            if (isset($result["success"]) && !$result["success"]) {
-                return $result;
+            $response = $this->create_device($ctrlid, $device['name'], $options, $result->devices);
+            if (isset($response["success"]) && !$response["success"]) {
+                return $response;
             }
             
             if (isset($template->inputs)) {
-                $channels = $template->inputs;
-                
                 // Create channels
-                $result = $this->create_channels($userid, $ctrlid, $device['name'], $options, $channels);
-                if (isset($result["success"]) && !$result["success"]) {
-                    return $result;
+                $response = $this->create_channels($userid, $ctrlid, $device['name'], $options, $result->devices, $template->inputs);
+                if (isset($response["success"]) && !$response["success"]) {
+                    return $response;
                 }
             }
         }
@@ -206,7 +204,7 @@ class MucTemplate extends DeviceTemplate
     }
 
     // Create the channels
-    protected function create_channels($userid, $ctrlid, $deviceid, $options, $channels) {
+    protected function create_channels($userid, $ctrlid, $deviceid, $options, $devices, $channels) {
         require_once "Modules/muc/muc_model.php";
         $ctrl = new Controller($this->mysqli, $this->redis);
         
@@ -233,11 +231,17 @@ class MucTemplate extends DeviceTemplate
             if (isset($configs['device'])) {
                 $device = $configs['device'];
                 unset($configs['device']);
+                
+                foreach ($devices as $d) {
+                    $driver = $d->driver;
+                    break;
+                }
             }
             else {
                 $device = $deviceid;
+                $driver = $devices{0}->driver;
             }
-            $result = $channel->create($userid, $ctrlid, $device, json_encode($configs));
+            $result = $channel->create($userid, $ctrlid, $driver, $device, json_encode($configs));
             if (isset($result["success"]) && !$result["success"]) {
                 return $result;
             }

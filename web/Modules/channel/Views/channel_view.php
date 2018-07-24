@@ -22,7 +22,7 @@
             <?php echo _('If configured to log sampled data, values will be written into inputs for the same key, to allow further processing.'); ?>
             <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Channels API helper'); ?></a>
         </p>
-       </div>
+    </div>
     <div id="channel-header" class="channel-header">
         <h2><?php echo _('Channels'); ?></h2>
         
@@ -38,6 +38,29 @@
     <div id="channel-loader" class="ajax-loader"></div>
     
     <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device connection'); ?></button>
+</div>
+
+<div id="channels-delete-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="channels-delete-modal" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="channels-delete-modal"><?php echo _('Delete Channels'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <p><?php echo _('The following channels will be deleted permanently:'); ?>
+        </p>
+		<div id="channels-delete-list"></div>
+        <p style="color:#999">
+            <?php echo _('Corresponding inputs and configurations will be removed, while feeds and all historic data will be kept. '); ?>
+            <?php echo _('To remove those, delete them manually afterwards.'); ?>
+        </p>
+        <p>
+            <?php echo _('Are you sure you want to proceed?'); ?>
+        </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="channels-delete-confirm" class="btn btn-primary"><?php echo _('Delete'); ?></button>
+    </div>
 </div>
 
 <?php require "Modules/muc/Views/device/device_dialog.php"; ?>
@@ -65,7 +88,7 @@ channel.list(function(result) {
 function update() {
     device.list(function(result) { devices = associateById('device', result); });
     channel.load(function(result) {
-        if (result.length > 0) {
+        if (typeof result.success === 'undefined' || result.success) {
             var wait = function() {
                 if (Object.keys(devices).length == 0) {
                     setTimeout(wait, 100);
@@ -108,7 +131,8 @@ function updaterStop() {
 //---------------------------------------------------------------------------------------------
 function draw(channels) {
     $('#channel-loader').hide();
-    if (Object.keys(channels).length == 0) {
+    if (Object.keys(channels).length == 0 && 
+    	    Object.keys(devices).length == 0) {
         $("#channel-none").show();
         $("#channel-header").hide();
         $("#api-help-header").hide();
@@ -179,6 +203,8 @@ function drawDevice(id, device, devices) {
     if (Object.keys(channels).length > 0) {
         var checked = true;
         var indeterminate = false;
+
+        var count = 0;
         for (var i in channels) {
             if (channels[i].deviceid == device.id) {
                 if (typeof selected[i] === 'undefined') {
@@ -186,12 +212,14 @@ function drawDevice(id, device, devices) {
                 }
                 if (selected[i]) {
                 	indeterminate = true;
+                	count++;
                 }
                 else {
                 	checked = false;
                 }
             }
         }
+        if (count == 0) checked = false;
         if (checked) indeterminate = false;
         
         $('#'+id+'-select').prop('checked', checked).prop('indeterminate', indeterminate);
@@ -222,7 +250,7 @@ function drawChannel(id, checked, channel, device) {
     var type = channel.configs.valueType;
     
     device.append(
-        "<tr data-id='"+id+"'>" +
+        "<tr id='"+id+"-row' data-id='"+id+"'>" +
             "<td><input id='"+id+"-select' class='channel-select select' type='checkbox' "+checked+"></input></td>" +
             "<td>" +
                 "<span class='channel-name'>"+channel.id+"</span>" +
@@ -241,16 +269,18 @@ function drawChannel(id, checked, channel, device) {
 
 function drawRecords(records) {
     for (var i in records) {
-        var record = records[i];
-        var id = 'channel-muc'+record.ctrlid+'-'+record.id.toLowerCase().replace(/[._]/g, '-');
-        var type = channels[id].configs.valueType;
-        
-        channels[id].flag = record.flag;
-        channels[id].time = record.time;
-        channels[id].flag = record.value;
-        
-        $('#'+id+'-flag').html(drawRecordFlag(record.flag));
-        $('#'+id+'-sample').html(drawRecordValue(id, type, record.value));
+        if (typeof channels[id] !== 'undefined') {
+            var record = records[i];
+            var id = 'channel-muc'+record.ctrlid+'-'+record.id.toLowerCase().replace(/[._]/g, '-');
+            var type = channels[id].configs.valueType;
+            
+            channels[id].flag = record.flag;
+            channels[id].time = record.time;
+            channels[id].flag = record.value;
+            
+            $('#'+id+'-flag').html(drawRecordFlag(record.flag));
+            $('#'+id+'-sample').html(drawRecordValue(id, type, record.value));
+        }
     }
 }
 
@@ -645,6 +675,30 @@ $.ajax({ url: path+"muc/driver/registered.json", dataType: 'json', async: true, 
 $("#device-new").on('click', function () {
     
     device_dialog.loadNew();
+});
+
+$("#channel-delete").on('click', function () {
+    var list = "";
+    for (var id in channels) {
+        if (selected[id]) {
+        	list += "<li>"+channels[id].id+"</li>";
+        }
+    }
+    $('#channels-delete-list').html("<ul>"+list+"</ul>");
+    $('#channels-delete-modal').modal('show');
+});
+
+$("#channels-delete-confirm").on('click', function () {
+    for (var id in channels) {
+        if (selected[id]) {
+            $('#'+id+'-row').remove();
+            channel.remove(channels[id].ctrlid, channels[id].id);
+        }
+    }
+    update();
+    
+    drawSelected(false);
+    $('#channels-delete-modal').modal('hide');
 });
 
 </script>
