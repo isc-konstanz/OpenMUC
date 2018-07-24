@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+  <driver id="modbus">
+    <name>Modbus</name>
+    <description><![CDATA[
+        Modbus is a communication protocol based on master-slave principle.<br>
+        It has become a de facto standard communication protocol and is now a commonly 
+        available means of connecting industrial electronic devices.<br>
+        The Modbus driver supports RTU, TCP and RTU over TCP.
+      ]]>
+    </description>
+    
+    <deviceAddress>
+      <syntax>
+        <keyValue>false</keyValue>
+        <separator>:</separator>
+      </syntax>
+      <option id="address">
+        <name>Address</name>
+        <description><![CDATA[
+            <ul>
+              <li><b>TCP</b> and <b>RTUTCP</b>: The DeviceAddress for TCP and RTUTCP connection is specified by an IP address and an optional port. <br>
+            	If no port is specified, the driver uses the modbus default port 502.</li>
+              <li><b>RTU</b>: The DeviceAddress for RTU connection is specified by a serial port like /dev/ttyS0.</li>
+            </ul>
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+      </option>
+      <option id="port">
+        <name>Port</name>
+        <description><![CDATA[
+            The DeviceAddress for TCP and RTUTCP connection is specified by an IP address and an optional port. <br>
+            If no port is specified, the driver uses the modbus default port 502.
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+        <default>502</default>
+      </option>
+    </deviceAddress>
+    
+    <deviceSettings>
+      <syntax>
+        <keyValue assignment="=">true</keyValue>
+        <separator>:</separator>
+      </syntax>
+      <option id="type">
+        <name>Type</name>
+        <description><![CDATA[
+            The connection type used.<br><br>
+            <b>For RTU connections all optional settings need to be configured.</b>
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="RTU">RTU</item>
+          <item value="TCP">TCP</item>
+          <item value="RTUTCP">RTUTCP</item>
+        </selection>
+      </option>
+      <option id="encoding">
+        <name>Encoding</name>
+        <description><![CDATA[
+            <i>Mandatory for RTU only.</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="SERIAL_ENCODING_RTU">Serial Encoding</item>
+        </selection>
+        <default>SERIAL_ENCODING_RTU</default>
+      </option>
+      <option id="baudrate">
+        <name>Baudrate</name>
+        <description><![CDATA[
+            The Baudrate is the number of distinct symbol changes made to the transmission medium per seconds.<br>
+            It is necessary to configure the same Baudrate for master and slave.<br><br>
+            <b>Example:</b> 2400, 9600, 115200<br><br>
+            <i>Mandatory for RTU only.</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>INTEGER</type>
+      </option>
+      <option id="databits">
+        <name>Data bits</name>
+        <description><![CDATA[
+        	Number of transmitted data bits.<br><br>
+            <i>Mandatory for RTU only.</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="DATABITS_5">5 data bits</item>
+          <item value="DATABITS_6">6 data bits</item>
+          <item value="DATABITS_7">7 data bits</item>
+          <item value="DATABITS_8">8 data bits</item>
+        </selection>
+      </option>
+      <option id="parity">
+        <name>Parity</name>
+        <description><![CDATA[
+            The default setting is even parity.<br><br>
+            Other modes may also be used.<br><br>
+            Remark: the use of no parity requires 2 stop bits.<br><br>
+            <i>Mandatory for RTU only.</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="PARITY_EVEN">even parity</item>
+          <item value="PARITY_MARK">mark parity</item>
+          <item value="PARITY_NONE">no parity</item>
+          <item value="PARITY_ODD">odd parity</item>
+          <item value="PARITY_SPACE">space parity</item>
+        </selection>
+        <default>PARITY_EVEN</default>
+      </option>
+      <option id="stopbits">
+        <name>Stop bits</name>
+        <description><![CDATA[
+            If no parity bit is configured, it is necessary to implement two stop bits.<br><br>
+            <i>Mandatory for RTU only.</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="STOPBITS_1">1 stop bit</item>
+          <item value="STOPBITS_1_5">1.5 stop bits</item>
+          <item value="STOPBITS_2">2 stop bits</item>
+        </selection>
+      </option>
+      <option id="echo">
+        <name>Echo</name>
+        <description><![CDATA[
+            <i>Mandatory for RTU only.</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="ECHO_TRUE">Echo enabled</item>
+          <item value="ECHO_FALSE">Echo disabled</item>
+        </selection>
+      </option>
+      <option id="flowControlIn">
+        <name>Flow control incoming data</name>
+        <description><![CDATA[
+        	Hardware flow control: RTS/CTS<br><br>
+        	Software flow control: XON/XOFF<br><br>
+            <i>Mandatory for RTU only.</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="FLOWCONTROL_NONE">no flow control</item>
+          <item value="FLOWCONTROL_RTSCTS_IN">flow control over RTS/CTS</item>
+          <item value="FLOWCONTROL_XONXOFF_IN">flow control over XON/XOFF</item>
+        </selection>
+      </option>
+      <option id="flowControlOut">
+        <name>Flow Control outgoing data</name>
+        <description><![CDATA[
+        	Hardware flow control: RTS/CTS<br><br>
+        	Software flow control: XON/XOFF<br><br>
+            <i>Mandatory for RTU only.</i>
+          ]]>
+        </description>
+        <mandatory>false</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="FLOWCONTROL_NONE">no flow control</item>
+          <item value="FLOWCONTROL_RTSCTS_OUT">flow control over RTS/CTS</item>
+          <item value="FLOWCONTROL_XONXOFF_OUT">flow control over XON/XOFF</item>
+        </selection>
+      </option>
+    </deviceSettings>
+    
+    <channelAddress>
+      <syntax>
+        <keyValue>false</keyValue>
+        <separator>:</separator>
+      </syntax>
+      <option id="UnitId">
+        <name>Unit ID</name>
+        <description><![CDATA[
+        	<ol>
+              <li><b>Adressed by IP address</b>: The value 255 has to be used<br></li>
+              <li><b>Serial Connection</b>: The device address of the Modbus slave.<br>
+              The slave device address is assigned from 1 to 247.<br>
+              Address 0 is used as broadcast address.</li>
+            </ol>
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>INTEGER</type>
+      </option>
+      <option id="PrimaryTable">
+        <name>Primary Table</name>
+        <description><![CDATA[
+        	The Primary Table defines which part of the device memory should be accessed.
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="COILS">Coils</item>
+          <item value="DISCRETE_INPUTS">Discrete Input</item>
+          <item value="INPUT_REGISTERS">Input Register</item>
+          <item value="HOLDING_REGISTERS">Holding Register</item>
+        </selection>
+      </option>
+      <option id="Address">
+        <name>Address</name>
+        <description><![CDATA[
+        	Address of the channel/register. Decimal integer value – not hex!
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>INTEGER</type>
+      </option>
+      <option id="Datatyp">
+        <name>Data type</name>
+        <description><![CDATA[
+        	Type of the transmitted data. 
+          ]]>
+        </description>
+        <mandatory>true</mandatory>
+        <type>STRING</type>
+        <selection>
+          <item value="BOOLEAN">boolean</item>
+          <item value="INT16">int16</item>
+          <item value="UINT16">uint16</item>
+          <item value="INT32">int32</item>
+          <item value="UINT32">uint32</item>
+          <item value="LONG">long</item>
+          <item value="FLOAT">float</item>
+          <item value="DOUBLE">double</item>
+          <item value="BYTEARRAY">bytearray</item>
+        </selection>
+      </option>
+    </channelAddress>
+  </driver>
+</configuration>
