@@ -55,13 +55,20 @@ class Channel
         else $description = '';
         
         $logging = $this->parse_log_settings($userid, $nodeid, $id, $description, $logging);
-        if ($description !== '') {
-            $input = $this->get_input_by_node_name($userid, $logging['nodeid'], $id);
-            if ($input) {
-                $inputid = $input['id'];
-                $this->input->set_fields($inputid, '{"description":"'.$description.'"}');
-                if ($this->redis) $this->load_redis_input($inputid);
+        
+        $input = $this->get_input_by_node_name($userid, $logging['nodeid'], $id);
+        if (isset($input)) {
+            $inputid = $input['id'];
+        }
+        else {
+            $inputid = $this->input->create_input($userid, $nodeid, $id);
+            if ($inputid < 0) {
+                return array('success'=>false, 'message'=>_("Unable to create input for channel: $id"));
             }
+        }
+        if ($description !== '') {
+            $this->input->set_fields($inputid, '{"description":"'.$description.'"}');
+            if ($this->redis) $this->load_redis_input($inputid);
         }
         
         $data = array(
@@ -379,11 +386,6 @@ class Channel
                     $auth = 'DEFAULT';
                     break;
             }
-            
-            $input = $this->get_input_by_node_name($userid, $nodeid, $name);
-            if (empty($input)) {
-                $this->input->create_input($userid, $nodeid, $name);
-            }
         }
         $settings = array(
             'nodeid' => $nodeid
@@ -484,15 +486,26 @@ class Channel
         $ctrlid = intval($ctrlid);
         
         $configs = (array) json_decode($configs);
-        $logging = (array) $configs['logging'];
         
-        if (!ctype_alnum(str_replace(array('.', '_', '-'), '', $configs['id']))) {
-            return array('success'=>false, 'message'=>_("Invalid characters in channel key"));
+        if (isset($configs['logging'])) {
+            $logging = (array) $configs['logging'];
+            
+            if (!ctype_alnum(str_replace(array('.', '_', '-'), '', $logging['nodeid']))) {
+                return array('success'=>false, 'message'=>_("Invalid characters in channel node"));
+            }
         }
-        $newid = $configs['id'];
+        else {
+            $logging = array('nodeid' => $nodeid);
+        }
         
-        if (!ctype_alnum(str_replace(array('.', '_', '-'), '', $logging['nodeid']))) {
-            return array('success'=>false, 'message'=>_("Invalid characters in channel node"));
+        if (isset($configs['id'])) {
+            if (!ctype_alnum(str_replace(array('.', '_', '-'), '', $configs['id']))) {
+                return array('success'=>false, 'message'=>_("Invalid characters in channel key"));
+            }
+            $newid = $configs['id'];
+        }
+        else {
+            $newid = $id;
         }
         $newnode = $logging['nodeid'];
         
@@ -502,7 +515,9 @@ class Channel
             }
             $description = $configs['description'];
         }
-        else $description = '';
+        else {
+            $description = '';
+        }
         
         $logging = $this->parse_log_settings($userid, $nodeid, $id, $description, $logging);
         $channel = $this->parse_channel($newid, $description, $logging, $configs);
@@ -596,10 +611,13 @@ class Channel
         return array('success'=>true, 'message'=>'Channel successfully removed');
     }
 
-    public function scan($ctrlid, $device, $settings) {
+    public function scan($userid, $ctrlid, $driverid, $deviceid, $settings) {
+        $userid = intval($userid);
         $ctrlid = intval($ctrlid);
-
-        $response = $this->ctrl->request($ctrlid, 'devices/'.$device.'/scan', 'GET', array('settings' => $settings));
+        
+        if (empty($settings)) $settings = "";
+        
+        $response = $this->ctrl->request($ctrlid, 'devices/'.$deviceid.'/scan', 'GET', array('settings' => $settings));
         if (isset($response["success"]) && !$response["success"]) {
             return $response;
         };
@@ -608,8 +626,10 @@ class Channel
         foreach($response['channels'] as $scan) {
             
             $channel = array(
+                'userid'=>$userid,
                 'ctrlid'=>$ctrlid,
-                'deviceid'=>$device,
+                'driverid'=>$driverid,
+                'deviceid'=>$deviceid,
                 'description'=>'',
                 'address'=>array(),
                 'settings'=>array(),

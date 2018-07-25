@@ -107,6 +107,8 @@ var config =
     },
 
     'drawOptionGroup':function(group, select) {
+    	$('#option-'+group+'-table', config.container).empty();
+    	
         // Show options, if at least one of them is defined or mandatory
         var show = false;
         var options = "";

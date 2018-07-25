@@ -81,11 +81,14 @@
         <h3 id="channel-delete-label"></h3>
     </div>
     <div id="channel-delete-body" class="modal-body">
-        <p><?php echo _('Deleting a channel is permanent.'); ?>
-            <br><br>
-            <?php echo _('Corresponding input and configurations will be removed, while feeds and all historic data will be kept. '); ?>
-            <?php echo _('To remove it, delete them manually afterwards.'); ?>
-            <br><br>
+        <p>
+            <?php echo _('Deleting a channel is permanent.'); ?>
+        </p>
+        <p style="color:#999">
+            <?php echo _('Corresponding configurations will be removed, while inputs, feeds and all historic data will be kept. '); ?>
+            <?php echo _('To remove those, delete them manually afterwards.'); ?>
+        </p>
+        <p>
             <?php echo _('Are you sure you want to proceed?'); ?>
         </p>
         <div id="channel-delete-loader" class="ajax-loader" style="display:none;"></div>

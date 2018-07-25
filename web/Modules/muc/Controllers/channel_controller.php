@@ -46,8 +46,8 @@ function channel_controller($format, $action, $subaction, $method) {
                         && $session['userid'] == $ctrlget['userid']) {
                     
                     if ($action == "create") $result = $channel->create($session['userid'], $ctrlid, get('driverid'), get('deviceid'), get('configs'));
+                    elseif ($action == 'scan') $result = $channel->scan($session['userid'], $ctrlid, get('driverid'), get('deviceid'), get('settings'));
                     elseif ($action == 'info') $result = $channel->info($session['userid'], $ctrlid, get('driverid'));
-                    elseif ($action == 'scan') $result = $channel->scan($ctrlid, get('deviceid'), get('settings'));
                     elseif ($action == "get") $result = $channel->get($ctrlid, get('id'));
                     elseif ($action == "set") $result = $channel->set($ctrlid, get('id'), get('value'), get('valueType'));
                     elseif ($action == "write") $result = $channel->write($ctrlid, get('id'), get('value'), get('valueType'));

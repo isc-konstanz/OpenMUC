@@ -81,7 +81,7 @@ class ChannelCache
                     'id'=>$id,
                     'userid'=>$userid,
                     'ctrlid'=>$ctrlid,
-                    'deviceid'=>$channel['driverid'],
+                    'driverid'=>$channel['driverid'],
                     'deviceid'=>$channel['deviceid'],
                     'nodeid'=>$channel['nodeid'],
                     'description'=>$channel['description']
@@ -139,14 +139,34 @@ class ChannelCache
         $result = $this->channel->update($userid, $ctrlid, $nodeid, $id, $configs);
         if ($this->redis && isset($result["success"]) && $result["success"]) {
             $configs = (array) json_decode($configs);
-            $logging = (array) $configs['logging'];
+            if (isset($configs['logging'])) {
+                $logging = (array) $configs['logging'];
+                $newnode = $logging['nodeid'];
+            }
+            else {
+                $newnode = $nodeid;
+            }
+            
+            if (isset($configs['id'])) {
+                $newid = $configs['id'];
+            }
+            else {
+                $newid = $id;
+            }
             
             if (isset($configs['description'])) {
                 $description = $configs['description'];
             }
-            else $description = '';
+            else {
+                $description = '';
+            }
             
-            $newid = $configs['id'];
+            if (empty($configs['driverid']) || empty($configs['deviceid'])) {
+                $configs = $this->channel->get($ctrlid, $newid);
+            }
+            $driver = $configs['driverid'];
+            $device = $configs['deviceid'];
+            
             if ($id != $newid) {
                 $this->redis->del("channel:$ctrlid:$id");
                 $this->redis->srem("muc:channel:$ctrlid", $id);
@@ -157,9 +177,9 @@ class ChannelCache
                 'id'=>$newid,
                 'userid'=>$userid,
                 'ctrlid'=>$ctrlid,
-                'deviceid'=>$configs['driverid'],
-                'deviceid'=>$configs['deviceid'],
-                'nodeid'=>$logging['nodeid'],
+                'driverid'=>$driver,
+                'deviceid'=>$device,
+                'nodeid'=>$newnode,
                 'description'=>$description
             ));
         }

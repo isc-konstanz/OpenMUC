@@ -194,6 +194,7 @@ class DeviceConnection
                     strcmp($key, 'id') !== 0 &&
                     strcmp($key, 'description') !== 0 &&
                     strcmp($key, 'driver') !== 0 &&
+                    strcmp($key, 'driverName') !== 0 &&
                     strcmp($key, 'deviceAddress') !== 0 &&
                     strcmp($key, 'settings') !== 0 &&
                     strcmp($key, 'state') !== 0 &&

@@ -50,7 +50,7 @@
         </p>
 		<div id="channels-delete-list"></div>
         <p style="color:#999">
-            <?php echo _('Corresponding inputs and configurations will be removed, while feeds and all historic data will be kept. '); ?>
+            <?php echo _('Corresponding configurations will be removed, while inputs, feeds and all historic data will be kept. '); ?>
             <?php echo _('To remove those, delete them manually afterwards.'); ?>
         </p>
         <p>
@@ -175,12 +175,35 @@ function drawDevice(id, device, devices) {
     
     var result = $('#'+id);
     if (!result.length || result.attr('id') !== id) {
+        var checked = '';
+        if (typeof device.channels !== 'undefined') {
+            var count = 0;
+            for (var i in device.channels) {
+                var channelid = 'channel-muc'+device.ctrlid+'-'+device.channels[i].toLowerCase().replace(/[._]/g, '-');
+                
+                if (typeof selected[channelid] === 'undefined') {
+                	selected[channelid] = false;
+                }
+                if (selected[channelid]) {
+                	count++;
+                }
+            }
+            if (count > 0) {
+                if (count < device.channels.length) {
+                	checked = 'indeterminate';
+                }
+                else {
+                    checked = 'checked';
+                }
+            }
+        }
+        
         devices.append(
             "<div class='device'>" +
                 "<div id='"+id+"-header' class='device-header' data-toggle='collapse' data-target='#"+id+"-body'>" +
                     "<table>" +
                         "<tr data-id='"+id+"'>" +
-                            "<td><input id='"+id+"-select' class='device-select select' type='checkbox'></input></td>" +
+                            "<td><input id='"+id+"-select' class='device-select select' type='checkbox' "+checked+"></input></td>" +
                             "<td>" +
                                 "<span class='device-name'>"+device.id+(description.length>0 ? ":" : "")+"</span>" +
                                 "<span class='device-description'>"+description+"</span>" +
@@ -199,30 +222,6 @@ function drawDevice(id, device, devices) {
             "</div>"
         );
         result = $('#'+id);
-    }
-    if (Object.keys(channels).length > 0) {
-        var checked = true;
-        var indeterminate = false;
-
-        var count = 0;
-        for (var i in channels) {
-            if (channels[i].deviceid == device.id) {
-                if (typeof selected[i] === 'undefined') {
-                	selected[i] = false;
-                }
-                if (selected[i]) {
-                	indeterminate = true;
-                	count++;
-                }
-                else {
-                	checked = false;
-                }
-            }
-        }
-        if (count == 0) checked = false;
-        if (checked) indeterminate = false;
-        
-        $('#'+id+'-select').prop('checked', checked).prop('indeterminate', indeterminate);
     }
     return result;
 }
@@ -429,9 +428,11 @@ function selectDevice(id, state) {
         }
         if (selected[i]) count++;
     }
-    $('#'+id+'-select').prop('indeterminate', false);
-    if (!$('#'+id+'-body').hasClass('in')) {
-    	$('#'+id+'-body').collapse('show');
+    if (state) {
+        $('#'+id+'-select').prop('indeterminate', false);
+        if (!$('#'+id+'-body').hasClass('in')) {
+        	$('#'+id+'-body').collapse('show');
+        }
     }
     drawSelected(count);
 }
@@ -689,15 +690,20 @@ $("#channel-delete").on('click', function () {
 });
 
 $("#channels-delete-confirm").on('click', function () {
+	var count = 0;
     for (var id in channels) {
         if (selected[id]) {
+            delete selected[id];
+            
             $('#'+id+'-row').remove();
             channel.remove(channels[id].ctrlid, channels[id].id);
+
+            count++;
         }
     }
     update();
     
-    drawSelected(false);
+    drawSelected(count);
     $('#channels-delete-modal').modal('hide');
 });
 

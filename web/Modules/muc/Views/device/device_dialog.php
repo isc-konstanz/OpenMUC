@@ -93,12 +93,14 @@
         <h3 id="device-delete-label"></h3>
     </div>
     <div id="device-delete-body" class="modal-body">
-        <p><?php echo _('Deleting a device is permanent.'); ?>
-            <br><br>
-            <?php echo _('If the represented device is active and is using a device key, it will no longer be able to post data. '); ?>
+        <p>
+            <?php echo _('Deleting a device is permanent.'); ?>
+        </p>
+        <p style="color:#999">
             <?php echo _('All corresponding channels and configurations will be removed, while inputs, feeds and all historic data is kept. '); ?>
-            <?php echo _('To remove it, delete them manually afterwards.'); ?>
-            <br><br>
+            <?php echo _('To remove those, delete them manually afterwards.'); ?>
+        </p>
+        <p>
             <?php echo _('Are you sure you want to proceed?'); ?>
         </p>
     </div>

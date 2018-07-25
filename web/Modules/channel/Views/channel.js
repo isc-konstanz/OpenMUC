@@ -66,10 +66,10 @@ var channel = {
         });
     },
 
-    'scan':function(ctrlid, deviceid, settings, callback) {
+    'scan':function(ctrlid, driverid, deviceid, settings, callback) {
         return $.ajax({
             url: path+"muc/channel/scan.json",
-            data: "ctrlid="+ctrlid+"&deviceid="+deviceid+"&settings="+JSON.stringify(settings),
+            data: "ctrlid="+ctrlid+"&driverid="+driverid+"&deviceid="+deviceid+"&settings="+JSON.stringify(settings),
             dataType: 'json',
             async: true,
             success: callback

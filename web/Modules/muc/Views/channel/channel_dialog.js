@@ -197,7 +197,12 @@ var channel_dialog = {
             }
             $('#channel-config-loader').show();
             
-            var configs = { 'id': id, 'description': $('#channel-config-description').val() };
+            var configs = {
+            		'id': id,
+            		'driverid': channel_dialog.channel.driverid,
+            		'deviceid': channel_dialog.channel.deviceid,
+            		'description': $('#channel-config-description').val(),
+            };
             
             configs['address'] = config.encode('address');
             configs['settings'] = config.encode('settings');
@@ -347,7 +352,7 @@ var channel_dialog = {
             
             var settings = config.encode('scanSettings');
             
-            channel.scan(channel_dialog.ctrlid, channel_dialog.deviceid, settings, function(result) {
+            channel.scan(channel_dialog.ctrlid, channel_dialog.driverid, channel_dialog.deviceid, settings, function(result) {
                 $('#channel-scan-loader').hide();
                 
                 if (typeof result.success !== 'undefined' && !result.success) {
