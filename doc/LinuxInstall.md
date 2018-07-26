@@ -69,6 +69,7 @@ Inside the projects direcotry is the designated emoncms module, needed to be lin
 ~~~
 sudo chown www-data:root -R /opt/emonmuc/web/Modules
 sudo -u www-data ln -s /opt/emonmuc/web/Modules/muc /var/www/emoncms/Modules/muc
+sudo -u www-data ln -s /opt/emonmuc/web/Modules/channel /var/www/emoncms/Modules/channel
 ~~~
 
 It is strongly recommended to improve the overall experience by using the additional device module.  
