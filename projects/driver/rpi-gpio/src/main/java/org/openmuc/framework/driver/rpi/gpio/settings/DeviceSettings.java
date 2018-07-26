@@ -23,6 +23,7 @@ package org.openmuc.framework.driver.rpi.gpio.settings;
 import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
+import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 
@@ -30,8 +31,10 @@ public class DeviceSettings extends Preferences {
 
     public static final PreferenceType TYPE = PreferenceType.SETTINGS_DEVICE;
 
+    public static final String MODE_KEY = "mode";
+
     @Option
-    private GpioType type = GpioType.UNKNOWN;
+    private PinMode mode;
 
     @Option
     private boolean defaultState = false;
@@ -56,8 +59,8 @@ public class DeviceSettings extends Preferences {
         return TYPE;
     }
 
-    public GpioType getType() {
-        return type;
+    public PinMode getMode() {
+        return mode;
     }
 
     public PinState getDefaultState() {

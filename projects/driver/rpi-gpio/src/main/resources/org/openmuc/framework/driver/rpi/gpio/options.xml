@@ -32,13 +32,13 @@
     </deviceAddress>
     
     <deviceSettings>
-      <option id="type">
-        <name>I/O type</name>
+      <option id="mode">
+        <name>I/O mode</name>
         <mandatory>true</mandatory>
         <type>STRING</type>
         <selection>
-          <item value="input">Input</item>
-          <item value="output">Output</item>
+          <item value="DIGITAL_INPUT">Input</item>
+          <item value="DIGITAL_OUTPUT">Output</item>
         </selection>
       </option>
       <option id="defaultState">
@@ -118,16 +118,8 @@
     </deviceSettings>
     
     <deviceScanSettings>
-      <option id="broadcomScheme">
-        <name>Broadcom Pin Numbering Scheme</name>
-        <description><![CDATA[
-            Use the Broadcom Pin Numbering Scheme.
-          ]]>
-        </description>
-        <mandatory>false</mandatory>
-        <type>BOOLEAN</type>
-        <default>true</default>
-      </option>
+      <option id="mode"></option>
+      <option id="broadcomScheme"></option>
     </deviceScanSettings>
     
     <channelSettings>

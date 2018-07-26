@@ -23,9 +23,14 @@ package org.openmuc.framework.driver.rpi.gpio.settings;
 import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
+import com.pi4j.io.gpio.PinMode;
+
 public class DeviceScanSettings extends Preferences {
 
     public static final PreferenceType TYPE = PreferenceType.SETTINGS_SCAN_DEVICE;
+
+    @Option
+    private PinMode mode;
 
     @Option
     private boolean broadcomScheme;
@@ -33,6 +38,10 @@ public class DeviceScanSettings extends Preferences {
     @Override
     public PreferenceType getPreferenceType() {
         return TYPE;
+    }
+
+    public PinMode getMode() {
+        return mode;
     }
 
     public boolean useBroadcomScheme() {

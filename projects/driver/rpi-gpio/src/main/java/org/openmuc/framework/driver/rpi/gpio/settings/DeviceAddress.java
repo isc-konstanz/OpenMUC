@@ -27,6 +27,8 @@ public class DeviceAddress extends Preferences {
 
     public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
 
+    public static final String PIN_KEY = "pin";
+
     @Option
     private int pin;
 
