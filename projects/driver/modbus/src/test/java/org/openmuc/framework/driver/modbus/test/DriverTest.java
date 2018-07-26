@@ -22,7 +22,6 @@ public class DriverTest {
         sb.append("DeviceAddressSyntax = " + info.getDeviceAddress().getSyntax() + "\n");
         sb.append("SettingsSyntax = " + info.getDeviceSettings().getSyntax() + "\n");
         sb.append("ChannelAddressSyntax = " + info.getChannelAddress().getSyntax() + "\n");
-        sb.append("DeviceScanSettingsSyntax = " + info.getDeviceScanSettings().getSyntax() + "\n");
         logger.info(sb.toString());
 
     }

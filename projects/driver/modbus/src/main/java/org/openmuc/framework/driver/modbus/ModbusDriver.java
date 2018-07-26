@@ -23,6 +23,7 @@ package org.openmuc.framework.driver.modbus;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.modbus.rtu.ModbusConfigurationException;
@@ -44,43 +45,14 @@ import org.slf4j.LoggerFactory;
 public final class ModbusDriver implements DriverService {
 
     private static final Logger logger = LoggerFactory.getLogger(ModbusDriver.class);
+
+    private final DriverInfo info = DriverInfoFactory.getInfo(ModbusDriver.class);
+
     private static final int DEFAULT_TIMEOUT_MS = 3000;
 
     @Override
     public DriverInfo getInfo() {
-
-        final String ID = "modbus";
-
-        final String DESCRIPTION = "Driver to communicate with devices via Modbus protocol. The driver supports TCP, RTU and RTU over TCP.";
-
-        final String TCP_ADDRESS = "  TCP: <ip>[:<port>] (e.g. 192.168.30.103:502)";
-        final String RTUTCP_ADDRESS = "  RTUTCP: <ip>[:<port>] (e.g. 192.168.30.103:502)";
-        final String RTU_ADDRESS = "  RTU: <serial port> (e.g. /dev/ttyS0)";
-        final String DEVICE_ADDRESS = "The device address dependes on the selected type: \n" + TCP_ADDRESS + "\n"
-                + RTUTCP_ADDRESS + "\n" + RTU_ADDRESS;
-
-        // FIXME auto generate settings string from class to avoid inconsistency
-
-        // FIXME OpenMUC passes only the connection settings to the driver. Driver is unable to access the
-        // samplingTimeout specified in channels.xml. As workaround the timeout is added to the device settings for the
-        // modbus driver. timeoutInMs used for:
-        // TCP: m_Socket.setSoTimeout(m_Timeout);
-        // RTU: m_SerialPort.enableReceiveTimeout(ms);
-
-        final String TCP_SETTINGS = "  TCP[:timeout=<timoutInMs>] (e.g. TCP or TCP:timeout=3000)";
-        final String RTUTCP_SETTINGS = "  RTUTCP[:timeout=<timoutInMs>] ";
-        final String RTU_SETTINGS = "  RTU:<ENCODING>:<BAUDRATE>:<DATABITS>:<PARITY>:<STOPBITS>:<ECHO>:<FLOWCONTROL_IN>:<FLOWCONTEOL_OUT>[:timeout=<timoutInMs>]";
-        final String DEVICE_SETTINGS = "Device settings depend on selected type: \n" + TCP_SETTINGS + "\n"
-                + RTUTCP_SETTINGS + "\n" + RTU_SETTINGS;
-
-        final String CHANNEL_ADDRESS = "<UnitId>:<PrimaryTable>:<Address>:<Datatyp>";
-
-        final String DEVICE_SCAN_SETTINGS = "Device scan is not supported.";
-
-        final DriverInfo driverInfo = new DriverInfo(ID, DESCRIPTION, DEVICE_ADDRESS, DEVICE_SETTINGS, CHANNEL_ADDRESS,
-                DEVICE_SCAN_SETTINGS);
-
-        return driverInfo;
+        return info;
     }
 
     @Override
