@@ -3,8 +3,8 @@ repositories {
   mavenCentral()
   
   flatDir {
-    dirs rootDir.getPath() + "/../emonjava/build/libs", 
-        rootDir.getPath() + "/../OpenPCharge/build/libs"
+    dirs rootDir.getPath() + "/dependencies/emonjava", 
+        rootDir.getPath() + "/dependencies/org.openmuc.pcharge"
   }
 }
 
