@@ -50,60 +50,113 @@ class Driver
         return $drivers;
     }
 
-    public function get_registered($ctrlid) {
-        $ctrlid = intval($ctrlid);
-        
-        $response = $this->ctrl->request($ctrlid, 'drivers/registered', 'GET', null);
-        if (isset($response["success"]) && !$response["success"]) {
-            return $response;
+    public function get_registered($userid, $ctrlid) {
+        if (isset($ctrlid)) {
+            $ctrlid = intval($ctrlid);
+            $ctrls = array();
+            $ctrls[] = $this->ctrl->get($ctrlid);
         }
-        return $response['drivers'];
-    }
-
-    public function get_configured($ctrlid) {
-        $ctrlid = intval($ctrlid);
+        else {
+            $userid = intval($userid);
+            $ctrls = $this->ctrl->get_list($userid);
+        }
         
         $drivers = array();
-        
-        $result = $this->ctrl->request($ctrlid, 'drivers', 'GET', null);
-        if (isset($result["success"]) && !$result["success"]) {
-            return $result;
-        }
-        $configured = $result['drivers'];
-        
-        $result = $this->get_registered($ctrlid);
-        if (isset($result["success"]) && !$result["success"]) {
-            return $result;
-        }
-        foreach($result as $driver) {
-            if (in_array($driver['id'], $configured)) {
-                $drivers[] = $driver;
+        foreach($ctrls as $ctrl) {
+            $result = $this->ctrl->request($ctrl['id'], 'drivers/registered', 'GET', null);
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
+            foreach($result['drivers'] as $driver) {
+                $drivers[] = $this->get_description($ctrl, $driver);
             }
         }
         return $drivers;
     }
 
-    public function get_unconfigured($ctrlid) {
-        $ctrlid = intval($ctrlid);
+    public function get_configured($userid, $ctrlid) {
+        if (isset($ctrlid)) {
+            $ctrlid = intval($ctrlid);
+            $ctrls = array();
+            $ctrls[] = $this->ctrl->get($ctrlid);
+        }
+        else {
+            $userid = intval($userid);
+            $ctrls = $this->ctrl->get_list($userid);
+        }
         
         $drivers = array();
-        
-        $result = $this->ctrl->request($ctrlid, 'drivers', 'GET', null);
-        if (isset($result["success"]) && !$result["success"]) {
-            return $result;
-        }
-        $configured = $result['drivers'];
-        
-        $result = $this->get_registered($ctrlid);
-        if (isset($result["success"]) && !$result["success"]) {
-            return $result;
-        }
-        foreach($result as $driver) {
-            if (!in_array($driver['id'], $configured)) {
-                $drivers[] = $driver;
+        foreach($ctrls as $ctrl) {
+            $result = $this->ctrl->request($ctrl['id'], 'drivers', 'GET', null);
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
+            $configured = $result['drivers'];
+            
+            $result = $this->get_registered($userid, $ctrl['id']);
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
+            foreach($result as $driver) {
+                if (in_array($driver['id'], $configured)) {
+                    $drivers[] = $this->get_description($ctrl, $driver);
+                }
             }
         }
         return $drivers;
+    }
+
+    public function get_unconfigured($userid, $ctrlid) {
+        if (isset($ctrlid)) {
+            $ctrlid = intval($ctrlid);
+            $ctrls = array();
+            $ctrls[] = $this->ctrl->get($ctrlid);
+        }
+        else {
+            $userid = intval($userid);
+            $ctrls = $this->ctrl->get_list($userid);
+        }
+        
+        $drivers = array();
+        foreach($ctrls as $ctrl) {
+            $result = $this->ctrl->request($ctrl['id'], 'drivers', 'GET', null);
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
+            $configured = $result['drivers'];
+            
+            $result = $this->get_registered($userid, $ctrl['id']);
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
+            foreach($result as $driver) {
+                if (!in_array($driver['id'], $configured)) {
+                    $drivers[] = $this->get_description($ctrl, $driver);
+                }
+            }
+        }
+        return $drivers;
+    }
+
+    private function get_description($ctrl, $desc) {
+        $driver = array(
+            'userid'=>$ctrl['userid'],
+            'ctrlid'=>$ctrl['id'],
+            'ctrl'=>$ctrl['description'],
+            'id'=>$desc['id']
+        );
+        
+        if (isset($desc['name'])) {
+            $driver['name'] = $desc['name'];
+        }
+        else $driver['name'] = $desc['id'];
+        
+        if (isset($desc['description'])) {
+            $driver['description'] = $desc['description'];
+        }
+        else $driver['description'] = "";
+        
+        return $driver;
     }
 
     public function info($ctrlid, $id) {
@@ -132,7 +185,7 @@ class Driver
         $driver = array(
             'userid'=>$ctrl['userid'],
             'ctrlid'=>$ctrl['id'],
-            'controller'=>$ctrl['description'],
+            'ctrl'=>$ctrl['description'],
             'id'=>$details['id']
         );
         

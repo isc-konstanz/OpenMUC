@@ -31,17 +31,13 @@
                     <label id="channel-config-device" style="padding: 4px 6px; margin-bottom: 10px;"><span style="color:#888"><em><?php echo _('loading...'); ?></em></span></label>
                     <select id="channel-config-device-select" class="input-large" style="display:none;"></select>
                 </td>
-                <td><input id="channel-config-name" class="input-medium" type="text"></td>
+                <td><input id="channel-config-name" class="input-medium" type="text" required></td>
                 <td><input id="channel-config-description" class="input-large" type="text"></td>
             </tr>
         </table>
         <p id="channel-config-info" style="display:none;"></p>
         
-        <div class="modal-container">
-            <div id="channel-config-container"></div>
-            
-            <div id="channel-config-overlay" class="modal-overlay"></div>
-        </div>
+        <div id="channel-config-container"></div>
     </div>
     <div class="modal-footer">
         <button id="channel-config-back" class="btn" style="display:none; float:left"><?php echo _('Back'); ?></button>
@@ -70,8 +66,6 @@
             <div id="channel-scan-results-none" class="alert" style="display:none"><?php echo _('No channels found'); ?></div>
             
             <div id="channel-scan-container"></div>
-            
-            <div id="channel-scan-overlay" class="modal-overlay"></div>
         </div>
     </div>
     <div class="modal-footer">
@@ -87,12 +81,14 @@
         <h3 id="channel-delete-label"></h3>
     </div>
     <div id="channel-delete-body" class="modal-body">
-        <p><?php echo _('Deleting a channel is permanent.'); ?>
-            <br><br>
-            <?php echo _('If the representing channel is active and data gets written to an input, it will no longer be able to post data. '); ?>
-            <?php echo _('The corresponding input and configurations will be removed, while feeds and all historic data is kept. '); ?>
-            <?php echo _('To remove it, delete them manually afterwards.'); ?>
-            <br><br>
+        <p>
+            <?php echo _('Deleting a channel is permanent.'); ?>
+        </p>
+        <p style="color:#999">
+            <?php echo _('Corresponding configurations will be removed, while inputs, feeds and all historic data will be kept. '); ?>
+            <?php echo _('To remove those, delete them manually afterwards.'); ?>
+        </p>
+        <p>
             <?php echo _('Are you sure you want to proceed?'); ?>
         </p>
         <div id="channel-delete-loader" class="ajax-loader" style="display:none;"></div>
@@ -104,11 +100,8 @@
 </div>
 
 <script>
-    $('#channel-config-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-	$('#channel-scan-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-
     $(window).resize(function() {
-        channel_dialog.adjustConfigModal();
-        channel_dialog.adjustScanModal();
+        channel_dialog.adjustConfig();
+        channel_dialog.adjustScan();
     });
 </script>

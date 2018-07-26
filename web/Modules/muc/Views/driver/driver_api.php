@@ -1,6 +1,12 @@
 <?php global $path, $session, $user; ?>
 <style>
-  a.anchor{display: block; position: relative; top: -50px; visibility: hidden;}
+    a.anchor {
+        display: block;
+        position: relative;
+        top: -50px;
+        visibility: hidden;
+    }
+    .table td:nth-of-type(1) { width:25%; }
 </style>
 
 <h2><?php echo _('Driver API'); ?></h2>
@@ -29,9 +35,9 @@
 <table class="table">
     <tr><td><?php echo _('Create new driver'); ?></td><td><a href="<?php echo $path; ?>muc/driver/create.json?ctrlid=1&id=csv"><?php echo $path; ?>muc/driver/create.json?ctrlid=1&id=csv</a></td></tr>
     <tr><td><?php echo _('List drivers'); ?></td><td><a href="<?php echo $path; ?>muc/driver/list.json"><?php echo $path; ?>muc/driver/list.json</a></td></tr>
-    <tr><td><?php echo _('List registered drivers'); ?></td><td><a href="<?php echo $path; ?>muc/driver/registered.json?ctrlid=1"><?php echo $path; ?>muc/driver/registered.json?ctrlid=1</a></td></tr>
-    <tr><td><?php echo _('List configured drivers'); ?></td><td><a href="<?php echo $path; ?>muc/driver/configured.json?ctrlid=1"><?php echo $path; ?>muc/driver/configured.json?ctrlid=1</a></td></tr>
-    <tr><td><?php echo _('List unconfigured drivers'); ?></td><td><a href="<?php echo $path; ?>muc/driver/unconfigured.json?ctrlid=1"><?php echo $path; ?>muc/driver/unconfigured.json?ctrlid=1</a></td></tr>
+    <tr><td><?php echo _('List registered drivers'); ?></td><td><a href="<?php echo $path; ?>muc/driver/registered.json"><?php echo $path; ?>muc/driver/registered.json</a></td></tr>
+    <tr><td><?php echo _('List configured drivers'); ?></td><td><a href="<?php echo $path; ?>muc/driver/configured.json"><?php echo $path; ?>muc/driver/configured.json</a></td></tr>
+    <tr><td><?php echo _('List unconfigured drivers'); ?></td><td><a href="<?php echo $path; ?>muc/driver/unconfigured.json"><?php echo $path; ?>muc/driver/unconfigured.json</a></td></tr>
     <tr><td><?php echo _('Get driver information'); ?></td><td><a href="<?php echo $path; ?>muc/driver/info.json?ctrlid=1&id=csv"><?php echo $path; ?>muc/driver/info.json?ctrlid=1&id=csv</a></td></tr>
     <tr><td><?php echo _('Get driver details'); ?></td><td><a href="<?php echo $path; ?>muc/driver/get.json?ctrlid=1&id=csv"><?php echo $path; ?>muc/driver/get.json?ctrlid=1&id=csv</a></td></tr>
     <tr><td><?php echo _('Update driver configuration'); ?></td><td><a href="<?php echo $path; ?>muc/driver/update.json?ctrlid=1&id=csv&config={%22disabled%22:%22true%22}"><?php echo $path; ?>muc/driver/update.json?ctrlid=1&id=csv&config={"disabled":"true"}</a></td></tr>

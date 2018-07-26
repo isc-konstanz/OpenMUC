@@ -20,11 +20,7 @@
         <select id="driver-config-select" class="input-large" style="display:none" disabled></select>
         <p id="driver-config-description"></p>
         
-        <div class="modal-container">
-            <div id="driver-config-container"></div>
-            
-            <div id="driver-config-overlay" class="modal-overlay"></div>
-        </div>
+        <div id="driver-config-container"></div>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
@@ -40,12 +36,14 @@
         <h3 id="driver-delete-label"></h3>
     </div>
     <div id="driver-delete-body" class="modal-body">
-        <p><?php echo _('Deleting a driver is permanent.'); ?>
-            <br><br>
-            <?php echo _('If this driver is enabled and has devices configured, they will no longer be sampled or listened to. '); ?>
-            <?php echo _('All corresponding devices and configurations will be removed, while feeds and all historic data is kept. '); ?>
-            <?php echo _('To remove it, delete them manually afterwards.'); ?>
-            <br><br>
+        <p>
+            <?php echo _('Deleting a driver is permanent.'); ?>
+        </p>
+        <p style="color:#999">
+            <?php echo _('All corresponding devices, channels and configurations will be removed, while inputs, feeds and all historic data is kept. '); ?>
+            <?php echo _('To remove those, delete them manually afterwards.'); ?>
+        </p>
+        <p>
             <?php echo _('Are you sure you want to proceed?'); ?>
         </p>
         <div id="driver-delete-loader" class="ajax-loader" style="display:none;"></div>
@@ -57,9 +55,7 @@
 </div>
 
 <script>
-    $('#driver-config-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-
     $(window).resize(function(){
-        driver_dialog.adjustConfigModal();
+        driver_dialog.adjustConfig();
     });
 </script>

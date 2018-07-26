@@ -5,6 +5,8 @@ var device_dialog =
     'driver': null,
     'device': null,
 
+    'drivers': null,
+
     'loadNew': function(driver) {
         if (driver != null) {
             this.ctrlid = driver.ctrlid;
@@ -33,14 +35,14 @@ var device_dialog =
     'drawConfig':function() {
         $("#device-config-modal").modal('show');
         
-        this.adjustConfigModal();
+        this.adjustConfig();
         
         var groups = {
             address: "Device address",
             settings: "Device settings",
             configs: "Configuration"
         };
-        config.init($('#device-config-container'), groups);
+        config.load($('#device-config-container'), groups);
         
         $('#device-config-driver').html('<span style="color:#888"><em>loading...</em></span>');
         $("#device-config-driver-select").empty().hide();
@@ -52,8 +54,6 @@ var device_dialog =
             $('#device-config-name').val(device_dialog.device.id);
             $('#device-config-description').val(device_dialog.device.description);
             
-            $('#device-config-overlay').hide();
-            
             if (typeof device_dialog.device.scanned !== 'undefined' && device_dialog.device.scanned) {
                 $('#device-config-back').show();
                 $('#device-config-scan').hide();
@@ -61,7 +61,7 @@ var device_dialog =
             }
             else {
                 $('#device-config-back').hide();
-                $('#device-config-scan').show();
+                $('#device-config-scan').hide();
                 $('#device-config-delete').show();
             }
             device_dialog.drawPreferences('config');
@@ -77,13 +77,11 @@ var device_dialog =
             if (device_dialog.driverid != null) {
                 $('#device-config-driver').html('<b>'+device_dialog.driver+'</b>').show();
 
-                $('#device-config-overlay').hide();
                 $('#device-config-scan').hide();
                 
                 device_dialog.drawPreferences('config');
             }
             else {
-                $('#device-config-overlay').show();
                 $('#device-config-scan').show();
                 
                 device_dialog.drawDrivers('config');
@@ -93,37 +91,32 @@ var device_dialog =
     },
 
     'drawDrivers':function(modal) {
-        muc.list(function(data, textStatus, xhr) {
+    	if (device_dialog.drivers != null) {
             // Append drivers from database to select
             var driverSelect = $('#device-'+modal+'-driver-select');
             driverSelect.append("<option selected hidden='true' value=''>Select a driver</option>");
             
-            $.each(data, function() {
-                var ctrl = this;
-                $.ajax({ url: path+"muc/driver/registered.json", data: "ctrlid="+ctrl.id, dataType: 'json', async: false, success: function(result, textStatus, xhr) {
-                    if (result.length > 0) {
-                        if (device_dialog.ctrlid <= 0) {
-                            driverSelect.append('<optgroup label="'+ctrl.description+'">');
-                        }
-                        
-                        $.each(result, function() {
-                            var driver;
-                            if (typeof this.name !== 'undefined') {
-                                driver = this.name;
-                            }
-                            else {
-                                driver = this.id;
-                            }
-                            driverSelect.append('<option value="'+this.id+'" ctrlid="'+ctrl.id+'">'+driver+'</option>');
-                        });
-                    }
-                }});
-            });
+            var ctrl = null;
+            for (var i in device_dialog.drivers) {
+            	var driver = device_dialog.drivers[i];
+            	
+            	if (ctrl !== driver.ctrlid) {
+            		ctrl = driver.ctrlid;
+                    driverSelect.append('<optgroup label="'+driver.ctrl+'">');
+            	}
+                driverSelect.append('<option value="'+driver.id+'" ctrlid="'+driver.ctrlid+'">'+driver.name+'</option>');
+            }
             driverSelect.show();
             if (modal == 'config') {
                 $('#device-config-driver').hide();
             }
-        });
+    	}
+    	else {
+            $.ajax({ url: path+"muc/driver/registered.json", dataType: 'json', async: true, success: function(result) {
+            	device_dialog.drivers = result;
+            	device_dialog.drawDrivers(modal);
+            }});
+    	}
     },
 
     'drawPreferences':function(modal) {
@@ -154,13 +147,13 @@ var device_dialog =
                     $('#device-'+modal+'-info').text('').hide();
                 }
                 
-                config.load(device_dialog.device, result);
+                config.draw(device_dialog.device, result);
             }
             $('#device-'+modal+'-loader').hide();
         });
     },
 
-    'closeConfigModal':function(result) {
+    'closeConfig':function(result) {
         $('#device-config-loader').hide();
         
         if (typeof result.success !== 'undefined' && !result.success) {
@@ -171,7 +164,7 @@ var device_dialog =
         $('#device-config-modal').modal('hide');
     },
 
-    'adjustConfigModal':function() {
+    'adjustConfig':function() {
         if ($("#device-config-modal").length) {
             var h = $(window).height() - $("#device-config-modal").position().top - 180;
             $("#device-config-body").height(h);
@@ -196,8 +189,6 @@ var device_dialog =
             device_dialog.device = null;
             
             device_dialog.drawPreferences('config');
-            
-            $('#device-config-overlay').hide();
         });
 
         $("#device-config-save").off('click').on('click', function () {
@@ -215,14 +206,14 @@ var device_dialog =
             
             var configs = { 'id': id, 'description': $('#device-config-description').val() };
             
-            configs['address'] = config.parseOptions('address');
-            configs['settings'] = config.parseOptions('settings');
+            configs['address'] = config.encode('address');
+            configs['settings'] = config.encode('settings');
             
             // Make sure JSON.stringify gets passed the right object type
-            configs['configs'] = $.extend({}, config.getOptions('configs'));
+            configs['configs'] = $.extend({}, config.get('configs'));
             
             if (device_dialog.device != null 
-                    && !(typeof device_dialog.device.scanned !== 'undefined' && !device_dialog.device.scanned)) {
+                    && !(typeof device_dialog.device.scanned !== 'undefined' && device_dialog.device.scanned)) {
                 
                 if (device_dialog.device['disabled'] != null) {
                     configs['disabled'] = device_dialog.device['disabled'];
@@ -230,11 +221,11 @@ var device_dialog =
                 configs['channels'] = $.extend([], device_dialog.device.channels);
                 
                 result = device.update(device_dialog.device.ctrlid, device_dialog.device.id, configs, 
-                        device_dialog.closeConfigModal);
+                        device_dialog.closeConfig);
             }
             else {
                 result = device.create(device_dialog.ctrlid, device_dialog.driverid, configs, 
-                        device_dialog.closeConfigModal);
+                        device_dialog.closeConfig);
             }
         });
 
@@ -277,12 +268,12 @@ var device_dialog =
     'drawScan':function() {
         $("#device-scan-modal").modal('show');
         
-        device_dialog.adjustScanModal();
+        device_dialog.adjustScan();
         
         var groups = {
             scanSettings: "Scan settings"
         };
-        config.init($('#device-scan-container'), groups);
+        config.load($('#device-scan-container'), groups);
         
         $('#device-scan-progress-bar').css('width', '100%');
         $('#device-scan-progress').removeClass('progress-default progress-info progress-success progress-warning progress-error').hide();
@@ -292,7 +283,6 @@ var device_dialog =
             $('#device-scan-label').html('Scan Devices: <b>'+device_dialog.driver+'</b>');
             $("#device-scan-driver-select").hide().empty();
             $('#device-scan-driver').hide();
-            $('#device-scan-overlay').hide();
             
             device_dialog.drawPreferences('scan');
         }
@@ -300,7 +290,6 @@ var device_dialog =
             $('#device-scan-label').html('Scan Devices');
             $("#device-scan-driver-select").show().empty();
             $('#device-scan-driver').show();
-            $('#device-scan-overlay').show();
             
             device_dialog.drawDrivers('scan');
         }
@@ -389,7 +378,7 @@ var device_dialog =
     	}
     },
 
-    'adjustScanModal':function() {
+    'adjustScan':function() {
         if ($("#device-scan-modal").length) {
             var h = $(window).height() - $("#device-scan-modal").position().top - 180;
             $("#device-scan-body").height(h);
@@ -417,7 +406,6 @@ var device_dialog =
             
             $('#device-scan-results').hide();
             $('#device-scan-results-none').hide();
-            $('#device-scan-overlay').hide();
         });
 
         $("#device-scan-start").off('click').on('click', function () {
@@ -431,15 +419,12 @@ var device_dialog =
             }
             $('#device-scan-loader').show();
             
-            var settings = config.parseOptions('scanSettings');
+            var settings = config.encode('scanSettings');
             
             device.scanStart(device_dialog.ctrlid, device_dialog.driverid, settings, function(result) {
                 $('#device-scan-loader').hide();
                 
                 device_dialog.scanProgress(result);
-                
-                config.groupShow['scanSettings'] = false;
-                config.draw();
             });
         });
 
@@ -468,7 +453,7 @@ var device_dialog =
         this.registerDeleteEvents(tablerow);
     },
 
-    'closeDeleteModal':function(result) {
+    'closeDelete':function(result) {
         $('#device-delete-loader').hide();
         
         if (typeof result.success !== 'undefined' && !result.success) {
@@ -485,7 +470,7 @@ var device_dialog =
         $("#device-delete-confirm").off('click').on('click', function() {
             $('#device-delete-loader').show();
             device.remove(device_dialog.device.ctrlid, device_dialog.device.id,
-                    device_dialog.closeDeleteModal);
+                    device_dialog.closeDelete);
             
             if (typeof table !== 'undefined' && row != null) table.remove(row);
         });

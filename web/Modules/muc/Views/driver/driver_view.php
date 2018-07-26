@@ -3,6 +3,7 @@
 ?>
 
 <link href="<?php echo $path; ?>Modules/muc/Views/muc.css" rel="stylesheet">
+<link href="<?php echo $path; ?>Modules/muc/Lib/tablejs/titatoggle-dist-min.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/muc/Lib/tablejs/muc-table-fields.js"></script>
@@ -26,14 +27,14 @@
     #table td:nth-of-type(8) { width:14px; text-align: center; }
 </style>
 
-<div>
+<div class="view-container">
     <div style="float:right">
         <span id="api-help-header"><a href="api"><?php echo _('Driver API Help'); ?></a></span>
-        <a href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
+        <a style="text-decoration: none;" href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
     </div>
-    <div id="local-header"><h2><?php echo _('Drivers'); ?></h2></div>
+    <div id="driver-header"><h2><?php echo _('Drivers'); ?></h2></div>
 
-    <div id="table"><div align='center'></div></div>
+    <div id="table"></div>
 
     <div id="driver-none" class="alert alert-block hide">
         <h4 class="alert-heading"><?php echo _('No drivers created'); ?></h4>
@@ -98,11 +99,11 @@
             table.draw();
             if (table.data.length != 0) {
                 $("#driver-none").hide();
-                $("#local-header").show();
+                $("#driver-header").show();
                 $("#api-help-header").show();
             } else {
                 $("#driver-none").show();
-                $("#local-header").hide();
+                $("#driver-header").hide();
                 $("#api-help-header").hide();
             }
             $('#driver-loader').hide();

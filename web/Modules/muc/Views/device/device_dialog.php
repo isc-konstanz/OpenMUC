@@ -41,16 +41,12 @@
                     <select id="device-config-driver-select" class="input-medium" style="display:none;"></select>
                 </td>
                 <td><input id="device-config-name" class="input-medium" type="text" required></td>
-                <td><input id="device-config-description" class="input-large" type="text" required></td>
+                <td><input id="device-config-description" class="input-large" type="text"></td>
             </tr>
         </table>
         <p id="device-config-info" style="display:none;"></p>
         
-        <div class="modal-container">
-            <div id="device-config-container"></div>
-            
-            <div id="device-config-overlay" class="modal-overlay"></div>
-        </div>
+        <div id="device-config-container"></div>
     </div>
     <div class="modal-footer">
         <button id="device-config-back" class="btn" style="display:none; float:left"><?php echo _('Back'); ?></button>
@@ -82,8 +78,6 @@
             <div id="device-scan-results-none" class="alert" style="display:none"><?php echo _('No devices found'); ?></div>
             
             <div id="device-scan-container"></div>
-            
-            <div id="device-scan-overlay" class="modal-overlay"></div>
         </div>
     </div>
     <div class="modal-footer">
@@ -99,12 +93,14 @@
         <h3 id="device-delete-label"></h3>
     </div>
     <div id="device-delete-body" class="modal-body">
-        <p><?php echo _('Deleting a device is permanent.'); ?>
-            <br><br>
-            <?php echo _('If the represented device is active and is using a device key, it will no longer be able to post data. '); ?>
+        <p>
+            <?php echo _('Deleting a device is permanent.'); ?>
+        </p>
+        <p style="color:#999">
             <?php echo _('All corresponding channels and configurations will be removed, while inputs, feeds and all historic data is kept. '); ?>
-            <?php echo _('To remove it, delete them manually afterwards.'); ?>
-            <br><br>
+            <?php echo _('To remove those, delete them manually afterwards.'); ?>
+        </p>
+        <p>
             <?php echo _('Are you sure you want to proceed?'); ?>
         </p>
     </div>
@@ -116,11 +112,8 @@
 </div>
 
 <script>
-    $('#device-config-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-    $('#device-scan-container').load('<?php echo $path; ?>Modules/muc/Lib/configjs/config.php');
-
     $(window).resize(function(){
-        device_dialog.adjustConfigModal();
-        device_dialog.adjustScanModal();
+        device_dialog.adjustConfig();
+        device_dialog.adjustScan();
     });
 </script>

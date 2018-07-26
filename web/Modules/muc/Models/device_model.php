@@ -30,13 +30,22 @@ class DeviceConnection
         
         $configs = (array) json_decode($configs);
         
-        $id = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$configs['id']);
+        if (!ctype_alnum(str_replace(array('.', '_', '-'), '', $configs['id']))) {
+            return array('success'=>false, 'message'=>_("Invalid characters in device key"));
+        }
+        $id = $configs['id'];
+        
+        if (!empty($configs['description'])) {
+            if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
+                return array('success'=>false, 'message'=>_("Invalid characters in device description"));
+            }
+        }
         
         // Check if the specified driver is registered already and add it, if necessary
         require_once "Modules/muc/Models/driver_model.php";
         $driver = new Driver($this->ctrl);
         
-        $response = $driver->get_configured($ctrlid);
+        $response = $driver->get_configured(null, $ctrlid);
         if (isset($response["success"]) && !$response["success"]) {
             return $response;
         }
@@ -158,7 +167,10 @@ class DeviceConnection
         $device = array('id' => $id);
         
         if (isset($configs['description'])) {
-            $device['description'] = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$configs['description']);
+            if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
+                return array('success'=>false, 'message'=>_("Invalid characters in device description"));
+            }
+            $device['description'] = $configs['description'];
         }
         if (isset($configs['address'])) $device['deviceAddress'] = $configs['address'];
         if (isset($configs['settings'])) $device['settings'] = $configs['settings'];
@@ -182,6 +194,7 @@ class DeviceConnection
                     strcmp($key, 'id') !== 0 &&
                     strcmp($key, 'description') !== 0 &&
                     strcmp($key, 'driver') !== 0 &&
+                    strcmp($key, 'driverName') !== 0 &&
                     strcmp($key, 'deviceAddress') !== 0 &&
                     strcmp($key, 'settings') !== 0 &&
                     strcmp($key, 'state') !== 0 &&
@@ -199,7 +212,16 @@ class DeviceConnection
 
         $configs = (array) json_decode($configs);
         
-        $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$configs['id']);
+        if (!ctype_alnum(str_replace(array('.', '_', '-'), '', $configs['id']))) {
+            return array('success'=>false, 'message'=>_("Invalid characters in device key"));
+        }
+        $name = $configs['id'];
+        
+        if (!empty($configs['description'])) {
+            if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
+                return array('success'=>false, 'message'=>_("Invalid characters in device description"));
+            }
+        }
         $device = $this->parse_device($name, $configs);
         
         $response = $this->ctrl->request($ctrlid, 'devices/'.$id.'/configs', 'PUT', array('configs' => $device));
@@ -226,7 +248,7 @@ class DeviceConnection
         require_once "Modules/muc/Models/driver_model.php";
         $driver = new Driver($this->ctrl);
         
-        $response = $driver->get_configured($ctrlid);
+        $response = $driver->get_configured(null, $ctrlid);
         if (isset($response["success"]) && !$response["success"]) {
             return $response;
         }
@@ -268,7 +290,10 @@ class DeviceConnection
             $device = array(
                 'ctrlid'=>$ctrlid,
                 'driverid'=>$driverid,
-                'id'=>$scan['id']
+                'id'=>$scan['id'],
+                'description'=>'',
+                'address'=>array(),
+                'settings'=>array()
             );
             if (isset($scan['description'])) $device['description'] = $scan['description'];
             if (isset($scan['deviceAddress'])) $device['address'] = $scan['deviceAddress'];

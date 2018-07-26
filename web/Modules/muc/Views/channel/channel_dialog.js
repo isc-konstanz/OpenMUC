@@ -32,7 +32,7 @@ var channel_dialog = {
     'drawConfig':function() {
         $("#channel-config-modal").modal('show');
         
-        channel_dialog.adjustConfigModal();
+        channel_dialog.adjustConfig();
         
         var groups = {
             address: "Channel address",
@@ -40,7 +40,7 @@ var channel_dialog = {
             logging: "Logging settings",
             configs: "Configuration"
         };
-        config.init($('#channel-config-container'), groups);
+        config.load($('#channel-config-container'), groups);
         
         $('#channel-config-device').html('<span style="color:#888"><em>loading...</em></span>');
         $("#channel-config-device-select").empty().hide();
@@ -52,7 +52,6 @@ var channel_dialog = {
             $('#channel-config-name').val(channel_dialog.channel.id);
             $('#channel-config-description').val(channel_dialog.channel.description);
             
-            $('#channel-config-overlay').hide();
             
             if (typeof channel_dialog.channel.scanned !== 'undefined' && channel_dialog.channel.scanned) {
                 $('#channel-config-back').show();
@@ -61,7 +60,7 @@ var channel_dialog = {
             }
             else {
                 $('#channel-config-back').hide();
-                $('#channel-config-scan').show();
+                $('#channel-config-scan').hide();
                 $('#channel-config-delete').show();
             }
             channel_dialog.drawPreferences('config');
@@ -77,13 +76,11 @@ var channel_dialog = {
             if (channel_dialog.driverid != null) {
                 $('#channel-config-device').html('<b>'+channel_dialog.deviceid+'</b>').show();
                 
-                $('#channel-config-overlay').hide();
                 $('#channel-config-scan').hide();
                 
                 channel_dialog.drawPreferences('config');
             }
             else {
-                $('#channel-config-overlay').show();
                 $('#channel-config-scan').show();
 
                 channel_dialog.drawDevices('config');
@@ -145,13 +142,13 @@ var channel_dialog = {
                     $('#channel-'+modal+'-info').text('').hide();
                 }
                 
-                config.load(channel_dialog.channel, result);
+                config.draw(channel_dialog.channel, result);
             }
             $('#channel-'+modal+'-loader').hide();
         });
     },
 
-    'closeConfigModal':function(result) {
+    'closeConfig':function(result) {
         $('#channel-config-loader').hide();
         
         if (typeof result.success !== 'undefined' && !result.success) {
@@ -162,7 +159,7 @@ var channel_dialog = {
         $('#channel-config-modal').modal('hide');
     },
 
-    'adjustConfigModal':function() {
+    'adjustConfig':function() {
         if ($("#channel-config-modal").length) {
             var h = $(window).height() - $("#channel-config-modal").position().top - 180;
             $("#channel-config-body").height(h);
@@ -185,8 +182,6 @@ var channel_dialog = {
             channel_dialog.channel = null;
             
             channel_dialog.drawPreferences('config');
-
-            $('#channel-config-overlay').hide();
         });
 
         $("#channel-config-save").off('click').on('click', function () {
@@ -202,17 +197,22 @@ var channel_dialog = {
             }
             $('#channel-config-loader').show();
             
-            var configs = { 'id': id, 'description': $('#channel-config-description').val() };
+            var configs = {
+            		'id': id,
+            		'driverid': channel_dialog.channel.driverid,
+            		'deviceid': channel_dialog.channel.deviceid,
+            		'description': $('#channel-config-description').val(),
+            };
             
-            configs['address'] = config.parseOptions('address');
-            configs['settings'] = config.parseOptions('settings');
+            configs['address'] = config.encode('address');
+            configs['settings'] = config.encode('settings');
             
             // Make sure JSON.stringify gets passed the right object type
-            configs['logging'] = $.extend({}, config.getOptions('logging'));
-            configs['configs'] = $.extend({}, config.getOptions('configs'));
+            configs['logging'] = $.extend({}, config.get('logging'));
+            configs['configs'] = $.extend({}, config.get('configs'));
             
             if (channel_dialog.channel != null 
-                    && !(typeof channel_dialog.channel.scanned !== 'undefined' && !channel_dialog.channel.scanned)) {
+                    && !(typeof channel_dialog.channel.scanned !== 'undefined' && channel_dialog.channel.scanned)) {
                 
                 if (channel_dialog.channel['disabled'] != null) {
                     configs['disabled'] = channel_dialog.channel['disabled'];
@@ -220,11 +220,11 @@ var channel_dialog = {
                 
                 result = channel.update(channel_dialog.channel.ctrlid, channel_dialog.channel.nodeid, 
                         channel_dialog.channel.id, configs, 
-                        channel_dialog.closeConfigModal);
+                        channel_dialog.closeConfig);
             }
             else {
-                channel.create(channel_dialog.ctrlid, channel_dialog.deviceid, configs,
-                        channel_dialog.closeConfigModal);
+                channel.create(channel_dialog.ctrlid, channel_dialog.driverid, channel_dialog.deviceid, configs,
+                        channel_dialog.closeConfig);
             }
         });
 
@@ -266,20 +266,19 @@ var channel_dialog = {
     'drawScan':function() {
         $("#channel-scan-modal").modal('show');
         
-        channel_dialog.adjustScanModal();
+        channel_dialog.adjustScan();
         
         var groups = {
             scanSettings: "Scan settings"
         };
-        config.init($('#channel-scan-container'), groups);
+        config.load($('#channel-scan-container'), groups);
         
         $('#channel-scan-results').text('').hide();
         
-        if (channel_dialog.driverid != null) {
+        if (channel_dialog.deviceid != null) {
             $('#channel-scan-label').html('Scan Channels: <b>'+channel_dialog.deviceid+'</b>');
             $("#channel-scan-device-select").hide().empty();
             $('#channel-scan-device').hide();
-            $('#channel-scan-overlay').hide();
             
             channel_dialog.drawPreferences('scan');
         }
@@ -287,7 +286,6 @@ var channel_dialog = {
             $('#channel-scan-label').html('Scan Devices');
             $("#channel-scan-device-select").show().empty();
             $('#channel-scan-device').show();
-            $('#channel-scan-overlay').show();
             
             channel_dialog.drawDevices('scan');
         }
@@ -311,7 +309,7 @@ var channel_dialog = {
         }
     },
 
-    'adjustScanModal':function() {
+    'adjustScan':function() {
         if ($("#channel-scan-modal").length) {
             var h = $(window).height() - $("#channel-scan-modal").position().top - 180;
             $("#channel-scan-body").height(h);
@@ -339,7 +337,6 @@ var channel_dialog = {
             
             $('#channel-scan-results').hide();
             $('#channel-scan-results-none').hide();
-            $('#channel-scan-overlay').hide();
         });
 
         $("#channel-scan-start").off('click').on('click', function () {
@@ -353,9 +350,9 @@ var channel_dialog = {
             }
             $('#channel-scan-loader').show();
             
-            var settings = config.parseOptions('scanSettings');
+            var settings = config.encode('scanSettings');
             
-            channel.scan(channel_dialog.ctrlid, channel_dialog.deviceid, settings, function(result) {
+            channel.scan(channel_dialog.ctrlid, channel_dialog.driverid, channel_dialog.deviceid, settings, function(result) {
                 $('#channel-scan-loader').hide();
                 
                 if (typeof result.success !== 'undefined' && !result.success) {
@@ -364,9 +361,6 @@ var channel_dialog = {
                 }
                 channel_dialog.scanChannels = result;
                 channel_dialog.drawScanProgress();
-                
-                config.groupShow['scanSettings'] = false;
-                config.draw();
             });
         });
 
@@ -395,7 +389,7 @@ var channel_dialog = {
         this.registerDeleteEvents(tablerow);
     },
 
-    'closeDeleteModal':function(result) {
+    'closeDelete':function(result) {
         $('#channel-delete-loader').hide();
         
         if (typeof result.success !== 'undefined' && !result.success) {
@@ -412,7 +406,7 @@ var channel_dialog = {
         $("#channel-delete-confirm").off('click').on('click', function() {
             $('#channel-delete-loader').show();
             channel.remove(channel_dialog.channel.ctrlid, channel_dialog.channel.id,
-                    channel_dialog.closeDeleteModal);
+                    channel_dialog.closeDelete);
             
             if (typeof table !== 'undefined' && row != null) table.remove(row);
         });
