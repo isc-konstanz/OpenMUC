@@ -34,7 +34,13 @@ class Channel
         $ctrlid = intval($ctrlid);
         
         $configs = (array) json_decode($configs);
-        $logging = (array) $configs['logging'];
+        
+        if (isset($configs['logging'])) {
+            $logging = (array) $configs['logging'];
+        }
+        else if (isset($configs['nodeid'])) {
+            $logging = array('nodeid' => $configs['nodeid']);
+        }
         
         if (!ctype_alnum(str_replace(array('.', '_', '-'), '', $configs['id']))) {
             return array('success'=>false, 'message'=>_("Invalid characters in channel key"));
@@ -52,7 +58,9 @@ class Channel
             }
             $description = $configs['description'];
         }
-        else $description = '';
+        else {
+            $description = '';
+        }
         
         $logging = $this->parse_log_settings($userid, $nodeid, $id, $description, $logging);
         

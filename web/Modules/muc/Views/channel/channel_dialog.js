@@ -197,11 +197,15 @@ var channel_dialog = {
             }
             $('#channel-config-loader').show();
             
+            var driverid = channel_dialog.driverid != null ? channel_dialog.driverid : channel_dialog.channel.driverid;
+            var deviceid = channel_dialog.deviceid != null ? channel_dialog.deviceid : channel_dialog.channel.deviceid;
+            var description = $('#channel-config-description').val();
+            
             var configs = {
             		'id': id,
-            		'driverid': channel_dialog.channel.driverid,
-            		'deviceid': channel_dialog.channel.deviceid,
-            		'description': $('#channel-config-description').val(),
+            		'driverid': driverid,
+            		'deviceid': deviceid,
+            		'description': description,
             };
             
             configs['address'] = config.encode('address');

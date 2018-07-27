@@ -107,8 +107,8 @@ var config =
     },
 
     'drawOptionGroup':function(group, select) {
-    	$('#option-'+group+'-table', config.container).empty();
-    	
+        $('#option-'+group+'-table', config.container).empty();
+        
         // Show options, if at least one of them is defined or mandatory
         var show = false;
         var options = "";
@@ -153,15 +153,15 @@ var config =
         }
         var description = info['description'];
         
-        var row = "<tr id='option-"+group+"-"+key+"-row' data-key='"+key+"' data-group='"+group+"'>" +
-                "<td class='option'>"+name+"</td>" +
+        var row = "<tr id='option-"+group+"-"+key+"-row' class='option' data-key='"+key+"' data-group='"+group+"'>" +
+                "<td>"+name+"</td>" +
             "</tr>";
         
         if (typeof description !== 'undefined' && description != '') {
-            row  += "<tr id='option-"+group+"-"+key+"-info' data-key='"+key+"' data-group='"+group+"' " +
+            row  += "<tr id='option-"+group+"-"+key+"-info' class='option' data-key='"+key+"' data-group='"+group+"' " +
                     "data-show='false' style='display:none'>" +
-                "<td class='option' colspan='4'>" +
-                    "<div class='alert alert-comment'>"+description+"</div>" +
+                "<td colspan='4'>" +
+                    "<div class='alert alert-comment hide'>"+description+"</div>" +
                 "</td>" +
             "</tr>";
         }
@@ -175,7 +175,7 @@ var config =
         }
         var type = info['type'].toUpperCase();
         if (typeof info['valueSelection'] !== 'undefined') {
-            row.append("<td><select id='option-"+group+"-"+key+"-input' class='option option-input input-large'></select></td>");
+            row.append("<td><select id='option-"+group+"-"+key+"-input' class='option-input input-large'></select></td>");
             
             var select = $('#option-'+group+'-'+key+'-input', config.container);
             select.append("<option selected hidden value=''>Select a "+name+"</option>");
@@ -200,7 +200,7 @@ var config =
         else if (type == 'BOOLEAN') {
             row.append(
                 "<td>" +
-                    "<div class='option option-input checkbox checkbox-slider--b-flat checkbox-slider-info'>" +
+                    "<div class='option-input checkbox checkbox-slider--b-flat checkbox-slider-info'>" +
                         "<label>" +
                             "<input id='option-"+group+"-"+key+"-input' type='checkbox'><span></span>" +
                         "</label>" +
@@ -208,14 +208,14 @@ var config =
                 "</td>"
             );
             if (value != null) {
-            	if (typeof value === 'string' || value instanceof String) {
-                	value = (value == 'true');
-            	}
+                if (typeof value === 'string' || value instanceof String) {
+                    value = (value == 'true');
+                }
                 $('#option-'+group+'-'+key+'-input', config.container).prop('checked', value);
             }
         }
         else {
-            row.append("<td><input id='option-"+group+"-"+key+"-input' type='text' class='option option-input input-large'></input></td>");
+            row.append("<td><input id='option-"+group+"-"+key+"-input' type='text' class='option-input input-large'></input></td>");
             if (value != null) {
                 $('#option-'+group+'-'+key+'-input', config.container).val(value);
             }
@@ -223,11 +223,11 @@ var config =
         
         if(!info.mandatory) {
             row.append("<td></td>")
-            row.append("<td class='option'><a id='option-"+group+"-"+key+"-remove' class='option-remove' title='Remove'><i class='icon-trash' style='cursor:pointer'></i></a></td>");
+            row.append("<td><a id='option-"+group+"-"+key+"-remove' class='option-remove' title='Remove'><i class='icon-trash' style='cursor:pointer'></i></a></td>");
         }
         else {
-            row.append("<td class='option'><span style='color:#888; font-size:12px'><em>mandatory</em></span></td>")
-            row.append("<td class='option'><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
+            row.append("<td><span style='color:#888; font-size:12px'><em>mandatory</em></span></td>")
+            row.append("<td><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
             
 //            $('#option-'+group+'-'+key, config.container).prop('required', true);
         }
@@ -247,32 +247,39 @@ var config =
         });
 
         $('#options', config.container).on('click', '.option', function() {
-            var row = $(this).closest('tr');
-            var group = row.data('group');
-            var key = row.data('key');
+            var group = $(this).data('group');
+            var key = $(this).data('key');
             
             var info = $('#option-'+group+'-'+key+'-info', config.container);
             if (typeof info !== 'undefined' && info.data('show')) {
-                if (!$(this).hasClass('option-input')) {
-                    info.data('show', false);
-                    info.slideUp();
-                }
+                info.data('show', false);
+                info.find('td > div').slideUp(function() { info.hide(); });
             }
             else {
                 // Hide already shown option infos and open the selected afterwards
-                $('.table-option tr[data-show]', '#options', config.container).each(function() {
-                    if ($(this).data('show')) {
-                        $(this).data('show', false);
-                        $(this).slideUp(200);
-                    }
-                });
-                
-                info.data('show', true);
-                info.slideDown();
+                // TODO: find a way to avoid display errors with select inputs if an info above it is collapsed
+//                $('.table-option tr[data-show]', '#options', config.container).each(function() {
+//                    if ($(this).data('show')) {
+//                        info.find('td > div').slideUp(function() { info.hide(); });
+//                    }
+//                });
+                info.data('show', true).show().find('td > div').slideDown();
             }
         });
 
-        $('#options', config.container).on('click', '.option-remove', function() {
+        $('#options', config.container).on('click', '.option-input', function(e) {
+            e.stopPropagation();
+            
+            var row = $(this).closest('tr');
+            var info = $('#option-'+row.data('group')+'-'+row.data('key')+'-info', config.container);
+            if (typeof info !== 'undefined' && !info.data('show')) {
+                info.data('show', true).show().find('td > div').slideDown();
+            }
+        });
+
+        $('#options', config.container).on('click', '.option-remove', function(e) {
+            e.stopPropagation();
+            
             var row = $(this).closest('tr');
             var group = row.data('group');
             var key = row.data('key');

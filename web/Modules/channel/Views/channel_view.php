@@ -48,7 +48,7 @@
     <div class="modal-body">
         <p><?php echo _('The following channels will be deleted permanently:'); ?>
         </p>
-		<div id="channels-delete-list"></div>
+        <div id="channels-delete-list"></div>
         <p style="color:#999">
             <?php echo _('Corresponding configurations will be removed, while inputs, feeds and all historic data will be kept. '); ?>
             <?php echo _('To remove those, delete them manually afterwards.'); ?>
@@ -132,7 +132,7 @@ function updaterStop() {
 function draw(channels) {
     $('#channel-loader').hide();
     if (Object.keys(channels).length == 0 && 
-    	    Object.keys(devices).length == 0) {
+            Object.keys(devices).length == 0) {
         $("#channel-none").show();
         $("#channel-header").hide();
         $("#api-help-header").hide();
@@ -175,22 +175,34 @@ function drawDevice(id, device, devices) {
     
     var result = $('#'+id);
     if (!result.length || result.attr('id') !== id) {
+        var table;
+        
         var checked = '';
         if (typeof device.channels !== 'undefined') {
+
             var count = 0;
-            for (var i in device.channels) {
-                var channelid = 'channel-muc'+device.ctrlid+'-'+device.channels[i].toLowerCase().replace(/[._]/g, '-');
+            if (device.channels.length > 0) {
+                table = "<table><tbody id='"+id+"'></tbody></table>";
                 
-                if (typeof selected[channelid] === 'undefined') {
-                	selected[channelid] = false;
+                for (var i in device.channels) {
+                    var channelid = 'channel-muc'+device.ctrlid+'-'+device.channels[i].toLowerCase().replace(/[._]/g, '-');
+                    
+                    if (typeof selected[channelid] === 'undefined') {
+                        selected[channelid] = false;
+                    }
+                    if (selected[channelid]) {
+                        count++;
+                    }
                 }
-                if (selected[channelid]) {
-                	count++;
-                }
+            }
+            else {
+                table = "<div id='"+id+"-none' class='alert'>" +
+                    "No channels configured yet. <a class='device-add'>Add</a> or <a class='device-scan'>scan</a> for channels with the buttons on this connection block." +
+                "</div>";
             }
             if (count > 0) {
                 if (count < device.channels.length) {
-                	checked = 'indeterminate';
+                    checked = 'indeterminate';
                 }
                 else {
                     checked = 'checked';
@@ -215,9 +227,7 @@ function drawDevice(id, device, devices) {
                     "</table>" +
                 "</div>" +
                 "<div id='"+id+"-body' class='collapse'>" +
-                    "<div class='channels'>" +
-                        "<table><tbody id='"+id+"'></tbody></table>" +
-                    "</div>" +
+                    "<div class='channels'>" + table + "</div>" +
                 "</div>" +
             "</div>"
         );
@@ -404,25 +414,25 @@ function selectAll(state) {
         $('#channel-delete').hide();
     }
     for (var id in devices) {
-    	if (state && !$('#'+id+'-body').hasClass('in')) {
-        	$('#'+id+'-body').collapse('show');
+        if (state && !$('#'+id+'-body').hasClass('in')) {
+            $('#'+id+'-body').collapse('show');
         }
         $('#'+id+'-select').prop('checked', state).prop('indeterminate', false);
     }
     for (var id in channels) {
-    	selected[id] = state;
-    	
+        selected[id] = state;
+        
         $('#'+id+'-select').prop('checked', state);
     }
 }
 
 function selectDevice(id, state) {
-	var device = devices[id];
+    var device = devices[id];
     
-	var count = 0;
+    var count = 0;
     for (var i in channels) {
         if (channels[i].deviceid == device.id) {
-        	selected[i] = state;
+            selected[i] = state;
 
             $('#'+i+'-select').prop('checked', state);
         }
@@ -431,7 +441,7 @@ function selectDevice(id, state) {
     if (state) {
         $('#'+id+'-select').prop('indeterminate', false);
         if (!$('#'+id+'-body').hasClass('in')) {
-        	$('#'+id+'-body').collapse('show');
+            $('#'+id+'-body').collapse('show');
         }
     }
     drawSelected(count);
@@ -445,14 +455,14 @@ function selectChannel(id, state) {
     
     selected[id] = state;
     
-	var count = 0;
+    var count = 0;
     for (var i in channels) {
         if (channels[i].deviceid == channel.deviceid) {
             if (selected[i]) {
-            	indeterminate = true;
+                indeterminate = true;
             }
             else {
-            	checked = false;
+                checked = false;
             }
         }
         if (selected[i]) count++;
@@ -682,7 +692,7 @@ $("#channel-delete").on('click', function () {
     var list = "";
     for (var id in channels) {
         if (selected[id]) {
-        	list += "<li>"+channels[id].id+"</li>";
+            list += "<li>"+channels[id].id+"</li>";
         }
     }
     $('#channels-delete-list').html("<ul>"+list+"</ul>");
@@ -690,7 +700,7 @@ $("#channel-delete").on('click', function () {
 });
 
 $("#channels-delete-confirm").on('click', function () {
-	var count = 0;
+    var count = 0;
     for (var id in channels) {
         if (selected[id]) {
             delete selected[id];

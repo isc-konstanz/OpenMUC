@@ -47,6 +47,9 @@
 .channels {
     padding: 0px 5px 5px 5px;
 }
+.channels .alert {
+    margin-bottom: 0px;
+}
 .channels .channel-value {
     text-align: right;
 }
