@@ -239,24 +239,24 @@ function drawDevice(id, device, devices) {
 function drawChannel(id, checked, channel, device) {
     var time = (new Date()).getTime();
     
+    if (typeof channel.configs === 'undefined') {
+        channel.configs = {};
+    }
+    
     var description = "";
     if (typeof channel.description !== 'undefined') {
         description = channel.description;
     }
     
-    if (typeof channel.configs === 'undefined') {
-        channel.configs = {};
+    var unit = "";
+    if (typeof channel.configs.unit !== 'undefined') {
+        unit = channel.configs.unit;
     }
     
-    if (typeof channel.configs.unit === 'undefined') {
-        channel.configs.unit = "";
+    var type = "DOUBLE";
+    if (typeof channel.configs.valueType !== 'undefined') {
+        type = channel.configs.valueType;
     }
-    var unit = channel.configs.unit;
-    
-    if (typeof channel.configs.valueType === 'undefined') {
-        channel.configs.valueType = "DOUBLE";
-    }
-    var type = channel.configs.valueType;
     
     device.append(
         "<tr id='"+id+"-row' data-id='"+id+"'>" +
@@ -281,7 +281,10 @@ function drawRecords(records) {
         if (typeof channels[id] !== 'undefined') {
             var record = records[i];
             var id = 'channel-muc'+record.ctrlid+'-'+record.id.toLowerCase().replace(/[._]/g, '-');
-            var type = channels[id].configs.valueType;
+            var type = "DOUBLE";
+            if (typeof channels[id].configs.valueType !== 'undefined') {
+                type = channels[id].configs.valueType;
+            }
             
             channels[id].flag = record.flag;
             channels[id].time = record.time;
