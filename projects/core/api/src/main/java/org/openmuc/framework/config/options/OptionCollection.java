@@ -130,16 +130,17 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                             Value value = null;
                             for (String setting : settingsArray) {
                                 String[] keyValue = setting.trim().split(assignment, 2);
-                                if (keyValue.length == 2) {
-                                    if (keyValue[0].trim().equalsIgnoreCase(key)) {
-                                        mandatoryOptMissing = false;
-                                        
-                                        value = parseValue(option.getType(), keyValue[1].trim());
-                                    }
+                                if (keyValue.length != 2) {
+                                    throw new ArgumentSyntaxException("Parameter is not a key value pair of type " 
+                                    		+ "<key>" + assignment + "<value> in parsed Settings: " + setting);
                                 }
-                                else {
-                                    throw new ArgumentSyntaxException("Parameter is not a key value pair of type "
-                                                + "<key>" + assignment + "<value> in parsed Settings: " + setting);
+                                if (keyValue[0].trim().equalsIgnoreCase(key)) {
+                                    if (keyValue[1].trim().isEmpty()) {
+                                    	throw new ArgumentSyntaxException("Parameter " + key + "is empty");
+                                    }
+                                    mandatoryOptMissing = false;
+                                    
+                                    value = parseValue(option.getType(), keyValue[1].trim());
                                 }
                             }
                             if (mandatoryOptMissing) {

@@ -43,7 +43,7 @@
     
     <deviceSettings>
       <syntax>
-        <keyValue assignment="=">true</keyValue>
+        <keyValue>false</keyValue>
         <separator>:</separator>
       </syntax>
       <option id="type">
