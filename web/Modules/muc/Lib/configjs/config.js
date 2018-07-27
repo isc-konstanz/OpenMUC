@@ -92,11 +92,11 @@ var config =
         if (show) {
             if ($("option", select).length > 1) {
                 select.prop("disabled", false).val('');
-                $("#option-add").prop("disabled", false);
+                $("#option-add", config.container).prop("disabled", false);
             }
             else {
                 select.prop("disabled", true).val('');
-                $("option-add").prop("disabled", true);
+                $("option-add", config.container).prop("disabled", true);
             }
             $("#option-footer", config.container).show();
         }
@@ -310,11 +310,11 @@ var config =
             select = $('#option-select', config.container);
             if ($("option", select).length > 1) {
                 select.prop("disabled", false).val('');
-                $("#option-add").prop("disabled", false);
+                $("#option-add", config.container).prop("disabled", false);
             }
             else {
                 select.prop("disabled", true).val('');
-                $("#option-add").prop("disabled", true);
+                $("#option-add", config.container).prop("disabled", true);
             }
         });
 
@@ -348,11 +348,11 @@ var config =
                 });
                 if ($("option", select).length > 1) {
                     select.prop("disabled", false).val('');
-                    $("#option-add").prop("disabled", false);
+                    $("#option-add", config.container).prop("disabled", false);
                 }
                 else {
                     select.prop("disabled", true).val('');
-                    $("#option-add").prop("disabled", true);
+                    $("#option-add", config.container).prop("disabled", true);
                 }
             }
         });
