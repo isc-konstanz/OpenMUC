@@ -220,6 +220,8 @@ var device_dialog =
                 }
                 configs['channels'] = $.extend([], device_dialog.device.channels);
                 
+                var foo = JSON.stringify(configs);
+                
                 result = device.update(device_dialog.device.ctrlid, device_dialog.device.id, configs, 
                         device_dialog.closeConfig);
             }

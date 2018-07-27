@@ -166,22 +166,15 @@ class DeviceConnection
     private function parse_device($id, $configs) {
         $device = array('id' => $id);
         
-        if (isset($configs['description'])) {
-            if (!ctype_alnum(str_replace(array(' ', '.', '_', '-'), '', $configs['description']))) {
-                return array('success'=>false, 'message'=>_("Invalid characters in device description"));
-            }
-            $device['description'] = $configs['description'];
-        }
+        if (isset($configs['description'])) $device['description'] = $configs['description'];
         if (isset($configs['address'])) $device['deviceAddress'] = $configs['address'];
         if (isset($configs['settings'])) $device['settings'] = $configs['settings'];
-        
         if (isset($configs['configs'])) {
-            $detailconfigs = (array) $configs['configs'];
+            $details = (array) $configs['configs'];
             
-            if (isset($detailconfigs['samplingTimeout'])) $device['samplingTimeout'] = $detailconfigs['samplingTimeout'];
-            if (isset($detailconfigs['connectRetryInterval'])) $device['connectRetryInterval'] = $detailconfigs['connectRetryInterval'];
+            if (isset($details['samplingTimeout'])) $device['samplingTimeout'] = $details['samplingTimeout'];
+            if (isset($details['connectRetryInterval'])) $device['connectRetryInterval'] = $details['connectRetryInterval'];
         }
-        
         if (isset($configs['disabled'])) $device['disabled'] = $configs['disabled'];
         
         return $device;

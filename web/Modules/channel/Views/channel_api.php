@@ -54,7 +54,7 @@
     <tr><td><?php echo _('List device states'); ?></td><td><a href="<?php echo $path; ?>muc/device/states.json"><?php echo $path; ?>muc/device/states.json</a></td></tr>
     <tr><td><?php echo _('Get device information'); ?></td><td><a href="<?php echo $path; ?>muc/device/info.json?ctrlid=1&driverid=csv"><?php echo $path; ?>muc/device/info.json?ctrlid=1&driverid=csv</a></td></tr>
     <tr><td><?php echo _('Get device details'); ?></td><td><a href="<?php echo $path; ?>muc/device/get.json?ctrlid=1&id=Home"><?php echo $path; ?>muc/device/get.json?ctrlid=1&id=Home</a></td></tr>
-    <tr><td><?php echo _('Update device fields'); ?></td><td><a href="<?php echo $path; ?>muc/device/update.json?ctrlid=1&configs={%22id%22:%22Home%22,%22description%22:%22Virtual%22}"><?php echo $path; ?>muc/device/update.json?ctrlid=1&configs={"id":"Home","description":"Virtual"}</a></td></tr>
+    <tr><td><?php echo _('Update device fields'); ?></td><td><a href="<?php echo $path; ?>muc/device/update.json?ctrlid=1&id=Home&configs={%22id%22:%22Home%22,%22description%22:%22Virtual%22}"><?php echo $path; ?>muc/device/update.json?ctrlid=1&id=Home&configs={"id":"Home","description":"Virtual"}</a></td></tr>
     <tr><td><?php echo _('Delete existing device'); ?></td><td><a href="<?php echo $path; ?>muc/device/delete.json?ctrlid=1&id=Home"><?php echo $path; ?>muc/device/delete.json?ctrlid=1&id=Home</a></td></tr>
 </table>
 
