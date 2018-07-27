@@ -173,6 +173,9 @@ var config =
         if (typeof config.options[group][key] !== 'undefined') {
             value = config.options[group][key];
         }
+        else if (typeof info.valueDefault !== 'undefined') {
+            value = info.valueDefault;
+        }
         var type = info['type'].toUpperCase();
         if (typeof info['valueSelection'] !== 'undefined') {
             row.append("<td><select id='option-"+group+"-"+key+"-input' class='option-input input-large'></select></td>");
