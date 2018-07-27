@@ -70,10 +70,11 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
     @Override
     public void scanForDevices(String settingsStr, DriverDeviceScanListener listener)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
-
+        resetDeviceScanInterrupt();
+        
         logger.info("Scan for 1-Wire devices connected to the Raspberry Pi platform.");
         DeviceScanSettings settings = info.parse(settingsStr, DeviceScanSettings.class);
-
+        
         List<W1Device> devices = master.getDevices();
         double size = devices.size();
         if (size > 0) {
@@ -104,6 +105,10 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
             }
         }
         else logger.debug("Scan discovered no 1-Wire devices");
+    }
+
+    private void resetDeviceScanInterrupt() {
+        isDeviceScanInterrupted = false;
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 import com.pi4j.io.gpio.PinMode;
+import com.pi4j.system.SystemInfo.BoardType;
 
 public class DeviceScanSettings extends Preferences {
 
@@ -33,19 +34,19 @@ public class DeviceScanSettings extends Preferences {
     private PinMode mode;
 
     @Option
-    private boolean broadcomScheme;
+    private BoardType board = BoardType.RaspberryPi_Unknown;
 
     @Override
     public PreferenceType getPreferenceType() {
         return TYPE;
     }
 
-    public PinMode getMode() {
+    public PinMode getPinMode() {
         return mode;
     }
 
-    public boolean useBroadcomScheme() {
-        return broadcomScheme;
+    public BoardType getBoardType() {
+        return board;
     }
 
 }

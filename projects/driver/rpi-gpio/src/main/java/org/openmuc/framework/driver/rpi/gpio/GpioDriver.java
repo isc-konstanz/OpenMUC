@@ -20,6 +20,7 @@
  */
 package org.openmuc.framework.driver.rpi.gpio;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,8 +49,10 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.GpioPinDigital;
 import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.RCMPin;
+import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.system.SystemInfo;
+import com.pi4j.system.SystemInfo.BoardType;
 import com.pi4j.wiringpi.GpioUtil;
 
 @Component
@@ -86,33 +89,40 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
     @Override
     public void scanForDevices(String settingsStr, DriverDeviceScanListener listener)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
-
-        logger.info("Scan for GPIOs of the Raspberry Pi platform.");
+        resetDeviceScanInterrupt();
+        
         DeviceScanSettings settings = info.parse(settingsStr, DeviceScanSettings.class);
-        
-        Pin[] pins;
-        if (settings.useBroadcomScheme()) {
-        	pins = RCMPin.allPins(settings.getMode());
-        }
-        else {
-        	pins = RaspiPin.allPins(settings.getMode());
-        }
-        
-        double counter = 0;
-        for (Pin pin : pins) {
-            if (isDeviceScanInterrupted) {
-                break;
+        try {
+            PinMode mode = settings.getPinMode();
+            BoardType board = SystemInfo.getBoardType();
+            Pin[] pins = RaspiPin.allPins(board);
+            
+            logger.info("Scan for {}s of the Raspberry Pi platform: {}", 
+            		mode.name().toLowerCase().replace('_', ' '), board.name().replace('_', ' '));
+            
+            double counter = 0;
+            for (Pin pin : pins) {
+                if (isDeviceScanInterrupted) {
+                    break;
+                }
+                if (pin.getSupportedPinModes().contains(mode)) {
+                    String scanAddress = DeviceAddress.PIN_KEY + ":" + pin.getAddress();
+                    String scanSettings = DeviceSettings.MODE_KEY + ":" + mode.name();
+                    
+                    listener.deviceFound(new DeviceScanInfo("Pin"+pin.getAddress(), 
+                            scanAddress, scanSettings, pin.getName()));
+                    
+                    listener.scanProgressUpdate((int) (counter / pins.length * 100.0));
+                    counter++;
+                }
             }
-            
-            String scanAddress = DeviceAddress.PIN_KEY + ":" + pin.getAddress();
-            String scanSettings = DeviceSettings.MODE_KEY + ":" + settings.getMode();
-            
-            listener.deviceFound(new DeviceScanInfo("Pin"+pin.getAddress(), 
-                    scanAddress, scanSettings, pin.getName()));
-            
-            listener.scanProgressUpdate((int) (counter / pins.length * 100.0));
-            counter++;
+        } catch (IOException | InterruptedException e) {
+            throw new ScanException(e);
         }
+    }
+
+    private void resetDeviceScanInterrupt() {
+        isDeviceScanInterrupted = false;
     }
 
     @Override
@@ -135,19 +145,13 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
             }
             GpioConnection connection;
             
-            Pin pin;
-            if (address.useBroadcomScheme()) {
-                pin = RCMPin.getPinByAddress(address.getPin());
-            }
-            else {
-                pin = RaspiPin.getPinByAddress(address.getPin());
-            }
+            Pin pin = RaspiPin.getPinByAddress(address.getPin());
             if (pin == null) {
                 throw new ConnectionException("Unable to configure GPIO pin: " + address.getPin());
             }
             
             GpioPinDigital gpioPin = null;
-            switch(settings.getMode()) {
+            switch(settings.getPinMode()) {
             case DIGITAL_INPUT:
                 gpioPin = gpio.provisionDigitalInputPin(pin, settings.getPullResistance());
                 
@@ -164,7 +168,7 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
                 connection = new OutputPin(this, gpioPin);
                 break;
             default:
-                throw new ArgumentSyntaxException("GPIO pins not supported for mode: " + settings.getMode());
+                throw new ArgumentSyntaxException("GPIO pins not supported for mode: " + settings.getPinMode());
             }
             gpioPin.setShutdownOptions(true, settings.getShutdownState(), settings.getShutdownPullResistance());
             

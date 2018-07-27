@@ -32,9 +32,6 @@ public class DeviceAddress extends Preferences {
     @Option
     private int pin;
 
-    @Option
-    private boolean broadcomScheme;
-
     @Override
     public PreferenceType getPreferenceType() {
         return TYPE;
@@ -42,10 +39,6 @@ public class DeviceAddress extends Preferences {
 
     public int getPin() {
         return pin;
-    }
-
-    public boolean useBroadcomScheme() {
-        return broadcomScheme;
     }
 
 }

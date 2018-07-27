@@ -59,7 +59,7 @@ public class DeviceSettings extends Preferences {
         return TYPE;
     }
 
-    public PinMode getMode() {
+    public PinMode getPinMode() {
         return mode;
     }
 

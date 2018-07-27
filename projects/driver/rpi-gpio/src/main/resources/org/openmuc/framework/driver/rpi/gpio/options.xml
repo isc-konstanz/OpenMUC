@@ -19,16 +19,6 @@
         <mandatory>true</mandatory>
         <type>INTEGER</type>
       </option>
-      <option id="broadcomScheme">
-        <name>Broadcom Pin Numbering Scheme</name>
-        <description><![CDATA[
-            Use the Broadcom Pin Numbering Scheme.
-          ]]>
-        </description>
-        <mandatory>false</mandatory>
-        <type>BOOLEAN</type>
-        <default>true</default>
-      </option>
     </deviceAddress>
     
     <deviceSettings>
@@ -119,7 +109,6 @@
     
     <deviceScanSettings>
       <option id="mode"></option>
-      <option id="broadcomScheme"></option>
     </deviceScanSettings>
     
     <channelSettings>
