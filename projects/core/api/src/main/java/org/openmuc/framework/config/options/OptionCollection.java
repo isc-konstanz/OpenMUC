@@ -129,7 +129,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                             String key = option.getKey();
                             Value value = null;
                             for (String setting : settingsArray) {
-                                String[] keyValue = setting.trim().split(assignment);
+                                String[] keyValue = setting.trim().split(assignment, 2);
                                 if (keyValue.length == 2) {
                                     if (keyValue[0].trim().equalsIgnoreCase(key)) {
                                         mandatoryOptMissing = false;
