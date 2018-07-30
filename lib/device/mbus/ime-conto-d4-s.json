@@ -6,9 +6,9 @@
     
     "prefix": "name",
     
+    "driver": "mbus",
     "devices": [
         {
-            "driver": "mbus",
             "description": "Energy Meter",
             "settings": "9600"
         }

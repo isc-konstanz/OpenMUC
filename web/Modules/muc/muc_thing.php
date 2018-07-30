@@ -33,10 +33,12 @@ class MucThing extends DeviceThing
 
     public function get_item_list($device) {
         $file = $this->get_template_dir().$device['type'].".json";
-        if (file_exists($file)) {
-            $template = json_decode(file_get_contents($file));
-        } else {
-            return array('success'=>false, 'message'=>"Template file not found '".$file."'");
+        if (!file_exists($file)) {
+            return array('success'=>false, 'message'=>"Error reading template ".$device['type'].": file does not exist");
+        }
+        $template = json_decode(file_get_contents($file));
+        if (json_last_error() != 0) {
+            return array('success'=>false, 'message'=>"Error reading template ".$device['type'].":".json_last_error_msg());
         }
         
         $ctrlid = null;
@@ -109,7 +111,7 @@ class MucThing extends DeviceThing
             else {
                 $result = $this->channel->write($ctrlid, $mapping['channelid'], $mapping['value'], $valueType);
             }
-            if (isset($result['success']) && !$result['success']) {
+            if (!empty($result["success"])) {
                 return $result;
             }
             return array('success'=>true, 'message'=>"Item value set");

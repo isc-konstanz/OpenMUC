@@ -17,15 +17,39 @@ class MucTemplate extends DeviceTemplate
 {
     const DEFAULT_DIR = "/opt/emonmuc/";
 
+    private $ctrl;
+
+    function __construct(&$parent) {
+        parent::__construct($parent);
+        
+        require_once "Modules/muc/muc_model.php";
+        $this->ctrl = new Controller($this->mysqli, $this->redis);
+    }
+
     protected function load_template_list($userid) {
         $list = array();
+        
+        require_once "Modules/muc/Models/driver_model.php";
+        $driver = new Driver($this->ctrl);
+        $drivers = array();
+        foreach ($driver->get_registered($userid, null) as $drv) {
+            $drivers[] = $drv['id'];
+        }
         
         $dir = $this->get_template_dir();
         $it = new RecursiveDirectoryIterator($dir);
         foreach (new RecursiveIteratorIterator($it) as $file) {
+            # TODO: Only list registered drivers
             if ($file->getExtension() == "json") {
                 $type = substr(pathinfo($file, PATHINFO_DIRNAME), strlen($dir)).'/'.pathinfo($file, PATHINFO_FILENAME);
-                $list[$type] = $this->get_template($userid, $type);
+                
+                $result = $this->get_template($userid, $type);
+                if (is_array($result) && isset($result["success"]) && !$result["success"]) {
+                    return $result;
+                }
+                if (empty($result->driver) || in_array($result->driver, $drivers)) {
+                    $list[$type] = $result;
+                }
             }
         }
         return $list;
@@ -35,20 +59,21 @@ class MucTemplate extends DeviceTemplate
         $file = $this->get_template_dir().$type.".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
-            if (is_object($template)) {
+            if (json_last_error() == 0) {
                 if (empty($template->options)) {
                     $template->options = array();
                 }
                 return $template;
             }
+            return array('success'=>false, 'message'=>"Error reading template $type: ".json_last_error_msg());
         }
-        return array('success'=>false, 'message'=>'Error while reading template: '.$type);
+        return array('success'=>false, 'message'=>"Error reading template $type: file does not exist");
     }
 
     protected function get_template_dir() {
-        global $muc_dir;
-        if (isset($muc_dir) && $muc_dir !== "") {
-            $muc_template_dir = $muc_dir;
+        global $muc_settings;
+        if (isset($muc_settings) && isset($muc_settings['rootdir']) && $muc_settings['rootdir'] !== "") {
+            $muc_template_dir = $muc_settings['rootdir'];
         }
         else {
             $muc_template_dir = self::DEFAULT_DIR;
@@ -66,10 +91,7 @@ class MucTemplate extends DeviceTemplate
         }
         $options = array();
         
-        require_once "Modules/muc/muc_model.php";
-        $ctrl = new Controller($this->mysqli, $this->redis);
-        
-        $ctrls = $ctrl->get_list($userid);
+        $ctrls = $this->ctrl->get_list($userid);
         $select = array();
         foreach ($ctrls as $ctrl) {
             $select[] = array('name'=>$ctrl['description'], 'value'=>$ctrl['id']);
@@ -149,17 +171,20 @@ class MucTemplate extends DeviceTemplate
             if (isset($options["success"])) {
                 return $options;
             }
+            $devices = $result->devices;
             
             // Create device connection
-            $response = $this->create_device($ctrlid, $device['name'], $options, $result->devices);
-            if (isset($response["success"]) && !$response["success"]) {
+            $response = $this->create_device($ctrlid, $device['driver'], $device['name'], $devices, $options);
+            if (!empty($response["success"])) {
                 return $response;
             }
             
             if (isset($template->inputs)) {
+                $channels = $template->inputs;
+                
                 // Create channels
-                $response = $this->create_channels($userid, $ctrlid, $device['name'], $options, $result->devices, $template->inputs);
-                if (isset($response["success"]) && !$response["success"]) {
+                $response = $this->create_channels($userid, $ctrlid, $devices, $channels, $options);
+                if (!empty($response["success"])) {
                     return $response;
                 }
             }
@@ -171,31 +196,28 @@ class MucTemplate extends DeviceTemplate
     }
 
     // Create the channels
-    protected function create_device($ctrlid, $name, $options, $devices) {
+    protected function create_device($ctrlid, $driverid, $id, &$devices, &$options) {
         if (empty($devices)) {
             return array('success'=>false, 'message'=>'Bad device template. Undefined devices');
         }
         
-        require_once "Modules/muc/muc_model.php";
-        $ctrl = new Controller($this->mysqli, $this->redis);
-        
         require_once "Modules/muc/Models/device_model.php";
-        $device = new DeviceConnection($ctrl, $this->mysqli, $this->redis);
+        $device = new DeviceConnection($this->ctrl, $this->mysqli, $this->redis);
         
         foreach ($devices as $d) {
-            $configs = (array) $d;
-            
-            if (isset($configs['name'])) {
-                $configs['id'] = $configs['name'];
-                unset($configs['name']);
+            if (isset($d->name)) {
+                $d->id = $d->name;
             }
             else {
-                $configs['id'] = $name;
+                $d->id = $id;
             }
-            if (isset($options['deviceAddress'])) $configs['address'] = $options['deviceAddress'];
-            if (isset($options['deviceSettings'])) $configs['settings'] = $options['deviceSettings'];
+            if (empty($d->driver)) {
+                $d->driver = $driverid;
+            }
+            if (isset($options['deviceAddress'])) $d->address = $options['deviceAddress'];
+            if (isset($options['deviceSettings'])) $d->settings = $options['deviceSettings'];
             
-            $result = $device->create($ctrlid, $configs['driver'], json_encode($configs));
+            $result = $device->create($ctrlid, $d->driver, json_encode($d));
             if (isset($result["success"]) && !$result["success"]) {
                 return $result;
             }
@@ -204,44 +226,34 @@ class MucTemplate extends DeviceTemplate
     }
 
     // Create the channels
-    protected function create_channels($userid, $ctrlid, $deviceid, $options, $devices, $channels) {
-        require_once "Modules/muc/muc_model.php";
-        $ctrl = new Controller($this->mysqli, $this->redis);
-        
+    protected function create_channels($userid, $ctrlid, &$devices, &$channels, &$options) {
         require_once "Modules/muc/Models/channel_model.php";
-        $channel = new Channel($ctrl, $this->mysqli, $this->redis);
+        $channel = new Channel($this->ctrl, $this->mysqli, $this->redis);
         
         foreach($channels as $c) {
-            // Create each channel
-            $configs = (array) $c;
-            $configs['id'] = $configs['name'];
-            unset($configs['name']);
+            $c->id = $c->name;
             
-            $configs['nodeid'] = $configs['node'];
-            unset($configs['node']);
-            
-            if (isset($options['channelAddress'])) $configs['address'] = $options['channelAddress'];
-            if (isset($options['channelSettings'])) $configs['settings'] = $options['channelSettings'];
-            if (isset($configs['logging'])) {
-                $logging = (array) $configs['logging'];
-                $logging['nodeid'] = $configs['nodeid'];
-                $configs['logging'] = $logging;
+            if (isset($options['channelAddress'])) $c->address = $options['channelAddress'];
+            if (isset($options['channelSettings'])) $c->settings = $options['channelSettings'];
+            if (isset($c->logging)) {
+                $c->logging->nodeid = $c->node;
             }
             
-            if (isset($configs['device'])) {
-                $device = $configs['device'];
-                unset($configs['device']);
+            if (isset($c->device)) {
+                $deviceid = $c->device;
                 
                 foreach ($devices as $d) {
-                    $driver = $d->driver;
-                    break;
+                    if ($d->id == $deviceid) {
+                        $driverid = $d->driver;
+                        break;
+                    }
                 }
             }
             else {
-                $device = $deviceid;
-                $driver = $devices{0}->driver;
+                $deviceid = $devices{0}->id;
+                $driverid = $devices{0}->driver;
             }
-            $result = $channel->create($userid, $ctrlid, $driver, $device, json_encode($configs));
+            $result = $channel->create($userid, $ctrlid, $driverid, $deviceid, json_encode($c));
             if (isset($result["success"]) && !$result["success"]) {
                 return $result;
             }

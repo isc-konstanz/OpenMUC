@@ -49,6 +49,10 @@ function muc_controller() {
                 // Configuration may be retrieved with read key
                 if ($session['userid']>0 && $session['write']) $result = $ctrl->get_config($session['userid'], get('id'));
             }
+            elseif ($route->action == "test") {
+                // Configuration may be retrieved with read key
+                if ($session['userid']>0 && $session['write']) $result = $ctrl->test($session['userid']);
+            }
             else {
                 $ctrlid = intval(get('id'));
                 if ($ctrl->exists($ctrlid)) {

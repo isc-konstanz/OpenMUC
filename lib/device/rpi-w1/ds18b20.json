@@ -6,9 +6,9 @@
     
     "prefix": "name",
 	
+    "driver": "rpi-w1",
     "devices": [
         {
-            "driver": "rpi-w1",
             "description": "DS18B20 temperature sensor",
             "settings": "type:TemperatureSensor"
         }

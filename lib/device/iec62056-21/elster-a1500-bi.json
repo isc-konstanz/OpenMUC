@@ -6,9 +6,9 @@
     
     "prefix": "name",
     
+    "driver": "iec62056-21",
     "devices": [
         {
-            "driver": "iec62056-21",
             "description": "Energy Meter",
             "settings": "baudrate:9600"
         }

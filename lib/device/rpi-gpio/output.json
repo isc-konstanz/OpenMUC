@@ -1,29 +1,25 @@
 {
-    "name": "GPIO 4 (Pin4)",
+    "name": "Output",
     "category": "Raspberry Pi",
     "group": "GPIO",
-    "description": "Configuration for a Raspberry Pi pin, either as input or output.",
+    "description": "Configuration for a Raspberry Pi pin as an output.",
     
+    "driver": "rpi-gpio",
     "devices": [
         {
-            "driver": "rpi-gpio",
-            "description": "Raspberry Pi GPIO 4",
-            "address": "pin:4"
+            "description": "Raspberry Pi Output",
+            "settings": "mode:DIGITAL_OUTPUT"
         }
     ],
     
     "options": [
         {
-            "id": "type",
-            "name": "Type",
-            "description": "Configure input/output",
-            "type": "selection",
-            "select": [
-                { "name": "Input", "value": "input" },
-                { "name": "Output", "value": "output" }
-            ],
+            "id": "pin",
+            "name": "Pin",
+            "description": "Configure Pin number",
+            "type": "text",
             "mandatory": true,
-            "syntax": "deviceSettings"
+            "syntax": "deviceAddress"
         }
     ],
     
@@ -33,23 +29,23 @@
             "type": "Switch",
             "label": "Pin state",
             "mapping": {
-                "ON": { "channel": "gpio4_state", "value": true },
-                "OFF": { "channel": "gpio4_state", "value": false }
+                "ON": { "channel": "state", "value": true },
+                "OFF": { "channel": "state", "value": false }
             },
-            "input": "gpio4_state"
+            "input": "state"
         }
     ],
     
     "channels": [
         {
-            "name": "gpio4_state",
-            "description": "GPIO 4 Pin state",
+            "name": "state",
+            "description": "Pin state",
             "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
             "configs": {"samplingInterval": 5000, "valueType":"BOOLEAN"},
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "gpio4_state"}
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "state"}
                 }
             ]
         }
@@ -57,7 +53,7 @@
     
     "feeds": [
         {
-            "name": "gpio4_state",
+            "name": "state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "60"

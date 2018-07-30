@@ -6,9 +6,9 @@
     
     "prefix": "name",
     
+	"driver": "csv",
     "devices": [
         {
-            "driver": "csv",
             "description": "Household energy consumption",
             "settings": "samplingmode=hhmmss;rewind=true"
         }

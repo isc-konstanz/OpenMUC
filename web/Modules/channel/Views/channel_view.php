@@ -175,14 +175,13 @@ function drawDevice(id, device, devices) {
     
     var result = $('#'+id);
     if (!result.length || result.attr('id') !== id) {
-        var table;
+        var table = "<table><tbody id='"+id+"'></tbody></table>";
         
         var checked = '';
         if (typeof device.channels !== 'undefined') {
 
             var count = 0;
             if (device.channels.length > 0) {
-                table = "<table><tbody id='"+id+"'></tbody></table>";
                 
                 for (var i in device.channels) {
                     var channelid = 'channel-muc'+device.ctrlid+'-'+device.channels[i].toLowerCase().replace(/[._]/g, '-');
@@ -196,7 +195,7 @@ function drawDevice(id, device, devices) {
                 }
             }
             else {
-                table = "<div id='"+id+"-none' class='alert'>" +
+                table += "<div id='"+id+"-none' class='alert'>" +
                     "No channels configured yet. <a class='device-add'>Add</a> or <a class='device-scan'>scan</a> for channels with the buttons on this connection block." +
                 "</div>";
             }

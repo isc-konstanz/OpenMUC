@@ -13,6 +13,8 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Controller
 {
+    const DEFAULT_DIR = "/opt/emonmuc/";
+
     private $mysqli;
     private $redis;
     private $log;
@@ -84,7 +86,7 @@ class Controller
         );
         
         $response = $this->sendHttpRequest('admin', 'admin', $url, 'POST', array('configs' => $data));
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         }
         
@@ -92,6 +94,42 @@ class Controller
         $this->sendHttpRequest('admin', 'admin', $url, 'DELETE', array('configs' => array('id' => 'admin', 'password' => 'admin')));
         
         return array('success'=>true, 'id'=>$id, 'message'=>'MUC successfully registered');
+    }
+
+    public function test($userid) {
+        if (count($this->get_list($userid)) == 0) {
+            global $user, $path, $muc_settings;
+            
+            if (isset($muc_settings) && isset($muc_settings['rootdir']) && $muc_settings['rootdir'] !== "") {
+                $muc_dir = $muc_settings['rootdir'];
+            }
+            else {
+                $muc_dir = self::DEFAULT_DIR;
+            }
+            if (substr($muc_dir, -1) !== "/") {
+                $muc_dir .= "/";
+            }
+            
+            $result = $this->create($userid, 'HTTP', 'localhost', 'Local');
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
+            
+            if (is_file($muc_dir.'conf/emoncms.default.conf') && !is_file($muc_dir.'conf/emoncms.conf')) {
+                $subpath = substr($path, strpos($path, '//')+2);
+                $address = substr($path, 0, strpos($path, '//')+2).'localhost'.substr($subpath, strpos($subpath, '/'));
+                $apikey = $user->get_apikey_write($userid);
+                
+                $contents = file_get_contents($muc_dir.'conf/emoncms.default.conf');
+                $contents = str_replace(';address = http://localhost/emoncms/', 'address = '.$address, $contents);
+                $contents = str_replace(';authorization = WRITE', 'authorization = WRITE', $contents);
+                $contents = str_replace(';authentication = <apikey>', 'authentication = '.$apikey, $contents);
+                
+                file_put_contents($muc_dir.'conf/emoncms.conf', $contents);
+            }
+            return $result;
+        }
+        return array('success'=>true, 'message'=>'MUC already registered');
     }
 
     public function exists($id) {
@@ -174,7 +212,7 @@ class Controller
         $id = intval($id);
         
         $response = $this->request($id, 'drivers', 'GET', null);
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         }
         return $response['drivers'];
@@ -244,7 +282,7 @@ class Controller
 
         if (count($data) > 1) {
             $response = $this->request($id, 'users', 'PUT', array('configs' => $data));
-            if (isset($response["success"]) && !$response["success"]) {
+            if (!empty($response["success"])) {
                 return $response;
             }
         }
@@ -274,7 +312,7 @@ class Controller
         
         $data = array('id' => $id);
         $response = $this->request($id, 'users', 'DELETE', array('configs' => $data));
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             $this->log->warn("Controller model: User on Controller with id=$id was not deregistered, as the controller is not available.");
         }
         

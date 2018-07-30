@@ -46,7 +46,7 @@ class DeviceConnection
         $driver = new Driver($this->ctrl);
         
         $response = $driver->get_configured(null, $ctrlid);
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         }
         else if (!in_array($driverid, $response)) {
@@ -58,7 +58,7 @@ class DeviceConnection
             'configs' => $this->parse_device($id, $configs)
         );
         $response = $this->ctrl->request($ctrlid, 'devices/'.$configs['id'], 'POST', $data);
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         }
         return array('success'=>true, 'message'=>'Device successfully added');
@@ -105,7 +105,7 @@ class DeviceConnection
         $ctrlid = intval($ctrlid);
 
         $response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/infos/details/device', 'GET', null);
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         }
         return $response['infos'];
@@ -116,7 +116,7 @@ class DeviceConnection
         
         $ctrl = $this->ctrl->get($ctrlid);
         $response = $this->ctrl->request($ctrlid, 'devices/'.$id.'/details', 'GET', null);
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         }
         $details = (array) $response['details'];
@@ -218,7 +218,7 @@ class DeviceConnection
         $device = $this->parse_device($name, $configs);
         
         $response = $this->ctrl->request($ctrlid, 'devices/'.$id.'/configs', 'PUT', array('configs' => $device));
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         }
         return array('success'=>true, 'message'=>'Device successfully updated');
@@ -228,7 +228,7 @@ class DeviceConnection
         $ctrlid = intval($ctrlid);
 
         $response = $this->ctrl->request($ctrlid, 'devices/'.$id, 'DELETE', null);
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         };
         return array('success'=>true, 'message'=>'Device successfully removed');
@@ -242,7 +242,7 @@ class DeviceConnection
         $driver = new Driver($this->ctrl);
         
         $response = $driver->get_configured(null, $ctrlid);
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         }
         else if (!in_array($driverid, $response)) {
@@ -250,7 +250,7 @@ class DeviceConnection
         }
         
         $response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/scanStart', 'GET', array('settings' => $settings));
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         };
         return $this->parse_scan_progress($ctrlid, $driverid, $response);
@@ -260,7 +260,7 @@ class DeviceConnection
         $ctrlid = intval($ctrlid);
 
         $response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/scanProgress', 'GET', null);
-        if (isset($response["success"]) && !$response["success"]) {
+        if (!empty($response["success"])) {
             return $response;
         }
         return $this->parse_scan_progress($ctrlid, $driverid, $response);

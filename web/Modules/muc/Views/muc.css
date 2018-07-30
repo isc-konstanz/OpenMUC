@@ -166,27 +166,26 @@
 .table-option input[type=checkbox]:focus+:before {
     outline: none !important;
 }
-.checkbox-slider--b-flat input+span {
-    cursor: default !important;
-}
 
 /* Chrome */
 @supports (-webkit-appearance:none ) {
     .checkbox-slider--b-flat {
-        height: 20px;
         padding: 0px;
+        height: 20px;
     }
 }
 
 /* IE */
 @media screen and (-ms-high-contrast: active) , ( -ms-high-contrast : none) {
     .checkbox-slider--b-flat {
+        padding: 0px;
         height: 20px;
     }
 }
 
 /* Firefox */
 _:-moz-tree-row(hover), .checkbox-slider--b-flat {
+    padding: 0px;
     height: 20px;
     width: 20px;
     border-radius: 25px;
