@@ -277,9 +277,9 @@ function drawChannel(id, checked, channel, device) {
 
 function drawRecords(records) {
     for (var i in records) {
+        var record = records[i];
+        var id = 'channel-muc'+record.ctrlid+'-'+record.id.toLowerCase().replace(/[._]/g, '-');
         if (typeof channels[id] !== 'undefined') {
-            var record = records[i];
-            var id = 'channel-muc'+record.ctrlid+'-'+record.id.toLowerCase().replace(/[._]/g, '-');
             var type = "DOUBLE";
             if (typeof channels[id].configs.valueType !== 'undefined') {
                 type = channels[id].configs.valueType;
