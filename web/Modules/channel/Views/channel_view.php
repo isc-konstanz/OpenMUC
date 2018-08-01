@@ -372,9 +372,15 @@ function drawRecordValue(id, type, value) {
     else if (type == 'DOUBLE' || type == 'FLOAT') {
         if (!isNaN(value)) {
             value = parseFloat(value);
-            if (Math.abs(value) >= 1000) value = value.toFixed(0);
-            else if (Math.abs(value) >= 100) value = value.toFixed(1);
-            else if (Math.abs(value) >= 10) value = value.toFixed(2);
+            if (Math.abs(value) >= 1000) {
+                value = value.toFixed(0);
+            }
+            else if (Math.abs(value) >= 100) {
+                value = value.toFixed(1);
+            }
+            else {
+                value = value.toFixed(2);
+            }
         }
         html = "<span id='"+id+"-value'>"+value+"</span>" +
                 "<input id='"+id+"-input' type='number' step='any' class='channel-input input-small' style='display:none'></input>";

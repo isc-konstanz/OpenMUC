@@ -188,7 +188,7 @@ class ChannelCache
 
     public function delete($ctrlid, $id) {
         $result = $this->channel->delete($ctrlid, $id);
-        if ($this->redis && isset($result["success"]) && $result["success"]) {
+        if ($this->redis) {
             $this->redis->del("channel:$ctrlid:$id");
             $this->redis->srem("muc:channel:$ctrlid", $id);
         }
