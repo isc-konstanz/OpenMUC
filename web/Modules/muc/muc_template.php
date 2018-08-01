@@ -39,7 +39,6 @@ class MucTemplate extends DeviceTemplate
         $dir = $this->get_template_dir();
         $it = new RecursiveDirectoryIterator($dir);
         foreach (new RecursiveIteratorIterator($it) as $file) {
-            # TODO: Only list registered drivers
             if ($file->getExtension() == "json") {
                 $type = substr(pathinfo($file, PATHINFO_DIRNAME), strlen($dir)).'/'.pathinfo($file, PATHINFO_FILENAME);
                 
@@ -70,7 +69,7 @@ class MucTemplate extends DeviceTemplate
         return array('success'=>false, 'message'=>"Error reading template $type: file does not exist");
     }
 
-    protected function get_template_dir() {
+    private function get_template_dir() {
         global $muc_settings;
         if (isset($muc_settings) && isset($muc_settings['rootdir']) && $muc_settings['rootdir'] !== "") {
             $muc_template_dir = $muc_settings['rootdir'];
@@ -166,25 +165,18 @@ class MucTemplate extends DeviceTemplate
         $options = $device['options'];
         if (isset($options['ctrlid'])) {
             $ctrlid = intval($options['ctrlid']);
+            $driverid = isset($result->driver) ? $result->driver : null;
             
-            $options = $this->parse_options($options, $result);
-            if (isset($options["success"])) {
-                return $options;
-            }
-            $devices = $result->devices;
-            
-            // Create device connection
-            $response = $this->create_device($ctrlid, $device['driver'], $device['name'], $devices, $options);
-            if (!empty($response["success"])) {
+            $devices = $this->parse_devices($result, $options);
+            $response = $this->create_devices($ctrlid, $driverid, $device['name'], $devices);
+            if (isset($response['success']) && $response['success'] == false) {
                 return $response;
             }
             
             if (isset($template->inputs)) {
-                $channels = $template->inputs;
-                
-                // Create channels
-                $response = $this->create_channels($userid, $ctrlid, $devices, $channels, $options);
-                if (!empty($response["success"])) {
+                $channels = $this->parse_channels($result, $options, $template->inputs);
+                $response = $this->create_channels($userid, $ctrlid, $devices, $channels);
+                if (isset($response['success']) && $response['success'] == false) {
                     return $response;
                 }
             }
@@ -195,8 +187,12 @@ class MucTemplate extends DeviceTemplate
         return array('success'=>true, 'message'=>'Device initialized');
     }
 
+    private function parse_devices($result, $parameters) {
+        return $this->parse_configs($result, $parameters, $result->devices, 'device');
+    }
+
     // Create the channels
-    protected function create_device($ctrlid, $driverid, $id, &$devices, &$options) {
+    private function create_devices($ctrlid, $driverid, $id, &$devices) {
         if (empty($devices)) {
             return array('success'=>false, 'message'=>'Bad device template. Undefined devices');
         }
@@ -214,27 +210,27 @@ class MucTemplate extends DeviceTemplate
             if (empty($d->driver)) {
                 $d->driver = $driverid;
             }
-            if (isset($options['deviceAddress'])) $d->address = $options['deviceAddress'];
-            if (isset($options['deviceSettings'])) $d->settings = $options['deviceSettings'];
             
             $result = $device->create($ctrlid, $d->driver, json_encode($d));
-            if (isset($result["success"]) && !$result["success"]) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
         }
         return array('success'=>true, 'message'=>'Devices successfully created');
     }
 
+    private function parse_channels($result, $parameters, &$channels) {
+        return $this->parse_configs($result, $parameters, $channels, 'channel');
+    }
+
     // Create the channels
-    protected function create_channels($userid, $ctrlid, &$devices, &$channels, &$options) {
+    private function create_channels($userid, $ctrlid, &$devices, &$channels) {
         require_once "Modules/muc/Models/channel_model.php";
         $channel = new Channel($this->ctrl, $this->mysqli, $this->redis);
         
         foreach($channels as $c) {
             $c->id = $c->name;
             
-            if (isset($options['channelAddress'])) $c->address = $options['channelAddress'];
-            if (isset($options['channelSettings'])) $c->settings = $options['channelSettings'];
             if (isset($c->logging)) {
                 $c->logging->nodeid = $c->node;
             }
@@ -261,41 +257,54 @@ class MucTemplate extends DeviceTemplate
         return array('success'=>true, 'message'=>'Channels successfully created');
     }
 
-    protected function parse_options($options, $template) {
-        $result = array();
+    private function parse_configs($template, $parameters, &$configs, $type) {
+        foreach ($configs as &$config) {
+            foreach (array('address', 'settings') as $key) {
+                if (isset($config->$key)) {
+                    foreach ($template->options as $option) {
+                        if (isset($option->syntax) && $option->syntax == $type.ucfirst($key)) {
+                            $id = $option->id;
+                            $config->$key = str_replace("<$id>", $parameters[$id], $config->$key);
+                        }
+                    }
+                }
+                else {
+                    $config->$key = $this->parse_option($template, $parameters, $type.ucfirst($key));
+                }
+            }
+        }
+        return $configs;
+    }
+
+    private function parse_option($template, $parameters, $key) {
+        $result = "";
         
         // Iterate all options as configured in the template and parse them accordingly, 
         // if they exist in the passed key value options array
         foreach ($template->options as $option) {
-            $id = $option->id;
-            if (isset($options[$id])) {
-                $value = $options[$id];
+            if (isset($option->syntax) && $option->syntax === $key) {
+                $syntax = $option->syntax;
                 
-                if (isset($option->syntax)) {
-                    $syntaxkey = $option->syntax;
-                    if (isset($template->syntax) && isset($template->syntax->$syntaxkey)) {
-                        $syntax = $template->syntax->$syntaxkey;
+                if (isset($parameters[$option->id])) {
+                    $value = $parameters[$option->id];
+                    
+                    if (isset($template->syntax) && isset($template->syntax->$syntax)) {
+                        $syntax = $template->syntax->$syntax;
                         
                         // Default syntax is <key1>:<value1>,<key2>:<value2>,...
-                        if (empty($result[$syntaxkey])) {
-                            $result[$syntaxkey] = "";
-                        }
-                        else {
-                            $result[$syntaxkey] .= isset($syntax->separator) ? $syntax->separator : ',';
+                        if (!empty($result)) {
+                            $result .= isset($syntax->separator) ? $syntax->separator : ',';
                         }
                         
                         if (isset($syntax->keyValue) && !$syntax->keyValue) {
-                            $result[$syntaxkey] .= $value;
+                            $result .= $value;
                         }
                         else {
                             $assignment = isset($syntax->assignment) ? $syntax->assignment : ':';
-                            $result[$syntaxkey] .= $id.$assignment.$value;
+                            $result .= $option->id.$assignment.$value;
                         }
                     }
                 }
-            }
-            else if ($option->mandatory) {
-                return array('success'=>false, 'message'=>'Mandatory option for device '.$template->device->name.' not configured: '.$id);
             }
         }
         return $result;
