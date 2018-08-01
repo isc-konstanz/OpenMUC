@@ -111,7 +111,7 @@ class MucThing extends DeviceThing
             else {
                 $result = $this->channel->write($ctrlid, $mapping['channelid'], $mapping['value'], $valueType);
             }
-            if (!empty($result["success"])) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             return array('success'=>true, 'message'=>"Item value set");

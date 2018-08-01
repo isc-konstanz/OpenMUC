@@ -28,7 +28,7 @@ class Driver
         $driver = $this->parse_driver($id, $configs);
         
         $response = $this->ctrl->request($ctrlid, 'drivers/'.$id, 'POST', array('configs' => $driver));
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         return array('success'=>true, 'message'=>'Driver successfully added');
@@ -163,7 +163,7 @@ class Driver
         $ctrlid = intval($ctrlid);
 
         $response = $this->ctrl->request($ctrlid, 'drivers/'.$id.'/infos/details/driver', 'GET', null);
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         return $response['infos'];
@@ -174,7 +174,7 @@ class Driver
         
         $ctrl = $this->ctrl->get($ctrlid);
         $response = $this->ctrl->request($ctrlid, 'drivers/'.$id.'/details', 'GET', null);
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         $details = (array) $response['details'];
@@ -246,7 +246,7 @@ class Driver
         $configs = $this->parse_driver($details['id'], $details);
         
         $response = $this->ctrl->request($ctrlid, 'drivers/'.$id.'/configs', 'PUT', array('configs' => $configs));
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         return array('success'=>true, 'message'=>'Driver successfully updated');
@@ -256,7 +256,7 @@ class Driver
         $ctrlid = intval($ctrlid);
         
         $response = $this->ctrl->request($ctrlid, 'drivers/'.$id, 'DELETE', null);
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         return array('success'=>true, 'message'=>'Driver successfully removed');

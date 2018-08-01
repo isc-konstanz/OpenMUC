@@ -86,7 +86,7 @@ class Controller
         );
         
         $response = $this->sendHttpRequest('admin', 'admin', $url, 'POST', array('configs' => $data));
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         
@@ -212,7 +212,7 @@ class Controller
         $id = intval($id);
         
         $response = $this->request($id, 'drivers', 'GET', null);
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         return $response['drivers'];
@@ -282,7 +282,7 @@ class Controller
 
         if (count($data) > 1) {
             $response = $this->request($id, 'users', 'PUT', array('configs' => $data));
-            if (!empty($response["success"])) {
+            if (isset($response['success']) && $response['success'] == false) {
                 return $response;
             }
         }
@@ -312,7 +312,7 @@ class Controller
         
         $data = array('id' => $id);
         $response = $this->request($id, 'users', 'DELETE', array('configs' => $data));
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             $this->log->warn("Controller model: User on Controller with id=$id was not deregistered, as the controller is not available.");
         }
         

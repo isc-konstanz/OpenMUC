@@ -84,7 +84,7 @@ class Channel
                 'configs' => $this->parse_channel($id, $description, $logging, $configs)
         );
         $response = $this->ctrl->request($ctrlid, 'channels/'.$id, 'POST', $data);
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         return array('success'=>true,
@@ -166,7 +166,7 @@ class Channel
         $ctrlid = intval($ctrlid);
         
         $response = $this->ctrl->request($ctrlid, 'drivers/'.$driverid.'/infos/details/channel', 'GET', null);
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         return $this->create_log_info($userid, $response['infos']);
@@ -211,7 +211,7 @@ class Channel
         
         $ctrl = $this->ctrl->get($ctrlid);
         $response = $this->ctrl->request($ctrlid, 'channels/'.$id.'/details', 'GET', null);
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         $details = (array) $response['details'];
@@ -531,7 +531,7 @@ class Channel
         $channel = $this->parse_channel($newid, $description, $logging, $configs);
         
         $response = $this->ctrl->request($ctrlid, 'channels/'.$id.'/configs', 'PUT', array('configs' => $channel));
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         
@@ -557,7 +557,7 @@ class Channel
         $record = array( 'value' => $value );
         
         $response = $this->ctrl->request($ctrlid, 'channels/'.$id, 'PUT', array('record' => $record));
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             if (strpos($response["message"], 'ACCESS_METHOD_NOT_SUPPORTED') !== false) {
                 return array('success'=>false, 'message'=>'Channel writing not supported');
             }
@@ -577,7 +577,7 @@ class Channel
         );
         
         $response = $this->ctrl->request($ctrlid, 'channels/'.$id.'/latestRecord', 'PUT', array('record' => $record));
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         return array('success'=>true, 'message'=>'Channel successfully written to');
@@ -613,7 +613,7 @@ class Channel
         $ctrlid = intval($ctrlid);
         
         $response = $this->ctrl->request($ctrlid, 'channels/'.$id, 'DELETE', null);
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
         return array('success'=>true, 'message'=>'Channel successfully removed');
@@ -626,7 +626,7 @@ class Channel
         if (empty($settings)) $settings = "";
         
         $response = $this->ctrl->request($ctrlid, 'devices/'.$deviceid.'/scan', 'GET', array('settings' => $settings));
-        if (!empty($response["success"])) {
+        if (isset($response['success']) && $response['success'] == false) {
             return $response;
         };
         
