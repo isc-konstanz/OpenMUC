@@ -10,19 +10,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/channel/Views/channel.js"></script>
 
 <div class="view-container">
-    <div style="float:right">
-        <span id="api-help-header"><a href="api"><?php echo _('Channel API Help'); ?></a></span>
-        <a style="text-decoration: none;" href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
-    </div>
-    <div id="channel-none" class="alert alert-block hide" style="margin-top:40px">
-        <h4 class="alert-heading"><?php echo _('No Channels configured'); ?></h4>
-        <p>
-            <?php echo _('Channels represents single data points, representing e.g. the metered active power of a smart meter, the temperature of a temperature sensor, '); ?>
-            <?php echo _('any value of digital or analog I/O modules or the manufacture data of the device.'); ?>
-            <?php echo _('If configured to log sampled data, values will be written into inputs for the same key, to allow further processing.'); ?>
-            <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Channels API helper'); ?></a>
-        </p>
-    </div>
+	<div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Channel API Help'); ?></a></div>
     <div id="channel-header" class="channel-header">
         <h2><?php echo _('Channels'); ?></h2>
         
@@ -31,6 +19,15 @@
         <div class="channel-select-action">
             <button id="channel-delete" class="channel-delete btn hide"><span class="icon-trash"></span></button>
         </div>
+    </div>
+    <div id="channel-none" class="alert alert-block hide" style="margin-top:12px">
+        <h4 class="alert-heading"><?php echo _('No Channels configured'); ?></h4>
+        <p>
+            <?php echo _('Channels represents single data points, representing e.g. the metered active power of a smart meter, the temperature of a temperature sensor, '); ?>
+            <?php echo _('any value of digital or analog I/O modules or the manufacture data of the device.'); ?>
+            <?php echo _('If configured to log sampled data, values will be written into inputs for the same key, to allow further processing.'); ?>
+            <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Channels API helper'); ?></a>
+        </p>
     </div>
     
     <div id="channel-list"></div>
