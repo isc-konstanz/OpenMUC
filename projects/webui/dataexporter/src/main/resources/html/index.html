@@ -57,8 +57,13 @@
       <div class="col-sm-6">
         <div class="col-sm-6" ng-repeat="channel in channels">
           <label class="sr-only">{{channel.name}}</label>
-          <label>
-              <input type="checkbox" checklist-model="selectedChannels" checklist-value="channel"> {{channel}}
+          <label data-title="{{!channel.historic  ? ('CHANNEL_NOT_HISTORIC' | translate) : ''}}"
+                 bs-tooltip>
+              <input type="checkbox"
+                     checklist-model="selectedChannels"
+                     checklist-value="channel"
+                     ng-disabled="!channel.historic" />
+              {{channel.id}}
           </label>
         </div>
       </div>

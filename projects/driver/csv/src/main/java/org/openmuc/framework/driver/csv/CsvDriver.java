@@ -113,8 +113,13 @@ public class CsvDriver implements DriverService {
     public Connection connect(String deviceAddress, String settings)
             throws ArgumentSyntaxException, ConnectionException {
 
+        File csvFile = new File(deviceAddress);
+        if (!csvFile.exists()) {
+            throw new ArgumentSyntaxException("CSV driver - file not found: " + deviceAddress);
+        }
+
         CsvDeviceConnection csvConnection = new CsvDeviceConnection(deviceAddress, settings);
-        logger.debug("CSV driver connected");
+        logger.info("Device connected: " + deviceAddress);
         return csvConnection;
     }
 

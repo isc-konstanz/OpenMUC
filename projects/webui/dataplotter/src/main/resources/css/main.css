@@ -1,7 +1,7 @@
 .plotter-place-holder {
   max-width: 90%;
   min-height: 400px;
-  margin: 5 auto;
+  margin: auto;
 }
 
 #plotter-grid {

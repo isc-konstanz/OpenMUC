@@ -27,6 +27,7 @@ public class RestUserConfig {
     private final String id;
     @SerializedName("password")
     private final String pass;
+    @SerializedName("oldPassword")
     private String oldPasswd;
     private final String[] groups;
     private final String description;

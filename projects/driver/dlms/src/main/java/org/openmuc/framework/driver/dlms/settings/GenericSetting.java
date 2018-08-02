@@ -18,8 +18,12 @@ import java.util.Map;
 import javax.xml.bind.DatatypeConverter;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class GenericSetting {
+
+    private static final Logger logger = LoggerFactory.getLogger(GenericSetting.class);
 
     private static final String SEPARATOR = ";";
     private static final String PAIR_SEP = "=";
@@ -98,9 +102,9 @@ public abstract class GenericSetting {
                     setField(field, val, option);
                     ++setFieldCounter;
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    logger.error("Not able to access to field " + field, e);
                 } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
+                    logger.error("No field found with name " + field, e);
                 }
             }
             else if (option.mandatory()) {

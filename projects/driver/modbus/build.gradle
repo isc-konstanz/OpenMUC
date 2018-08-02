@@ -4,13 +4,11 @@ def projectDescription = "Modbus driver for the OpenMUC framework."
 
 configurations.create('embed')
 
-repositories {
-  mavenCentral()
-}
+def jrxtxversion = '1.0.1'
 
 dependencies {
   compile project(':openmuc-core-spi')
-  compile files('../../../dependencies/rxtx/rxtxcomm_api-2.2pre2.jar')
+  compile group: 'org.openmuc', name: 'jrxtx', version: jrxtxversion
   compile files('../../../dependencies/j2mod/j2mod-r100.jar')
   embed files('../../../dependencies/j2mod/j2mod-r100.jar')
 }

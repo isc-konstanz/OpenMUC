@@ -29,7 +29,7 @@ import org.openmuc.jmbus.MBusConnection;
  * This class will bind to the local com-interface.<br>
  * 
  */
-public class SerialInterface {
+class SerialInterface {
 
     private int connectionCounter = 0;
     private final MBusConnection mBusConnection;

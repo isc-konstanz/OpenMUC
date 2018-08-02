@@ -113,7 +113,7 @@ public class SmlConnection extends GeneralConnection {
     @Override
     public void startListening(final List<ChannelRecordContainer> containers, final RecordsReceivedListener listener)
             throws ConnectionException {
-        logger.trace("starting scan");
+        logger.trace("start listening");
 
         this.listenerTask = new ListenerTask(containers, listener);
         this.threadExecutor.execute(listenerTask);

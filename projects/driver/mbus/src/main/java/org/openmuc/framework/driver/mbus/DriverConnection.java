@@ -42,6 +42,9 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.openmuc.jmbus.Bcd;
 import org.openmuc.jmbus.DataRecord;
+import org.openmuc.jmbus.DataRecord.DataValueType;
+import org.openmuc.jmbus.DataRecord.Description;
+import org.openmuc.jmbus.DataRecord.FunctionField;
 import org.openmuc.jmbus.MBusConnection;
 import org.openmuc.jmbus.SecondaryAddress;
 import org.openmuc.jmbus.VariableDataStructure;
@@ -75,7 +78,12 @@ public class DriverConnection implements Connection {
 
             try {
                 MBusConnection mBusConnection = serialInterface.getMBusConnection();
-                mBusConnection.linkReset(mBusAddress);
+                if (secondaryAddress != null) {
+                    mBusConnection.selectComponent(secondaryAddress);
+                }
+                else {
+                    mBusConnection.linkReset(mBusAddress);
+                }
                 VariableDataStructure variableDataStructure = mBusConnection.read(mBusAddress);
 
                 List<DataRecord> dataRecords = variableDataStructure.getDataRecords();
@@ -95,7 +103,12 @@ public class DriverConnection implements Connection {
                         valueLength = 25;
                         break;
                     case LONG:
-                        valueType = ValueType.LONG;
+                        if (dataRecord.getMultiplierExponent() == 0) {
+                            valueType = ValueType.LONG;
+                        }
+                        else {
+                            valueType = ValueType.DOUBLE;
+                        }
                         valueLength = null;
                         break;
                     case DOUBLE:
@@ -119,11 +132,16 @@ public class DriverConnection implements Connection {
                         break;
                     }
 
-                    chanScanInf.add(new ChannelScanInfo(dib + ":" + vib, dataRecord.getDescription().toString(),
-                            valueType, valueLength));
+                    String unit = "";
+                    if (dataRecord.getUnit() != null) {
+                        unit = dataRecord.getUnit().getUnit();
+                    }
+
+                    chanScanInf.add(new ChannelScanInfo(dib + ":" + vib, getDescription(dataRecord), valueType,
+                            valueLength, true, true, "", unit));
                 }
             } catch (SerialPortTimeoutException e) {
-                return null;
+                throw new ConnectionException("Scan timeout.");
             } catch (IOException e) {
                 throw new ConnectionException(e);
             }
@@ -131,6 +149,74 @@ public class DriverConnection implements Connection {
             return chanScanInf;
 
         }
+    }
+
+    private String getDescription(DataRecord dataRecord) {
+        DataValueType dataValueType = dataRecord.getDataValueType();
+        Double scaledDataValue = dataRecord.getScaledDataValue();
+
+        Description description = dataRecord.getDescription();
+        FunctionField functionField = dataRecord.getFunctionField();
+        int tariff = dataRecord.getTariff();
+
+        short subunit = dataRecord.getSubunit();
+        String userDefinedDescription = dataRecord.getUserDefinedDescription();
+        long storageNumber = dataRecord.getStorageNumber();
+        int multiplierExponent = dataRecord.getMultiplierExponent();
+        Object dataValue = dataRecord.getDataValue();
+
+        StringBuilder builder = new StringBuilder().append("Descr:").append(description);
+
+        if (description == Description.USER_DEFINED) {
+            builder.append(':').append(userDefinedDescription);
+        }
+        builder.append(";Function:").append(functionField);
+
+        if (storageNumber > 0) {
+            builder.append(";Storage:").append(storageNumber);
+        }
+
+        if (tariff > 0) {
+            builder.append(";Tariff:").append(tariff);
+        }
+
+        if (subunit > 0) {
+            builder.append(";Subunit:").append(subunit);
+        }
+
+        final String valuePlacHolder = ";Value:";
+        final String scaledValueString = ";ScaledValue:";
+
+        switch (dataValueType) {
+        case DATE:
+        case STRING:
+            builder.append(valuePlacHolder).append((dataValue).toString());
+            break;
+        case DOUBLE:
+            builder.append(scaledValueString).append(scaledDataValue);
+            break;
+        case LONG:
+            if (multiplierExponent == 0) {
+                builder.append(valuePlacHolder).append(dataValue);
+            }
+            else {
+                builder.append(scaledValueString).append(scaledDataValue);
+            }
+            break;
+        case BCD:
+            if (multiplierExponent == 0) {
+                builder.append(valuePlacHolder).append((dataValue).toString());
+            }
+            else {
+                builder.append(scaledValueString).append(scaledDataValue);
+            }
+            break;
+        case NONE:
+            builder.append(";value:NONE");
+            break;
+        }
+
+        return builder.toString();
     }
 
     @Override
@@ -174,11 +260,13 @@ public class DriverConnection implements Connection {
             VariableDataStructure variableDataStructure = null;
             try {
 
-                if (resetLink) {
-                    mBusConnection.linkReset(mBusAddress);
-                }
-                if (resetApplication) {
-                    mBusConnection.resetReadout(mBusAddress);
+                if (secondaryAddress == null) {
+                    if (resetLink) {
+                        mBusConnection.linkReset(mBusAddress);
+                    }
+                    if (resetApplication) {
+                        mBusConnection.resetReadout(mBusAddress);
+                    }
                 }
 
                 variableDataStructure = mBusConnection.read(mBusAddress);
@@ -239,8 +327,10 @@ public class DriverConnection implements Connection {
 
         for (ChannelRecordContainer container : containers) {
 
-            if (container.getChannelAddress().startsWith("X")) {
-                String[] dibAndVib = container.getChannelAddress().split(":");
+            String channelAddress = container.getChannelAddress();
+
+            if (channelAddress.startsWith("X")) {
+                String[] dibAndVib = channelAddress.split(":");
                 if (dibAndVib.length != 2) {
                     container.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID));
                 }
@@ -280,9 +370,9 @@ public class DriverConnection implements Connection {
                 continue;
             }
 
-            i = 0;
+            int j = 0;
             for (DataRecord dataRecord : dataRecords) {
-                if (dibvibs[i++].equalsIgnoreCase(container.getChannelAddress())) {
+                if (dibvibs[j++].equalsIgnoreCase(channelAddress)) {
                     setContainersRecord(timestamp, container, dataRecord);
                     break;
                 }

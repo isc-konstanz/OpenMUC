@@ -37,12 +37,16 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import org.openmuc.framework.data.Record;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class providing a graphical UI to view the content of a .opm file
  * 
  */
 public final class SlotsDbVisualizer extends JFrame {
+
+    private static final Logger logger = LoggerFactory.getLogger(SlotsDbVisualizer.class);
 
     private static final long serialVersionUID = 1L;
     JFileChooser fc = new JFileChooser();
@@ -86,6 +90,7 @@ public final class SlotsDbVisualizer extends JFrame {
                     FileObject fo = new FileObject(file);
                     res = fo.readFully();
                 } catch (IOException e1) {
+                    logger.error("error read fully. ", e);
                     e1.printStackTrace();
                 }
                 if (res != null) {

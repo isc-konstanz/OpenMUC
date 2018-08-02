@@ -55,6 +55,7 @@ import com.google.gson.JsonSyntaxException;
 
 public class ChannelResourceServlet extends GenericServlet {
 
+    private static final String REST_PATH = " Rest Path = ";
     private static final String REQUESTED_REST_PATH_IS_NOT_AVAILABLE = "Requested rest path is not available";
     private static final String APPLICATION_JSON = "application/json";
     private static final long serialVersionUID = -702876016040151438L;
@@ -123,7 +124,7 @@ public class ChannelResourceServlet extends GenericServlet {
             }
             else {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, " Rest Path = ", request.getPathInfo());
+                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
             }
         }
         else if (pathInfoArray.length == 3 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
@@ -132,7 +133,7 @@ public class ChannelResourceServlet extends GenericServlet {
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    REQUESTED_REST_PATH_IS_NOT_AVAILABLE, " Rest Path = ", request.getPathInfo());
+                    REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
         }
     }
 
@@ -157,7 +158,7 @@ public class ChannelResourceServlet extends GenericServlet {
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    REQUESTED_REST_PATH_IS_NOT_AVAILABLE, " Rest Path = ", request.getPathInfo());
+                    REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
         }
     }
 
@@ -177,7 +178,7 @@ public class ChannelResourceServlet extends GenericServlet {
 
             if (pathInfoArray.length < 1) {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, " Rest Path = ", request.getPathInfo());
+                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
             }
             else {
                 ChannelConfig channelConfig = getChannelConfig(channelId, response);
@@ -195,7 +196,7 @@ public class ChannelResourceServlet extends GenericServlet {
                     }
                     else {
                         ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                                REQUESTED_REST_PATH_IS_NOT_AVAILABLE, " Rest Path = ", request.getPathInfo());
+                                REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
                     }
                 }
             }
@@ -220,7 +221,11 @@ public class ChannelResourceServlet extends GenericServlet {
             channelId = pathInfoArray[0].replace("/", "");
             channelConfig = getChannelConfig(channelId, response);
 
-            if (channelConfig != null && pathInfoArray.length != 1) {
+            if (channelConfig == null) {
+                return;
+            }
+
+            if (pathInfoArray.length != 1) {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
                         REQUESTED_REST_PATH_IS_NOT_AVAILABLE, " Path Info = ", request.getPathInfo());
             }
@@ -311,7 +316,8 @@ public class ChannelResourceServlet extends GenericServlet {
 
     private void doGetHistory(ToJson json, String channelId, String fromParameter, String untilParameter,
             HttpServletResponse response) {
-        long fromTimeStamp = 0, untilTimeStamp = 0;
+        long fromTimeStamp = 0;
+        long untilTimeStamp = 0;
 
         List<String> channelIds = dataAccess.getAllIds();
         List<Record> records = null;

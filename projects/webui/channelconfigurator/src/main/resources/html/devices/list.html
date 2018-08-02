@@ -35,7 +35,7 @@
           <a ng-click="deleteDevice(device.id)" class="btn btn-default btn-sm" data-title="{{'DELETE' | translate}}" bs-tooltip>
             <span class="item-icon fa fa-trash-o" aria-hidden="true"></span>
           </a>
-          <a ui-sref="channelconfigurator.devices.scan({deviceId: device.id})" class="btn btn-default btn-sm" ng-if="device.data.state == 'CONNECTED'" data-title="{{'SEARCH' | translate}}" bs-tooltip>
+          <a ui-sref="channelconfigurator.devices.scan({deviceId: device.id})" class="btn btn-default btn-sm" ng-if="device.data.state == 'CONNECTED'" data-title="{{'SCAN_FOR_CHANNELS' | translate}}" bs-tooltip>
             <span class="item-icon fa fa-search" aria-hidden="true"></span>
           </a>
         </td>

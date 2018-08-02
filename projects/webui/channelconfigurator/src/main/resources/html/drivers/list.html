@@ -25,7 +25,7 @@
       <a ng-click="deleteDriver(driver.id)" class="btn btn-default btn-sm" data-title="{{'DELETE' | translate}}" bs-tooltip>
         <span class="item-icon fa fa-trash-o" aria-hidden="true"></span>
       </a>
-      <a ui-sref="channelconfigurator.drivers.scan({id: driver.id})" class="btn btn-default btn-sm" ng-if="driver.data.running" data-title="{{'SEARCH' | translate}}" bs-tooltip>
+      <a ui-sref="channelconfigurator.drivers.scan({id: driver.id})" class="btn btn-default btn-sm" ng-if="driver.data.running" data-title="{{'SCAN_DRIVER' | translate}}" bs-tooltip>
         <span class="item-icon fa fa-search" aria-hidden="true"></span>
       </a>
     </td>

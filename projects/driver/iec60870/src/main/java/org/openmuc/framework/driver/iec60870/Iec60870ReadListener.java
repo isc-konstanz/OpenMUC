@@ -11,7 +11,6 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.iec60870.settings.ChannelAddress;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
-import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.openmuc.j60870.InformationObject;
@@ -31,11 +30,9 @@ class Iec60870ReadListener implements ConnectionEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(Iec60870ReadListener.class);
 
-    public synchronized void setContainer(List<ChannelRecordContainer> containers, long timeout)
-            throws ConnectionException {
+    synchronized void setContainer(List<ChannelRecordContainer> containers) {
 
         this.containers = containers;
-        this.timeout = timeout;
         Iterator<ChannelRecordContainer> containerIterator = containers.iterator();
 
         while (containerIterator.hasNext()) {
@@ -48,6 +45,10 @@ class Iec60870ReadListener implements ConnectionEventListener {
                         "ChannelId: " + channelRecordContainer.getChannel().getId() + "; Message: " + e.getMessage());
             }
         }
+    }
+
+    void setReadTimeout(long timeout) {
+        this.timeout = timeout;
     }
 
     @Override
@@ -82,7 +83,7 @@ class Iec60870ReadListener implements ConnectionEventListener {
         ioException = e;
     }
 
-    public void read() throws IOException {
+    void read() throws IOException {
         long sleepTime = 100;
         long time = 0;
 
@@ -115,7 +116,7 @@ class Iec60870ReadListener implements ConnectionEventListener {
     private void processRecords(ASdu aSdu, long timestamp, String channelId, ChannelAddress channelAddress) {
         for (InformationObject informationObject : aSdu.getInformationObjects()) {
             if (informationObject.getInformationObjectAddress() == channelAddress.ioa()) {
-                Record record = IEC60870DataHandling.handleInformationObject(aSdu, timestamp, channelAddress,
+                Record record = Iec60870DataHandling.handleInformationObject(aSdu, timestamp, channelAddress,
                         informationObject);
                 recordMap.put(channelId, record);
             }

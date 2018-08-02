@@ -1,7 +1,6 @@
 package org.openmuc.framework.driver.mbus;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyInt;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -289,7 +288,7 @@ public class DriverConnectionTest {
         assertEquals(Flag.DRIVER_ERROR_TIMEOUT, records.get(0).getRecord().getFlag());
     }
 
-    @Test
+    @Test(expected = ConnectionException.class)
     public void testScanThrowsTimeoutException() throws Exception {
 
         MBusConnection con = mock(MBusConnection.class);
@@ -303,7 +302,7 @@ public class DriverConnectionTest {
         DriverConnection driverCon = new DriverConnection(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
                 null);
 
-        assertNull(driverCon.scanForChannels(null));
+        driverCon.scanForChannels(null);
     }
 
     @Test(expected = ConnectionException.class)

@@ -57,7 +57,6 @@ public final class RestServer {
 
     @Activate
     protected void activate(ComponentContext context) throws Exception {
-
         logger.info("Activating REST Server");
 
         SecurityHandler securityHandler = new SecurityHandler(context.getBundleContext().getBundle(),
@@ -73,7 +72,6 @@ public final class RestServer {
 
     @Deactivate
     protected void deactivate(ComponentContext context) {
-
         logger.info("Deactivating REST Server");
 
         httpService.unregister(Const.ALIAS_CHANNELS);

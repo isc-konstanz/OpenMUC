@@ -111,7 +111,7 @@ class Connector {
                     "The given Authentication Mechanism " + deviceSettings.getEncryptionMechanism() + " is unknown.");
         }
         byte[] encryptionKeyBytes = null;
-        if ((encryptionMechanism == EncryptionMechanism.AES_GMC_128)
+        if ((encryptionMechanism == EncryptionMechanism.AES_GCM_128)
                 || authenticationMechanism == AuthenticationMechanism.HLS5_GMAC) {
             encryptionKeyBytes = deviceSettings.getEncryptionKey();
         }
@@ -131,7 +131,7 @@ class Connector {
 
     private static byte[] extractAuthKey(DeviceSettings deviceSettings, EncryptionMechanism encryptionMechanism,
             AuthenticationMechanism authenticationMechanism) {
-        boolean hlsAuth = encryptionMechanism == EncryptionMechanism.AES_GMC_128
+        boolean hlsAuth = encryptionMechanism == EncryptionMechanism.AES_GCM_128
                 || authenticationMechanism == AuthenticationMechanism.HLS5_GMAC;
 
         if (hlsAuth) {

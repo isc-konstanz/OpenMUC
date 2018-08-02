@@ -4,7 +4,7 @@ def projectDescription = "REST server for the OpenMUC framework."
 
 configurations.create('embed')
 
-def gsonVersion = '2.8.1'
+def gsonVersion = '2.8.5'
 
 dependencies {
   compile project(':openmuc-core-api')

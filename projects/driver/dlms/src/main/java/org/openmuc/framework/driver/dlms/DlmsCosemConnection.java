@@ -93,21 +93,25 @@ class DlmsCosemConnection implements Connection {
 
     @Override
     public List<ChannelScanInfo> scanForChannels(String settings) throws ConnectionException {
+        if (deviceSettings.useSn()) {
+            throw new UnsupportedOperationException("Scan devices for SN is not supported, yet.");
+        }
+
         AttributeAddress scanChannel = new AttributeAddress(15, "0.0.40.0.0.255", 2);
         GetResult scanResult = executeScan(scanChannel);
-
         if (scanResult.getResultCode() != AccessResultCode.SUCCESS) {
             logger.error("Cannot scan device for channels. Resultcode: " + scanResult.getResultCode());
             throw new ConnectionException("Cannot scan device for channels.");
         }
 
         List<DataObject> objectArray = scanResult.getResultData().getValue();
-
         List<ChannelScanInfo> result = new ArrayList<>(objectArray.size());
         for (DataObject objectDef : objectArray) {
             List<DataObject> defItems = objectDef.getValue();
+
             int classId = defItems.get(0).getValue();
             classId &= 0xFF;
+
             byte[] instanceId = defItems.get(2).getValue();
             List<DataObject> accessRight = defItems.get(3).getValue();
             List<DataObject> attributes = accessRight.get(0).getValue();
@@ -130,7 +134,7 @@ class DlmsCosemConnection implements Connection {
 
     @Override
     public void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
-            throws UnsupportedOperationException, ConnectionException {
+            throws ConnectionException {
         throw new UnsupportedOperationException();
     }
 
@@ -142,7 +146,7 @@ class DlmsCosemConnection implements Connection {
 
         ObisCode instanceId = new ObisCode(logicalName);
 
-        String channelAddress = MessageFormat.format("a={0}/{1}/{2}", classId, instanceId.toString(), attributeId);
+        String channelAddress = MessageFormat.format("a={0}/{1}/{2}", classId, instanceId, attributeId);
 
         int valueTypeLength = 0;
 

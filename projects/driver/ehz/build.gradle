@@ -5,15 +5,15 @@ def projectDescription = 'eHZ driver for the OpenMUC framework.'
 configurations.create('embed')
 
 def jsmlversion = '1.1.1'
-def jrxtxversion = '1.0.0'
+def jrxtxversion = '1.0.1'
 
 dependencies {
   compile project(':openmuc-core-spi')
   
-  compile group: 'org.openmuc', name: 'jsml', version: jsmlversion
-  embed group: 'org.openmuc', name: 'jsml', version: jsmlversion
+  compile group: 'org.openmuc', name: 'jsml',  version: jsmlversion
+  embed   group: 'org.openmuc', name: 'jsml',  version: jsmlversion
   
-  embed group: 'org.openmuc', name: 'jrxtx', version: jrxtxversion
+  embed   group: 'org.openmuc', name: 'jrxtx', version: jrxtxversion
 }
 
 jar {

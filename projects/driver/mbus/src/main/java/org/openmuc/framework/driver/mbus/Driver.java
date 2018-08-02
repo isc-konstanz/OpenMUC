@@ -84,9 +84,9 @@ public class Driver implements DriverService {
         Settings settings = new Settings(settingsString, true);
 
         MBusConnection mBusConnection;
-        if (!interfaces.containsKey(settings.scanSerialPortName)) {
+        if (!interfaces.containsKey(settings.scanConnectionAddress)) {
             try {
-                mBusConnection = MBusConnection.newSerialBuilder(settings.scanSerialPortName)
+                mBusConnection = MBusConnection.newSerialBuilder(settings.scanConnectionAddress)
                         .setBaudrate(settings.baudRate)
                         .setTimeout(settings.timeout)
                         .build();
@@ -98,17 +98,17 @@ public class Driver implements DriverService {
             }
         }
         else {
-            mBusConnection = interfaces.get(settings.scanSerialPortName).getMBusConnection();
+            mBusConnection = interfaces.get(settings.scanConnectionAddress).getMBusConnection();
         }
 
         try {
             if (settings.scanSecondary) {
                 SecondaryAddressListenerImplementation secondaryAddressListenerImplementation = new SecondaryAddressListenerImplementation(
-                        listener);
+                        listener, settings.scanConnectionAddress);
                 mBusConnection.scan("ffffffff", secondaryAddressListenerImplementation);
             }
             else {
-                scanPrimary(listener, settings, mBusConnection);
+                scanPrimaryAddress(listener, settings, mBusConnection);
             }
 
         } catch (IOException e) {
@@ -119,7 +119,7 @@ public class Driver implements DriverService {
 
     }
 
-    private void scanPrimary(DriverDeviceScanListener listener, Settings settings, MBusConnection mBusConnection)
+    private void scanPrimaryAddress(DriverDeviceScanListener listener, Settings settings, MBusConnection mBusConnection)
             throws ScanInterruptedException, ScanException {
         VariableDataStructure dataStructure = null;
         for (int i = 0; i <= 250; i++) {
@@ -146,7 +146,7 @@ public class Driver implements DriverService {
                 SecondaryAddress secondaryAddress = dataStructure.getSecondaryAddress();
                 description = getScanDescription(secondaryAddress);
             }
-            listener.deviceFound(new DeviceScanInfo(settings.scanSerialPortName + ':' + i, "", description));
+            listener.deviceFound(new DeviceScanInfo(settings.scanConnectionAddress + ':' + i, "", description));
             logger.debug("Meter found on address {}", i);
         }
     }
@@ -268,17 +268,14 @@ public class Driver implements DriverService {
         }
     }
 
-    private String getScanDescription(SecondaryAddress secondaryAddress) {
-        return secondaryAddress.getManufacturerId() + '_' + secondaryAddress.getDeviceType() + '_'
-                + secondaryAddress.getVersion();
-    }
-
     class SecondaryAddressListenerImplementation implements SecondaryAddressListener {
-
         private final DriverDeviceScanListener driverDeviceScanListener;
+        private final String connectionAddress;
 
-        public SecondaryAddressListenerImplementation(DriverDeviceScanListener driverDeviceScanListener) {
+        private SecondaryAddressListenerImplementation(DriverDeviceScanListener driverDeviceScanListener,
+                String connectionAddress) {
             this.driverDeviceScanListener = driverDeviceScanListener;
+            this.connectionAddress = connectionAddress;
         }
 
         @Override
@@ -289,13 +286,20 @@ public class Driver implements DriverService {
         @Override
         public void newDeviceFound(SecondaryAddress secondaryAddress) {
             driverDeviceScanListener.deviceFound(new DeviceScanInfo(
-                    SECONDARY_ADDRESS_SCAN + SEPERATOR + secondaryAddress, "", getScanDescription(secondaryAddress)));
+                    connectionAddress + SEPERATOR + DatatypeConverter.printHexBinary(secondaryAddress.asByteArray()),
+                    "", getScanDescription(secondaryAddress)));
         }
 
     }
 
+    private String getScanDescription(SecondaryAddress secondaryAddress) {
+        return "ManufactureId:" + secondaryAddress.getManufacturerId() + ";DeviceType:"
+                + secondaryAddress.getDeviceType() + ";DeviceID:" + secondaryAddress.getDeviceId() + ";Version:"
+                + secondaryAddress.getVersion();
+    }
+
     private class Settings {
-        private String scanSerialPortName = "";
+        private String scanConnectionAddress = "";
         private boolean scanSecondary = false;
 
         private boolean resetLink = false;
@@ -319,7 +323,7 @@ public class Driver implements DriverService {
         }
 
         private void setScanOptions(String args[]) throws ArgumentSyntaxException {
-            scanSerialPortName = args[0];
+            scanConnectionAddress = args[0];
 
             for (int i = 1; i < args.length; ++i) {
                 if (args[i].equalsIgnoreCase(SECONDARY_ADDRESS_SCAN)) {

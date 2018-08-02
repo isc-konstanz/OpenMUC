@@ -80,7 +80,7 @@ public abstract class SnmpDevice implements Connection {
 
     protected List<SnmpDiscoveryListener> listeners = new ArrayList<>();
 
-    public static final Map<String, String> ScanOIDs = new HashMap<>();
+    protected static final Map<String, String> ScanOIDs = new HashMap<>();
 
     static {
         // some general OIDs that are valid in almost every MIB

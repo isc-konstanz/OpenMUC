@@ -12,7 +12,7 @@ body {
 
 #header {
   border: 0px;
-  background: url('/openmuc/images/header-bg.jpg') repeat-x;
+  background: url('../images/header-bg.jpg') repeat-x;
 }
 
 @media (min-width: 768px) {
@@ -48,13 +48,6 @@ body {
 
   background: #E9EDEB;  
   margin-top: 60px;
-}
-
-.alert.top-right {
-	position: absolute;
-	top: 40px;
-	right: 10px;
-	z-index: 1000;
 }
 
 .navbar-brand {
@@ -96,11 +89,11 @@ body {
 }
 
 .flag-de {
-	background: url('/openmuc/images/flag-de.gif');
+	background: url('../images/flag-de.gif');
 }
 
 .flag-en {
-  background: url('/openmuc/images/flag-en.gif');
+  background: url('../images/flag-en.gif');
 }
 
 .dropdown-label {

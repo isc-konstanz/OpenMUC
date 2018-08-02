@@ -43,6 +43,9 @@ public class WebUiBaseServlet extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(WebUiBaseServlet.class);
 
+    /**
+     * 5 minutes.
+     */
     private static final int SESSION_TIMEOUT = 300;
 
     private final WebUiBase webUiBase;
@@ -103,25 +106,27 @@ public class WebUiBaseServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if ("/login".equals(req.getServletPath())) {
-            String user = req.getParameter("user");
-            String pwd = req.getParameter("pwd");
+        String servletPath = req.getServletPath();
+        logger.info(servletPath);
+        if (!servletPath.equals("/login")) {
+            doGet(req, resp);
+            return;
+        }
 
-            AuthenticationService auth = webUiBase.getAuthenticationService();
-            if (auth.login(user, pwd)) {
+        String user = req.getParameter("user");
+        String pwd = req.getParameter("pwd");
 
-                HttpSession session = req.getSession(true); // create a new session
-                session.setMaxInactiveInterval(SESSION_TIMEOUT); // and set timeout
-                session.setAttribute("user", user);
-            }
-            else {
-                logger.info("login failed!");
-                req.getSession().invalidate(); // invalidate the session
-                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            }
+        AuthenticationService auth = webUiBase.getAuthenticationService();
+        if (auth.login(user, pwd)) {
+            HttpSession session = req.getSession(true); // create a new session
+            session.setMaxInactiveInterval(SESSION_TIMEOUT); // set session timeout
+            session.setAttribute("user", user);
+            resp.setStatus(HttpServletResponse.SC_ACCEPTED);
         }
         else {
-            doGet(req, resp);
+            logger.info("login failed!");
+            req.getSession().invalidate(); // invalidate the session
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
     }

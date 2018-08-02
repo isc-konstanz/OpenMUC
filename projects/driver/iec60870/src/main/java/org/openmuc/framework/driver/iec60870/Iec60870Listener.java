@@ -87,17 +87,11 @@ public class Iec60870Listener implements ConnectionEventListener {
     private void processRecords(ASdu aSdu, long timestamp, int i, ChannelAddress channelAddress) {
         for (InformationObject informationObject : aSdu.getInformationObjects()) {
             if (informationObject.getInformationObjectAddress() == channelAddress.ioa()) {
-                Record record = IEC60870DataHandling.handleInformationObject(aSdu, timestamp, channelAddress,
+                Record record = Iec60870DataHandling.handleInformationObject(aSdu, timestamp, channelAddress,
                         informationObject);
                 newRecords(i, record);
             }
         }
-    }
-
-    @Override
-    public void connectionClosed(IOException e) {
-        logger.info("Connection was closed by server.");
-        listener.connectionInterrupted(driverId, connection);
     }
 
     private void newRecords(int i, Record record) {
@@ -113,6 +107,12 @@ public class Iec60870Listener implements ConnectionEventListener {
         container.setRecord(record);
         channelRecordContainerList.add(container);
         return channelRecordContainerList;
+    }
+
+    @Override
+    public void connectionClosed(IOException e) {
+        logger.info("Connection was closed by server.");
+        listener.connectionInterrupted(driverId, connection);
     }
 
 }

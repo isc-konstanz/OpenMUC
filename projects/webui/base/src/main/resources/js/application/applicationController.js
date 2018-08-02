@@ -12,14 +12,6 @@
 			return AuthService.isLoggedIn();
 		};
 		
-		$scope.currentUsername = function() {
-			return AuthService.currentUsername();
-		};
-
-		this.currentPwd = function() {
-			return AuthService.currentPwd();
-		};
-
 		$scope.logout = function() {
 			AuthService.logout();
 			
