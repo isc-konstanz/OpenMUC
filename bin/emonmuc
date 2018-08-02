@@ -41,6 +41,16 @@ if [ -z ${EMONMUC_HOME+x} ]; then
 fi
 cd "$EMONMUC_HOME"
 
+find_gradle() {
+    if hash gradle 2>/dev/null; then
+        GRADLE="gradle"
+    else
+        GRADLE="$EMONMUC_HOME/gradlew"
+    fi
+}
+
+find_gradle
+
 # If root change user to owner of this script
 if [ $UID -eq 0 ] ; then
     SCRIPT_OWNER=`stat -c "%U" bin/emonmuc`
@@ -195,7 +205,6 @@ do_stop()
     return 0
 }
 
-
 enable_bundle() {
     case "$2" in
         app)
@@ -233,7 +242,6 @@ enable_bundle() {
     echo "To start the new bundle, you need to run:"
     echo "  systemctl restart emonmuc"
 }
-
 
 disable_bundle() {
     case "$2" in
@@ -273,7 +281,6 @@ disable_bundle() {
     echo "  systemctl restart emonmuc"
 }
 
-
 case "$1" in
     start)
         start_emonmuc $*
@@ -291,6 +298,13 @@ case "$1" in
         ;;
     disable)
         disable_bundle $*
+        ;;
+    update-bundles)
+        if [ "$2" = "-i" ]
+        then
+            eval $GRADLE -p "$EMONMUC_HOME" install
+        fi
+        eval $GRADLE -b "$EMONMUC_HOME"/conf/bundles.gradle updateBundles
         ;;
     remote-shell)
         echo "Using netcat to connect to remote shell at 127.0.0.1:6666"

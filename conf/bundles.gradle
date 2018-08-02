@@ -16,7 +16,7 @@ configurations.core.transitive = false;
 configurations.optional.transitive = false;
 
 dependencies {
-  main group:     "org.apache.felix",         name: "org.apache.felix.main",            version: "5.6.10"
+  main group:     "org.apache.felix",         name: "org.apache.felix.main",            version: "6.0.0"
 
   core project(":openmuc-core-api")
   core project(":openmuc-core-spi")
@@ -69,10 +69,10 @@ dependencies {
   //--------------------------------------------------------------------------------------------------
   // The Apache Felix Gogo standard shell for OSGi (http://felix.apache.org/site/apache-felix-gogo.html)
   //--------------------------------------------------------------------------------------------------
-  core group:     "org.apache.felix",         name: "org.apache.felix.gogo.runtime",    version: "1.0.10"
+  core group:     "org.apache.felix",         name: "org.apache.felix.gogo.runtime",    version: "1.1.0"
   core group:     "org.apache.felix",         name: "org.apache.felix.gogo.command",    version: "1.0.2"
-  core group:     "org.apache.felix",         name: "org.apache.felix.gogo.jline",      version: "1.0.10"
-  core group:     "org.jline",                name: "jline",                            version: "3.5.2"
+  core group:     "org.apache.felix",         name: "org.apache.felix.gogo.jline",      version: "1.1.0"
+  core group:     "org.jline",                name: "jline",                            version: "3.8.0"
 
   //--------------------------------------------------------------------------------------------------
   // Adds a telnet server so that the Felix Gogo Shell can be accessed
@@ -86,21 +86,21 @@ dependencies {
   // Apache Felix Service Component Runtime that implements the OSGi Declarative Services Specification
   // the OpenMUC core bundles use declarative services and thus depend on them
   //--------------------------------------------------------------------------------------------------
-  core group:     "org.apache.felix",         name: "org.apache.felix.scr",             version: "2.0.14"
+  core group:     "org.apache.felix",         name: "org.apache.felix.scr",             version: "2.1.0"
 
   //--------------------------------------------------------------------------------------------------
   // An implementation of the OSGi HTTP Service Specification, needed by the WebUI bundles
   //--------------------------------------------------------------------------------------------------
   core group:     "org.apache.felix",        name: "org.apache.felix.http.servlet-api", version: "1.1.2"
   core group:     "org.apache.felix",        name: "org.apache.felix.http.api",         version: "3.0.0"
-  core group:     "org.apache.felix",        name: "org.apache.felix.http.jetty",       version: "3.4.8"
+  core group:     "org.apache.felix",        name: "org.apache.felix.http.jetty",       version: "4.0.0"
 
   //--------------------------------------------------------------------------------------------------
   // Implementations of the OSGi Event Admin, Configuration Admin and MetaType services, needed by jetty
   //--------------------------------------------------------------------------------------------------
-  core group:     "org.apache.felix",        name: "org.apache.felix.eventadmin",       version: "1.4.10"
-  core group:     "org.apache.felix",        name: "org.apache.felix.configadmin",      version: "1.8.16"
-  core group:     "org.apache.felix",        name: "org.apache.felix.metatype",         version: "1.1.6"
+  core group:     "org.apache.felix",        name: "org.apache.felix.eventadmin",       version: "1.5.0"
+  core group:     "org.apache.felix",        name: "org.apache.felix.configadmin",      version: "1.9.2"
+  core group:     "org.apache.felix",        name: "org.apache.felix.metatype",         version: "1.2.0"
 
   //--------------------------------------------------------------------------------------------------
   // Adds a web console for felix bundle management
