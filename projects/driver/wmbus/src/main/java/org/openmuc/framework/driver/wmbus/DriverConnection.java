@@ -42,12 +42,12 @@ import org.openmuc.jmbus.wireless.WMBusConnection;
  */
 public class DriverConnection implements Connection {
     private final SecondaryAddress secondaryAddress;
-    private final WMBusSerialInterface serialInterface;
+    private final WMBusInterface serialInterface;
     private final WMBusConnection con;
     private List<ChannelRecordContainer> containersToListenFor = new ArrayList<>();
 
     public DriverConnection(WMBusConnection con, SecondaryAddress secondaryAddress, String keyString,
-            WMBusSerialInterface serialInterface) throws ArgumentSyntaxException {
+            WMBusInterface serialInterface) throws ArgumentSyntaxException {
         this.con = con;
         this.serialInterface = serialInterface;
         this.secondaryAddress = secondaryAddress;

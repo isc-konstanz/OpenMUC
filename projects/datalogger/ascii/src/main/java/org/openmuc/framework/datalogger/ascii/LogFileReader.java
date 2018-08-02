@@ -187,7 +187,7 @@ public class LogFileReader {
             unixTimestampColumn = channelsColumnsMap.get(Const.TIMESTAMP_STRING);
             firstValueLine = raf.readLine();
 
-            rowSize = firstValueLine.length() + 1; // +1 because of "\n"
+            rowSize = firstValueLine.length() + 1l; // +1 because of "\n"
 
             // rewind the position to the start of the firstValue line
             currentPosition = raf.getFilePointer() - rowSize;
@@ -280,7 +280,7 @@ public class LogFileReader {
         } catch (NumberFormatException e) {
             logger.warn("It's not a timestamp.\n", e.getMessage());
         } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
+            logger.error("Array Index Out Of Bounds Exception. ", e);
         }
     }
 

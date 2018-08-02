@@ -46,7 +46,7 @@ import org.openmuc.jmbus.DecodingException;
 import org.openmuc.jmbus.SecondaryAddress;
 import org.openmuc.jmbus.VariableDataStructure;
 import org.openmuc.jmbus.wireless.WMBusConnection;
-import org.openmuc.jmbus.wireless.WMBusConnection.WMBusSerialBuilder.WMBusManufacturer;
+import org.openmuc.jmbus.wireless.WMBusConnection.WMBusManufacturer;
 import org.openmuc.jmbus.wireless.WMBusListener;
 import org.openmuc.jmbus.wireless.WMBusMessage;
 import org.openmuc.jmbus.wireless.WMBusMode;
@@ -58,15 +58,15 @@ import org.slf4j.LoggerFactory;
  * This class will bind to the local com-interface.<br>
  * 
  */
-public class WMBusSerialInterface {
-    private static final Logger logger = LoggerFactory.getLogger(WMBusSerialInterface.class);
+public class WMBusInterface {
+    private static final Logger logger = LoggerFactory.getLogger(WMBusInterface.class);
 
-    private static final Map<String, WMBusSerialInterface> interfaces = new HashMap<>();
+    private static final Map<String, WMBusInterface> interfaces = new HashMap<>();
     private final HashMap<SecondaryAddress, DriverConnection> connectionsBySecondaryAddress = new HashMap<>();
     RecordsReceivedListener listener;
 
     private final WMBusConnection con;
-    private final String serialPortName;
+    private final String connectionName;
     private final String transceiverString;
     private final String modeString;
 
@@ -206,56 +206,66 @@ public class WMBusSerialInterface {
 
         @Override
         public void stoppedListening(IOException e) {
-            WMBusSerialInterface.this.stoppedListening();
+            WMBusInterface.this.stoppedListening();
         }
     }
 
-    public static WMBusSerialInterface getInstance(String serialPortName, String transceiverString, String modeString)
+    public static WMBusInterface getSerialInstance(String serialPortName, String transceiverString, String modeString)
             throws ConnectionException, ArgumentSyntaxException {
-        WMBusSerialInterface serialInterface;
+        WMBusInterface wmBusInterface;
 
         synchronized (interfaces) {
-            serialInterface = interfaces.get(serialPortName);
+            wmBusInterface = interfaces.get(serialPortName);
 
-            if (serialInterface == null) {
-                serialInterface = new WMBusSerialInterface(serialPortName, transceiverString, modeString);
-                interfaces.put(serialPortName, serialInterface);
+            if (wmBusInterface == null) {
+                wmBusInterface = new WMBusInterface(serialPortName, transceiverString, modeString);
+                interfaces.put(serialPortName, wmBusInterface);
             }
             else {
-                if (!serialInterface.modeString.equals(modeString)
-                        || !serialInterface.transceiverString.equals(transceiverString)) {
+                if (!wmBusInterface.modeString.equals(modeString)
+                        || !wmBusInterface.transceiverString.equals(transceiverString)) {
                     throw new ConnectionException(
                             "Connections serial interface is already in use with a different transceiver or mode");
                 }
             }
         }
 
-        return serialInterface;
-
+        return wmBusInterface;
     }
 
-    private WMBusSerialInterface(String serialPortName, String transceiverString, String modeString)
+    public static WMBusInterface getTCPInstance(String host, int port, String transceiverString, String modeString)
+            throws ConnectionException, ArgumentSyntaxException {
+        WMBusInterface wmBusInterface;
+        String hostAndPort = host + ':' + port;
+
+        synchronized (interfaces) {
+            wmBusInterface = interfaces.get(hostAndPort);
+
+            if (wmBusInterface == null) {
+                wmBusInterface = new WMBusInterface(host, port, transceiverString, modeString);
+                interfaces.put(hostAndPort, wmBusInterface);
+            }
+            else {
+                if (!wmBusInterface.modeString.equals(modeString)
+                        || !wmBusInterface.transceiverString.equals(transceiverString)) {
+                    throw new ConnectionException(
+                            "Connections TCP interface is already in use with a different transceiver or mode");
+                }
+            }
+        }
+
+        return wmBusInterface;
+    }
+
+    private WMBusInterface(String serialPortName, String transceiverString, String modeString)
             throws ArgumentSyntaxException, ConnectionException {
 
-        this.serialPortName = serialPortName;
+        this.connectionName = serialPortName;
         this.transceiverString = transceiverString;
         this.modeString = modeString;
 
-        WMBusMode mode = null;
-
-        if (modeString.equalsIgnoreCase("s")) {
-            mode = WMBusMode.S;
-        }
-        else if (modeString.equalsIgnoreCase("t")) {
-            mode = WMBusMode.T;
-        }
-        else {
-            throw new ArgumentSyntaxException(
-                    "The wireless M-Bus mode is not correctly specified in the device's parameters string. Should be S or T but is: "
-                            + modeString);
-        }
-
-        WMBusManufacturer wmBusManufacturer = convertManStrToManId(transceiverString);
+        WMBusMode mode = getWMBusModeFromString(modeString);
+        WMBusManufacturer wmBusManufacturer = getWMBusManufactureFromString(transceiverString);
 
         try {
             con = new WMBusConnection.WMBusSerialBuilder(wmBusManufacturer, new Receiver(), serialPortName)
@@ -266,19 +276,43 @@ public class WMBusSerialInterface {
         }
     }
 
-    private static WMBusManufacturer convertManStrToManId(String transceiverString) throws ArgumentSyntaxException {
-        switch (transceiverString.toLowerCase()) {
-        case "amber":
-            return WMBusManufacturer.AMBER;
-        case "rc":
-            return WMBusManufacturer.RADIO_CRAFTS;
-        case "imst":
-            return WMBusManufacturer.IMST;
-        default:
-            // should not occur.
-            String msg = "The type of transceiver is not correctly specified in the device's parameters string. Should be amber, imst or rc but is: "
-                    + transceiverString;
-            throw new ArgumentSyntaxException(msg);
+    public WMBusInterface(String host, int port, String transceiverString, String modeString)
+            throws ArgumentSyntaxException, ConnectionException {
+        this.connectionName = host + ':' + port;
+        this.transceiverString = transceiverString;
+        this.modeString = modeString;
+
+        WMBusMode mode = getWMBusModeFromString(modeString);
+        WMBusManufacturer wmBusManufacturer = getWMBusManufactureFromString(transceiverString);
+
+        try {
+            con = new WMBusConnection.WMBusTcpBuilder(wmBusManufacturer, new Receiver(), host, port).setMode(mode)
+                    .build();
+        } catch (IOException e) {
+            throw new ConnectionException("Failed to open TCP interface", e);
+        }
+    }
+
+    private WMBusMode getWMBusModeFromString(String modeString) throws ArgumentSyntaxException {
+        WMBusMode mode;
+        try {
+            mode = WMBusMode.valueOf(modeString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new ArgumentSyntaxException(
+                    "The wireless M-Bus mode is not correctly specified in the device's parameters string. Should be S, T or C but is: "
+                            + modeString);
+        }
+        return mode;
+    }
+
+    private static WMBusManufacturer getWMBusManufactureFromString(String transceiverString)
+            throws ArgumentSyntaxException {
+        try {
+            return WMBusManufacturer.valueOf(transceiverString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new ArgumentSyntaxException(
+                    "The type of transceiver is not correctly specified in the device's parameters string. Should be amber, imst or rc but is: "
+                            + transceiverString);
         }
     }
 
@@ -296,7 +330,7 @@ public class WMBusSerialInterface {
             } catch (IOException e) {
                 logger.warn("Failed to close connection properly", e);
             }
-            interfaces.remove(serialPortName);
+            interfaces.remove(connectionName);
         }
     }
 
@@ -312,7 +346,7 @@ public class WMBusSerialInterface {
 
     public void stoppedListening() {
         synchronized (interfaces) {
-            interfaces.remove(serialPortName);
+            interfaces.remove(connectionName);
         }
         synchronized (this) {
             for (DriverConnection connection : connectionsBySecondaryAddress.values()) {
@@ -321,4 +355,5 @@ public class WMBusSerialInterface {
             connectionsBySecondaryAddress.clear();
         }
     }
+
 }

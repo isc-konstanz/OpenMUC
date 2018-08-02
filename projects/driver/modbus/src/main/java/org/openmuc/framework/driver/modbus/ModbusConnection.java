@@ -251,15 +251,8 @@ public abstract class ModbusConnection implements Connection {
 
         ModbusResponse response = null;
 
-        if (transaction instanceof ModbusTCPTransaction) {
-            // see: performModbusTCPReadTransactionWithRetry()
-            response = performModbusReadTransaction();
-        }
-        else {
-            // other than modbus TCP
-            response = performModbusReadTransaction();
-
-        }
+        // see: performModbusTCPReadTransactionWithRetry()
+        response = performModbusReadTransaction();
 
         if (response == null) {
             throw new ModbusException("received response object is null");

@@ -5,7 +5,7 @@ def projectDescription = "REST driver for the OpenMUC framework."
 configurations.create('embed')
 
 def commonscodecversion = "1.11"
-def gsonversion = "2.8.2"
+def gsonversion = "2.8.5"
 
 dependencies {
   compile project(':openmuc-core-spi')

@@ -54,8 +54,8 @@ public final class Iec60870Connection implements Connection {
     private final DeviceAddress deviceAddress;
     private final DeviceSettings deviceSettings;
     private final String driverId;
-    private final static long TIMEOUT = 5000; // TODO: get from configuration
 
+    private final Iec60870ListenerList iec60870listener = new Iec60870ListenerList();
     private final Iec60870ReadListener readListener = new Iec60870ReadListener();
 
     public Iec60870Connection(DeviceAddress deviceAddress, DeviceSettings deviceSettings, String driverId)
@@ -71,20 +71,29 @@ public final class Iec60870Connection implements Connection {
 
         try {
             setupClientSap(clientConnectionBuilder, deviceSettings);
-
-            logger.debug("Try to connect to: ", hostAddress, ':', port);
-            clientConnection = clientConnectionBuilder.connect();
-            logger.info("Driver-IEC60870: successful connected to ", hostAddress, ":", port);
-
-            clientConnection.startDataTransfer(readListener, deviceSettings.stardtConTimeout());
-            logger.debug("Driver-IEC60870: successful sended startDT act to ", hostAddress, ":", port,
-                    "and got startDT con.");
+            connect(clientConnectionBuilder, port, hostAddress);
+            startListenIec60870(deviceSettings, port, hostAddress);
         } catch (IOException e) {
             throw new ConnectionException(MessageFormat.format("Was not able to connect to {0}:{1}. {2}",
                     this.deviceAddress.hostAddress().getHostName(), port, e.getMessage()));
         } catch (TimeoutException e) {
             throw new ConnectionException("Timeout while start data transfer.", e);
         }
+    }
+
+    private void startListenIec60870(DeviceSettings deviceSettings, int port, String hostAddress)
+            throws IOException, TimeoutException {
+        clientConnection.startDataTransfer(iec60870listener, deviceSettings.stardtConTimeout());
+        iec60870listener.addListener(readListener);
+        logger.debug("Driver-IEC60870: successful sended startDT act to ", hostAddress, ":", port,
+                "and got startDT con.");
+    }
+
+    private void connect(ClientConnectionBuilder clientConnectionBuilder, int port, String hostAddress)
+            throws IOException {
+        logger.debug("Try to connect to: ", hostAddress, ':', port);
+        clientConnection = clientConnectionBuilder.connect();
+        logger.info("Driver-IEC60870: successful connected to ", hostAddress, ":", port);
     }
 
     @Override
@@ -96,9 +105,9 @@ public final class Iec60870Connection implements Connection {
     @Override
     public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
             throws UnsupportedOperationException, ConnectionException {
-
         // TODO: read specific values, not only general interrogation
-        readListener.setContainer(containers, TIMEOUT);
+        readListener.setContainer(containers);
+        readListener.setReadTimeout(deviceSettings.readTimeout());
         try {
             clientConnection.interrogation(1, CauseOfTransmission.ACTIVATION, new IeQualifierOfInterrogation(20));
             readListener.read();
@@ -114,13 +123,9 @@ public final class Iec60870Connection implements Connection {
     @Override
     public synchronized void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
             throws UnsupportedOperationException, ConnectionException {
-        Iec60870Listener iec60870Listener = new Iec60870Listener();
-        try {
-            clientConnection.startDataTransfer(iec60870Listener, deviceSettings.stardtConTimeout());
-        } catch (IOException | TimeoutException e) {
-            throw new ConnectionException(e);
-        }
-        iec60870Listener.registerOpenMucListener(containers, listener, driverId, this);
+        Iec60870Listener iec60870Listen = new Iec60870Listener();
+        iec60870Listen.registerOpenMucListener(containers, listener, driverId, this);
+        iec60870listener.addListener(iec60870Listen);
     }
 
     @Override
@@ -131,7 +136,7 @@ public final class Iec60870Connection implements Connection {
             try {
                 channelAddress = new ChannelAddress(channelValueContainer.getChannelAddress());
                 Record record = new Record(channelValueContainer.getValue(), System.currentTimeMillis(), Flag.VALID);
-                IEC60870DataHandling.writeSingleCommand(record, channelAddress, clientConnection);
+                Iec60870DataHandling.writeSingleCommand(record, channelAddress, clientConnection);
                 channelValueContainer.setFlag(Flag.VALID);
             } catch (ArgumentSyntaxException e) {
                 channelValueContainer.setFlag(Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID);
@@ -157,6 +162,7 @@ public final class Iec60870Connection implements Connection {
         if (clientConnection != null) {
             clientConnection.close();
         }
+        iec60870listener.removeAllListener();
         logger.info("Disconnected IEC 60870 driver.");
     }
 

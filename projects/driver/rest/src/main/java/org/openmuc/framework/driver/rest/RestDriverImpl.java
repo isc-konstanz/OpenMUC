@@ -34,15 +34,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = DriverService.class)
 public class RestDriverImpl implements DriverService {
 
-    // private static final Logger logger = LoggerFactory.getLogger(RestDriverImpl.class);
-
     private static final int timeout = 10000;
 
     private static final String ID = "rest";
     private static final String DESCRIPTION = "Driver to connect this OpenMUC instance with another, remote OpenMUC instance with rest.";
     private static final String DEVICE_ADDRESS = "https://adress:port or http://adress:port";
-    private static final String SETTINGS = "username:password or ct;username:password  ct means check timestamp, only load record if timestamp changed";
-    private static final String CHANNEL_ADDRESS = "/rest/channels/channelid";
+    private static final String SETTINGS = "<username>:<password> or ct;<username>:<password>  ct means check timestamp, only load record if timestamp changed";
+    private static final String CHANNEL_ADDRESS = "channelId";
     private static final String DEVICE_SCAN_SETTINGS = "N.A.";
 
     private static final DriverInfo info = new DriverInfo(ID, DESCRIPTION, DEVICE_ADDRESS, SETTINGS, CHANNEL_ADDRESS,
@@ -50,13 +48,9 @@ public class RestDriverImpl implements DriverService {
 
     private DataAccessService dataAccessService;
 
-    public RestDriverImpl() {
-    }
-
     @Override
     public Connection connect(String deviceAddress, String settings)
             throws ArgumentSyntaxException, ConnectionException {
-
         RestConnection connection;
 
         String HTTP = "http://";
@@ -91,20 +85,17 @@ public class RestDriverImpl implements DriverService {
 
     @Override
     public DriverInfo getInfo() {
-
         return info;
     }
 
     @Override
     public void scanForDevices(String settings, DriverDeviceScanListener listener)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException {
-
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void interruptDeviceScan() throws UnsupportedOperationException {
-
         throw new UnsupportedOperationException();
     }
 

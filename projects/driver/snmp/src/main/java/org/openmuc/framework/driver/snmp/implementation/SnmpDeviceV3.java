@@ -145,10 +145,11 @@ public class SnmpDeviceV3 extends SnmpDevice {
             }
 
         }
-        snmp.getUSM().addUser(new OctetString(username),
-                new UsmUser(new OctetString(securityName), authenticationProtocol,
-                        new OctetString(authenticationPassphrase), privacyProtocol,
-                        new OctetString(privacyPassphrase)));
+        snmp.getUSM()
+                .addUser(new OctetString(username),
+                        new UsmUser(new OctetString(securityName), authenticationProtocol,
+                                new OctetString(authenticationPassphrase), privacyProtocol,
+                                new OctetString(privacyPassphrase)));
         // create the target
         target = new UserTarget();
         target.setAddress(targetAddress);

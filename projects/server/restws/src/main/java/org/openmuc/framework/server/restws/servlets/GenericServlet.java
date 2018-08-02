@@ -51,7 +51,6 @@ public abstract class GenericServlet extends HttpServlet implements ConfigChange
 
     @Override
     public void init() throws ServletException {
-
         handleDataAccessService(RestServer.getDataAccessService());
         handleConfigService(RestServer.getConfigService());
         handleRootConfig(configService.getConfig(this));

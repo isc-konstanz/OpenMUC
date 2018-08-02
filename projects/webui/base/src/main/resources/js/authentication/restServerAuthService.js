@@ -6,7 +6,7 @@
 
     	this.getAuthHash = function() {
 			if (AuthService.isLoggedIn) {
-				return 'Basic ' + btoa(AuthService.currentUsername() + ":" + AuthService.currentPwd());
+				return AuthService.getRestAuth();
 			}
     	};
     };

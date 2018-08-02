@@ -1,9 +1,9 @@
 (function () {
 
-    var injectParams = ['$scope', '$stateParams', '$state', '$q', '$translate', 'ChannelsService', '$alert'];
+    var injectParams = ['$scope', '$stateParams', '$state', '$q', '$translate', 'ChannelsService', '$alert', 'ChannelDataService'];
     var noData;
 
-    var DataPlotterController = function ($scope, $stateParams, $state, $q, $translate, ChannelsService, $alert) {
+    var DataPlotterController = function ($scope, $stateParams, $state, $q, $translate, ChannelsService, $alert, ChannelDataService) {
 
         if ($stateParams.name) {
             $scope.dataPlotter = $scope.getPlotter($stateParams.name);
@@ -40,7 +40,7 @@
 
         $scope.isTS = $scope.dataPlotter && $scope.dataPlotter.isTS;
 
-        $translate('NO_DATA_TO_DISPLAY').then((text) => noData = text);
+        $translate('NO_DATA_TO_DISPLAY').then(text => noData = text);
 
         $scope.channels = [];
         $scope.selectedChannels = [];
@@ -62,8 +62,11 @@
                 $scope.channels = channels.map((channel) => {
                     return {id: channel, label: channel, preselect: false};
                 });
-            }
 
+                $scope.channels.forEach(c => {
+                    ChannelDataService.channelHasHistoricValues(c).then(r => c.historic = r);
+                });
+            }
             //console.log($scope.channels);
 
         });
@@ -74,7 +77,7 @@
         });
 
 
-        function buildChart(data) {
+        var buildChart = function (data) {
             var chart = nv.models.lineChart()
                 .margin({left: 70, right: 22})  //Adjust chart margins to give the x-axis some breathing room.
                 .interactive(true)
@@ -83,18 +86,18 @@
                 .showYAxis(true)        //Show the y-axis
                 .showXAxis(true)        //Show the x-axis
                 .tooltips(true)
-                .forceY($scope.plotRange())
+                .forceY(plotRange())
                 .noData(noData)
                 .width(450)
                 .height(300);
 
             chart.xAxis     //Chart x-axis settings
-                .axisLabel($scope.xAxisLabel())
-                .tickFormat($scope.xAxisTickFormat());
+                .axisLabel(xAxisLabel())
+                .tickFormat(xAxisTickFormat());
 
             chart.yAxis     //Chart y-axis settings
-                .axisLabel($scope.yAxisLabel())
-                .tickFormat($scope.yAxisTickFormat());
+                .axisLabel(yAxisLabel())
+                .tickFormat(yAxisTickFormat());
 
             /* Done setting the chart up? Time to render it!*/
             //     d3.select('#graph svg')    //Select the <svg> element you want to render the chart in.
@@ -104,12 +107,14 @@
                 .call(chart);          //Finally, render the chart!
 
             //Update the chart when window resizes.
-            nv.utils.windowResize(function () {
-                chart.update()
-            });
+            nv.utils.windowResize(() => chart.update());
 
             return chart;
-        }
+        };
+
+        $scope.channelPlottable = function (channel) {
+            return channel.historic && (channel.valueType !== 'STRING');
+        };
 
         $scope.plotData = function () {
             var requests = $scope.selectedChannels.map((channel) => {
@@ -132,8 +137,9 @@
                 }
             });
 
-            $q.all(requests).then((d) => {
+            $q.all(requests).then(d => {
                 var d2 = d.filter((c) => c.values.length !== 0);
+
                 if (d2.length !== d.length) {
                     $alert({content: 'Can not plot all channels.', type: 'warning'});
                 }
@@ -141,23 +147,11 @@
             });
         };
 
-        $scope.xFunction = function () {
-            return function (d) {
-                return d.x;
-            };
-        };
-
-        $scope.yFunction = function () {
-            return function (d) {
-                return d.y;
-            };
-        };
-
-        $scope.xAxisLabel = function () {
+        var xAxisLabel = function () {
             return $scope.xLabel;
         };
 
-        $scope.yAxisLabel = function () {
+        var yAxisLabel = function () {
             return $scope.yLabel;
         };
         /*
@@ -194,7 +188,9 @@
             return ret;
         };
 
-        $scope.xAxisTicks = function () {
+
+        // TDOD: is this needed? remove
+        var xAxisTicks = function () {
             var xRange = xRangeHrs();
             if (xRange <= 1) {
                 return [];
@@ -209,7 +205,7 @@
             }
         };
 
-        $scope.xAxisTickFormat = function () {
+        var xAxisTickFormat = function () {
             return (d) => d3.time.format('%m.%d. %H:%M')(new Date(d));
             //var xRange = xRangeHrs();
             //if(xRange <= 48){
@@ -224,15 +220,15 @@
 
         };
 
-        $scope.yAxisTickFormat = function () {
-            return (d) => d;
+        var yAxisTickFormat = function () {
+            return d => d;
         };
 
         $scope.disabledPlot = function () {
             return $scope.selectedChannels.length == 0;// || $scope.selectedChannels.length > 3;
         };
 
-        $scope.plotRange = function () {
+        var plotRange = function () {
             if ($scope.dataPlotter && $scope.dataPlotter.plotRange) {
                 return $scope.dataPlotter.plotRange;
             } else {

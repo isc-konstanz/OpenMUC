@@ -4,7 +4,7 @@ def projectDescription = "SNMP driver for the OpenMUC framework."
 
 configurations.create("embed")
 
-def snmp4jVersion = "2.3.4"
+def snmp4jVersion = "2.6.2"
 
 repositories {
   mavenCentral()
@@ -12,8 +12,8 @@ repositories {
 
 dependencies {
   compile project(":openmuc-core-spi")
-  compile files("dependencies/snmp4j/snmp4j-" + snmp4jVersion + ".jar")
-  embed files("dependencies/snmp4j/snmp4j-" + snmp4jVersion + ".jar")
+  compile group: 'org.snmp4j', name: 'snmp4j', version: snmp4jVersion
+  embed group: 'org.snmp4j', name: 'snmp4j', version: snmp4jVersion
 }
 
 jar {

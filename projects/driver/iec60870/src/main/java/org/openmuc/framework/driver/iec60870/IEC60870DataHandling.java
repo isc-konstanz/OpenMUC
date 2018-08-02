@@ -44,9 +44,9 @@ import org.openmuc.j60870.TypeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class IEC60870DataHandling {
+public class Iec60870DataHandling {
 
-    private static final Logger logger = LoggerFactory.getLogger(IEC60870DataHandling.class);
+    private static final Logger logger = LoggerFactory.getLogger(Iec60870DataHandling.class);
 
     private static final int INT32_BYTE_LENGTH = 4;
 
@@ -454,7 +454,7 @@ public class IEC60870DataHandling {
                 return new Record(Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID);
             }
             if (informationElements != null) {
-                record = IEC60870DataHandling.creatNewRecord(informationElements, aSdu.getTypeIdentification(),
+                record = Iec60870DataHandling.creatNewRecord(informationElements, aSdu.getTypeIdentification(),
                         channelAddress, timestamp);
             }
             else {

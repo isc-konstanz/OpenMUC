@@ -423,6 +423,7 @@ public class ToJson {
             jso.addProperty(Const.VALUETYPELENGTH, channelScanInfo.getValueTypeLength());
             jso.addProperty(Const.DESCRIPTION, channelScanInfo.getDescription());
             jso.addProperty(Const.METADATA, channelScanInfo.getMetaData());
+            jso.addProperty(Const.UNIT, channelScanInfo.getUnit());
             jsa.add(jso);
         }
         jsonObject.add(Const.CHANNELS, jsa);

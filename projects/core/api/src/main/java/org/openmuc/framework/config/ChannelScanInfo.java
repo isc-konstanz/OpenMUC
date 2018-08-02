@@ -33,6 +33,7 @@ public class ChannelScanInfo {
     private final Boolean readable;
     private final Boolean writable;
     private final String metaData;
+    private final String unit;
 
     public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength) {
         this(channelAddress, "", description, valueType, valueTypeLength, true, true);
@@ -54,11 +55,11 @@ public class ChannelScanInfo {
 
     public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength,
             Boolean readable, Boolean writable, String metaData) {
-        this(channelAddress, "", description, valueType, valueTypeLength, readable, writable, metaData);
+        this(channelAddress, description, valueType, valueTypeLength, readable, writable, metaData, "");
     }
 
-    public ChannelScanInfo(String channelAddress, String channelSettings, String description, ValueType valueType, Integer valueTypeLength,
-            Boolean readable, Boolean writable, String metaData) {
+    public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength,
+            Boolean readable, Boolean writable, String metaData, String unit) {
         if (channelAddress == null || channelAddress.isEmpty()) {
             throw new IllegalArgumentException("Channel Address may not be empty.");
         }
@@ -70,6 +71,7 @@ public class ChannelScanInfo {
         this.readable = readable;
         this.writable = writable;
         this.metaData = metaData;
+        this.unit = unit;
     }
 
     public String getChannelAddress() {
@@ -102,5 +104,9 @@ public class ChannelScanInfo {
 
     public String getMetaData() {
         return metaData;
+    }
+
+    public String getUnit() {
+        return unit;
     }
 }

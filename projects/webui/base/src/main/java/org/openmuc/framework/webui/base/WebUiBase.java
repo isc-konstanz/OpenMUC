@@ -27,7 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.openmuc.framework.authentication.AuthenticationService;
 import org.openmuc.framework.webui.spi.WebUiPluginService;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -51,13 +53,13 @@ public final class WebUiBase {
 
     private volatile WebUiBaseServlet servlet;
 
-    protected void activate(ComponentContext context) throws Exception {
+    @Activate
+    protected void activate(ComponentContext context) {
         logger.info("Activating WebUI Base");
 
         servlet = new WebUiBaseServlet(this);
 
-        BundleHttpContext bundleHttpContext = new BundleHttpContext(context.getBundleContext().getBundle(),
-                authService);
+        BundleHttpContext bundleHttpContext = new BundleHttpContext(context.getBundleContext().getBundle());
 
         try {
             httpService.registerResources("/app", "/app", bundleHttpContext);
@@ -80,7 +82,8 @@ public final class WebUiBase {
 
     }
 
-    protected void deactivate(ComponentContext context) {
+    @Deactivate
+    protected void deactivate() {
         logger.info("Deactivating WebUI Base");
 
         httpService.unregister("/app");
@@ -109,24 +112,26 @@ public final class WebUiBase {
     protected void unsetWebUiPluginService(WebUiPluginService uiPlugin) {
         unregisterResources(uiPlugin);
         pluginsByAlias.remove(uiPlugin.getAlias());
-        logger.info("WebUI plugin deregistered: " + uiPlugin.getName());
+        logger.info("WebUI plugin deregistered: {}.", uiPlugin.getName());
     }
 
     private void registerResources(WebUiPluginService plugin) {
-        if (servlet != null && httpService != null) {
+        if (servlet == null || httpService == null) {
+            logger.warn("Cant register web UI plugin {}.", plugin.getName());
+            return;
+        }
 
-            BundleHttpContext bundleHttpContext = new BundleHttpContext(plugin.getContextBundle(), authService);
+        BundleHttpContext bundleHttpContext = new BundleHttpContext(plugin.getContextBundle());
 
-            Set<String> aliases = plugin.getResources().keySet();
-            for (String alias : aliases) {
-                try {
+        Set<String> aliases = plugin.getResources().keySet();
+        for (String alias : aliases) {
+            try {
 
-                    httpService.registerResources("/" + plugin.getAlias() + "/" + alias,
-                            plugin.getResources().get(alias), bundleHttpContext);
+                httpService.registerResources("/" + plugin.getAlias() + "/" + alias, plugin.getResources().get(alias),
+                        bundleHttpContext);
 
-                } catch (NamespaceException e) {
-                    logger.error("Servlet with alias \"/" + plugin.getAlias() + "/" + alias + "\" already registered");
-                }
+            } catch (NamespaceException e) {
+                logger.error("Servlet with alias \"/{}/{}\" already registered.", plugin.getAlias(), alias);
             }
         }
     }

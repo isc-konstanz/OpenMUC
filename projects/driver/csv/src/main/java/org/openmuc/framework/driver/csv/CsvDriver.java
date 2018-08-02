@@ -121,7 +121,7 @@ public class CsvDriver implements DriverService {
             throws ArgumentSyntaxException, ConnectionException {
 
         CsvDeviceConnection csvConnection = new CsvDeviceConnection(deviceAddress, deviceSettings);
-        logger.debug("CSV driver connected");
+        logger.info("Device connected: " + deviceAddress);
         return csvConnection;
     }
 

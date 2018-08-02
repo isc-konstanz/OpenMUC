@@ -167,7 +167,7 @@ public final class FileObjectProxy {
      * Define flush-period in seconds with JVM flag: org.openmuc.mux.dbprovider.slotsdb.flushperiod
      */
     private void createScheduledFlusher() {
-        timer.schedule(new Flusher(), flush_period * 1000, flush_period * 1000);
+        timer.schedule(new Flusher(), flush_period * 1000l, flush_period * 1000l);
     }
 
     class Flusher extends TimerTask {
@@ -353,6 +353,9 @@ public final class FileObjectProxy {
             if (toStoreIn.getStartTimeStamp() > timestamp) {
                 return;
             }
+        }
+        if (toStoreIn == null) {
+            throw new IOException("\"Store in\" is null.");
         }
 
         /*

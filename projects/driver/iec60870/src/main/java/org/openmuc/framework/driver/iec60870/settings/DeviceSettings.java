@@ -13,6 +13,7 @@ public class DeviceSettings extends GenericSetting {
     protected int max_idle_time = -1;
     protected int max_unconfirmed_ipdus_received = -1;
     protected int stardt_con_timeout = 5000;
+    protected int read_timeout = 5000;
 
     public static enum Option implements OptionI {
         MESSAGE_FRAGMENT_TIMEOUT("mft", Integer.class, false),
@@ -23,7 +24,8 @@ public class DeviceSettings extends GenericSetting {
         MAX_TIME_NO_ACK_SENT("mtnas", Integer.class, false),
         MAX_IDLE_TIME("mit", Integer.class, false),
         MAX_UNCONFIRMED_IPDUS_RECEIVED("mupr", Integer.class, false),
-        STARDT_CON_TIMEOUT("sct", Integer.class, false);
+        STARDT_CON_TIMEOUT("sct", Integer.class, false),
+        READ_TIMEOUT("rt", Integer.class, false);
 
         private String prefix;
         private Class<?> type;
@@ -93,6 +95,16 @@ public class DeviceSettings extends GenericSetting {
 
     public int stardtConTimeout() {
         return stardt_con_timeout;
+    }
+
+    /**
+     * Optional: read/sampling timeout in milliseconds<br>
+     * Default timeout is 5000 milliseconds
+     * 
+     * @return read timeout in milliseconds
+     */
+    public int readTimeout() {
+        return read_timeout;
     }
 
 }

@@ -13,7 +13,7 @@
         <div class="alert alert-sm alert-warning" ng-show="!driver.devices.length">
           <b class="small">{{'NO_DEVICES' | translate}}</b>
         </div>
-
+        <button class="btn btn-default" data-toggle="confirmation">Confirmation</button>
         <div ng-repeat="device in driver.devices">
           <div class="well well-sm"><b>{{'DEVICE' | translate}} "{{device.id}}"</b></div>
             
@@ -42,7 +42,7 @@
               </td>            
             </tr>
           </table>
-            
+
           <div class="text-right">
             <a ui-sref="channelconfigurator.channels.new({deviceId: device.id})" class="btn btn-primary">{{'ADD_CHANNEL' | translate}}...</a>
           </div>
