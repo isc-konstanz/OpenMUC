@@ -39,7 +39,7 @@ import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
 @Component
-public class SnmpDriver implements DriverService {
+public final class SnmpDriver implements DriverService {
 //    private final static Logger logger = LoggerFactory.getLogger(SnmpDriver.class);
 
     private final DriverInfo info = DriverInfoFactory.getPreferences(SnmpDriver.class);

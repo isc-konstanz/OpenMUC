@@ -39,13 +39,23 @@ public class ChannelScanInfo {
         this(channelAddress, "", description, valueType, valueTypeLength, true, true);
     }
 
-    public ChannelScanInfo(String channelAddress, String channelSettings, String description, ValueType valueType, Integer valueTypeLength) {
-        this(channelAddress, channelSettings, description, valueType, valueTypeLength, true, true);
-    }
-
     public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength,
             Boolean readable, Boolean writable) {
         this(channelAddress, "", description, valueType, valueTypeLength, readable, writable, "");
+    }
+
+    public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength,
+            Boolean readable, Boolean writable, String metaData) {
+        this(channelAddress, "", description, valueType, valueTypeLength, readable, writable, metaData, "");
+    }
+
+    public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength,
+            Boolean readable, Boolean writable, String metaData, String unit) {
+        this(channelAddress, "", description, valueType, valueTypeLength, readable, writable, metaData, unit);
+    }
+
+    public ChannelScanInfo(String channelAddress, String channelSettings, String description, ValueType valueType, Integer valueTypeLength) {
+        this(channelAddress, channelSettings, description, valueType, valueTypeLength, true, true);
     }
 
     public ChannelScanInfo(String channelAddress, String channelSettings, String description, ValueType valueType, Integer valueTypeLength,
@@ -53,12 +63,12 @@ public class ChannelScanInfo {
         this(channelAddress, channelSettings, description, valueType, valueTypeLength, readable, writable, "");
     }
 
-    public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength,
+    public ChannelScanInfo(String channelAddress, String channelSettings, String description, ValueType valueType, Integer valueTypeLength,
             Boolean readable, Boolean writable, String metaData) {
-        this(channelAddress, description, valueType, valueTypeLength, readable, writable, metaData, "");
+        this(channelAddress, channelSettings, description, valueType, valueTypeLength, readable, writable, metaData, "");
     }
 
-    public ChannelScanInfo(String channelAddress, String description, ValueType valueType, Integer valueTypeLength,
+    public ChannelScanInfo(String channelAddress, String channelSettings, String description, ValueType valueType, Integer valueTypeLength,
             Boolean readable, Boolean writable, String metaData, String unit) {
         if (channelAddress == null || channelAddress.isEmpty()) {
             throw new IllegalArgumentException("Channel Address may not be empty.");
