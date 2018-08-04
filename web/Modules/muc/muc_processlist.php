@@ -20,8 +20,7 @@ class Muc_ProcessList
     private $log;
 
     // Module required constructor, receives parent as reference
-    public function __construct(&$parent)
-    {
+    public function __construct(&$parent) {
         $this->mysqli = &$parent->mysqli;
         $this->redis = &$parent->redis;
         $this->feed = &$parent->feed;
@@ -35,29 +34,49 @@ class Muc_ProcessList
         $this->log = new EmonLogger(__FILE__);
     }
 
-    // Module required process configuration, return $list array
-    public function process_list()
-    {
-        $list = array();
-        
-        // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'requireredis'=>true | 'desc'=>Description
-        $list[] = array(_("Time derivative by seconds"),ProcessArg::FEEDID,"derivative_s",1,DataType::REALTIME,"Misc",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES), 'requireredis'=>true, 'desc'=>"<p>Get the derivative of the value with respect to the time in seconds.</p>");
-        $list[] = array(_("Time derivative by hours"),ProcessArg::FEEDID,"derivative_h",1,DataType::REALTIME,"Misc",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES), 'requireredis'=>true, 'desc'=>"<p>Get the derivative of the value with respect to the time in hours.</p>");
+    public function process_list() {
+        textdomain("process_messages");
+        return array();
+        $list = array(
+            array(
+                "name"=>_("Time derivative by seconds"),
+                "short"=>"derivative s",
+                "argtype"=>ProcessArg::FEEDID,
+                "function"=>"derivative_s",
+                "datafields"=>1,
+                "datatype"=>DataType::REALTIME,
+                "unit"=>"",
+                "group"=>_("Misc"),
+                "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
+                "requireredis"=>true,
+                "description"=>_("<p>Get the derivative of the value with respect to the time in seconds.</p>")
+            ),
+            array(
+                "name"=>_("Time derivative by hours"),
+                "short"=>"derivative h",
+                "argtype"=>ProcessArg::FEEDID,
+                "function"=>"derivative_h",
+                "datafields"=>1,
+                "datatype"=>DataType::REALTIME,
+                "unit"=>"",
+                "group"=>_("Misc"),
+                "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
+                "requireredis"=>true,
+                "description"=>_("<p>Get the derivative of the value with respect to the time in hours.</p>")
+            )
+        );
         return $list;
     }
-    
-    public function derivative_s($feedid, $time, $value)
-    {
+
+    public function derivative_s($feedid, $time, $value) {
         return $this->derivative($feedid, $time, $value, 1);
     }
-    
-    public function derivative_h($feedid, $time, $value)
-    {
+
+    public function derivative_h($feedid, $time, $value) {
         return $this->derivative($feedid, $time, $value, 1/3600);
     }
-    
-    private function derivative($feedid, $time, $value, $scale)
-    {
+
+    private function derivative($feedid, $time, $value, $scale) {
         global $redis;
         if (!$redis|| $value === null) return $value; // return if redis is not available or null
         
@@ -76,8 +95,7 @@ class Muc_ProcessList
         return $derivative;
     }
 
-//     public function write_channel($arg, $time, $value)
-//     {
+//     public function write_channel($arg, $time, $value) {
 //         global $redis;
 //
 //         $config = array();
