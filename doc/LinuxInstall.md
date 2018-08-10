@@ -1,4 +1,4 @@
-![emonmuc header](https://github.com/isc-konstanz/emonmuc/blob/master/doc/img/emonmuc-logo.png)
+![emonmuc header](img/emonmuc-logo.png)
 
 This document describes how to install emonmuc (**e**nergy **mon**itoring **m**ulty **u**tility **c**ommunication), an open-source protocoll driver project to enable the communication with a variety of metering or other devices, developed based on the [OpenMUC](https://www.openmuc.org/) project.
 
@@ -154,24 +154,29 @@ To disable the driver, use
 emonmuc disable driver csv
 ~~~
 
-Several drivers can be enabled at once, while each needs to be selected individually. A list of possible drivers are:
+Several drivers can be enabled at once, while each needs to be selected individually. A list of possible integrated drivers are:
 
- - **csv**: Read CSV files
- - **dlms**: DLMS/COSEM
- - **ehz**: eHz meters
- - **iec60870**: IEC 60870-5-104
- - **iec61850**: IEC 61850
- - **iec62056p21**: IEC 62056-21
- - **knx**: KNX
- - **mbus**: M-Bus (wired)
- - **wmbus**: M-Bus (wireless)
- - **modbus**: Modbus TCP
- - **rpi-gpio**: GPIO (Raspberry Pi)
- - **rpi-s0**: S0 (Raspberry Pi)
- - **rpi-w1**: 1-Wire (Raspberry Pi)
- - **snmp**: SNMP
- 
+  - **csv**: Read CSV files
+  - **dlms**: DLMS/COSEM
+  - **ehz**: eHz
+  - **iec60870**: IEC 60870-5-104
+  - **iec61850**: IEC 61850
+  - **iec62056p21**: IEC 62056-21
+  - **knx**: KNX
+  - **mbus**: M-Bus (wired)
+  - **wmbus**: M-Bus (wireless)
+  - **modbus**: Modbus
+  - **rpi-gpio**: GPIO (Raspberry Pi)
+  - **rpi-w1**: 1-Wire (Raspberry Pi)
+  - **snmp**: SNMP
+
 Details about most drivers and specific information about their usage and configuration may be found in the [OpenMUC User Guide](https://www.openmuc.org/openmuc/user-guide/).
+
+Additionally, external communication protocols may be installed separately:
+
+  - **homematic-cc1101**: [HomeMatic (CC1101)](https://github.com/isc-konstanz/OpenHomeMatic)
+  - **pcharge**: [P-CHARGE](https://github.com/isc-konstanz/OpenPCharge)
+  - **solaredge**: [SolarEdge API](https://github.com/isc-konstanz/OpenSolarEdge)
 
 
 ---------------
@@ -180,7 +185,7 @@ Details about most drivers and specific information about their usage and config
 
 With both components installed and running, the OpenMUC framework needs to be registered to the emoncms user. This can be done in the Controllers page, accessible at **Setup->Device Connections** from the menu.
 
-![emonmuc controllers](https://github.com/isc-konstanz/emonmuc/blob/master/doc/img/emonmuc-controllers.JPG)
+![emonmuc controllers](img/emonmuc-controllers.jpg)
 
 Click **Controllers->New controller** and confirm the default settings, if the framework is running on the same machine.  
 Energy meters and other utility devices connected to the platform can now be configured in the **Device Connections** site.
