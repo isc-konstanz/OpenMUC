@@ -175,11 +175,19 @@ To do this, **uncomment the lines** related to authorization and authentication,
 
 # 3 Setup
 
-With both components installed and running, the OpenMUC framework needs to be registered to the emoncms user. This can be done in the Controllers page, accessible at **Setup->Channels->Controller** from the menu.
+With both components installed and running, an OpenMUC framework controller was automatically registered to the emoncms user. This can be verified in the **Controllers** page, accessible at the users **My Account** from the menu. 
+
+![emonmuc user](img/emonmuc-user.jpg)
+
+Click *Multiy Utility Communication* **Configure** and verify the default settings, if the framework is running on the same machine.  
 
 ![emonmuc controllers](img/emonmuc-controllers.jpg)
 
-Click **New controller** and confirm the default settings, if the framework is running on the same machine.  
+ Now, with the controller registration verified, the automatic registration and initiation can be disabled by modifying `/var/www/emoncms/settings.php`
+
+- Stop controller registration test
+   >     $muc_test = false;
+
 Energy meters and other utility devices connected to the platform can now be configured in the **Channels** site.
 
 To learn about the features of EmonMUC, a [First Steps guide](https://github.com/isc-konstanz/emonmuc/blob/master/doc/FirstSteps.md) was documented and may be followed.
