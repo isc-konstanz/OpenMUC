@@ -22,8 +22,8 @@ The project provides detailed installation guides for several platforms. Recomme
 First, create some necessary directories for the installation and data and set the right permissions
 
 ~~~
-sudo mkdir /var/{lib,log,run}/emonmuc
-sudo chown pi /var/{lib,log,run}/emonmuc
+sudo mkdir -p /var/{lib,run}/emonmuc /var/log/emoncms
+sudo chown pi /var/{lib,run}/emonmuc /var/log/emoncms
 ~~~
 
 Now, the emonmuc application can be installed either via git or simply copied in a subdirection */opt/emonmuc*.
