@@ -149,7 +149,17 @@ sudo -u www-data ln -s /opt/emonmuc/web/Modules/channel /var/www/emoncms/Modules
 
 ## 2.1 Emonmuc settings
 
-For some configurations, the settings may be necessary to be adjusted. All settings can be found in the emoncms.conf.
+To enable automatic controller registration and initialization, open `/var/www/emoncms/settings.php` in an editor and add the lines: 
+   >     // Emonmuc module 
+   >     // Skip MUC controller setup test - set to false once it has been setup.
+   >     $muc_test = true;
+   >      
+   >     $muc_settings = array(
+   >         'rootdir' => "/opt/emonmuc"
+   >     );
+
+
+While all emoncms related configurations will be setup automatically, somme settings may be necessary to be adjusted. All settings can be found in the emoncms.conf.  
 Defaults for all parameters can be found in emoncms.default.conf. 
 
 ~~~
