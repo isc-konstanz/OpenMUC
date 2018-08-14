@@ -11,8 +11,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-function channel_controller()
-{
+function channel_controller() {
     global $mysqli, $redis, $session, $route;
 
     $result = false;
@@ -32,6 +31,9 @@ function channel_controller()
     }
 
     if ($route->format == 'json') {
+        if ($route->action == 'connect') {
+            return connect_controller($ctrl, $cache);
+        }
         if ($route->action == 'list') {
             if ($session['userid']>0 && $session['write']) $result = $cache->get_list($session['userid']);
         }
@@ -44,16 +46,53 @@ function channel_controller()
                 $ctrlget = $ctrl->get($ctrlid);
                 if (isset($session['write']) && $session['write'] && $session['userid'] > 0
                     && $session['userid'] == $ctrlget['userid']) {
-                        
-                        if ($route->action == "create") $result = $cache->create($session['userid'], $ctrlid, get('driverid'), get('deviceid'), get('configs'));
-                        elseif ($route->action == "get") $result = $cache->get($ctrlid, get('id'));
-                        elseif ($route->action == 'update') $result = $cache->update($session['userid'], $ctrlid, get('nodeid'), get('id'), get('configs'));
-                        elseif ($route->action == "delete") $result = $cache->delete($ctrlid, get('id'));
-                    }
+                    
+                    if ($route->action == "create") $result = $cache->create($session['userid'], $ctrlid, get('driverid'), get('deviceid'), get('configs'));
+                    elseif ($route->action == "get") $result = $cache->get($session['userid'], $ctrlid, get('id'));
+                    elseif ($route->action == 'update') $result = $cache->update($session['userid'], $ctrlid, get('nodeid'), get('id'), get('configs'));
+                    elseif ($route->action == "delete") $result = $cache->delete($ctrlid, get('id'));
+                }
             }
             else {
                 $result = array('success'=>false, 'message'=>'Controller does not exist');
             }
+        }
+    }
+    return array('content'=>$result);
+}
+
+function connect_controller($ctrl, $channel) {
+    global $redis, $session, $route;
+
+    $result = false;
+
+    require_once "Modules/muc/Models/device_model.php";
+    $device = new DeviceConnection($ctrl);
+
+    require_once "Modules/channel/device_model.php";
+    $cache = new DeviceCache($ctrl, $device, $channel, $redis);
+
+    if ($route->subaction == 'list') {
+        if ($session['userid']>0 && $session['write']) $result = $cache->get_list($session['userid']);
+    }
+    else if ($route->subaction == 'load') {
+        if ($session['userid']>0 && $session['write']) $result = $cache->load($session['userid']);
+    }
+    else {
+        $ctrlid = (int) get('ctrlid');
+        if ($ctrl->exists($ctrlid)) {
+            $ctrlget = $ctrl->get($ctrlid);
+            if (isset($session['write']) && $session['write'] && $session['userid'] > 0
+                && $session['userid'] == $ctrlget['userid']) {
+                
+                if ($route->subaction == "create") $result = $cache->create($session['userid'], $ctrlid, get('driverid'), get('configs'));
+                elseif ($route->subaction == "get") $result = $cache->get($session['userid'], $ctrlid, get('id'));
+                elseif ($route->subaction == 'update') $result = $cache->update($session['userid'], $ctrlid, get('id'), get('configs'));
+                elseif ($route->subaction == "delete") $result = $cache->delete($ctrlid, get('id'));
+            }
+        }
+        else {
+            $result = array('success'=>false, 'message'=>'Controller does not exist');
         }
     }
     return array('content'=>$result);

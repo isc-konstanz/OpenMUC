@@ -30,13 +30,13 @@ function channel_controller($format, $action, $subaction, $method) {
     elseif ($format == 'json') {
         
         if ($action == 'list') {
-            if ($session['userid']>0 && $session['write']) $result = $channel->get_list($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $channel->get_list($session['userid'], null);
         }
         elseif ($action == 'states') {
-            if ($session['userid']>0 && $session['write']) $result = $channel->get_states($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $channel->get_states($session['userid'], null);
         }
         elseif ($action == 'records') {
-            if ($session['userid']>0 && $session['write']) $result = $channel->get_records($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $channel->get_records($session['userid'], null);
         }
         else {
             $ctrlid = (int) get('ctrlid');

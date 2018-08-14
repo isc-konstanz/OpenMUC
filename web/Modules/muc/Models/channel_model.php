@@ -68,7 +68,7 @@ class Channel
         if (isset($input)) {
             $inputid = $input['id'];
         }
-        else {
+        else if (isset($logging['loggingInterval'])) {
             $inputid = $this->input->create_input($userid, $nodeid, $id);
             if ($inputid < 0) {
                 return array('success'=>false, 'message'=>_("Unable to create input for channel: $id"));
@@ -79,32 +79,36 @@ class Channel
             if ($this->redis) $this->load_redis_input($inputid);
         }
         
+        $channel = $this->parse_channel($id, $description, $logging, $configs);
         $data = array(
                 'device' => $deviceid,
-                'configs' => $this->parse_channel($id, $description, $logging, $configs)
+                'configs' => $channel
         );
         $response = $this->ctrl->request($ctrlid, 'channels/'.$id, 'POST', $data);
         if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
-        return array('success'=>true,
-            'message'=>'Channel successfully added',
-            'channel'=>array(
-                'id'=>$id,
-                'userid'=>$userid,
-                'ctrlid'=>$ctrlid,
-                'driverid'=>$driverid,
-                'deviceid'=>$deviceid,
-                'nodeid'=>$logging['nodeid'],
-                'description'=>$description
-        ));
+        $channel['driver'] = $driverid;
+        $channel['device'] = $deviceid;
+        
+        return array('success'=>true, 'message'=>'Channel successfully added', 
+            'channel'=>$this->get_channel($this->ctrl->get($ctrlid), $channel)
+        );
     }
 
-    public function get_list($userid) {
-        $userid = intval($userid);
+    public function get_list($userid, $ctrlid) {
+        if (isset($ctrlid)) {
+            $ctrlid = intval($ctrlid);
+            $ctrls = array();
+            $ctrls[] = $this->ctrl->get($ctrlid);
+        }
+        else {
+            $userid = intval($userid);
+            $ctrls = $this->ctrl->get_list($userid);
+        }
         
         $channels = array();
-        foreach($this->ctrl->get_list($userid) as $ctrl) {
+        foreach($ctrls as $ctrl) {
             // Get drivers of all registered MUCs and add identifying location description and parse their configuration
             $response = $this->ctrl->request($ctrl['id'], 'channels/details', 'GET', null);
             if (isset($response["details"])) {
@@ -116,11 +120,19 @@ class Channel
         return $channels;
     }
 
-    public function get_states($userid) {
-        $userid = intval($userid);
+    public function get_states($userid, $ctrlid) {
+        if (isset($ctrlid)) {
+            $ctrlid = intval($ctrlid);
+            $ctrls = array();
+            $ctrls[] = $this->ctrl->get($ctrlid);
+        }
+        else {
+            $userid = intval($userid);
+            $ctrls = $this->ctrl->get_list($userid);
+        }
         
         $states = array();
-        foreach($this->ctrl->get_list($userid) as $ctrl) {
+        foreach($ctrls as $ctrl) {
             // Get drivers of all registered MUCs and add identifying location description
             $response = $this->ctrl->request($ctrl['id'], 'channels/states', 'GET', null);
             if (isset($response["states"])) {
@@ -137,11 +149,19 @@ class Channel
         return $states;
     }
 
-    public function get_records($userid) {
-        $userid = intval($userid);
+    public function get_records($userid, $ctrlid) {
+        if (isset($ctrlid)) {
+            $ctrlid = intval($ctrlid);
+            $ctrls = array();
+            $ctrls[] = $this->ctrl->get($ctrlid);
+        }
+        else {
+            $userid = intval($userid);
+            $ctrls = $this->ctrl->get_list($userid);
+        }
         
         $records = array();
-        foreach($this->ctrl->get_list($userid) as $ctrl) {
+        foreach($ctrls as $ctrl) {
             // Get drivers of all registered MUCs and add identifying location description
             $response = $this->ctrl->request($ctrl['id'], 'channels', 'GET', null);
             if (isset($response["records"])) {
@@ -219,44 +239,26 @@ class Channel
     }
 
     public function get_channel($ctrl, $details) {
-        $time = isset($details['timestamp']) ? $details['timestamp'] : null;
-        $value = isset($details['value']) ? $details['value'] : null;
-        
-        $address = isset($details['channelAddress']) ? $details['channelAddress'] : '';
-        $settings = isset($details['channelSettings']) ? $details['channelSettings'] : '';
         $logging = $this->decode_log_settings($details);
         
-        if (!empty($details['description'])) {
-            $description = $details['description'];
-        }
-        else $description = '';
-        
-        $channel = array(
+        return array(
+            'id'=>$details['id'],
             'userid'=>$ctrl['userid'],
             'ctrlid'=>$ctrl['id'],
             'driverid'=>$details['driver'],
             'deviceid'=>$details['device'],
             'nodeid'=>$logging['nodeid'],
-            'id'=>$details['id'],
-            'description'=>$description,
-            'time'=>$time,
-            'value'=>$value,
-            'flag'=>$details['flag'],
-            'state'=>$details['state'],
-            'address'=>$address,
-            'settings'=>$settings,
-            'logging'=>$logging
+            'description'=>!empty($details['description']) ? $details['description'] : '',
+            'time'=>isset($details['timestamp']) ? $details['timestamp'] : null,
+            'value'=>isset($details['value']) ? $details['value'] : null,
+            'flag'=>isset($details['flag']) ? $details['flag'] : null,
+            'state'=>isset($details['state']) ? $details['state'] : null,
+            'address'=>isset($details['channelAddress']) ? $details['channelAddress'] : '',
+            'settings'=>isset($details['channelSettings']) ? $details['channelSettings'] : '',
+            'logging'=>$logging,
+            'configs'=>$this->get_configs($details),
+            'disabled'=>isset($details['disabled']) ? $details['disabled'] : false
         );
-        
-        $configs = $this->get_configs($details);
-        if (count($configs) > 0) $channel['configs'] = $configs;
-        
-        if (isset($details['disabled'])) {
-            $channel['disabled'] = $details['disabled'];
-        }
-        else $channel['disabled'] = false;
-        
-        return $channel;
     }
 
     private function create_log_info($userid, &$info) {
@@ -459,6 +461,9 @@ class Channel
                     $configs[$key] = $value;
                 }
             }
+        }
+        if (empty($configs['valueType'])) {
+            $configs['valueType'] = 'DOUBLE';
         }
         return $configs;
     }

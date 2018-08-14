@@ -135,7 +135,7 @@ class MucThing extends DeviceThing
 
     protected function get_ctrl_id($userid, $name, $driver) {
         require_once "Modules/muc/Models/device_model.php";
-        $device = new DeviceConnection($this->ctrl, $this->mysqli, $this->redis);
+        $device = new DeviceConnection($this->ctrl);
         
         $devices = $device->get_list($userid);
         foreach($devices as $d) {

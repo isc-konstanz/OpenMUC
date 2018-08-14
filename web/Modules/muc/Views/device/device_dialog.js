@@ -113,6 +113,12 @@ var device_dialog =
     	}
     	else {
             $.ajax({ url: path+"muc/driver/registered.json", dataType: 'json', async: true, success: function(result) {
+                if (typeof result.success !== 'undefined' && !result.success) {
+                    alert('Registered drivers could not be retrieved:\n'+result.message);
+
+                    $('#device-'+modal+'-modal').modal('hide');
+                	return;
+                }
             	device_dialog.drivers = result;
             	device_dialog.drawDrivers(modal);
             }});

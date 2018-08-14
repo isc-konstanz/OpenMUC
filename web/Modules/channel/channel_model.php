@@ -11,8 +11,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-class ChannelCache
-{
+class ChannelCache {
     private $ctrl;
     private $channel;
     private $redis;
@@ -26,13 +25,28 @@ class ChannelCache
     }
 
     public function create($userid, $ctrlid, $driverid, $deviceid, $configs) {
+        $userid = intval($userid);
+        $ctrlid = intval($ctrlid);
+        
         $result = $this->channel->create($userid, $ctrlid, $driverid, $deviceid, $configs);
         if ($this->redis && isset($result["channel"])) {
             $channel = $result['channel'];
             $id = $channel['id'];
             
-            $this->redis->sAdd("muc:channel:$ctrlid", $id);
-            $this->redis->hMSet("channel:$ctrlid:$id", $channel);
+            $this->redis->sAdd("muc#$ctrlid:channels", $id);
+            $this->redis->hMSet("muc#$ctrlid:channel:$id", array(
+                'id'=>$id,
+                'userid'=>$userid,
+                'ctrlid'=>$ctrlid,
+                'driverid'=>$driverid,
+                'deviceid'=>$deviceid,
+                'nodeid'=>$channel['nodeid'],
+                'description'=>$channel['description'],
+                'address'=>$channel['address'],
+                'settings'=>$channel['settings'],
+                'logging'=>json_encode($channel['logging']),
+                'configs'=>json_encode($channel['configs'])
+            ));
         }
         return $result;
     }
@@ -45,7 +59,7 @@ class ChannelCache
         else {
             $channel_exist = false;
             if ($this->redis) {
-                $channel_exist = $this->redis->exists("channel:$ctrlid:$id");
+                $channel_exist = $this->redis->exists("muc#$ctrlid:channel:$id");
             }
             else {
                 // Always return true if redis is not enabled
@@ -59,58 +73,59 @@ class ChannelCache
     public function load($userid) {
         $userid = intval($userid);
         
-        $channels = array();
+        if (!$this->redis) {
+            return array('success'=>false, 'message'=>_("Unable to load channels without redis installed"));
+        }
         foreach($this->ctrl->get_list($userid) as $ctrl) {
+            $ctrlid = intval($ctrl['id']);
+            
+            // First, flush redis keys for the controller to reload
+            foreach ($this->redis->sMembers("muc#$ctrlid:channels") as $id) {
+                $this->redis->del("muc#$ctrlid:channel:$id");
+                $this->redis->srem("muc#$ctrlid:channels", $id);
+            }
+            
             // Get drivers of all registered MUCs and add identifying location description and parse their configuration
-            $result = $this->ctrl->request($ctrl['id'], 'channels/details', 'GET', null);
-            if (isset($result["success"]) && !$result["success"]) {
+            $result = $this->ctrl->request($ctrlid, 'channels/details', 'GET', null);
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             foreach($result['details'] as $details) {
-                $channels[] = $this->channel->get_channel($ctrl, $details);
-            }
-        }
-        
-        if ($this->redis) {
-            foreach ($channels as $channel) {
-                $ctrlid = $channel['ctrlid'];
+                $channel = $this->channel->get_channel($ctrl, $details);
                 $id = $channel['id'];
                 
-                $this->redis->sAdd("muc:channel:$ctrlid", $id);
-                $this->redis->hMSet("channel:$ctrlid:$id", array(
+                $this->redis->sAdd("muc#$ctrlid:channels", $id);
+                $this->redis->hMSet("muc#$ctrlid:channel:$id", array(
                     'id'=>$id,
                     'userid'=>$userid,
                     'ctrlid'=>$ctrlid,
                     'driverid'=>$channel['driverid'],
                     'deviceid'=>$channel['deviceid'],
                     'nodeid'=>$channel['nodeid'],
-                    'description'=>$channel['description']
+                    'description'=>$channel['description'],
+                    'address'=>$channel['address'],
+                    'settings'=>$channel['settings'],
+                    'logging'=>json_encode($channel['logging']),
+                    'configs'=>json_encode($channel['configs'])
                 ));
             }
         }
-        usort($channels, function($c1, $c2) {
-            if($c1['deviceid'] == $c2['deviceid'])
-                return strcmp($c1['id'], $c2['id']);
-            return strcmp($c1['deviceid'], $c2['deviceid']);
-        });
-        return $channels;
+        return array('success'=>true, 'message'=>_("Channels successfully loaded"));
     }
 
     public function get_list($userid) {
         if (!$this->redis) {
-            return $this->channel->get_list($userid);
+            return $this->channel->get_list($userid, null);
         }
         $channels = array();
         
         foreach($this->ctrl->get_list($userid) as $ctrl) {
-            $ctrlid = $ctrl['id'];
+            $ctrlid = intval($ctrl['id']);
             
-            $channelids = $this->redis->sMembers("muc:channel:$ctrlid");
-            foreach ($channelids as $id) {
-                $channel = (array) $this->redis->hGetAll("channel:$ctrlid:$id");
-                $channel['time'] = null;
-                $channel['value'] = null;
-                $channel['flag'] = 'LOADING';
+            foreach ($this->redis->sMembers("muc#$ctrlid:channels") as $id) {
+                $channel = (array) $this->redis->hGetAll("muc#$ctrlid:channel:$id");
+                $channel['logging'] = json_decode($channel['logging'], true);
+                $channel['configs'] = json_decode($channel['configs'], true);
                 
                 $channels[] = $channel;
             }
@@ -123,22 +138,25 @@ class ChannelCache
         return $channels;
     }
 
-    public function get($ctrlid, $id) {
+    public function get($userid, $ctrlid, $id) {
         if (!$this->redis) {
-            return $this->channel->get_list($ctrlid, $id);
+            return $this->channel->get($ctrlid, $id);
         }
-        $channel = (array) $this->redis->hGetAll("channel:$ctrlid:$id");
-        $channel['time'] = null;
-        $channel['value'] = null;
-        $channel['flag'] = 'LOADING';
+        $channel = (array) $this->redis->hGetAll("muc#$ctrlid:channel:$id");
+        $channel['logging'] = json_decode($channel['logging'], true);
+        $channel['configs'] = json_decode($channel['configs'], true);
         
         return $channel;
     }
 
     public function update($userid, $ctrlid, $nodeid, $id, $configs) {
+        $userid = intval($userid);
+        $ctrlid = intval($ctrlid);
+        
         $result = $this->channel->update($userid, $ctrlid, $nodeid, $id, $configs);
-        if ($this->redis && isset($result["success"]) && $result["success"]) {
+        if ($this->redis && isset($result['success']) && $result['success']) {
             $configs = (array) json_decode($configs);
+            
             if (isset($configs['logging'])) {
                 $logging = (array) $configs['logging'];
                 $newnode = $logging['nodeid'];
@@ -154,13 +172,6 @@ class ChannelCache
                 $newid = $id;
             }
             
-            if (isset($configs['description'])) {
-                $description = $configs['description'];
-            }
-            else {
-                $description = '';
-            }
-            
             if (empty($configs['driverid']) || empty($configs['deviceid'])) {
                 $configs = $this->channel->get($ctrlid, $newid);
             }
@@ -168,19 +179,23 @@ class ChannelCache
             $device = $configs['deviceid'];
             
             if ($id != $newid) {
-                $this->redis->del("channel:$ctrlid:$id");
-                $this->redis->srem("muc:channel:$ctrlid", $id);
+                $this->redis->del("muc#$ctrlid:channel:$id");
+                $this->redis->srem("muc#$ctrlid:channels", $id);
                 
-                $this->redis->sAdd("muc:channel:$ctrlid", $newid);
+                $this->redis->sAdd("muc#$ctrlid:channels", $newid);
             }
-            $this->redis->hMSet("channel:$ctrlid:$newid", array(
+            $this->redis->hMSet("muc#$ctrlid:channel:$newid", array(
                 'id'=>$newid,
                 'userid'=>$userid,
                 'ctrlid'=>$ctrlid,
                 'driverid'=>$driver,
                 'deviceid'=>$device,
                 'nodeid'=>$newnode,
-                'description'=>$description
+                'description'=>isset($configs['description']) ? $configs['description'] : '',
+                'address'=>isset($configs['address']) ? $configs['address'] : '',
+                'settings'=>isset($configs['settings']) ? $configs['settings'] : '',
+                'logging'=>json_encode(isset($configs['logging']) ? $configs['logging'] : new stdClass()),
+                'configs'=>json_encode(isset($configs['configs']) ? $configs['configs'] : new stdClass())
             ));
         }
         return $result;
@@ -189,8 +204,8 @@ class ChannelCache
     public function delete($ctrlid, $id) {
         $result = $this->channel->delete($ctrlid, $id);
         if ($this->redis) {
-            $this->redis->del("channel:$ctrlid:$id");
-            $this->redis->srem("muc:channel:$ctrlid", $id);
+            $this->redis->del("muc#$ctrlid:channel:$id");
+            $this->redis->srem("muc#$ctrlid:channels", $id);
         }
         return $result;
     }

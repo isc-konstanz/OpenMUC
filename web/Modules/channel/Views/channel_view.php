@@ -6,7 +6,7 @@
 <link href="<?php echo $path; ?>Modules/muc/Views/muc.css" rel="stylesheet">
 <link href="<?php echo $path; ?>Modules/muc/Lib/tablejs/titatoggle-dist-min.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Modules/muc/Lib/configjs/config.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/muc/Views/device/device.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/channel/Views/device.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/channel/Views/channel.js"></script>
 
 <div class="view-container">
@@ -68,49 +68,57 @@
 
 <script>
 
-const INTERVAL = 5000;
-var updateTime = new Date().getTime();
+const INTERVAL_RECORDS = 5000;
+const INTERVAL_REDRAW = 15000;
+var redrawTime = new Date().getTime();
+var redraw = false;
 var updater;
 var timeout;
 var path = "<?php echo $path; ?>";
 
 var devices = {};
 var channels = {};
+var records = {};
+
+var collapsed = {};
 var selected = {};
 
-channel.list(function(result) {
+device.list(function(result) {
     draw(result);
+    device.load();
+    channel.load();
+    channel.records(drawRecords);
     
-    update();
     updaterStart();
 });
 
 function update() {
-    device.list(function(result) { devices = associateById('device', result); });
-    channel.load(function(result) {
-        if (typeof result.success === 'undefined' || result.success) {
-            var wait = function() {
-                if (Object.keys(devices).length == 0) {
-                    setTimeout(wait, 100);
-                    return;
-                }
-                channels = associateById('channel', result);
-                draw(channels);
-            }
-            wait();
-        }
-    });
+    device.list(draw);
 }
 
-function updateRecords() {
+function updateView() {
     var time = new Date().getTime();
-    if (time - updateTime >= INTERVAL) {
-        updateTime = time;
+    if (time - redrawTime >= INTERVAL_REDRAW) {
+        redrawTime = time;
+        redraw = true;
         
-        channel.records(drawRecords);
+        device.list(function(result) {
+            draw(result);
+            redraw = false;
+            
+            channel.records(drawRecords);
+        });
     }
-    for (var id in channels) {
-        $('#'+id+'-time').html(drawRecordTime(channels[id].time, time));
+    else if (!redraw) {
+        if ((time - redrawTime) % INTERVAL_RECORDS == 0) {
+            
+            channel.records(drawRecords);
+        }
+        else if (Object.keys(records).length > 0) {
+            for (var id in records) {
+                $('#'+id+'-time').html(drawRecordTime(id, time));
+            }
+        }
     }
 }
 
@@ -118,7 +126,7 @@ function updaterStart() {
     if (updater != null) {
         clearInterval(updater);
     }
-    updater = setInterval(updateRecords, 1000);
+    updater = setInterval(updateView, 1000);
 }
 
 function updaterStop() {
@@ -127,116 +135,124 @@ function updaterStop() {
 }
 
 //---------------------------------------------------------------------------------------------
-// Draw channels
+// Draw devices and channels
 //---------------------------------------------------------------------------------------------
-function draw(channels) {
+function draw(result) {
     $('#channel-loader').hide();
-    if (Object.keys(channels).length == 0 && 
-            Object.keys(devices).length == 0) {
+    $("#channel-list").empty();
+    
+    if (typeof result.success !== 'undefined' && !result.success) {
+        alert("Error:\n" + result.message);
+        return;
+    }
+    else if (result.length == 0) {
         $("#channel-none").show();
         $("#channel-header").hide();
         $("#api-help-header").hide();
 
         return;
     }
+    devices = {};
+    channels = {};
+    
     $("#channel-none").hide();
     $("#channel-header").show();
     $("#api-help-header").show();
-
+    
     var count = 0;
-    var list = $("#channel-list").empty();
-    for (var id in devices) {
-        drawDevice(id, devices[id], list);
-    }
-    for (var id in channels) {
-        var channel = channels[id];
-        
-        var deviceid = 'device-muc'+channel.ctrlid+'-'+channel.deviceid.toLowerCase().replace(/[._]/g, '-');
-        var device = drawDevice(deviceid, { 'id': channel.deviceid }, list);
-        
-        var checked = "";
-        if (selected[id]) {
-            checked = "checked";
-            count++;
-        }
-        drawChannel(id, checked, channel, device);
+    for (var i in result) {
+        count += drawDevice(result[i]);
     }
     drawSelected(count);
     
     registerEvents();
 }
 
-function drawDevice(id, device, devices) {
+function drawDevice(device) {
+    var deviceid = 'device-muc'+device.ctrlid+'-'+device.id.toLowerCase().replace(/[._]/g, '-');
+    
+    var collapse = '';
+    if (typeof collapsed[deviceid] === 'undefined') {
+    	collapsed[deviceid] = true;
+    }
+    if (!collapsed[deviceid]) {
+    	collapse = 'in';
+    }
+    
     var description;
     if (typeof device.description !== 'undefined') {
         description = device.description;
     }
     else description = "";
     
-    var result = $('#'+id);
-    if (!result.length || result.attr('id') !== id) {
-        var table = "<table><tbody id='"+id+"'></tbody></table>";
-        
-        var checked = '';
-        if (typeof device.channels !== 'undefined') {
-
-            var count = 0;
-            if (device.channels.length > 0) {
-                
-                for (var i in device.channels) {
-                    var channelid = 'channel-muc'+device.ctrlid+'-'+device.channels[i].toLowerCase().replace(/[._]/g, '-');
-                    
-                    if (typeof selected[channelid] === 'undefined') {
-                        selected[channelid] = false;
-                    }
-                    if (selected[channelid]) {
-                        count++;
-                    }
-                }
+    var table = "<table><tbody id='"+deviceid+"'>";
+    var count = 0;
+    var checked = '';
+    if (typeof device.channels !== 'undefined' && device.channels.length > 0) {
+        for (var i in device.channels) {
+            var channel = device.channels[i];
+            var channelid = 'channel-muc'+channel.ctrlid+'-'+channel.id.toLowerCase().replace(/[._]/g, '-');
+            
+            channels[channelid] = channel;
+            
+            if (typeof selected[channelid] === 'undefined') {
+                selected[channelid] = false;
             }
-            else {
-                table += "<div id='"+id+"-none' class='alert'>" +
-                    "No channels configured yet. <a class='device-add'>Add</a> or <a class='device-scan'>scan</a> for channels with the buttons on this connection block." +
-                "</div>";
+            if (selected[channelid]) {
+                count++;
             }
-            if (count > 0) {
-                if (count < device.channels.length) {
-                    checked = 'indeterminate';
-                }
-                else {
-                    checked = 'checked';
-                }
-            }
+            table += drawChannel(channelid, channel);
         }
-        
-        devices.append(
-            "<div class='device'>" +
-                "<div id='"+id+"-header' class='device-header' data-toggle='collapse' data-target='#"+id+"-body'>" +
-                    "<table>" +
-                        "<tr data-id='"+id+"'>" +
-                            "<td><input id='"+id+"-select' class='device-select select' type='checkbox' "+checked+"></input></td>" +
-                            "<td>" +
-                                "<span class='device-name'>"+device.id+(description.length>0 ? ":" : "")+"</span>" +
-                                "<span class='device-description'>"+description+"</span>" +
-                            "</td>" +
-                            "<td class='device-scan'><span class='icon-search icon-white' title='Scan'></span></td>" +
-                            "<td class='device-add'><span class='icon-plus-sign icon-white' title='Add'></span></td>" +
-                            "<td class='device-config'><span class='icon-wrench icon-white' title='Configure'></span></td>" +
-                        "</tr>" +
-                    "</table>" +
-                "</div>" +
-                "<div id='"+id+"-body' class='collapse'>" +
-                    "<div class='channels'>" + table + "</div>" +
-                "</div>" +
-            "</div>"
-        );
-        result = $('#'+id);
+        table += "</tbody></table>";
     }
-    return result;
+    else {
+        table += "</tbody></table><div id='"+deviceid+"-none' class='alert'>" +
+            "No channels configured yet. <a class='device-add'>Add</a> or <a class='device-scan'>scan</a> for channels with the buttons on this connection block." +
+        "</div>";
+    }
+    if (count > 0) {
+        if (count < device.channels.length) {
+            checked = 'indeterminate';
+        }
+        else {
+            checked = 'checked';
+        }
+    }
+    delete device['channels'];
+    
+    $("#channel-list").append(
+        "<div class='device'>" +
+            "<div id='"+deviceid+"-header' class='device-header' data-toggle='collapse' data-target='#"+deviceid+"-body'>" +
+                "<table>" +
+                    "<tr data-id='"+deviceid+"'>" +
+                        "<td><input id='"+deviceid+"-select' class='device-select select' type='checkbox' "+checked+"></input></td>" +
+                        "<td>" +
+                            "<span class='device-name'>"+device.id+(description.length>0 ? ":" : "")+"</span>" +
+                            "<span class='device-description'>"+description+"</span>" +
+                        "</td>" +
+                        "<td class='device-scan'><span class='icon-search icon-white' title='Scan'></span></td>" +
+                        "<td class='device-add'><span class='icon-plus-sign icon-white' title='Add'></span></td>" +
+                        "<td class='device-config'><span class='icon-wrench icon-white' title='Configure'></span></td>" +
+                    "</tr>" +
+                "</table>" +
+            "</div>" +
+            "<div id='"+deviceid+"-body' class='collapse "+collapse+"'>" +
+                "<div class='channels'>" + table + "</div>" +
+            "</div>" +
+        "</div>"
+    );
+    devices[deviceid] = device;
+    
+    return count;
 }
 
-function drawChannel(id, checked, channel, device) {
+function drawChannel(id, channel) {
     var time = (new Date()).getTime();
+    
+    var checked = "";
+    if (selected[id]) {
+        checked = "checked";
+    }
     
     if (typeof channel.configs === 'undefined') {
         channel.configs = {};
@@ -257,45 +273,45 @@ function drawChannel(id, checked, channel, device) {
         type = channel.configs.valueType;
     }
     
-    device.append(
-        "<tr id='"+id+"-row' data-id='"+id+"'>" +
+    return "<tr id='"+id+"-row' data-id='"+id+"'>" +
             "<td><input id='"+id+"-select' class='channel-select select' type='checkbox' "+checked+"></input></td>" +
             "<td>" +
                 "<span class='channel-name'>"+channel.id+"</span>" +
                 (description.length>0 ? "<span style='margin:0px 5px 0px 1px'>:</span>" : "") +
                 "<span class='channel-description'>"+description+"</span>" +
             "</td>" +
-            "<td id='"+id+"-flag' class='channel-flag'>"+drawRecordFlag(channel.flag)+"</td>" +
-            "<td id='"+id+"-time' class='channel-time'>"+drawRecordTime(channel.time, time)+"</td>" +
-            "<td id='"+id+"-sample' class='channel-value'>"+drawRecordValue(id, type, channel.value)+"</td>" +
+            "<td id='"+id+"-flag' class='channel-flag'>"+drawRecordFlag(id)+"</td>" +
+            "<td id='"+id+"-time' class='channel-time'>"+drawRecordTime(id, time)+"</td>" +
+            "<td id='"+id+"-sample' class='channel-value'>"+drawRecordValue(id)+"</td>" +
             "<td id='"+id+"-unit' class='channel-unit'><span>"+unit+"</span></td>" +
             "<td id='"+id+"-write' class='channel-action'><span class='icon-pencil' title='Add'></span></td>" +
             "<td id='"+id+"-config' class='channel-action'><span class='icon-wrench' title='Configure'></span></td>" +
-        "</tr>"
-    );
+        "</tr>";
 }
 
-function drawRecords(records) {
-    for (var i in records) {
-        var record = records[i];
+function drawRecords(result) {
+    records = {};
+    for (var i in result) {
+        var record = result[i];
         var id = 'channel-muc'+record.ctrlid+'-'+record.id.toLowerCase().replace(/[._]/g, '-');
-        if (typeof channels[id] !== 'undefined') {
-            var type = "DOUBLE";
-            if (typeof channels[id].configs.valueType !== 'undefined') {
-                type = channels[id].configs.valueType;
-            }
-            
-            channels[id].flag = record.flag;
-            channels[id].time = record.time;
-            channels[id].flag = record.value;
-            
-            $('#'+id+'-flag').html(drawRecordFlag(record.flag));
-            $('#'+id+'-sample').html(drawRecordValue(id, type, record.value));
+        
+        records[id] = record;
+        if (!redraw) {
+            $('#'+id+'-flag').html(drawRecordFlag(id));
+            $('#'+id+'-sample').html(drawRecordValue(id));
         }
     }
 }
 
-function drawRecordFlag(flag) {
+function drawRecordFlag(id) {
+    var flag;
+    if (typeof records[id] !== 'undefined') {
+        flag = records[id].flag;
+    }
+    else {
+        flag = 'LOADING';
+    }
+    
     var color;
     if (flag === 'VALID' || flag === 'CONNECTED' || flag === 'SAMPLING' || flag === 'LISTENING') {
         color = "rgb(50,200,50)";
@@ -317,40 +333,16 @@ function drawRecordFlag(flag) {
     return "<span style='color:"+color+"'>"+flag.toLowerCase().replace(/[_]/g, ' ')+"</span><span style='margin-left:1px'>:</span>";
 }
 
-function drawRecordTime(time, now) {
-    var update = (new Date(time)).getTime();
-    
-    var delta = (now - update);
-    var secs = Math.abs(delta)/1000;
-    var mins = secs/60;
-    var hour = secs/3600;
-    var day = hour/24;
-    
-    var updated = secs.toFixed(0) + "s";
-    if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
-    else if (secs.toFixed(0) == 0) updated = "now";
-    else if (day>7 && delta>0) updated = "inactive";
-    else if (day>2) updated = day.toFixed(1)+" days";
-    else if (hour>2) updated = hour.toFixed(0)+" hrs";
-    else if (secs>180) updated = mins.toFixed(0)+" mins";
-    
-    secs = Math.abs(secs);
-    var color = "rgb(255,0,0)";
-    if (delta<0) color = "rgb(60,135,170)"
-    else if (secs<25) color = "rgb(50,200,50)"
-    else if (secs<60) color = "rgb(240,180,20)"; 
-    else if (secs<(3600*2)) color = "rgb(255,125,20)"
-    
-    return "<span style='color:"+color+";'>"+updated+"</span>";
-}
-
-function drawRecordValue(id, type, value) {
+function drawRecordValue(id) {
     var html = "";
-    
-    if (typeof value === 'undefined') {
-        value = "";
+    var type = null;
+	var value = "<span style='color: #999'>null</span>";
+	
+    if (typeof records[id] !== 'undefined' && typeof records[id].value !== 'undefined' && records[id].value !== null) {
+        type = records[id].configs.valueType;
+        value = records[id].value;
     }
-    if (type == 'BOOLEAN') {
+    if (type === 'BOOLEAN') {
         var checked = "";
         if (typeof value === 'string' || value instanceof String) {
             value = (value == 'true');
@@ -369,7 +361,7 @@ function drawRecordValue(id, type, value) {
                     "</label>" +
                 "</div>";
     }
-    else if (type == 'DOUBLE' || type == 'FLOAT') {
+    else if (type === 'DOUBLE' || type === 'FLOAT') {
         if (!isNaN(value)) {
             value = parseFloat(value);
             if (Math.abs(value) >= 1000) {
@@ -385,7 +377,7 @@ function drawRecordValue(id, type, value) {
         html = "<span id='"+id+"-value'>"+value+"</span>" +
                 "<input id='"+id+"-input' type='number' step='any' class='channel-input input-small' style='display:none'></input>";
     }
-    else if (type == 'LONG' || type == 'INTEGER' || type == 'SHORT') {
+    else if (type === 'LONG' || type === 'INTEGER' || type === 'SHORT') {
         if (!isNaN(value)) {
             value = parseInt(value).toFixed(0);
         }
@@ -394,9 +386,39 @@ function drawRecordValue(id, type, value) {
     }
     else {
         html = "<span id='"+id+"-value'>"+value+"</span>" +
-                "<input id='"+id+"-input' type='text' class='channel-input input-small hide'></input>";
+                "<input id='"+id+"-input' type='text' class='channel-input input-small' style='display:none'></input>";
     }
     return html;
+}
+
+function drawRecordTime(id, time) {
+    var updated = "n/a"
+    var color = "rgb(255,0,0)";
+    
+    if (typeof records[id] !== 'undefined' && records[id].time > 0) {
+        var update = (new Date(records[id].time)).getTime();
+        var delta = (time - update);
+        var secs = Math.abs(delta)/1000;
+        var mins = secs/60;
+        var hour = secs/3600;
+        var day = hour/24;
+        
+        if ($.isNumeric(secs)) {
+            updated = secs.toFixed(0) + "s";
+            if (secs.toFixed(0) == 0) updated = "now";
+            else if (day>7 && delta>0) updated = "inactive";
+            else if (day>2) updated = day.toFixed(1)+" days";
+            else if (hour>2) updated = hour.toFixed(0)+" hrs";
+            else if (secs>180) updated = mins.toFixed(0)+" mins";
+            
+            secs = Math.abs(secs);
+            if (delta<0) color = "rgb(60,135,170)"
+            else if (secs<25) color = "rgb(50,200,50)"
+            else if (secs<60) color = "rgb(240,180,20)"; 
+            else if (secs<(3600*2)) color = "rgb(255,125,20)"
+        }
+    }
+    return "<span style='color:"+color+";'>"+updated+"</span>";
 }
 
 function drawSelected(count) {
@@ -482,9 +504,15 @@ function selectChannel(id, state) {
 }
 
 function registerEvents() {
+    $("#channel-list .collapse").off().on("show hide", function(e) {
+        var id = $(this).attr('id').replace('-body', '');
+        collapsed[id] = $(this).hasClass('in');
+    }),
+    
     $(".channel-action").off();
     $(".channel-action").on("click", ".icon-pencil", function(e) {
         e.stopPropagation();
+        updaterStop();
 
         $(this).removeClass('icon-pencil').addClass('icon-remove');
         
@@ -507,8 +535,7 @@ function registerEvents() {
 
     $(".channel-action").on("click", ".icon-share-alt", function(e) {
         e.stopPropagation();
-        
-        $(this).removeClass('icon-share-alt').addClass('icon-pencil');
+        updaterStart();
 
         var id = $(this).closest('tr').data('id');
         var ch = channels[id];
@@ -524,16 +551,19 @@ function registerEvents() {
                 alert("Error:\n" + result.message);
             }
         });
+        
+        $(".channel-action span").removeClass('icon-share-alt').addClass('icon-pencil');
+        $(".channel-value input").hide();
+        $('.channel-value span').fadeIn();
     });
 
     $(".channel-action").on("click", ".icon-remove", function(e) {
         e.stopPropagation();
+        updaterStart();
         
-        $(this).removeClass('icon-remove').addClass('icon-pencil');
-        
-        var id = $(this).closest('tr').data('id');
-        $('#'+id+'-input').hide();
-        $('#'+id+'-value').fadeIn();
+        $(".channel-action span").removeClass('icon-remove').addClass('icon-pencil');
+        $(".channel-value input").hide();
+        $('.channel-value span').fadeIn();
     });
 
     $(".channel-action").on("click", ".icon-wrench", function(e) {
@@ -551,7 +581,11 @@ function registerEvents() {
         e.stopPropagation();
 
         var id = $(this).closest('tr').data('id');
-        var value = channels[id].value;
+        
+        var value = null;
+        if (typeof records[id] !== 'undefined') {
+            value = records[id].value;
+        }
         if (typeof value === 'string' || value instanceof String) {
             value = (value == 'true');
         }
@@ -563,6 +597,10 @@ function registerEvents() {
         }
     });
 
+    $(".channels").on("click", ".channel-input", function(e) {
+        e.stopPropagation();
+    }),
+
     $(".channels").on("keyup", ".channel-input", function(e) {
         e.stopPropagation();
         
@@ -573,10 +611,14 @@ function registerEvents() {
         timeout = setTimeout(function() {
             timeout = null;
             
-            var id = $(this).closest('tr').data('id');
-            var value = channels[id].value;
-            if (!isNaN(value)) {
-                value = value.toFixed(3);
+            var id = $(self).closest('tr').data('id');
+            
+            var value = null;
+            if (typeof records[id] !== 'undefined') {
+                value = records[id].value;
+                if (!isNaN(value)) {
+                    value = value.toFixed(3);
+                }
             }
             var newVal = $(self).val();
             if (newVal != "" && newVal !== value) {
@@ -679,16 +721,10 @@ function setChannelInputValue(id, type, value) {
     }
 }
 
-function associateById(prefix, list) {
-    dict = {};
-    for (var i in list) {
-        dict[prefix+'-muc'+list[i].ctrlid+'-'+list[i].id.toLowerCase().replace(/[._]/g, '-')] = list[i];
-    }
-    return dict;
-}
-
 $.ajax({ url: path+"muc/driver/registered.json", dataType: 'json', async: true, success: function(result) {
-    device_dialog.drivers = result;
+    if (typeof result.success === 'undefined' || result.success) {
+        device_dialog.drivers = result;
+    }
 }});
 
 $("#device-new").on('click', function () {
