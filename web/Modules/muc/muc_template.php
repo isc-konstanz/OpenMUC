@@ -69,7 +69,7 @@ class MucTemplate extends DeviceTemplate
         return array('success'=>false, 'message'=>"Error reading template $type: file does not exist");
     }
 
-    private function get_template_dir() {
+    protected function get_template_dir() {
         global $muc_settings;
         if (isset($muc_settings) && isset($muc_settings['rootdir']) && $muc_settings['rootdir'] !== "") {
             $muc_template_dir = $muc_settings['rootdir'];
@@ -162,26 +162,24 @@ class MucTemplate extends DeviceTemplate
         }
         
         $options = $device['options'];
-        if (isset($options['ctrlid'])) {
-            $ctrlid = intval($options['ctrlid']);
-            $driverid = isset($result->driver) ? $result->driver : null;
-            
-            $devices = $this->parse_devices($result, $options);
-            $response = $this->create_devices($ctrlid, $driverid, $device['name'], $devices);
+        if (empty($options['ctrlid'])) {
+            return array('success'=>false, 'message'=>'Unspecified controller ID in device options.');
+        }
+        $ctrlid = intval($options['ctrlid']);
+        $driverid = isset($result->driver) ? $result->driver : null;
+        
+        $devices = $this->parse_devices($result, $options);
+        $response = $this->create_devices($ctrlid, $driverid, $device['name'], $devices);
+        if (isset($response['success']) && $response['success'] == false) {
+            return $response;
+        }
+        
+        if (isset($template->inputs)) {
+            $channels = $this->parse_channels($result, $options, $template->inputs);
+            $response = $this->create_channels($userid, $ctrlid, $devices, $channels);
             if (isset($response['success']) && $response['success'] == false) {
                 return $response;
             }
-            
-            if (isset($template->inputs)) {
-                $channels = $this->parse_channels($result, $options, $template->inputs);
-                $response = $this->create_channels($userid, $ctrlid, $devices, $channels);
-                if (isset($response['success']) && $response['success'] == false) {
-                    return $response;
-                }
-            }
-        }
-        else {
-            return array('success'=>false, 'message'=>'Controller ID not found. Only inputs, feeds and their processes were initialized.');
         }
         parent::init_template($device, $template);
         
@@ -283,41 +281,42 @@ class MucTemplate extends DeviceTemplate
                     }
                 }
                 else {
-                    $config->$key = $this->parse_option($template, $parameters, $type.ucfirst($key));
+                    $config->$key = $this->parse_options($template, $parameters, $type.ucfirst($key));
                 }
             }
         }
         return $configs;
     }
 
-    private function parse_option($template, $parameters, $key) {
+    private function parse_options($template, $parameters, $key) {
         $result = "";
         
         // Iterate all options as configured in the template and parse them accordingly, 
         // if they exist in the passed key value options array
         foreach ($template->options as $option) {
-            if (isset($option->syntax) && $option->syntax === $key) {
-                $syntax = $option->syntax;
+            if (empty($option->syntax) || empty($parameters[$option->id])) {
+                continue;
+            }
+            $value = $parameters[$option->id];
+            
+            $types = explode(',', $option->syntax);
+            foreach($types as $type) {
+                if ($option->syntax !== $key || empty($template->syntax) || empty($template->syntax->$type)) {
+                    continue;
+                }
+                $syntax = $template->syntax->$type;
                 
-                if (isset($parameters[$option->id])) {
-                    $value = $parameters[$option->id];
-                    
-                    if (isset($template->syntax) && isset($template->syntax->$syntax)) {
-                        $syntax = $template->syntax->$syntax;
-                        
-                        // Default syntax is <key1>:<value1>,<key2>:<value2>,...
-                        if (!empty($result)) {
-                            $result .= isset($syntax->separator) ? $syntax->separator : ',';
-                        }
-                        
-                        if (isset($syntax->keyValue) && !$syntax->keyValue) {
-                            $result .= $value;
-                        }
-                        else {
-                            $assignment = isset($syntax->assignment) ? $syntax->assignment : ':';
-                            $result .= $option->id.$assignment.$value;
-                        }
-                    }
+                // Default syntax is <key1>:<value1>,<key2>:<value2>,...
+                if (!empty($result)) {
+                    $result .= isset($syntax->separator) ? $syntax->separator : ',';
+                }
+                
+                if (isset($syntax->keyValue) && !$syntax->keyValue) {
+                    $result .= $value;
+                }
+                else {
+                    $assignment = isset($syntax->assignment) ? $syntax->assignment : ':';
+                    $result .= $option->id.$assignment.$value;
                 }
             }
         }

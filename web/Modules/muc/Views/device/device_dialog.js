@@ -178,15 +178,6 @@ var device_dialog =
     },
 
     'registerConfigEvents':function() {
-        
-        // Event to scroll to parameter panel at the bottom of the page when editing
-        $('#config', '#device-config-container').on('click', '.edit-parameter', function() {
-            
-            var container = $('#deviceBody');
-            container.animate({
-                scrollTop: container.scrollTop() + container.height()
-            });
-        });
 
         $('#device-config-driver-select').off('change').on('change', function() {
             device_dialog.ctrlid = $('option:selected', this).attr('ctrlid');
@@ -394,15 +385,6 @@ var device_dialog =
     },
 
     'registerScanEvents':function() {
-
-        // Event to scroll to parameter panel at the bottom of the page when editing
-        $('#config', '#device-scan-container').on('click', '.edit-parameter', function() {
-            
-            var container = $('#device-scan-body');
-            container.animate({
-                scrollTop: container.scrollTop() + container.height()
-            });
-        });
 
         $('#device-scan-driver-select').off('change').on('change', function(){
             device_dialog.ctrlid = $('option:selected', this).attr('ctrlid');

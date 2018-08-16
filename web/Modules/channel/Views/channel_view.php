@@ -12,7 +12,6 @@
 <div class="view-container">
     <div style="float:right">
         <span id="api-help-header"><a href="api"><?php echo _('Channel API Help'); ?></a></span>
-        <a style="text-decoration: none;" href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
     </div>
     <div id="channel-none" class="alert alert-block hide" style="margin-top:40px">
         <h4 class="alert-heading"><?php echo _('No Channels configured'); ?></h4>
@@ -210,15 +209,9 @@ function drawDevice(device) {
             "No channels configured yet. <a class='device-add'>Add</a> or <a class='device-scan'>scan</a> for channels with the buttons on this connection block." +
         "</div>";
     }
-    if (count > 0) {
-        if (count < device.channels.length) {
-            checked = 'indeterminate';
-        }
-        else {
-            checked = 'checked';
-        }
+    if (count > 0 && count == device.channels.length) {
+        checked = 'checked';
     }
-    delete device['channels'];
     
     $("#channel-list").append(
         "<div class='device'>" +
@@ -241,6 +234,10 @@ function drawDevice(device) {
             "</div>" +
         "</div>"
     );
+    if (count > 0 && count < device.channels.length) {
+        $('#'+deviceid+'-select').prop('indeterminate', true);
+    }
+    delete device['channels'];
     devices[deviceid] = device;
     
     return count;
@@ -282,10 +279,10 @@ function drawChannel(id, channel) {
             "</td>" +
             "<td id='"+id+"-flag' class='channel-flag'>"+drawRecordFlag(id)+"</td>" +
             "<td id='"+id+"-time' class='channel-time'>"+drawRecordTime(id, time)+"</td>" +
-            "<td id='"+id+"-sample' class='channel-value'>"+drawRecordValue(id)+"</td>" +
+            "<td id='"+id+"-sample' class='channel-sample'>"+drawRecordValue(id)+"</td>" +
             "<td id='"+id+"-unit' class='channel-unit'><span>"+unit+"</span></td>" +
-            "<td id='"+id+"-write' class='channel-action'><span class='icon-pencil' title='Add'></span></td>" +
-            "<td id='"+id+"-config' class='channel-action'><span class='icon-wrench' title='Configure'></span></td>" +
+            "<td id='"+id+"-write' class='channel-action channel-write' data-action='edit'><span class='icon-pencil' title='Add'></span></td>" +
+            "<td id='"+id+"-config' class='channel-action channel-config'><span class='icon-wrench' title='Configure'></span></td>" +
         "</tr>";
 }
 
@@ -335,13 +332,13 @@ function drawRecordFlag(id) {
 
 function drawRecordValue(id) {
     var html = "";
-    var type = null;
+    
 	var value = "<span style='color: #999'>null</span>";
-	
     if (typeof records[id] !== 'undefined' && typeof records[id].value !== 'undefined' && records[id].value !== null) {
-        type = records[id].configs.valueType;
         value = records[id].value;
     }
+    
+    var type = channels[id].configs.valueType;
     if (type === 'BOOLEAN') {
         var checked = "";
         if (typeof value === 'string' || value instanceof String) {
@@ -350,15 +347,17 @@ function drawRecordValue(id) {
         if (value) {
             checked = "checked";
         }
-        html = "<div id='"+id+"-value' class='checkbox checkbox-slider--b-flat'>" +
-                    "<label>" +
-                        "<input type='checkbox' onclick='return false;' "+checked+"><span></span></input>" +
-                    "</label>" +
-                "</div>" +
-                "<div id='"+id+"-input' class='checkbox checkbox-slider--b-flat checkbox-slider-info hide'>" +
-                    "<label>" +
-                        "<input id='"+id+"-slider' class='channel-slider' type='checkbox' "+checked+"><span></span></input>" +
-                    "</label>" +
+        html = "<div class='channel-checkbox'>" +
+                    "<div id='"+id+"-value' class='channel-value checkbox checkbox-slider--b-flat'>" +
+                        "<label>" +
+                            "<input type='checkbox' onclick='return false;' "+checked+"><span></span></input>" +
+                        "</label>" +
+                    "</div>" +
+                    "<div id='"+id+"-input' class='channel-input checkbox checkbox-slider--b-flat checkbox-slider-info hide'>" +
+                        "<label>" +
+                            "<input id='"+id+"-slider' class='channel-slider' type='checkbox' "+checked+"><span></span></input>" +
+                        "</label>" +
+                    "</div>" +
                 "</div>";
     }
     else if (type === 'DOUBLE' || type === 'FLOAT') {
@@ -374,19 +373,19 @@ function drawRecordValue(id) {
                 value = value.toFixed(2);
             }
         }
-        html = "<span id='"+id+"-value'>"+value+"</span>" +
-                "<input id='"+id+"-input' type='number' step='any' class='channel-input input-small' style='display:none'></input>";
+        html = "<span id='"+id+"-value' class='channel-value'>"+value+"</span>" +
+                "<input id='"+id+"-input' class='channel-input input-small' type='number' step='any' style='display:none'></input>";
     }
     else if (type === 'LONG' || type === 'INTEGER' || type === 'SHORT') {
         if (!isNaN(value)) {
             value = parseInt(value).toFixed(0);
         }
-        html = "<span id='"+id+"-value'>"+value+"</span>" +
-                "<input id='"+id+"-input' type='number' step='1' class='channel-input input-small' style='display:none'></input>";
+        html = "<span id='"+id+"-value' class='channel-value'>"+value+"</span>" +
+                "<input id='"+id+"-input' class='channel-input input-small' type='number' step='1' style='display:none'></input>";
     }
     else {
-        html = "<span id='"+id+"-value'>"+value+"</span>" +
-                "<input id='"+id+"-input' type='text' class='channel-input input-small' style='display:none'></input>";
+        html = "<span id='"+id+"-value' class='channel-value'>"+value+"</span>" +
+                "<input id='"+id+"-input' class='channel-input input-small' type='text' style='display:none'></input>";
     }
     return html;
 }
@@ -505,68 +504,66 @@ function selectChannel(id, state) {
 
 function registerEvents() {
     $("#channel-list .collapse").off().on("show hide", function(e) {
+        // Remember if the device block is collapsed, to redraw it correctly
         var id = $(this).attr('id').replace('-body', '');
         collapsed[id] = $(this).hasClass('in');
     }),
     
-    $(".channel-action").off();
-    $(".channel-action").on("click", ".icon-pencil", function(e) {
+    $(".channel-write").off("click").on("click", function(e) {
         e.stopPropagation();
-        updaterStop();
-
-        $(this).removeClass('icon-pencil').addClass('icon-remove');
         
         var id = $(this).closest('tr').data('id');
         var ch = channels[id];
         
-        var type = 'DOUBLE';
-        if (typeof ch.configs !== 'undefined' && typeof ch.configs.valueType !== 'undefined') {
-            type = ch.configs.valueType;
-        }
-        var value = "";
-        if (typeof ch.value !== 'undefined') {
-            value = ch.value;
-        }
-        setChannelInputValue(id, type, value);
-        
-        $('#'+id+'-value').hide();
-        $('#'+id+'-input').fadeIn();
-    });
-
-    $(".channel-action").on("click", ".icon-share-alt", function(e) {
-        e.stopPropagation();
-        updaterStart();
-
-        var id = $(this).closest('tr').data('id');
-        var ch = channels[id];
-        
-        var type = 'DOUBLE';
-        if (typeof ch.configs !== 'undefined' && typeof ch.configs.valueType !== 'undefined') {
-            type = ch.configs.valueType;
-        }
-        var value = getChannelInputValue(id, type);
-        
-        channel.write(ch.ctrlid, ch.id, value, type, function(result) {
-            if (typeof result.success !== 'undefined' && !result.success) {
-                alert("Error:\n" + result.message);
+        var action = $(this).data('action');
+        if (action == 'edit') {
+            updaterStop();
+            
+            $(this).data('action', 'cancel');
+            $(this).find('span').removeClass('icon-pencil').addClass('icon-remove');
+            
+            var type = ch.configs.valueType;
+            var value = "";
+            if (typeof records[id].value !== 'undefined') {
+                value = records[id].value;
             }
-        });
-        
-        $(".channel-action span").removeClass('icon-share-alt').addClass('icon-pencil');
-        $(".channel-value input").hide();
-        $('.channel-value span').fadeIn();
+            setChannelInputValue(id, type, value);
+            
+            $('#'+id+'-value').hide();
+            $('#'+id+'-input').fadeIn();
+        }
+        else if (action == 'write') {
+            $(this).data('action', 'edit');
+            $(this).find('span').removeClass('icon-share-alt').addClass('icon-pencil');
+            
+            var type = ch.configs.valueType;
+            var value = getChannelInputValue(id, type);
+            
+            channel.write(ch.ctrlid, ch.id, value, type, function(result) {
+                if (typeof result.success !== 'undefined' && !result.success) {
+                    alert("Error:\n" + result.message);
+                    return;
+                }
+                channel.records(drawRecords);
+            });
+            
+            $(".channel-input").hide();
+            $('.channel-value').fadeIn();
+
+            updaterStart();
+        }
+        else {
+            $(this).data('action', 'edit');
+            $(this).find('span').removeClass('icon-remove').addClass('icon-pencil');
+            
+            $(".channel-input").hide();
+            $('.channel-value').fadeIn();
+
+            updaterStart();
+        }
     });
 
-    $(".channel-action").on("click", ".icon-remove", function(e) {
-        e.stopPropagation();
-        updaterStart();
-        
-        $(".channel-action span").removeClass('icon-remove').addClass('icon-pencil');
-        $(".channel-value input").hide();
-        $('.channel-value span').fadeIn();
-    });
-
-    $(".channel-action").on("click", ".icon-wrench", function(e) {
+    $(".channel-config").off("click").on("click", function(e) {
         e.stopPropagation();
 
         // Get channel of clicked row
@@ -590,9 +587,11 @@ function registerEvents() {
             value = (value == 'true');
         }
         if (value !== $(this).is(':checked')) {
+            $('#'+id+'-write').data('action', 'write');
             $('#'+id+'-write span').removeClass('icon-remove').addClass('icon-share-alt');
         }
         else {
+            $('#'+id+'-write').data('action', 'cancel');
             $('#'+id+'-write span').removeClass('icon-share-alt').addClass('icon-remove');
         }
     });
@@ -622,9 +621,11 @@ function registerEvents() {
             }
             var newVal = $(self).val();
             if (newVal != "" && newVal !== value) {
+                $('#'+id+'-write').data('action', 'write');
                 $('#'+id+'-write span').removeClass('icon-remove').addClass('icon-share-alt');
             }
             else {
+                $('#'+id+'-write').data('action', 'cancel');
                 $('#'+id+'-write span').removeClass('icon-share-alt').addClass('icon-remove');
             }
         }, 200);

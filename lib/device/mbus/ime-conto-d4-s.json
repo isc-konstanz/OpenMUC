@@ -4,8 +4,6 @@
     "group": "IME Messger&auml;te GmbH",
     "description": "<b>Energy Meter CONTO D4-S</b>:<br>Current: 10(63)A<br>Voltage : 230(400) - 240(415)V",
     
-    "prefix": "name",
-    
     "driver": "mbus",
     "devices": [
         {
@@ -65,6 +63,7 @@
         }
     ],
     
+    "prefix": "name",
     "syntax": {
         "deviceAddress": {
             "keyValue": false,

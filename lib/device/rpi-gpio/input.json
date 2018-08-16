@@ -12,12 +12,17 @@
         }
     ],
     
+    "scan": {
+        "settings": "mode:DIGITAL_INPUT"
+    },
+    
     "options": [
         {
             "id": "pin",
             "name": "Pin",
             "description": "Configure Pin number",
             "type": "text",
+			"scan": true,
             "mandatory": true,
             "syntax": "deviceAddress"
         }
@@ -60,6 +65,7 @@
         }
     ],
     
+    "prefix": "name",
     "syntax": {
         "deviceSettings": {
             "keyValue": true,

@@ -4,9 +4,7 @@
     "group": "CSV",
     "description": "Configuration for a CSV driver demonstration, creating the device channels, inputs and feeds for a virtual household.",
     
-    "prefix": "name",
-    
-	"driver": "csv",
+    "driver": "csv",
     "devices": [
         {
             "description": "Household energy consumption",
@@ -14,16 +12,17 @@
         }
     ],
     
+    "scan": {
+        "settings": "path=lib/driver/csv/"
+    },
+    
     "options": [
         {
             "id": "file",
             "name": "CSV file",
-            "description": "One of Two provided demonstration CSV files.",
-            "type": "selection",
-            "select": [
-                { "name": "Home 1", "value": "./lib/driver/csv/home1.csv" },
-                { "name": "Home 2", "value": "./lib/driver/csv/home2.csv" }
-            ],
+            "description": "The location of the provided demonstration CSV file.<br><b>Default:</b><ul><li>lib/driver/csv/home1.csv</li><li>lib/driver/csv/home2.csv</li></ul>",
+            "type": "text",
+			"scan": true,
             "mandatory": true,
             "syntax": "deviceAddress"
         }
@@ -34,7 +33,7 @@
             "name": "pv_generation_power",
             "description": "Photovoltaic generation power",
             "address": "pv_power_production",
-			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
             "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
@@ -55,7 +54,7 @@
             "name": "grid_import_power",
             "description": "Grid import power",
             "address": "grid_power",
-			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
             "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
@@ -80,7 +79,7 @@
             "name": "grid_export_power",
             "description": "Grid export power",
             "address": "grid_power",
-			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
             "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
@@ -105,7 +104,7 @@
             "name": "consumption_power",
             "description": "Consumption power",
             "address": "grid_power",
-			"logging": {"loggingInterval": 5000, "loggingTimeOffset": 1000, "loggingMaxInterval": 60000},
+            "logging": {"loggingInterval": 5000, "loggingTimeOffset": 1000, "loggingMaxInterval": 60000},
             "configs": {"samplingInterval": 5000, "samplingTimeOffset": 1000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
@@ -134,7 +133,7 @@
             "name": "hp_consumption",
             "description": "Heat pump consumption",
             "address": "hp_power_consumption",
-			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
             "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
@@ -155,7 +154,7 @@
             "name": "ev_consumption",
             "description": "Electric vehicle consumption",
             "address": "ev_power_consumption",
-			"logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
+            "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
             "configs": {"samplingInterval": 5000, "unit": "kW", "valueType":"DOUBLE"},
             "processList": [
                 {
@@ -249,6 +248,7 @@
         }
     ],
     
+    "prefix": "name",
     "syntax": {
         "deviceAddress": {
             "keyValue": false

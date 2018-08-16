@@ -41,12 +41,11 @@ class MucThing extends DeviceThing
             return array('success'=>false, 'message'=>"Error reading template ".$device['type'].":".json_last_error_msg());
         }
         
-        $ctrlid = null;
-        if (isset($device['options']['ctrlid'])) {
-            $ctrlid = intval($device['options']['ctrlid']);
-        } else {
-            return array('success'=>false, 'message'=>'Controller ID not found.');
+        if (empty($device['options']['ctrlid'])) {
+            return array('success'=>false, 'message'=>'Unspecified controller ID in device options.');
         }
+        $ctrlid = intval($device['options']['ctrlid']);
+        
         $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $template);
         
         $items = array();
@@ -118,11 +117,11 @@ class MucThing extends DeviceThing
         }
         return array('success'=>false, 'message'=>"Error while seting item value");
     }
-
+    
     protected function get_template_dir() {
-        global $muc_dir;
-        if (isset($muc_dir) && $muc_dir !== "") {
-            $muc_template_dir = $muc_dir;
+        global $muc_settings;
+        if (isset($muc_settings) && isset($muc_settings['rootdir']) && $muc_settings['rootdir'] !== "") {
+            $muc_template_dir = $muc_settings['rootdir'];
         }
         else {
             $muc_template_dir = self::DEFAULT_DIR;
