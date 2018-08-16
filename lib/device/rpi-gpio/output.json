@@ -22,7 +22,7 @@
             "name": "Pin",
             "description": "Configure Pin number",
             "type": "text",
-			"scan": true,
+            "scan": true,
             "mandatory": true,
             "syntax": "deviceAddress"
         }

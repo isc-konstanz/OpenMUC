@@ -22,7 +22,7 @@
             "name": "CSV file",
             "description": "The location of the provided demonstration CSV file.<br><b>Default:</b><ul><li>lib/driver/csv/home1.csv</li><li>lib/driver/csv/home2.csv</li></ul>",
             "type": "text",
-			"scan": true,
+            "scan": true,
             "mandatory": true,
             "syntax": "deviceAddress"
         }

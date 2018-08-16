@@ -19,7 +19,7 @@
             "name": "Device ID",
             "description": "The device ID, retrievable through scanning.",
             "type": "text",
-			"scan": true,
+            "scan": true,
             "mandatory": true,
             "syntax": "deviceAddress"
         }
