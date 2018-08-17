@@ -67,7 +67,7 @@
     
     "prefix": "name",
     "syntax": {
-        "deviceSettings": {
+        "deviceAddress": {
             "keyValue": true,
             "assignment": ":",
             "separator": ","

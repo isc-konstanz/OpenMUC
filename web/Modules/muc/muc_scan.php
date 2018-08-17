@@ -37,7 +37,7 @@ class MucScan extends DeviceScan
 
     public function start($userid, $type, $options) {
         $result = $this->get_template($type);
-        if (is_array($result) && isset($result['success'])) {
+        if (is_array($result) && isset($result['success']) && $result['success'] == false) {
             return $result;
         }
         if (empty($result->driver)) {
@@ -69,12 +69,13 @@ class MucScan extends DeviceScan
             $this->redis->hMSet("user#$userid:device:$type", $options); // Temporary availability of auth for device ip address
             $this->redis->expire("user#$userid:device:$type", 600);     // Expire after 10 minutes
         }
-        return $this->device->scan_start($ctrlid, $driverid, $settings);
+        return $this->parse_progress($userid, $ctrlid, $type, $result, 
+            $this->device->scan_start($ctrlid, $driverid, $settings));
     }
 
     public function progress($userid, $type) {
         $result = $this->get_template($type);
-        if (is_array($result) && isset($result['success'])) {
+        if (is_array($result) && isset($result['success']) && $result['success'] == false) {
             return $result;
         }
         if (empty($result->driver)) {
@@ -94,25 +95,13 @@ class MucScan extends DeviceScan
         }
         $ctrlid = intval($options['ctrlid']);
         
-        $scan = $this->device->scan_progress($ctrlid, $driverid);
-        $devices = array();
-        foreach($scan['devices'] as $device) {
-            $devices[] = array(
-                'userid'=>$userid,
-                'name'=>$device['id'],
-                'description'=>$device['description'],
-                'type'=>$type,
-                'options'=>$this->decode_options($ctrlid, $result, $device['address'], $device['settings']),
-            );
-        }
-        $scan['devices'] = $devices;
-        
-        return $scan;
+        return $this->parse_progress($userid, $ctrlid, $type, $result, 
+            $this->device->scan_progress($ctrlid, $driverid));
     }
 
     public function cancel($userid, $type) {
         $result = $this->get_template($type);
-        if (is_array($result) && isset($result['success'])) {
+        if (is_array($result) && isset($result['success']) && $result['success'] == false) {
             return $result;
         }
         if (empty($result->driver)) {
@@ -156,6 +145,26 @@ class MucScan extends DeviceScan
             $muc_template_dir .= "/";
         }
         return $muc_template_dir."lib/device/";
+    }
+
+    private function parse_progress($userid, $ctrlid, $type, $template, $result) {
+        if (isset($result['success']) && $result['success'] == false) {
+            return $result;
+        }
+        
+        $devices = array();
+        foreach($result['devices'] as $device) {
+            $devices[] = array(
+                'userid'=>$userid,
+                'name'=>$device['id'],
+                'description'=>$device['description'],
+                'type'=>$type,
+                'options'=>$this->decode_options($ctrlid, $template, $device['address'], $device['settings']),
+            );
+        }
+        $result['devices'] = $devices;
+        
+        return $result;
     }
 
     private function encode_options($template, $parameters) {
@@ -224,8 +233,8 @@ class MucScan extends DeviceScan
             }
             
             for($i=0; $i<count($options); $i++) {
-                if (isset($syntax->keyValue) || !$syntax->keyValue) {
-                    $result[$option->id] = $arr[$i];
+                if (!isset($syntax->keyValue) || !$syntax->keyValue) {
+                    $result[$options[$i]->id] = $arr[$i];
                 }
                 else {
                     $assignment = isset($syntax->assignment) ? $syntax->assignment : ':';

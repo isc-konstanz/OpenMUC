@@ -377,9 +377,10 @@ var device_dialog =
     	
     	// Continue to schedule scan progress requests every second until the scan info signals completion
     	if (progress.success && !progress.info.finished && !progress.info.interrupted) {
-    		
-        	device_dialog.scanUpdater = setTimeout(device.scanProgress(device_dialog.ctrlid, device_dialog.driverid, 
-        			device_dialog.scanProgress), 10000);
+            
+            device_dialog.scanUpdater = setTimeout(function() {
+            	device.scanProgress(device_dialog.deviceType, device_dialog.scanProgress);
+            }, 1000);
     	}
     },
 
