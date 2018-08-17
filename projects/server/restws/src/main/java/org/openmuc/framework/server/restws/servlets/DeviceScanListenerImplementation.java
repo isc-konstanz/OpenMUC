@@ -30,15 +30,10 @@ import org.openmuc.framework.lib.json.rest.objects.RestScanProgressInfo;
 class DeviceScanListenerImplementation implements DeviceScanListener {
     private final RestScanProgressInfo restScanProgressInfo = new RestScanProgressInfo();
 
-    private final List<DeviceScanInfo> scannedDevicesList;
+    private final List<DeviceScanInfo> scannedDevicesList = new ArrayList<DeviceScanInfo>();
 
     DeviceScanListenerImplementation() {
-        scannedDevicesList = new ArrayList<>();
-    }
-
-    DeviceScanListenerImplementation(List<DeviceScanInfo> scannedDevicesList) {
         restScanProgressInfo.setScanFinished(false);
-        this.scannedDevicesList = scannedDevicesList;
     }
 
     @Override

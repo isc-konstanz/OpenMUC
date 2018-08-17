@@ -83,7 +83,10 @@ class MucScan extends DeviceScan
         $driverid = $result->driver;
         
         $options = array();
-        if ($this->redis && $this->redis->exists("user#$userid:device:$type")) {
+        if (!$this->redis) {
+            return array('success'=>false, 'message'=>'Unable to retrieve scan progress without redis enabled.');
+        }
+        if ($this->redis->exists("user#$userid:device:$type")) {
             $options = (array) $this->redis->hGetAll("user#$userid:device:$type");
         }
         if (empty($options['ctrlid'])) {

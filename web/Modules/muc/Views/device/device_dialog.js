@@ -349,7 +349,13 @@ var device_dialog =
         		type = 'default';
         	}
     	}
-        $('#device-scan-progress-bar').css('width', value+'%');
+    	
+        if (bar.css('width') == $('#device-scan-progress-bar').css('width')) {
+        	bar.html("<div id='device-scan-progress-bar' class='bar' style='width:"+value+"%;'></div>");
+        }
+        else {
+        	$('#device-scan-progress-bar').css('width', value+'%');
+        }
         
     	if (value < 100 || type == 'default') {
     		bar.addClass('active');
@@ -370,7 +376,7 @@ var device_dialog =
     	device_dialog.drawScanProgress(progress);
     	
     	// Continue to schedule scan progress requests every second until the scan info signals completion
-    	if (progress.success && !progress.info.finished && !progress.info.interrupted && progress.info.progress < 100) {
+    	if (progress.success && !progress.info.finished && !progress.info.interrupted) {
     		
         	device_dialog.scanUpdater = setTimeout(device.scanProgress(device_dialog.ctrlid, device_dialog.driverid, 
         			device_dialog.scanProgress), 10000);
