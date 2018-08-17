@@ -91,17 +91,20 @@ class MucTemplate extends DeviceTemplate
         $options = array();
         
         $ctrls = $this->ctrl->get_list($userid);
-        $select = array();
-        foreach ($ctrls as $ctrl) {
-            $select[] = array('name'=>$ctrl['description'], 'value'=>$ctrl['id']);
+        if (count($ctrls) > 0) {
+            $select = array();
+            foreach ($ctrls as $ctrl) {
+                $select[] = array('name'=>$ctrl['description'], 'value'=>$ctrl['id']);
+            }
+            $options[] = array('id'=>'ctrlid',
+                'name'=>'Controller',
+                'description'=>'The communication controller this device should be registered for.',
+                'type'=>'selection',
+                'select'=>$select,
+                'default'=>$ctrls[0]['id'],
+                'mandatory'=>true,
+            );
         }
-        $options[] = array('id'=>'ctrlid',
-            'name'=>'Controller',
-            'description'=>'The communication controller this device should be registered for.',
-            'type'=>'selection',
-            'select'=>$select,
-            'mandatory'=>true,
-        );
         
         if (isset($result->options)) {
             $options = array_merge($options, (array) $result->options);
