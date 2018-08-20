@@ -488,9 +488,9 @@ public class DriverResourceServlet extends GenericServlet {
         }
     }
 
-    private void scanForAllDevicesAsync(String driverId, String settings, HttpServletResponse response) {
+    private DeviceScanListenerImplementation scanForAllDevicesAsync(String driverId, String settings, HttpServletResponse response) {
         try {
-            scanListener = new DeviceScanListenerImplementation(new ArrayList<>());
+            scanListener = new DeviceScanListenerImplementation();
             configService.scanForDevices(driverId, settings, scanListener);
             
         } catch (UnsupportedOperationException e) {
@@ -499,24 +499,11 @@ public class DriverResourceServlet extends GenericServlet {
         } catch (DriverNotAvailableException e) {
             driverNotAvailable(response, driverId);
         }
+        return scanListener;
     }
 
     private List<DeviceScanInfo> scanForAllDevices(String driverId, String settings, HttpServletResponse response) {
-        List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
-        
-        try {
-            scanListener = new DeviceScanListenerImplementation(scannedDevicesList);
-            configService.scanForDevices(driverId, settings, scanListener);
-            scannedDevicesList = scanListener.getScannedDevicesResult();
-            
-        } catch (UnsupportedOperationException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Driver does not support scanning.", DRIVER_ID, driverId);
-        } catch (DriverNotAvailableException e) {
-            driverNotAvailable(response, driverId);
-        }
-        
-        return scannedDevicesList;
+        return scanForAllDevicesAsync(driverId, settings, response).getScannedDevicesResult();
     }
 
     @SuppressWarnings("unused")

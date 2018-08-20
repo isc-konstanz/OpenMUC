@@ -447,7 +447,7 @@ var config =
             }
             return optArr.join(syntax['separator']);
         }
-        return null;
+        return "";
     },
 
     'valid':function() {

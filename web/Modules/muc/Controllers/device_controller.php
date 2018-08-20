@@ -20,7 +20,7 @@ function device_controller($format, $action, $subaction, $method) {
     $ctrl = new Controller($mysqli, $redis);
     
     require_once "Modules/muc/Models/device_model.php";
-    $device = new DeviceConnection($ctrl, $mysqli, $redis);
+    $device = new DeviceConnection($ctrl);
     
     if ($format == 'html') {
         
@@ -30,10 +30,10 @@ function device_controller($format, $action, $subaction, $method) {
     elseif ($format== 'json') {
         
         if ($action == 'list') {
-            if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid'], null);
         }
         elseif ($action == 'states') {
-            if ($session['userid']>0 && $session['write']) $result = $device->get_states($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $device->get_states($session['userid'], null);
         }
         else {
             $ctrlid = intval(get('ctrlid'));

@@ -100,7 +100,6 @@ configure(javaProjects) {
     }
   }
   
-  
   task report {
     doLast {
       if (!file(buildDir.path + '/jacoco/tests.exec').exists()) {

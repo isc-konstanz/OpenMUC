@@ -167,13 +167,6 @@ var channel_dialog = {
     },
 
     'registerConfigEvents':function() {
-        // Event to scroll to parameter panel at the bottom of the page when editing
-        $('#config', '#channel-config-container').on('click', '.edit-parameter', function() {
-            var container = $('#channel-config-body');
-            container.animate({
-                scrollTop: container.scrollTop() + container.height()
-            });
-        });
 
         $('#channel-config-device-select').off('change').on('change', function() {
             channel_dialog.ctrlid = $('option:selected', this).attr('ctrlid');
@@ -322,15 +315,6 @@ var channel_dialog = {
 
     'registerScanEvents':function() {
 
-        // Event to scroll to parameter panel at the bottom of the page when editing
-        $('#config', '#channel-scan-container').on('click', '.edit-parameter', function() {
-            
-            var container = $('#channel-scan-body');
-            container.animate({
-                scrollTop: container.scrollTop() + container.height()
-            });
-        });
-        
         $('#channel-scan-device-select').off('change').on('change', function(){
             channel_dialog.ctrlid = $('option:selected', this).attr('ctrlid');
             channel_dialog.driverid = $('option:selected', this).attr('driverid');

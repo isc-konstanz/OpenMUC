@@ -14,14 +14,10 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class DeviceConnection
 {
     private $ctrl;
-    private $mysqli;
-    private $redis;
     private $log;
 
-    public function __construct($ctrl, $mysqli, $redis) {
+    public function __construct($ctrl) {
         $this->ctrl = $ctrl;
-        $this->mysqli = $mysqli;
-        $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
     }
 
@@ -53,23 +49,35 @@ class DeviceConnection
             $driver->create($ctrlid, $driverid, "{}");
         }
         
+        $device = $this->parse_device($id, $configs);
         $data = array(
             'driver' => $driverid,
-            'configs' => $this->parse_device($id, $configs)
+            'configs' => $device
         );
         $response = $this->ctrl->request($ctrlid, 'devices/'.$configs['id'], 'POST', $data);
-        return $response;
         if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
-        return array('success'=>true, 'message'=>'Device successfully added');
+        $device['driver'] = $driverid;
+        
+        return array('success'=>true, 'message'=>'Device successfully added',
+            'device'=>$this->get_device($this->ctrl->get($ctrlid), $device)
+        );
     }
 
-    public function get_list($userid) {
-        $userid = intval($userid);
+    public function get_list($userid, $ctrlid) {
+        if (isset($ctrlid)) {
+            $ctrlid = intval($ctrlid);
+            $ctrls = array();
+            $ctrls[] = $this->ctrl->get($ctrlid);
+        }
+        else {
+            $userid = intval($userid);
+            $ctrls = $this->ctrl->get_list($userid);
+        }
         
         $devices = array();
-        foreach($this->ctrl->get_list($userid) as $ctrl) {
+        foreach($ctrls as $ctrl) {
             // Get drivers of all registered MUCs and add identifying location description
             $response = $this->ctrl->request($ctrl['id'], 'devices/details', 'GET', null);
             if (isset($response["details"])) {
@@ -81,11 +89,19 @@ class DeviceConnection
         return $devices;
     }
 
-    public function get_states($userid) {
-        $userid = intval($userid);
+    public function get_states($userid, $ctrlid) {
+        if (isset($ctrlid)) {
+            $ctrlid = intval($ctrlid);
+            $ctrls = array();
+            $ctrls[] = $this->ctrl->get($ctrlid);
+        }
+        else {
+            $userid = intval($userid);
+            $ctrls = $this->ctrl->get_list($userid);
+        }
         
         $states = array();
-        foreach($this->ctrl->get_list($userid) as $ctrl) {
+        foreach($ctrls as $ctrl) {
             // Get drivers of all registered MUCs and add identifying location description
             $response = $this->ctrl->request($ctrl['id'], 'devices/states', 'GET', null);
             if (isset($response["states"])) {
@@ -124,44 +140,21 @@ class DeviceConnection
         return $this->get_device($ctrl, $details);
     }
 
-    private function get_device($ctrl, $details) {
-        if (isset($details['driverName'])) {
-            $driver= $details['driverName'];
-        }
-        else $driver= $details['driver'];
-        
-        if (isset($details['description'])) {
-            $description = $details['description'];
-        }
-        else $description = '';
-        
-        $device = array(
-                'userid'=>$ctrl['userid'],
-                'ctrlid'=>$ctrl['id'],
-                'driverid'=>$details['driver'],
-                'driver'=>$driver,
-                'id'=>$details['id'],
-                'description'=>$description,
-                'state'=>$details['state']
+    public function get_device($ctrl, $details) {
+        return array(
+            'id'=>$details['id'],
+            'userid'=>$ctrl['userid'],
+            'ctrlid'=>$ctrl['id'],
+            'driverid'=>$details['driver'],
+            'driver'=>isset($details['driverName']) ? $details['driverName'] : $details['driver'],
+            'description'=>!empty($details['description']) ? $details['description'] : '',
+            'state'=>isset($details['state']) ? $details['state'] : null,
+            'address'=>isset($details['deviceAddress']) ? $details['deviceAddress'] : '',
+            'settings'=>isset($details['settings']) ? $details['settings'] : '',
+            'configs'=>$this->get_configs($details),
+            'channels'=>isset($details['channels']) ? $details['channels'] : array(),
+            'disabled'=>isset($details['disabled']) ? $details['disabled'] : false
         );
-        
-        if (isset($details['channels'])) {
-            $device['channels'] = $details['channels'];
-        }
-        else $device['channels'] = array();
-        
-        if (isset($details['deviceAddress'])) $device['address'] = $details['deviceAddress'];
-        if (isset($details['settings'])) $device['settings'] = $details['settings'];
-        
-        $configs = $this->get_configs($details);
-        if (count($configs) > 0) $device['configs'] = $configs;
-        
-        if (isset($details['disabled'])) {
-            $device['disabled'] = $details['disabled'];
-        }
-        else $device['disabled'] = false;
-        
-        return $device;
     }
 
     private function parse_device($id, $configs) {

@@ -155,15 +155,6 @@ var driver_dialog = {
 
     'registerConfigEvents':function() {
 
-        // Event to scroll to parameter panel at the bottom of the page when editing
-        $('#config', '#driver-config-container').on('click', '.edit-parameter', function() {
-            
-            var container = $('#driver-config-body');
-            container.animate({
-                scrollTop: container.scrollTop() + container.height()
-            });
-        });
-
         $('#driver-config-ctrl-select').off('change').on('change', function(){
             var ctrlid = this.value;
             if (ctrlid.length > 0) {

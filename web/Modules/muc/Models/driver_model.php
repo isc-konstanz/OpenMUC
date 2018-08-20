@@ -34,11 +34,19 @@ class Driver
         return array('success'=>true, 'message'=>'Driver successfully added');
     }
 
-    public function get_list($userid) {
-        $userid = intval($userid);
+    public function get_list($userid, $ctrlid) {
+        if (isset($ctrlid)) {
+            $ctrlid = intval($ctrlid);
+            $ctrls = array();
+            $ctrls[] = $this->ctrl->get($ctrlid);
+        }
+        else {
+            $userid = intval($userid);
+            $ctrls = $this->ctrl->get_list($userid);
+        }
         
         $drivers = array();
-        foreach($this->ctrl->get_list($userid) as $ctrl) {
+        foreach($ctrls as $ctrl) {
             // Get drivers of all registered MUCs and add identifying location description and parse their configuration
             $response = $this->ctrl->request($ctrl['id'], 'drivers/details', 'GET', null);
             if (isset($response["details"])) {
@@ -64,7 +72,7 @@ class Driver
         $drivers = array();
         foreach($ctrls as $ctrl) {
             $result = $this->ctrl->request($ctrl['id'], 'drivers/registered', 'GET', null);
-            if (isset($result["success"]) && !$result["success"]) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             foreach($result['drivers'] as $driver) {
@@ -88,13 +96,13 @@ class Driver
         $drivers = array();
         foreach($ctrls as $ctrl) {
             $result = $this->ctrl->request($ctrl['id'], 'drivers', 'GET', null);
-            if (isset($result["success"]) && !$result["success"]) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             $configured = $result['drivers'];
             
             $result = $this->get_registered($userid, $ctrl['id']);
-            if (isset($result["success"]) && !$result["success"]) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             foreach($result as $driver) {
@@ -120,13 +128,13 @@ class Driver
         $drivers = array();
         foreach($ctrls as $ctrl) {
             $result = $this->ctrl->request($ctrl['id'], 'drivers', 'GET', null);
-            if (isset($result["success"]) && !$result["success"]) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             $configured = $result['drivers'];
             
             $result = $this->get_registered($userid, $ctrl['id']);
-            if (isset($result["success"]) && !$result["success"]) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             foreach($result as $driver) {

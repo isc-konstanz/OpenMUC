@@ -111,7 +111,7 @@ class Controller
             }
             
             $result = $this->create($userid, 'HTTP', 'localhost', 'Local');
-            if (isset($result["success"]) && !$result["success"]) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             

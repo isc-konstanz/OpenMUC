@@ -100,7 +100,7 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
             logger.info("Scan for {}s of the Raspberry Pi platform: {}", 
             		mode.name().toLowerCase().replace('_', ' '), board.name().replace('_', ' '));
             
-            double counter = 0;
+            int counter = 1;
             for (Pin pin : pins) {
                 if (isDeviceScanInterrupted) {
                     break;
@@ -112,7 +112,7 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
                     listener.deviceFound(new DeviceScanInfo("Pin"+pin.getAddress(), 
                             scanAddress, scanSettings, pin.getName()));
                     
-                    listener.scanProgressUpdate((int) (counter / pins.length * 100.0));
+                    listener.scanProgressUpdate((int) Math.round(counter/(double) pins.length*100));
                     counter++;
                 }
             }

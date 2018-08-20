@@ -49,13 +49,14 @@
 
 <p><b><?php echo _('Device actions'); ?></b></p>
 <table class="table">
-    <tr><td><?php echo _('Create new device'); ?></td><td><a href="<?php echo $path; ?>muc/device/create.json?ctrlid=1&driverid=csv&configs={%22id%22:%22Home%22,%22description%22:%22Virtual home%22}"><?php echo $path; ?>muc/device/create.json?ctrlid=1&driverid=csv&configs={"id":"Home","description":"Virtual home"}</a></td></tr>
-    <tr><td><?php echo _('List devices'); ?></td><td><a href="<?php echo $path; ?>muc/device/list.json"><?php echo $path; ?>muc/device/list.json</a></td></tr>
+    <tr><td><?php echo _('Create new device'); ?></td><td><a href="<?php echo $path; ?>channel/connect/create.json?ctrlid=1&driverid=csv&configs={%22id%22:%22Home%22,%22description%22:%22Virtual home%22}"><?php echo $path; ?>channel/connect/create.json?ctrlid=1&driverid=csv&configs={"id":"Home","description":"Virtual home"}</a></td></tr>
+    <tr><td><?php echo _('Load devices'); ?></td><td><a href="<?php echo $path; ?>channel/connect/load.json"><?php echo $path; ?>channel/connect/load.json</a></td></tr>
+    <tr><td><?php echo _('List devices'); ?></td><td><a href="<?php echo $path; ?>channel/connect/list.json"><?php echo $path; ?>channel/connect/list.json</a></td></tr>
     <tr><td><?php echo _('List device states'); ?></td><td><a href="<?php echo $path; ?>muc/device/states.json"><?php echo $path; ?>muc/device/states.json</a></td></tr>
     <tr><td><?php echo _('Get device information'); ?></td><td><a href="<?php echo $path; ?>muc/device/info.json?ctrlid=1&driverid=csv"><?php echo $path; ?>muc/device/info.json?ctrlid=1&driverid=csv</a></td></tr>
-    <tr><td><?php echo _('Get device details'); ?></td><td><a href="<?php echo $path; ?>muc/device/get.json?ctrlid=1&id=Home"><?php echo $path; ?>muc/device/get.json?ctrlid=1&id=Home</a></td></tr>
-    <tr><td><?php echo _('Update device fields'); ?></td><td><a href="<?php echo $path; ?>muc/device/update.json?ctrlid=1&id=Home&configs={%22id%22:%22Home%22,%22description%22:%22Virtual%22}"><?php echo $path; ?>muc/device/update.json?ctrlid=1&id=Home&configs={"id":"Home","description":"Virtual"}</a></td></tr>
-    <tr><td><?php echo _('Delete existing device'); ?></td><td><a href="<?php echo $path; ?>muc/device/delete.json?ctrlid=1&id=Home"><?php echo $path; ?>muc/device/delete.json?ctrlid=1&id=Home</a></td></tr>
+    <tr><td><?php echo _('Get device details'); ?></td><td><a href="<?php echo $path; ?>channel/connect/get.json?ctrlid=1&id=Home"><?php echo $path; ?>channel/connect/get.json?ctrlid=1&id=Home</a></td></tr>
+    <tr><td><?php echo _('Update device fields'); ?></td><td><a href="<?php echo $path; ?>channel/connect/update.json?ctrlid=1&id=Home&configs={%22id%22:%22Home%22,%22description%22:%22Virtual%22}"><?php echo $path; ?>channel/connect/update.json?ctrlid=1&id=Home&configs={"id":"Home","description":"Virtual"}</a></td></tr>
+    <tr><td><?php echo _('Delete existing device'); ?></td><td><a href="<?php echo $path; ?>channel/connect/delete.json?ctrlid=1&id=Home"><?php echo $path; ?>channel/connect/delete.json?ctrlid=1&id=Home</a></td></tr>
 </table>
 
 <p><b><?php echo _('Device scan actions'); ?></b></p>

@@ -50,7 +50,7 @@
 .channels .alert {
     margin-bottom: 0px;
 }
-.channels .channel-value {
+.channels .channel-sample {
     text-align: right;
 }
 .channels .channel-unit,
@@ -127,6 +127,10 @@
 }
 .channels input[type=checkbox]:focus+:before {
     outline: none !important;
+}
+.channels .channel-checkbox {
+    width: 40px;
+    float: right;
 }
 
 .channel-header {
