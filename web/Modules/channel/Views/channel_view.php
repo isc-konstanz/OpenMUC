@@ -12,6 +12,7 @@
 <div class="view-container">
     <div style="float:right">
         <span id="api-help-header"><a href="api"><?php echo _('Channel API Help'); ?></a></span>
+        <a style="text-decoration: none;" href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
     </div>
     <div id="channel-none" class="alert alert-block hide" style="margin-top:40px">
         <h4 class="alert-heading"><?php echo _('No Channels configured'); ?></h4>
