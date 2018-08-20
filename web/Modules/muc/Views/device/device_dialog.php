@@ -10,8 +10,8 @@
         font-weight: normal;
         color: #888;
     }
-    #device-config-header td:nth-of-type(1) { width:10%; padding-right:8px; }
-    #device-config-header td:nth-of-type(2) { width:10%; padding-right:8px; }
+    #device-config-header td:nth-of-type(1),
+    #device-config-header td:nth-of-type(2) { padding-right:8px; }
 
     #device-scan-progress {
         margin-top:-15px;

@@ -10,8 +10,8 @@
         font-weight: normal;
         color: #888;
     }
-    #channel-config-header td:nth-of-type(1) { width:10%; padding-right:8px; }
-    #channel-config-header td:nth-of-type(2) { width:10%; padding-right:8px; }
+    #channel-config-header td:nth-of-type(1),
+    #channel-config-header td:nth-of-type(2) { padding-right:8px; }
 </style>
 
 <div id="channel-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="channel-config-modal" aria-hidden="true" data-backdrop="static">

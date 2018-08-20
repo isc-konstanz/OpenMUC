@@ -76,12 +76,12 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
         DeviceScanSettings settings = info.parse(settingsStr, DeviceScanSettings.class);
         
         List<W1Device> devices = master.getDevices();
-        double size = devices.size();
+        int size = devices.size();
         if (size > 0) {
             logger.debug("Scan discovered {} 1-Wire devices: {}", size, devices.toString());
             this.devices.clear();
             
-            double counter = 0;
+            int counter = 1;
             for (W1Device device : devices) {
                 if (isDeviceScanInterrupted) {
                     break;
@@ -100,7 +100,7 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
                 }
                 this.devices.put(id, device);
                 
-                listener.scanProgressUpdate((int) (counter / size * 100.0));
+                listener.scanProgressUpdate((int) Math.round(counter/(double) size*100));
                 counter++;
             }
         }
