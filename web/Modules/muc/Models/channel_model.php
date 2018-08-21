@@ -435,6 +435,9 @@ class Channel
     private function encode_log_settings($settings) {
         $arr = array();
         foreach ($settings as $key=>$value) {
+            if (is_bool($value)) {
+                $value = ($value) ? 'true' : 'false';
+            }
             $arr[] = $key.':'.$value;
         }
         return implode(",", $arr);
