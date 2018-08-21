@@ -29,7 +29,7 @@
         <mandatory>true</mandatory>
         <type>STRING</type>
         <selection>
-          <item value="TemperatureSensor">Temperature sensor</item>
+          <item value="SENSOR_TEMPERATURE">Temperature sensor</item>
         </selection>
       </option>
     </deviceSettings>

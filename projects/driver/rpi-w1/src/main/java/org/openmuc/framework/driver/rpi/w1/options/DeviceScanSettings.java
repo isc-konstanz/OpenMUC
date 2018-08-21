@@ -28,7 +28,7 @@ public class DeviceScanSettings extends Preferences {
     public static final PreferenceType TYPE = PreferenceType.SETTINGS_SCAN_DEVICE;
 
     @Option
-    private boolean ignore;
+    private boolean ignore = true;
 
     @Override
     public PreferenceType getPreferenceType() {

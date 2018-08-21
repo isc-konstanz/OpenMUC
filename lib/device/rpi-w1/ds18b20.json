@@ -9,7 +9,7 @@
     "devices": [
         {
             "description": "DS18B20 temperature sensor",
-            "settings": "type:TemperatureSensor"
+            "settings": "type:SENSOR_TEMPERATURE"
         }
     ],
     

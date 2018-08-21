@@ -16,14 +16,26 @@ require_once "Modules/device/device_template.php";
 class MucTemplate extends DeviceTemplate
 {
     const DEFAULT_DIR = "/opt/emonmuc/";
-
+    
     private $ctrl;
+    private $device;
+    private $channel;
 
     function __construct(&$parent) {
         parent::__construct($parent);
         
         require_once "Modules/muc/muc_model.php";
         $this->ctrl = new Controller($this->mysqli, $this->redis);
+        
+        require_once "Modules/muc/Models/channel_model.php";
+        require_once "Modules/channel/channel_model.php";
+        $this->channel = new ChannelCache($this->ctrl, 
+            new Channel($this->ctrl, $this->mysqli, $this->redis), $this->redis);
+        
+        require_once "Modules/muc/Models/device_model.php";
+        require_once "Modules/channel/device_model.php";
+        $this->device = new DeviceCache($this->ctrl, 
+            new DeviceConnection($this->ctrl), $this->channel, $this->redis);
     }
 
     protected function load_template_list($userid) {
@@ -172,7 +184,7 @@ class MucTemplate extends DeviceTemplate
         $driverid = isset($result->driver) ? $result->driver : null;
         
         $devices = $this->parse_devices($result, $options);
-        $response = $this->create_devices($ctrlid, $driverid, $device['name'], $devices);
+        $response = $this->create_devices($userid, $ctrlid, $driverid, $device['name'], $devices);
         if (isset($response['success']) && $response['success'] == false) {
             return $response;
         }
@@ -194,13 +206,10 @@ class MucTemplate extends DeviceTemplate
     }
 
     // Create the channels
-    private function create_devices($ctrlid, $driverid, $id, &$devices) {
+    private function create_devices($userid, $ctrlid, $driverid, $id, &$devices) {
         if (empty($devices)) {
             return array('success'=>false, 'message'=>'Bad device template. Undefined devices');
         }
-        
-        require_once "Modules/muc/Models/device_model.php";
-        $device = new DeviceConnection($this->ctrl);
         
         foreach ($devices as $d) {
             if (isset($d->name)) {
@@ -213,7 +222,7 @@ class MucTemplate extends DeviceTemplate
                 $d->driver = $driverid;
             }
             
-            $result = $device->create($ctrlid, $d->driver, json_encode($d));
+            $result = $this->device->create($userid, $ctrlid, $d->driver, json_encode($d));
             if (isset($result['success']) && $result['success'] == false) {
                 if (strpos($result['message'], 'already exists') !== false) {
                     return array('success'=>true, 'message'=>'Devices already created');
@@ -230,9 +239,6 @@ class MucTemplate extends DeviceTemplate
 
     // Create the channels
     private function create_channels($userid, $ctrlid, $devices, $channels) {
-        require_once "Modules/muc/Models/channel_model.php";
-        $channel = new Channel($this->ctrl, $this->mysqli, $this->redis);
-        
         foreach($channels as $id=>$c) {
             $configs = (array) $c;
             $configs['id'] = $c->name;
@@ -262,7 +268,7 @@ class MucTemplate extends DeviceTemplate
                 $driverid = $devices{0}->driver;
             }
             
-            $result = $channel->create($userid, $ctrlid, $driverid, $deviceid, json_encode($configs));
+            $result = $this->channel->create($userid, $ctrlid, $driverid, $deviceid, json_encode($configs));
             if (isset($result['success']) && $result['success'] == false && 
                     strpos($result['message'], 'already exists') === false) {
                 

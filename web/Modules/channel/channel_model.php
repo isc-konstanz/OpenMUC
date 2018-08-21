@@ -47,6 +47,11 @@ class ChannelCache {
                 'logging'=>json_encode($channel['logging']),
                 'configs'=>json_encode($channel['configs'])
             ));
+            
+            $channels = json_decode($this->redis->hget("muc#$ctrlid:device:$deviceid",'channels'));
+            $channels[] = $id;
+            
+            $this->redis->hset("muc#$ctrlid:device:$deviceid",'channels', json_encode($channels));
         }
         return $result;
     }
@@ -138,7 +143,7 @@ class ChannelCache {
         return $channels;
     }
 
-    public function get($userid, $ctrlid, $id) {
+    public function get($ctrlid, $id) {
         if (!$this->redis) {
             return $this->channel->get($ctrlid, $id);
         }
@@ -202,12 +207,19 @@ class ChannelCache {
     }
 
     public function delete($ctrlid, $id) {
-        $result = $this->channel->delete($ctrlid, $id);
         if ($this->redis) {
-            $this->redis->del("muc#$ctrlid:channel:$id");
+            $channel = $this->get($ctrlid, $id);
+            $channels = json_decode($this->redis->hget("muc#$ctrlid:device:".$channel['deviceid'],'channels'));
+            $index = array_search($id, $channels);
+            if($index !== false) {
+                unset($channels[$index]);
+            }
+            $this->redis->hset("muc#$ctrlid:device:".$channel['deviceid'],'channels', json_encode($channels));
+            
             $this->redis->srem("muc#$ctrlid:channels", $id);
+            $this->redis->del("muc#$ctrlid:channel:$id");
         }
-        return $result;
+        return $this->channel->delete($ctrlid, $id);
     }
 
 }

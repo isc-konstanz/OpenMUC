@@ -141,6 +141,7 @@ class DeviceCache {
             }
             foreach($devices as &$device) {
                 $channelids = $device['channels'];
+                sort($channelids);
                 
                 $device['channels'] = array();
                 foreach($channelids as $id) {
@@ -210,11 +211,16 @@ class DeviceCache {
     }
 
     public function delete($ctrlid, $id) {
-        $result = $this->device->delete($ctrlid, $id);
         if ($this->redis) {
-            $this->redis->del("muc#$ctrlid:device:$id");
+            $channelids = json_decode($this->redis->hget("muc#$ctrlid:device:$id",'channels'));
+            foreach ($channelids as $channelid) {
+                $this->redis->srem("muc#$ctrlid:channels", $channelid);
+                $this->redis->del("muc#$ctrlid:channel:$channelid");
+            }
+            
             $this->redis->srem("muc#$ctrlid:devices", $id);
+            $this->redis->del("muc#$ctrlid:device:$id");
         }
-        return $result;
+        return $this->device->delete($ctrlid, $id);;
     }
 }

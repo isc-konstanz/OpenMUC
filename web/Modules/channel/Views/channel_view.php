@@ -291,7 +291,7 @@ function drawRecords(result) {
         var id = 'channel-muc'+record.ctrlid+'-'+record.id.toLowerCase().replace(/[._]/g, '-');
         
         records[id] = record;
-        if (!redraw) {
+        if (typeof channels[id] !== 'undefined' && !redraw) {
             $('#'+id+'-flag').html(drawRecordFlag(id));
             $('#'+id+'-sample').html(drawRecordValue(id));
         }
