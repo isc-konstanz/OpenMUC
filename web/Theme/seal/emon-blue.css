@@ -21,7 +21,7 @@ html, body {
 }
 
 .body-login {
-    background-color: #eaa400;
+	background-color: #1d8dbc;
 }
 
 #login-form input[type="text"], #login-form input[type="password"] {
@@ -37,11 +37,11 @@ html, body {
     text-align: center;
     font-size: 13px;
     font-weight: bold;
-    padding-top: 10px;
+    padding-top:10px;
 }
 
 #footer a {
-    color: #eac666;
+    color: #77b4d9;
     text-decoration: none;
 }
 
@@ -50,9 +50,9 @@ html, body {
 }
 
 #submenu {
-    width: 100%;
-    background-color: #ddd;
-    height: 27px;
+    width:100%;
+    background-color:#ddd;
+    height:27px;
 }
 
 #topspacer {
@@ -60,20 +60,20 @@ html, body {
 }
 
 div#account {
-    width: 250px;
+    width:250px;
 }
 
 .account-item {
-    margin-bottom: 10px;
+    margin-bottom:10px;
 }
 
 input[type=text][class=variable-name-edit] {
-    margin-bottom: 0px;
+    margin-bottom:0px;
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
     #topspacer {
-        margin-top: -20px;
+        margin-top:-20px;
         padding-top: 0px;
     }
 }
@@ -86,7 +86,7 @@ input[type=text][class=variable-name-edit] {
         padding-right: 20px;
     }
     #topspacer {
-        margin-top: -20px;
+        margin-top:-20px;
         padding-top: 0px;
     }
 }
@@ -112,52 +112,32 @@ input[type=text][class=variable-name-edit] {
 
 .ajax-loader {
     position: absolute;
-    top: 0; bottom: 0; left: 0; right: 0;
+    top: 0; bottom:0; left: 0; right:0;
     margin: auto;
     background: rgba(255, 255, 255, .8)
-        url(ajax-loader.gif)
-        center
-        no-repeat;
+    	url(ajax-loader.gif)
+    	center
+    	no-repeat;
 }
 
 .navbar-inner {
     background-image:none !important;
-    background-color:#ffbe14 !important;
+    background-color:#44b3e2 !important;
     border:none !important;
     padding:0px !important;
 }
 
-.nav > li > a {
-    color: #fff !important;
-    text-shadow: none !important;
-}
-
-.nav > li > a:hover,
-.nav > .open > a {
-    background-color: #ffcb47 !important;
-}
-
 .nav > .active > a {
-    background-color: #f7a90c !important;
-    box-shadow: none !important;
+    background-color:#209ed3 !important;
+    box-shadow:none !important;
 }
 
-.dropdown-menu > li > a:hover,
-.dropdown-menu > .active > a:hover {
-    background-color: #ffbe14 !important;
-    background-image: none !important;
+.nav > .open > a {
+    background-color:#2eaadf !important;
 }
 
-.dropdown-menu > li > a:focus,
-.dropdown-menu > .active > a,
-.dropdown-menu > .active > a:focus {
-    background-color: #f7a90c !important;
-    background-image: none !important;
-}
-
-.caret {
-   border-top-color: #fff !important;
-}
+.nav > li > a { color: #fff !important; }
+.nav > li > a { text-shadow:none !important; }
 
 .caret {
    border-top-color: #fff !important;
