@@ -48,7 +48,7 @@ function channel_controller() {
                     && $session['userid'] == $ctrlget['userid']) {
                     
                     if ($route->action == "create") $result = $cache->create($session['userid'], $ctrlid, get('driverid'), get('deviceid'), get('configs'));
-                    elseif ($route->action == "get") $result = $cache->get($session['userid'], $ctrlid, get('id'));
+                    elseif ($route->action == "get") $result = $cache->get($ctrlid, get('id'));
                     elseif ($route->action == 'update') $result = $cache->update($session['userid'], $ctrlid, get('nodeid'), get('id'), get('configs'));
                     elseif ($route->action == "delete") $result = $cache->delete($ctrlid, get('id'));
                 }
