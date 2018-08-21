@@ -38,7 +38,7 @@ public class DeviceAddress extends Preferences {
     }
 
     public String getId() {
-        return id;
+        return id.trim().replace("\n", "").replace("\r", "");
     }
 
 }

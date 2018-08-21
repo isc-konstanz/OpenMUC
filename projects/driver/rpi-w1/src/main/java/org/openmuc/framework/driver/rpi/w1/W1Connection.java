@@ -79,7 +79,7 @@ public class W1Connection implements Connection {
                 
                 Value value = null;
                 switch(type) {
-                case TEMPERATURE_SENSOR:
+                case SENSOR_TEMPERATURE:
                     TemperatureSensor sensor = (TemperatureSensor) device;
                     Double temperature = sensor.getTemperature(settings.getUnit());
                     

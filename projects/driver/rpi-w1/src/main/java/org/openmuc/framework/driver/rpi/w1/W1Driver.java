@@ -90,7 +90,7 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
                 String id = device.getId().trim().replace("\n", "").replace("\r", "");
                 if (!settings.ignoreExisting() || !connectedDevices.contains(id)) {
                     String name = device.getClass().getSimpleName();
-                    W1Type type = W1Type.newType(device);
+                    W1Type type = W1Type.valueOf(device);
                     
                     String scanAddress = DeviceAddress.ID_KEY + ":" + id;
                     String scanSettings = DeviceSettings.TYPE_KEY + ":" + type.getName();
@@ -142,7 +142,7 @@ public class W1Driver implements DriverService, W1ConnectionCallbacks {
                 }
             }
             if (device != null) {
-                W1Type type = W1Type.newType(device);
+                W1Type type = W1Type.valueOf(device);
                 if (type == settings.getType()) {
                     connection = new W1Connection(this, device, type);
                     

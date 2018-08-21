@@ -25,41 +25,25 @@ import com.pi4j.io.w1.W1Device;
 
 public enum W1Type {
 
-    TEMPERATURE_SENSOR("TemperatureSensor", TemperatureSensor.class);
+    SENSOR_TEMPERATURE("TemperatureSensor");
 
     private final String name;
-    private final Class<?> type;
 
-    private W1Type(String name, Class<?> type) {
+    private W1Type(String name) {
         this.name = name;
-        this.type = type;
     }
 
     public String getName() {
         return name;
     }
 
-    public Class<?> getType() {
-        return type;
-    }
-
-    public static W1Type newType(W1Device device) throws IllegalArgumentException {
+    public static W1Type valueOf(W1Device device) throws IllegalArgumentException {
         
         if (device instanceof TemperatureSensor) {
-            return W1Type.TEMPERATURE_SENSOR;
+            return W1Type.SENSOR_TEMPERATURE;
         }
         else {
             throw new IllegalArgumentException("Unknown 1-Wire device type: " + device.getClass().getSimpleName());
-        }
-    }
-
-    public static W1Type newType(String type) throws IllegalArgumentException {
-        
-        switch(type.trim()) {
-        case "TemperatureSensor":
-            return W1Type.TEMPERATURE_SENSOR;
-        default:
-            throw new IllegalArgumentException("Unknown 1-Wire device type: " + type);
         }
     }
 }
