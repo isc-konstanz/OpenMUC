@@ -1,112 +1,44 @@
-.device {
-    margin-bottom: 12px;
-    background-color: #ddd;
-    border: 1px solid #aaa;
-}
-.device:hover {
-    background-color: #e3e3e3;
-}
-
-.device-header {
-    height: 40px;
-    cursor: pointer;
-}
-.device-header .device-name {
-    padding-left: 10px;
-    padding-right: 5px;
-    font-weight: bold;
-}
-
-.device-header table {
-    width: 100%;
-}
-.device-header table td:nth-of-type(1) {
-    width: 14px;
-    padding: 0px 2px 4px 19px;
-    text-align: center;
-}
-.device-header table td:nth-of-type(2) {
-    white-space: nowrap;
-    width: 100%;
-    color: #666;
-}
-.device-header table td:nth-of-type(3),
-.device-header table td:nth-of-type(4),
-.device-header table td:nth-of-type(5) {
-    padding: 10px 16px 10px 16px;
-    width: 14px;
-    text-align: center;
-    border-left: 1px solid #eee;
-}
-.device-header table td:nth-of-type(3):hover,
-.device-header table td:nth-of-type(4):hover,
-.device-header table td:nth-of-type(5):hover {
-    background-color: #eaeaea;
-}
-
-.channels {
-    padding: 0px 5px 5px 5px;
-}
-.channels .alert {
-    margin-bottom: 0px;
-}
-.channels .channel-sample {
-    text-align: right;
-}
-.channels .channel-unit,
-.channels .channel-description {
-    color: #999;
-}
-.channels .channel-action {
-    cursor: pointer;
-}
-
-.channels table {
-    width: 100%;
-}
-.channels table tr {
-    height: 42px;
-    text-align: left;
-    background-color: #f0f0f0;
-    border-left: 2px solid #f0f0f0;
-    border-bottom: 1px solid #fff;
-}
-.channels table tr:hover {
-    background-color: #f5f5f5;
-    border-left: 2px solid #44b3e2;
-}
-.channels table td {
-    white-space: nowrap;
-    color: #333;
-}
-.channels table td:nth-of-type(1) {
-    width: 14px;
-    padding: 0px 12px 5px 12px;
-    text-align: center;
-}
-.channels table td:nth-of-type(3) {
-    padding-right: 5px;
-    width: 100%;
-    text-align: right;
-}
-.channels table td:nth-of-type(4) {
-    padding-right: 24px;
-}
-.channels table td:nth-of-type(5) {
-    padding-right: 5px;
-}
-.channels table td:nth-of-type(6) {
+.channel-name {
+    width: 20%;
+    min-width: 90px;
+    max-width: 210px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding-right: 12px;
 }
-.channels table td:nth-of-type(7),
-.channels table td:nth-of-type(8) {
-    padding: 0px 12px 0px 12px;
-    width: 14px;
-    text-align: center;
+.channel-description > * {
+    color: #999;
+}
+@media(max-width: 900px) {
+    .channel-description { display: none !important; }
+}
+.channel-time > * {
+    padding-right: 8px;
+    text-align: right;
+}
+@media(max-width: 700px) {
+    .channel-time { display: none !important; }
+}
+.channel-flag > * {
+    padding-right: 12px;
+}
+.channel-sample {
+    width: 5%;
+    min-width: 40px;
+    text-align: right;
+}
+.channel-unit > * {
+    padding-left: 6px;
+    padding-right: 12px;
+    color: #999;
+}
+@media(max-width: 600px) {
+    .channel-sample { display: none !important; }
+    .channel-unit { display: none !important; }
 }
 
 .channels input {
-    margin-bottom: 0px;
+    margin: 0px;
     text-align: right;
 }
 
@@ -131,24 +63,4 @@
 .channels .channel-checkbox {
     width: 40px;
     float: right;
-}
-
-.channel-header {
-	position: relative;
-    margin-bottom: 5px;
-}
-.channel-header .select {
-	margin: 0px 8px 2px 20px;
-}
-.channel-header span {
-	color: #b3b3b3;
-	font-size: 12px;
-}
-.channel-header .channel-select-action {
-	position: absolute;
-	right: 8px;
-	bottom: 4px;
-}
-.channel-header .channel-select-action .btn {
-	padding: 4px 8px;
 }
