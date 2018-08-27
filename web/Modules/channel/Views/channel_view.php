@@ -5,6 +5,8 @@
 <link href="<?php echo $path; ?>Modules/channel/Views/channel.css" rel="stylesheet">
 <link href="<?php echo $path; ?>Modules/muc/Views/muc.css" rel="stylesheet">
 <link href="<?php echo $path; ?>Modules/muc/Lib/tablejs/titatoggle-dist-min.css" rel="stylesheet">
+<link href="<?php echo $path; ?>Modules/channel/Lib/groupjs/groups.css" rel="stylesheet">
+<script type="text/javascript" src="<?php echo $path; ?>Modules/channel/Lib/groupjs/groups.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/muc/Lib/configjs/config.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/channel/Views/device.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/channel/Views/channel.js"></script>
@@ -12,20 +14,10 @@
 <div class="view-container">
     <div id="channel-header" class="hide">
         <div style="float:right">
-        	<span id="api-help"><a href="api"><?php echo _('Channel API Help'); ?></a></span>
+            <span id="api-help"><a href="api"><?php echo _('Channel API Help'); ?></a></span>
             <a style="text-decoration: none;" href="<?php echo $path; ?>muc/view">&nbsp;<button class="btn btn-mini"><span class="icon-cog"></span>&nbsp;<?php echo _('Controller'); ?></button></a>
         </div>
         <h2><?php echo _('Channels'); ?></h2>
-        
-        <div class="group-actions" data-spy="affix" data-offset-top="100">
-            <div class="group-select">
-                <input id="channel-select-all" class="select" type="checkbox"></input>
-                <span id="channel-select-header"><i><?php echo _('Select all'); ?></i></span>
-            </div>
-            <div class='whitespace'></div>
-            <div id="channel-delete" class="action hide" title="<?php echo _('Delete selected') ?>"><span class="icon-trash"></span></div>
-            <div id="channel-expand-all" class="action" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><span class="icon-resize-small"></span></div>
-        </div>
     </div>
     <div id="channel-none" class="alert alert-block hide" style="margin-top:12px">
         <h4 class="alert-heading"><?php echo _('No Channels configured'); ?></h4>
@@ -36,6 +28,7 @@
             <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Channels API helper'); ?></a>
         </p>
     </div>
+    <div id="channel-actions" class="hide"></div>
     <div id="channel-groups"></div>
     
     <div id="channel-footer" class="hide">
@@ -80,18 +73,27 @@ var updater;
 var timeout;
 var path = "<?php echo $path; ?>";
 
+groups.actions = {
+    'delete': {
+        'title':'<?php echo _("Delete Selected"); ?>',
+        'class':'action',
+        'icon':'icon-trash',
+        'event':'deleteSelected',
+        'hide':true
+    }
+};
+groups.header = {
+    'name': {'class':'name'},
+    'description': {'class':'description'},
+};
+groups.init($('#channel-actions'));
+
 var devices = {};
 var channels = {};
 var records = {};
 
 var collapsed = {};
 var selected = {};
-
-var hover = false;
-$(document).on('mousemove', function() {
-    $(document).off('mousemove');
-    hover = true;
-});
 
 setTimeout(function() {
     device.list(function(result) {
@@ -159,6 +161,7 @@ function draw(result) {
     }
     else if (result.length == 0) {
         $("#channel-header").hide();
+        $("#channel-actions").hide();
         $("#channel-footer").show();
         $("#channel-none").show();
 
@@ -168,6 +171,7 @@ function draw(result) {
     channels = {};
     
     $("#channel-header").show();
+    $("#channel-actions").show();
     $("#channel-footer").show();
     $("#channel-none").hide();
     
@@ -223,21 +227,20 @@ function drawDevice(device) {
     
     $("#channel-groups").append(
         "<div class='device group'>" +
-            "<div id='"+deviceid+"-header' class='group-header' data-id='"+deviceid+"' " +
-                    "data-toggle='collapse' data-target='#"+deviceid+"-body'>" +
-                "<div class='group-icon'>" +
-                    "<span id='"+deviceid+"-icon' class='icon-chevron-"+(collapsed[deviceid] ? 'right' : 'down')+" icon-collapse'></span>" +
-                    "<input id='"+deviceid+"-select' class='device-select select hide' type='checkbox' "+checked+"></input>" +
+            "<div id='"+deviceid+"-header' class='group-header' data-toggle='collapse' data-target='#"+deviceid+"-body'>" +
+                "<div class='group-item' data-id='"+deviceid+"'>" +
+                    "<div class='group-collapse'>" +
+                        "<span id='"+deviceid+"-icon' class='icon-chevron-"+(collapsed[deviceid] ? 'right' : 'down')+" icon-collapse'></span>" +
+                        "<input id='"+deviceid+"-select' class='device-select select hide' type='checkbox' "+checked+"></input>" +
+                    "</div>" +
+                    "<div class='name'><span>"+device.id+(description.length>0 ? ":" : "")+"</span></div>" +
+                    "<div class='description'><span>"+description+"</span></div>" +
+                    "<div class='group-grow'></div>" +
+                    "<div class='action device-scan'><span class='icon-search' title='Scan'></span></div>" +
+                    "<div class='action device-add'><span class='icon-plus-sign' title='Add'></span></div>" +
+                    "<div class='action device-config'><span class='icon-wrench' title='Configure'></span></div>" +
+                    "</div>" +
                 "</div>" +
-                "<div>" +
-                    "<span class='name'>"+device.id+(description.length>0 ? ":" : "")+"</span>" +
-                    "<span class='description'>"+description+"</span>" +
-                "</div>" +
-                "<div class='whitespace'></div>" +
-                "<div class='action device-scan'><span class='icon-search' title='Scan'></span></div>" +
-                "<div class='action device-add'><span class='icon-plus-sign' title='Add'></span></div>" +
-                "<div class='action device-config'><span class='icon-wrench' title='Configure'></span></div>" +
-            "</div>" +
             "<div id='"+deviceid+"-body' class='group-body channels collapse "+(collapsed[deviceid] ? '' : 'in')+"'>" +
                 groups +
             "</div>" +
@@ -279,11 +282,11 @@ function drawChannel(id, channel) {
         type = channel.configs.valueType;
     }
     
-    return "<div id='"+id+"-row' class='group-row' data-id='"+id+"'>" +
+    return "<div id='"+id+"-item' class='group-item' data-id='"+id+"'>" +
             "<div class='group-select'><input id='"+id+"-select' class='channel-select select' type='checkbox' "+checked+"></input></div>" +
             "<div class='channel-name'><span>"+channel.id+"</span></div>" +
             "<div class='channel-description'><span>"+description+"</span></div>" +
-            "<div class='whitespace'></div>" +
+            "<div class='group-grow'></div>" +
             "<div id='"+id+"-time' class='channel-time'>"+drawRecordTime(id, time)+"</div>" +
             "<div id='"+id+"-flag' class='channel-flag'>"+drawRecordFlag(id)+"</div>" +
             "<div id='"+id+"-sample' class='channel-sample'>"+drawRecordValue(id)+"</div>" +
@@ -429,25 +432,25 @@ function drawRecordValue(id) {
 
 function drawSelected(count) {
     if (count == 0) {
-        $('#channel-select-all').prop('checked', false).prop('indeterminate', false);
-        $('#channel-delete').hide();
+        $('#group-action-select-all input').prop('checked', false).prop('indeterminate', false);
+        $('#group-action-delete').hide();
     }
     else if (count < Object.keys(channels).length) {
-        $('#channel-select-all').prop('checked', false).prop('indeterminate', true);
-        $('#channel-delete').show();
+        $('#group-action-select-all input').prop('checked', false).prop('indeterminate', true);
+        $('#group-action-delete').show();
     }
     else {
-        $('#channel-select-all').prop('checked', true).prop('indeterminate', false);
-        $('#channel-delete').show();
+        $('#group-action-select-all input').prop('checked', true).prop('indeterminate', false);
+        $('#group-action-delete').show();
     }
 }
 
 function selectAll(state) {
     if (state) {
-        $('#channel-delete').show();
+        $('#group-action-delete').show();
     }
     else {
-        $('#channel-delete').hide();
+        $('#group-action-delete').hide();
     }
     for (var id in devices) {
         if (state && !$('#'+id+'-body').hasClass('in')) {
@@ -511,13 +514,22 @@ function selectChannel(id, state) {
 
 function registerEvents() {
 
-    $(".group-header").off('mouseover ').on("mouseover ", function(e) {
+    $("#group-action-select-all").off('click').on('click', function(e) {
+        var state = $(this).find('input').prop('checked')
+        groups.drawExpandAction(state);
+        
+        if (state) {
+            selectAll(state);
+        }
+    });
+
+    $(".group-header .group-item").off('mouseover').on("mouseover", function(e) {
         var id = $(this).data('id');
         $("#"+id+"-icon").hide();
         $("#"+id+"-select").show();
     }),
 
-    $(".group-header").off('mouseout ').on("mouseout ", function(e) {
+    $(".group-header .group-item").off('mouseout').on("mouseout", function(e) {
         var id = $(this).data('id');
         $("#"+id+"-icon").show();
         $("#"+id+"-select").hide();
@@ -544,7 +556,7 @@ function registerEvents() {
         }
     }),
 
-    $(".group-row").off('click').on("click", function(e) {
+    $(".group-body .group-item").off('click').on('click', function(e) {
         e.stopPropagation();
         
         var id = $(this).data('id');
@@ -558,7 +570,7 @@ function registerEvents() {
     $(".device-select").off('click').on('click', function(e) {
         e.stopPropagation();
         
-        var id = $(this).closest('.group-header').data('id');
+        var id = $(this).closest('.group-item').data('id');
         var state = $(this).prop('checked');
         
         selectDevice(id, state);
@@ -568,7 +580,7 @@ function registerEvents() {
         e.stopPropagation();
         
         // Get device of clicked row
-        var id = $(this).closest('.group-header').data('id');
+        var id = $(this).closest('.group-item').data('id');
         var device = devices[id];
         
         device_dialog.loadConfig(device);
@@ -578,7 +590,7 @@ function registerEvents() {
         e.stopPropagation();
         
         // Get device of clicked row
-        var id = $(this).closest('.group-header').data('id');
+        var id = $(this).closest('.group-item').data('id');
         var device = devices[id];
         
         channel_dialog.loadNew(device);
@@ -588,16 +600,16 @@ function registerEvents() {
         e.stopPropagation();
         
         // Get device of clicked row
-        var id = $(this).closest('.group-header').data('id');
+        var id = $(this).closest('.group-item').data('id');
         var device = devices[id];
         
         channel_dialog.loadScan(device);
     });
 
-    $(".channel-write").off("click").on("click", function(e) {
+    $(".channel-write").off('click').on('click', function(e) {
         e.stopPropagation();
         
-        var id = $(this).closest('.group-row').data('id');
+        var id = $(this).closest('.group-item').data('id');
         var ch = channels[id];
         
         var action = $(this).data('action');
@@ -648,20 +660,20 @@ function registerEvents() {
         }
     });
 
-    $("channel-config").off('click').on("click", function(e) {
+    $(".channel-config").off('click').on('click', function(e) {
         e.stopPropagation();
 
         // Get channel of clicked row
-        var id = $(this).closest('.group-row').data('id');
+        var id = $(this).closest('.group-item').data('id');
         var channel = channels[id];
         
         channel_dialog.loadConfig(channel);
     });
 
-    $(".channel-slider").off('click').on("click", function(e) {
+    $(".channel-slider").off('click').on('click', function(e) {
         e.stopPropagation();
 
-        var id = $(this).closest('.group-row').data('id');
+        var id = $(this).closest('.group-item').data('id');
         
         var value = null;
         if (typeof records[id] !== 'undefined') {
@@ -680,7 +692,7 @@ function registerEvents() {
         }
     });
 
-    $(".channel-input").off('click').on("click", function(e) {
+    $(".channel-input").off('click').on('click', function(e) {
         e.stopPropagation();
     }),
 
@@ -694,7 +706,7 @@ function registerEvents() {
         timeout = setTimeout(function() {
             timeout = null;
             
-            var id = $(self).closest('.group-row').data('id');
+            var id = $(self).closest('.group-item').data('id');
             
             var value = null;
             if (typeof records[id] !== 'undefined') {
@@ -715,20 +727,12 @@ function registerEvents() {
         }, 200);
     });
 
-    $(".channel-select").off('click').on("click", function(e) {
+    $(".channel-select").off('click').on('click', function(e) {
         e.stopPropagation();
         
-        var id = $(this).closest('.group-row').data('id');
+        var id = $(this).closest('.group-item').data('id');
         var state = $(this).prop('checked');
         selectChannel(id, state);
-    });
-
-    $("#channel-select-all").off("click").on("click", function(e) {
-        selectAll($(this).prop('checked'));
-    });
-
-    $("#channel-expand-all").off("click").on("click", function(e) {
-        selectAll($(this).prop('checked'));
     });
 }
 
@@ -770,7 +774,7 @@ $("#device-new").on('click', function () {
     device_dialog.loadNew();
 });
 
-$("#channel-delete").on('click', function () {
+$("#group-action-delete").on('click', function () {
     var list = "";
     for (var id in channels) {
         if (selected[id]) {
@@ -787,7 +791,7 @@ $("#channels-delete-confirm").on('click', function () {
         if (selected[id]) {
             delete selected[id];
             
-            $('#'+id+'-row').remove();
+            $('#'+id+'-item').remove();
             channel.remove(channels[id].ctrlid, channels[id].id);
 
             count++;
