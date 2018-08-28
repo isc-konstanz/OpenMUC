@@ -54,12 +54,14 @@
         {
             "name": "energy",
             "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
+            "engine": "Engine::PHPTIMESERIES",
+			"unit": "kWh"
         },
         {
             "name": "power",
             "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
+            "engine": "Engine::PHPTIMESERIES",
+			"unit": "W"
         }
     ],
     

@@ -178,73 +178,85 @@
             "name": "solar_power",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "W"
         },
         {
             "name": "solar_energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "kWh"
         },
         {
             "name": "grid_import_power",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "W"
         },
         {
             "name": "grid_import_energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "kWh"
         },
         {
             "name": "grid_export_power",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "W"
         },
         {
             "name": "grid_export_energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "kWh"
         },
         {
             "name": "consumption_power",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "W"
         },
         {
             "name": "consumption_energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "kWh"
         },
         {
             "name": "heatpump_power",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "W"
         },
         {
             "name": "heatpump_energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "kWh"
         },
         {
             "name": "ev_power",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "W"
         },
         {
             "name": "ev_energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+			"unit": "kWh"
         }
     ],
     
