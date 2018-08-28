@@ -21,7 +21,7 @@ html, body {
 }
 
 .body-login {
-    background-color: #eaa400;
+	background-color: #eaa400;
 }
 
 #login-form input[type="text"], #login-form input[type="password"] {
@@ -37,7 +37,7 @@ html, body {
     text-align: center;
     font-size: 13px;
     font-weight: bold;
-    padding-top: 10px;
+    padding-top:10px;
 }
 
 #footer a {
@@ -50,9 +50,9 @@ html, body {
 }
 
 #submenu {
-    width: 100%;
-    background-color: #ddd;
-    height: 27px;
+    width:100%;
+    background-color:#ddd;
+    height:27px;
 }
 
 #topspacer {
@@ -60,20 +60,20 @@ html, body {
 }
 
 div#account {
-    width: 250px;
+    width:250px;
 }
 
 .account-item {
-    margin-bottom: 10px;
+    margin-bottom:10px;
 }
 
 input[type=text][class=variable-name-edit] {
-    margin-bottom: 0px;
+    margin-bottom:0px;
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
     #topspacer {
-        margin-top: -20px;
+        margin-top:-20px;
         padding-top: 0px;
     }
 }
@@ -86,7 +86,7 @@ input[type=text][class=variable-name-edit] {
         padding-right: 20px;
     }
     #topspacer {
-        margin-top: -20px;
+        margin-top:-20px;
         padding-top: 0px;
     }
 }
@@ -112,12 +112,12 @@ input[type=text][class=variable-name-edit] {
 
 .ajax-loader {
     position: absolute;
-    top: 0; bottom: 0; left: 0; right: 0;
+    top: 0; bottom:0; left: 0; right:0;
     margin: auto;
     background: rgba(255, 255, 255, .8)
-        url(ajax-loader.gif)
-        center
-        no-repeat;
+    	url(ajax-loader.gif)
+    	center
+    	no-repeat;
 }
 
 .navbar-inner {
@@ -127,9 +127,9 @@ input[type=text][class=variable-name-edit] {
     padding:0px !important;
 }
 
-.nav > li > a {
-    color: #fff !important;
-    text-shadow: none !important;
+.nav > .active > a {
+    background-color: #f7a90c !important;
+    box-shadow:none !important;
 }
 
 .nav > li > a:hover,
@@ -137,9 +137,13 @@ input[type=text][class=variable-name-edit] {
     background-color: #ffcb47 !important;
 }
 
-.nav > .active > a {
-    background-color: #f7a90c !important;
-    box-shadow: none !important;
+.nav > li > a {
+    color: #fff !important;
+    text-shadow:none !important;
+}
+
+.caret {
+   border-top-color: #fff !important;
 }
 
 .dropdown-menu > li > a:hover,
@@ -155,18 +159,9 @@ input[type=text][class=variable-name-edit] {
     background-image: none !important;
 }
 
-.caret {
-   border-top-color: #fff !important;
-}
-
-.caret {
-   border-top-color: #fff !important;
-}
-
 .text-larger {
     font-size: larger
 }
-
 
 .expand-all .icon-resize-small{
     display: none
@@ -187,6 +182,7 @@ input[type=text][class=variable-name-edit] {
     background: #ddd;
     height: 41px;
 }
+/* dropdown indicator */
 .node .accordion-toggle .has-indicator:before {
     content: '';
     transition: border .2s ease-out;
@@ -257,6 +253,8 @@ input[type=text][class=variable-name-edit] {
 
 .label-container{padding-top:.6em; display:inline-block; min-width: 200px}
 
+/* select all button */
+/*
 .has-indicator{position:relative}
 .has-indicator:after{
     transition:all 200ms ease-in-out;
@@ -273,7 +271,7 @@ input[type=text][class=variable-name-edit] {
     top:0;
     line-height: 1.1em;
     opacity: 0;
-    content:'✔';
+    content: attr(data-marker);
 }
 .has-indicator:hover:after{
     opacity: 1;
@@ -282,4 +280,38 @@ input[type=text][class=variable-name-edit] {
     border: 1px solid #B1522E;
     color: #FBFBFB;
     background: #D65C29;
+}
+*/
+#table .accordion{
+    margin-bottom:.5em
+}
+
+
+#table{margin-top:3rem}
+.controls{
+    transition: all .2s ease-out
+}
+.controls.affix:before{
+    content: '';
+    background: rgba(5,4,4,0.7);
+    width: 100%;
+    display:block;
+    position: fixed;
+    z-index: -1;
+    height: 2.5rem;
+    left:0;
+    margin-top:-.3rem;
+}
+.controls.affix > *{
+    z-index: 2
+}
+.controls.affix{
+    z-index: 2;
+    top: 2.5rem;
+    padding: .3rem 0;
+}
+.controls.affix-top{position: absolute;}
+
+@media(max-width:979px) {
+    .controls.affix{top:0}
 }
