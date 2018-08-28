@@ -30,7 +30,7 @@ function driver_controller($format, $action, $method) {
     elseif ($format == 'json') {
         
         if ($action == 'list') {
-            if ($session['userid']>0 && $session['write']) $result = $driver->get_list($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $driver->get_list($session['userid'], null);
         }
         elseif ($action == "registered") {
             if ($session['userid']>0 && $session['write']) $result = $driver->get_registered($session['userid'], get('ctrlid'));
