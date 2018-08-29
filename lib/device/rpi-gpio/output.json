@@ -20,7 +20,7 @@
         {
             "id": "pin",
             "name": "Pin",
-            "description": "Configure Pin number",
+            "description": "The Pin number, according to the <a href='http://pi4j.com/pin-numbering-scheme.html'>WiringPi Pin Numbering Scheme</a>",
             "type": "text",
             "scan": true,
             "mandatory": true,
@@ -33,6 +33,8 @@
             "id": "state",
             "type": "Switch",
             "label": "Pin state",
+            "left": "Low",
+            "right": "High",
             "mapping": {
                 "ON": { "channel": "state", "value": true },
                 "OFF": { "channel": "state", "value": false }

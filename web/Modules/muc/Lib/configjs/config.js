@@ -249,6 +249,10 @@ var config =
             }
         });
 
+        $('#options', config.container).on('click', '.alert', function(e) {
+        	e.stopPropagation();
+        });
+
         $('#options', config.container).on('click', '.option', function() {
             var group = $(this).data('group');
             var key = $(this).data('key');

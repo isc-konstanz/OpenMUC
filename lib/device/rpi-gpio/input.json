@@ -20,24 +20,11 @@
         {
             "id": "pin",
             "name": "Pin",
-            "description": "Configure Pin number",
+            "description": "The Pin number, according to the <a href='http://pi4j.com/pin-numbering-scheme.html'>WiringPi Pin Numbering Scheme</a>",
             "type": "text",
             "scan": true,
             "mandatory": true,
             "syntax": "deviceAddress"
-        }
-    ],
-    
-    "items": [
-        {
-            "id": "state",
-            "type": "Switch",
-            "label": "Pin state",
-            "mapping": {
-                "ON": { "channel": "state", "value": true },
-                "OFF": { "channel": "state", "value": false }
-            },
-            "input": "state"
         }
     ],
     
