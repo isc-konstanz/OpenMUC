@@ -241,7 +241,7 @@ function drawDevice(device) {
                     "<div class='action device-config'><span class='icon-wrench' title='Configure'></span></div>" +
                     "</div>" +
                 "</div>" +
-            "<div id='"+deviceid+"-body' class='group-body channels collapse "+(collapsed[deviceid] ? '' : 'in')+"'>" +
+            "<div id='"+deviceid+"-body' class='group-body collapse "+(collapsed[deviceid] ? '' : 'in')+"'>" +
                 groups +
             "</div>" +
         "</div>"
@@ -606,6 +606,24 @@ function registerEvents() {
         channel_dialog.loadScan(device);
     });
 
+    $(".channel-select").off('click').on('click', function(e) {
+        e.stopPropagation();
+        
+        var id = $(this).closest('.group-item').data('id');
+        var state = $(this).prop('checked');
+        selectChannel(id, state);
+    });
+
+    $(".channel-config").off('click').on('click', function(e) {
+        e.stopPropagation();
+
+        // Get channel of clicked row
+        var id = $(this).closest('.group-item').data('id');
+        var channel = channels[id];
+        
+        channel_dialog.loadConfig(channel);
+    });
+
     $(".channel-write").off('click').on('click', function(e) {
         e.stopPropagation();
         
@@ -660,17 +678,8 @@ function registerEvents() {
         }
     });
 
-    $(".channel-config").off('click').on('click', function(e) {
-        e.stopPropagation();
-
-        // Get channel of clicked row
-        var id = $(this).closest('.group-item').data('id');
-        var channel = channels[id];
-        
-        channel_dialog.loadConfig(channel);
-    });
-
-    $(".channel-slider").off('click').on('click', function(e) {
+    $(".channel-sample").off('click');
+    $(".channel-sample").on('click', '.channel-slider', function(e) {
         e.stopPropagation();
 
         var id = $(this).closest('.group-item').data('id');
@@ -692,11 +701,11 @@ function registerEvents() {
         }
     });
 
-    $(".channel-input").off('click').on('click', function(e) {
+    $(".channel-sample").on('click', '.channel-input', function(e) {
         e.stopPropagation();
     }),
 
-    $(".channel-input").off('keyup').on("keyup", function(e) {
+    $(".channel-sample").off('keyup').on('keyup', '.channel-input', function(e) {
         e.stopPropagation();
         
         var self = this;
@@ -725,14 +734,6 @@ function registerEvents() {
                 $('#'+id+'-write span').removeClass('icon-share-alt').addClass('icon-remove');
             }
         }, 200);
-    });
-
-    $(".channel-select").off('click').on('click', function(e) {
-        e.stopPropagation();
-        
-        var id = $(this).closest('.group-item').data('id');
-        var state = $(this).prop('checked');
-        selectChannel(id, state);
     });
 }
 
