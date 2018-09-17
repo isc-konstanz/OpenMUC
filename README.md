@@ -62,7 +62,7 @@ The systems setup guide was documented for Linux based platforms, specifically *
 
 Recommended:
 
-- [Ubuntu / Debian Linux via git](https://github.com/isc-konstanz/emonmuc/blob/master/doc/LinuxInstall.md)
+- [Ubuntu / Debian Linux via git](doc/LinuxInstall.md)
 
 
 ----------
@@ -70,7 +70,7 @@ Recommended:
 # First steps
 
 With the system being prepared, some first steps can be taken to learn about the features of emonmuc.
-For this purpose, a [First Steps guide](https://github.com/isc-konstanz/emonmuc/blob/master/doc/FirstSteps.md) was documented to be followed.
+For this purpose, a [First Steps guide](doc/FirstSteps.md) was documented to be followed.
 
 
 ----------
