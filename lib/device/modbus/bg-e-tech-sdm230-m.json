@@ -4,8 +4,6 @@
     "group": "B+G E-TECH",
     "description": "<b>Energy Meter SDM230-M</b>:<br>Current: 10(100)A<br>Voltage : 230V<br>50(60)Hz",
     
-    "prefix": "name",
-    
     "devices": [
         {
             "driver": "modbus",
@@ -38,8 +36,8 @@
             "name": "voltage",
             "description": "Voltage",
             "address": "<unitId>:INPUT_REGISTERS:0:FLOAT",
-            "logging": {"loggingInterval": 30000, "loggingMaxInterval": 180000},
-            "configs": {"samplingInterval": 30000, "unit": "V", "valueType":"FLOAT"},
+            "logging": {"loggingInterval": 30000, "loggingMaxInterval": 180000, "loggingTolerance": 1, "average": true},
+            "configs": {"samplingInterval": 30000, "valueType":"FLOAT", "unit": "V"},
             "processList": [
                 {
                     "process": "log_to_feed",
@@ -52,7 +50,7 @@
             "description": "Power",
             "address": "<unitId>:INPUT_REGISTERS:12:FLOAT",
             "logging": {"loggingInterval": 30000, "loggingMaxInterval": 180000},
-            "configs": {"samplingInterval": 30000, "unit": "W", "valueType":"FLOAT"},
+            "configs": {"samplingInterval": 30000, "valueType":"FLOAT", "unit": "W"},
             "processList": [
                 {
                     "process": "log_to_feed",
@@ -64,8 +62,8 @@
             "name": "frequency",
             "description": "Frequency",
             "address": "<unitId>:INPUT_REGISTERS:70:FLOAT",
-            "logging": {"loggingInterval": 30000, "loggingMaxInterval": 180000},
-            "configs": {"samplingInterval": 30000, "unit": "Hz", "valueType":"FLOAT"},
+            "logging": {"loggingInterval": 30000, "loggingMaxInterval": 180000, "loggingTolerance": 0.1, "average": true},
+            "configs": {"samplingInterval": 30000, "valueType":"FLOAT", "unit": "Hz"},
             "processList": [
                 {
                     "process": "log_to_feed",
@@ -75,40 +73,35 @@
         },
         {
             "name": "import_energy",
-            "description": "Import energy",
+            "description": "Import Energy",
             "address": "<unitId>:INPUT_REGISTERS:72:FLOAT",
             "logging": {"loggingInterval": 30000, "loggingMaxInterval": 180000},
-            "configs": {"samplingInterval": 30000, "unit": "kWh", "valueType":"FLOAT"},
+            "configs": {"samplingInterval": 30000, "valueType":"FLOAT", "unit": "kWh"},
             "processList": [
                 {
                     "process": "log_to_feed",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "import_energy"}
+                },
+                {
+                    "process": "kwh_to_power",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "import_power"}
                 }
             ]
         },
         {
             "name": "export_energy",
-            "description": "Export energy",
+            "description": "Export Energy",
             "address": "<unitId>:INPUT_REGISTERS:74:FLOAT",
             "logging": {"loggingInterval": 30000, "loggingMaxInterval": 180000},
-            "configs": {"samplingInterval": 30000, "unit": "kWh", "valueType":"FLOAT"},
+            "configs": {"samplingInterval": 30000, "valueType":"FLOAT", "unit": "kWh"},
             "processList": [
                 {
                     "process": "log_to_feed",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "export_energy"}
-                }
-            ]
-        },
-        {
-            "name": "total_system_power",
-            "description": "Total system power demand",
-            "address": "<unitId>:INPUT_REGISTERS:84:FLOAT",
-            "logging": {"loggingInterval": 30000, "loggingMaxInterval": 180000},
-            "configs": {"samplingInterval": 30000, "unit": "W", "valueType":"FLOAT"},
-            "processList": [
+                },
                 {
-                    "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "total_system_power"}
+                    "process": "kwh_to_power",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "export_power"}
                 }
             ]
         }
@@ -119,40 +112,54 @@
             "name": "voltage",
             "tag": "Voltage",
             "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "V"
         },
         {
             "name": "power",
             "tag": "Power",
             "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "W"
         },
         {
             "name": "frequency",
             "tag": "Frequency",
             "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "Hz"
+        },
+        {
+            "name": "import_energy",
+            "tag": "Energy",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
         },
         {
             "name": "import_power",
             "tag": "Power",
             "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
+        },
+        {
+            "name": "export_energy",
+            "tag": "Energy",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
         },
         {
             "name": "export_power",
             "tag": "Power",
             "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
-        },
-        {
-            "name": "total_system_power",
-            "tag": "Power",
-            "type": "DataType::REALTIME",
-            "engine": "Engine::PHPTIMESERIES"
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": ""
         }
     ],
     
+    "prefix": "name",
     "syntax": {
         "deviceAddress": {
             "keyValue": false,

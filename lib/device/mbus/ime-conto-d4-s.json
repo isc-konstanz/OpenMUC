@@ -34,9 +34,10 @@
     "channels": [
         {
             "name": "energy",
+            "description": "Energy",
             "address": "06:fd61",
             "logging": {"loggingInterval": 60000, "loggingMaxInterval": 180000},
-            "configs": {"samplingInterval": 60000, "unit": "kWh", "valueType":"DOUBLE"},
+            "configs": {"samplingInterval": 60000, "valueType":"DOUBLE", "unit": "kWh"},
             "processList": [
                 {
                     "process": "log_to_feed",
@@ -53,12 +54,14 @@
     "feeds": [
         {
             "name": "energy",
+            "tag": "Energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
 			"unit": "kWh"
         },
         {
             "name": "power",
+            "tag": "Power",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
 			"unit": "W"
