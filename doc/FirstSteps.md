@@ -54,14 +54,14 @@ All the information might be confusing. Thats the reason we made some tutorials,
 To add a new device (in this instance the CSV-Driver) first go to **Setup --> Inputs** and hit the "New device" button.
 
 
-![New Device in Inputs](img/CSV driver/new_device.png)
+![New Device in Inputs](img/csv/new_device.png)
 
 ##Configure Device
 Next step is to configure your device. Therefore go to **Demonstration --> CSV --> Home**. Type in a Node and Name as you like. **But be careful:** There are no blanks allowed for neither Node nor Name! 
 
 Another thing you mandatorily have to fill out is the CSV file. There are two ways of choosing the file: First possibility is to simply type it in. Second possibility is to do a scan and let the programme search for the file. In this tutorial it might be helpful, to use the scan-option given in the configuration menu because you might not know the location of the file.
 
-![configure new device](img/CSV driver/configure_device_csv.png)
+![configure new device](img/csv/configure_device_csv.png)
 
 When clicking scan you might get to choose between two nearly equal devices. Click at one of them to add. After that click **Save** and **Initialize**  
 
@@ -72,15 +72,15 @@ The **Input**-file is now full of information concerning the newly created devic
 
 On the right side of the screen you can see a spanner to delete or edit the process or to add a new one. There are detailed explanations on every process you can add. 
 
-![inputs](img/CSV driver/inputs_kurz.png)
+![inputs](img/csv/inputs_kurz.png)
 
 ##Channels
 In **Channels** (as said in the beginning) you can edit the Channel address, the Logging settings, (like Logging Interval -Time difference until this channel is logged again-, the Logging time offset, the Logging interval
  maximum -Dynamically log records only on changed values, up until to a maximum amount of time-), the Configuration and have the possibility to add an option. 
  
-![channels overview](img/CSV driver/channels_kurz.png)
+![channels overview](img/csv/channels_kurz.png)
 
-![channels config](img/CSV driver/configure_channel.png)
+![channels config](img/csv/configure_channel.png)
 
 ##Feeds
 In Feeds you can select the Data you want to see in the Graph. You might notice that there are more groups then in Channels and Inputs, more precisely: Exact twice as much. Where does that come from?
@@ -94,7 +94,7 @@ You can select the scaling for the different processes by clicking either the le
 
 After running the programme for several hours, the graph should look something like this: 
 
-![data viewer](img/CSV driver/graph_viewer.png)
+![data viewer](img/csv/graph_viewer.png)
 
 Congratulations! You have done your first test measurement. Now you are able to add a new device, log the Inputs to Feeds and evaluate the graphical output! 
 
