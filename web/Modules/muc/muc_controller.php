@@ -49,15 +49,11 @@ function muc_controller() {
                 // Configuration may be retrieved with read key
                 if ($session['userid']>0 && $session['write']) $result = $ctrl->get_config($session['userid'], get('id'));
             }
-            elseif ($route->action == "test") {
-                // Configuration may be retrieved with read key
-                if ($session['userid']>0 && $session['write']) $result = $ctrl->test($session['userid']);
-            }
             else {
                 $ctrlid = intval(get('id'));
                 if ($ctrl->exists($ctrlid)) {
                     $ctrlget = $ctrl->get($ctrlid);
-                    if (isset($session['write']) && $session['write'] && $session['userid']>0 && $ctrlget['userid']==$session['userid']) {
+                    if ($session['write'] && $session['userid']>0 && $ctrlget['userid']==$session['userid']) {
                         if ($route->action == "get") $result = $ctrlget;
                         elseif ($route->action == 'set') $result = $ctrl->set_fields($session['userid'], $ctrlid, get('fields'));
                         elseif ($route->action == "delete") $result = $ctrl->delete($session['userid'], $ctrlid);
