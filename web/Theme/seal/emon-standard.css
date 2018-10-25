@@ -120,6 +120,7 @@ input[type=text][class=variable-name-edit] {
         no-repeat;
 }
 
+/*
 .navbar-inner {
     background-color: #44b3e2 !important;
     background-image: none !important;
@@ -145,6 +146,7 @@ input[type=text][class=variable-name-edit] {
 .caret {
    border-top-color: #fff !important;
 }
+*/
 
 .text-larger {
     font-size: larger
@@ -182,6 +184,9 @@ input[type=text][class=variable-name-edit] {
 .node .select input {margin-top: -1px}
 .node .collapse {
     width: 100%;
+    transition-duration: 350ms;
+    transition-property: all;
+    transition-timing-function: ease;
 }
 .node .collapse > * {
     width: 100%;
@@ -220,7 +225,8 @@ input[type=text][class=variable-name-edit] {
 
 .device-key,
 .device-schedule,
-.device-configure {
+.device-configure,
+.device-last-updated {
     border-left: 1px solid #eee;
     color: white;
 }
@@ -263,8 +269,6 @@ input[type=text][class=variable-name-edit] {
     margin-bottom: .5em
 }
 
-
-#table{margin-top:3rem}
 .controls {
     transition: all .2s ease-out
 }
@@ -292,4 +296,18 @@ input[type=text][class=variable-name-edit] {
 
 @media(max-width:979px) {
     .controls.affix{top:0}
+}
+
+.app-header,
+.graph-header {
+    color: #fff;
+    background-color: #ddd;
+}
+.app-header .action:hover,
+.graph-header .action:hover {
+    background-color: #e3e3e3;
+}
+
+.graph-body {
+    background-color: #f9f9f9;
 }

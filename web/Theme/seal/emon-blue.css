@@ -182,6 +182,9 @@ input[type=text][class=variable-name-edit] {
 .node .select input {margin-top: -1px}
 .node .collapse {
     width: 100%;
+    transition-duration: 350ms;
+    transition-property: all;
+    transition-timing-function: ease;
 }
 .node .collapse > * {
     width: 100%;
@@ -220,7 +223,8 @@ input[type=text][class=variable-name-edit] {
 
 .device-key,
 .device-schedule,
-.device-configure {
+.device-configure,
+.device-last-updated {
     border-left: 1px solid #eee;
     color: white;
 }
@@ -263,8 +267,6 @@ input[type=text][class=variable-name-edit] {
     margin-bottom: .5em
 }
 
-
-#table{margin-top:3rem}
 .controls {
     transition: all .2s ease-out
 }
@@ -292,4 +294,18 @@ input[type=text][class=variable-name-edit] {
 
 @media(max-width:979px) {
     .controls.affix{top:0}
+}
+
+.app-header,
+.graph-header {
+    color: #fff;
+    background-color: #44b3e2;
+}
+.app-header .action:hover,
+.graph-header .action:hover {
+    background-color: #2eaadf;
+}
+
+.graph-body {
+    background-color: #44b3e210;
 }

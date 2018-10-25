@@ -26,7 +26,7 @@
 
 <div>
     <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('MUC API Help'); ?></a></div>
-    <div id="local-header"><h2><?php echo _('Controller'); ?></h2></div>
+    <div id="ctrl-header"><h2><?php echo _('Controller'); ?></h2></div>
     
     <div id="table"><div align='center'></div></div>
     
@@ -87,11 +87,13 @@
             
             table.draw();
             if (table.data.length == 0) {
+                $("#api-help-header").hide();
+                $("#ctrl-header").hide();
                 $("#ctrl-none").show();
-                $("#local-header").hide();
             } else {
+                $("#api-help-header").show();
+                $("#ctrl-header").show();
                 $("#ctrl-none").hide();
-                $("#local-header").show();
             }
             $('#ctrl-loader').hide();
         });

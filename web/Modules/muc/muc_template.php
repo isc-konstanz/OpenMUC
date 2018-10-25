@@ -44,22 +44,25 @@ class MucTemplate extends DeviceTemplate
         require_once "Modules/muc/Models/driver_model.php";
         $driver = new Driver($this->ctrl);
         $drivers = array();
-        foreach ($driver->get_registered($userid, null) as $drv) {
-            $drivers[] = $drv['id'];
-        }
-        
-        $dir = $this->get_template_dir();
-        $it = new RecursiveDirectoryIterator($dir);
-        foreach (new RecursiveIteratorIterator($it) as $file) {
-            if ($file->getExtension() == "json") {
-                $type = substr(pathinfo($file, PATHINFO_DIRNAME), strlen($dir)).'/'.pathinfo($file, PATHINFO_FILENAME);
-                
-                $result = $this->get_template($userid, $type);
-                if (is_array($result) && isset($result['success']) && $result['success'] == false) {
-                    return $result;
-                }
-                if (empty($result->driver) || in_array($result->driver, $drivers)) {
-                    $list[$type] = $result;
+        $registered = $driver->get_registered($userid, null);
+        if (is_array($registered) && count($registered)>0 && !isset($registered['success'])) {
+            foreach ($registered as $drv) {
+                $drivers[] = $drv['id'];
+            }
+            
+            $dir = $this->get_template_dir();
+            $it = new RecursiveDirectoryIterator($dir);
+            foreach (new RecursiveIteratorIterator($it) as $file) {
+                if ($file->getExtension() == "json") {
+                    $type = substr(pathinfo($file, PATHINFO_DIRNAME), strlen($dir)).'/'.pathinfo($file, PATHINFO_FILENAME);
+                    
+                    $result = $this->get_template($userid, $type);
+                    if (is_array($result) && isset($result['success']) && $result['success'] == false) {
+                        return $result;
+                    }
+                    if (empty($result->driver) || in_array($result->driver, $drivers)) {
+                        $list[$type] = $result;
+                    }
                 }
             }
         }
