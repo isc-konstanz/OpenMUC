@@ -6,8 +6,8 @@
 ROOT_DIR="/opt/emonmuc"
 WEB_DIR="/var/www/html"
 WEB_USER="www-data"
-GIT_SERVER="https://github.com/isc-konstanz"
-GIT_BRANCH="seal"
+GIT_SERVER="https://github.com/emoncms"
+GIT_BRANCH="stable"
 USER="pi"
 
 if [[ $EUID -ne 0 ]]; then
@@ -33,9 +33,9 @@ fi
 
 if [ ! -d "$ROOT_DIR" ]; then
     echo "Installing emonmuc framework"
-    exec apt-get install -y netcat
+    apt-get install -y git-core netcat
 
-    git clone -b $GIT_BRANCH $GIT_SERVER/emonmuc.git $ROOT_DIR
+    git clone -b $GIT_BRANCH "https://github.com/isc-konstanz/emonmuc.git" $ROOT_DIR
     chown $USER:root -R $ROOT_DIR
 fi
 #echo -e "\e[96m\e[1m$(cat $ROOT_DIR/lib/framework/welcome.txt)\e[0m"
@@ -55,7 +55,7 @@ if [ ! -d "$WEB_DIR/emoncms" ]; then
     chown $WEB_USER:root -R $WEB_DIR /var/lib/emoncms
 
     sudo -u $WEB_USER git clone -b $GIT_BRANCH $GIT_SERVER/emoncms.git $WEB_DIR/emoncms
-    sudo -u $WEB_USER git clone -b $GIT_BRANCH $GIT_SERVER/device.git $WEB_DIR/emoncms/Modules/device
+    sudo -u $WEB_USER git clone -b master $GIT_SERVER/device.git $WEB_DIR/emoncms/Modules/device
     sudo -u $WEB_USER git clone -b $GIT_BRANCH $GIT_SERVER/graph.git $WEB_DIR/emoncms/Modules/graph
     #sudo -u $WEB_USER git clone -b $GIT_BRANCH $GIT_SERVER/app.git $WEB_DIR/emoncms/Modules/app
     if [ "$WEB_DIR" != "/var/www/html" ]; then
@@ -82,7 +82,7 @@ GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
 FLUSH PRIVILEGES;"
 
     sudo -u $WEB_USER cp $ROOT_DIR/conf/emoncms.default.php $WEB_DIR/emoncms/settings.php
-    sed -e "7s/\<password\>/$SQL_USER/" $WEB_DIR/emoncms/settings.php
+    sed -i "7s/<password>/$SQL_USER/" $WEB_DIR/emoncms/settings.php
     php -f $ROOT_DIR/lib/upgrade.php
 
     echo "[MySQL]" > ./setup_pwd.txt
@@ -94,3 +94,4 @@ $ROOT_DIR/bin/emonmuc install
 echo "Successfully installed the emonmuc framework"
 
 exit 0
+

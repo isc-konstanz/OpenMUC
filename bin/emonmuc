@@ -111,6 +111,8 @@ install() {
     while ! netcat -z localhost $EMONMUC_PORT; do
         sleep 0.1
     done
+
+    php -f $EMONMUC_DIR/lib/upgrade.php
     if [ "$2" = "-a" ]; then
         php -f $EMONMUC_DIR/lib/setup.php "$3"
     else
