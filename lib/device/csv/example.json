@@ -30,7 +30,7 @@
     
     "channels": [
         {
-            "name": "pv_generation_power",
+            "name": "pv_power",
             "description": "Photovoltaic generation power",
             "address": "pv_power_production",
             "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
@@ -130,7 +130,7 @@
             ]
         },
         {
-            "name": "hp_consumption",
+            "name": "hp_power",
             "description": "Heat pump consumption",
             "address": "hp_power_consumption",
             "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},
@@ -151,7 +151,7 @@
             ]
         },
         {
-            "name": "ev_consumption",
+            "name": "ev_power",
             "description": "Electric vehicle consumption",
             "address": "ev_power_consumption",
             "logging": {"loggingInterval": 5000, "loggingMaxInterval": 60000},

@@ -105,9 +105,9 @@ FLUSH PRIVILEGES;"
     sed -i "7s/<password>/$SQL_USER/" $WEB_DIR/emoncms/settings.php
     php -f $ROOT_DIR/lib/upgrade.php
 
-    echo "[MySQL]" > ./setup_pwd.txt
-    echo "root:$SQL_ROOT" >> ./setup_pwd.txt
-    echo "emoncms:$SQL_USER" >> ./setup_pwd.txt
+    echo "[MySQL]" > $ROOT_DIR/setup_pwd.conf
+    echo "root:$SQL_ROOT" >> $ROOT_DIR/setup_pwd.conf
+    echo "emoncms:$SQL_USER" >> $ROOT_DIR/setup_pwd.conf
 fi
 $ROOT_DIR/bin/emonmuc install -d "$WEB_DIR/emoncms" -a "$API_KEY"
 

@@ -56,6 +56,9 @@ If the webserver already got installed, the setup may be finished by passing the
 sudo bash /opt/emonmuc/setup.sh --dir /var/www --apikey <apikey>
 ~~~
 
+**Notice:** Empty installations will be initialized with a default user "*admin*", authenticated with a temporary password: *admin*, that should be replaced with a secure password immediately in the Account configurations.  
+*If the database was created automatically, a `setup_pwd.conf` file can be found at the emonmuc root directory, containing database user passwords. This file needs to be removed from the system, to avoid compromising security.*
+
 A more detailed installation guide, containing separate steps executed in the setup script, can be found here:
 
 - [Ubuntu / Debian Linux via git](doc/LinuxInstall.md)

@@ -11,7 +11,6 @@ First, the emoncms webserver needs to be installed and running.
 The project provides detailed installation guides for several platforms. Recommended for this guide are Linux oriented instructions:
 
 - [Ubuntu / Debian Linux via git](https://github.com/emoncms/emoncms/blob/master/docs/LinuxInstall.md)
-
 - [Raspbian Stretch](https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/readme.md)
 
 
@@ -32,7 +31,6 @@ Git is a source code management and revision control system, but here it is used
 ~~~
 sudo git clone -b stable https://github.com/isc-konstanz/emonmuc.git /opt/emonmuc
 sudo chown pi -R /opt/emonmuc
-sudo chown www-data -R /opt/emonmuc/web
 ~~~
 
 
@@ -135,8 +133,8 @@ To enable the comfortable configuration of e.g. metering devices for enabled pro
 
 ~~~
 sudo chown www-data:root -R /opt/emonmuc/web/Modules
-sudo -u www-data ln -s /opt/emonmuc/web/Modules/muc /var/www/emoncms/Modules/muc
-sudo -u www-data ln -s /opt/emonmuc/web/Modules/channel /var/www/emoncms/Modules/channel
+sudo -u www-data ln -s /opt/emonmuc/web/Modules/ /var/www/emoncms/Modules/muc
+sudo -u www-data ln -s /opt/emonmuc/web/Modules/ /var/www/emoncms/Modules/channel
 ~~~
 
 **Check for Database upates in the Administration pane, for the necessary tables to be created**
@@ -144,18 +142,14 @@ sudo -u www-data ln -s /opt/emonmuc/web/Modules/channel /var/www/emoncms/Modules
 
 ## 2.1 Emonmuc settings
 
-To enable automatic controller registration and initialization, open `/var/www/emoncms/settings.php` in an editor and add the lines: 
-   >     // Emonmuc module 
-   >     // Skip MUC controller setup test - set to false once it has been setup.
-   >     $muc_test = true;
-   >      
+If emonmuc was installed in a custom directory, its location should be configured in the emoncms settings. Open `/var/www/emoncms/settings.php` in an editor and add the lines, pointing to the specific location: 
+   >     // Emonmuc module
    >     $muc_settings = array(
-   >         'rootdir' => "/opt/emonmuc"
+   >         'rootdir' => "/home/pi/emonmuc"
    >     );
 
-
-While all emoncms related configurations will be setup automatically, somme settings may be necessary to be adjusted. All settings can be found in the emoncms.conf.  
-Defaults for all parameters can be found in emoncms.default.conf. 
+For some configurations, the settings may be necessary to be adjusted. All settings can be found in the emoncms.conf.
+Defaults for all parameters can be found in `emoncms.default.conf`.
 
 ~~~
 nano /opt/emonmuc/conf/emoncms.conf
@@ -180,18 +174,14 @@ To do this, **uncomment the lines** related to authorization and authentication,
 
 # 3 Setup
 
-With both components installed and running, an OpenMUC framework controller was automatically registered to the emoncms user. This can be verified in the **Controllers** page, accessible at the users **My Account** from the menu. 
+With both components installed and running, the OpenMUC framework needs to be registered to the emoncms user. This can be done in the Controllers page, accessible at **Setup->Channels->Controller** from the menu.
 
 ![emonmuc user](img/emonmuc-user.jpg)
 
-Click *Multiy Utility Communication* **Configure** and verify the default settings, if the framework is running on the same machine.  
+Further, it is recommended to use the Beta version, as well as the emoncms [device module](https://github.com/emoncms/device), to improve the usability of the platform.  
+Click **New controller** and confirm the default settings, if the framework is running on the same machine.
 
 ![emonmuc controllers](img/emonmuc-controllers.jpg)
-
- Now, with the controller registration verified, the automatic registration and initiation can be disabled by modifying `/var/www/emoncms/settings.php`
-
-- Stop controller registration test
-   >     $muc_test = false;
 
 Energy meters and other utility devices connected to the platform can now be configured in the **Channels** site.
 
