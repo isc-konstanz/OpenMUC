@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__)."/emoncms.php";
 require_once "Modules/muc/muc_model.php";
-require_once("Modules/user/user_model.php");
+require_once "Modules/user/user_model.php";
 $ctrl = new Controller($mysqli,$redis);
 $user = new User($mysqli,$redis);
 
@@ -9,8 +9,11 @@ $type = 'HTTP';
 $address = 'localhost';
 $path = '/emoncms/';
 
-if (count($argv)>1 && is_string($argv[1])) {
-    $apikey = $argv[1];
+if (isset($options['a']) || isset($options['apikey'])) {
+    $apikey = isset($options['a']) ? $options['a'] : $options['apikey'];
+    if (strlen($apikey) != 32) {
+        echo "Invalid apikey: $apikey\n"; die;
+    }
     $session = $user->apikey_session($apikey);
     $userid = $session['userid'];
 }
@@ -35,7 +38,7 @@ if (count($ctrl->get_list($userid)) == 0) {
         echo "Unable to create MUC for user $userid: ".$result['message']."\n"; die;
     }
     
-    if (!is_file($root.'/conf/emoncms.default.conf')) {
+    if (!is_file($root.'/conf/emoncms.settings.conf')) {
         echo "Unable to find default emoncms configuration ".$root."/conf/emoncms.default.conf\n"; die;
     }
     if (!is_writable($root.'/conf') || (is_file($root.'/conf/emoncms.conf') && !is_writable($root.'/conf/emoncms.conf'))) {

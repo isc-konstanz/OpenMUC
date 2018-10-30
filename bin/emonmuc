@@ -94,13 +94,33 @@ location of your Java installation."
 fi
 
 install() {
+    API_KEY=""
+    while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -d|--dir)
+        EMONCMS_DIR="$2"
+        shift
+        shift
+        ;;
+        -a|--apikey)
+        API_KEY="$2"
+        shift
+        shift
+        ;;
+        *)
+        echo "Usage: emonmuc install [-d|--dir][-a|--apikey]"
+        exit 1
+        ;;
+    esac
+    done
+
     mkdir -p /var/{lib,run}/emonmuc /var/log/emoncms
     chown $EMONMUC_USER /var/{lib,run}/emonmuc /var/log/emoncms
     chown $EMONCMS_USER -R $EMONMUC_DIR/web
 
-    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Modules/channel $EMONCMS_DIR/Modules/channel
-    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Modules/muc $EMONCMS_DIR/Modules/muc
-    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Theme/seal $EMONCMS_DIR/Theme/seal
+    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Modules/channel $EMONCMS_DIR/Modules/
+    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Modules/muc $EMONCMS_DIR/Modules/
+    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Theme/seal $EMONCMS_DIR/Theme/
 
     ln -sf $EMONMUC_DIR/bin/emonmuc /usr/local/bin/emonmuc
     ln -sf $EMONMUC_DIR/lib/systemd/emonmuc.service /lib/systemd/system/emonmuc.service
@@ -112,12 +132,8 @@ install() {
         sleep 0.1
     done
 
-    php -f $EMONMUC_DIR/lib/upgrade.php
-    if [ "$2" = "-a" ]; then
-        php -f $EMONMUC_DIR/lib/setup.php "$3"
-    else
-        php -f $EMONMUC_DIR/lib/setup.php
-    fi
+    php $EMONMUC_DIR/lib/upgrade.php --dir $EMONCMS_DIR
+    php $EMONMUC_DIR/lib/setup.php --dir $EMONCMS_DIR --apikey $API_KEY
     chown $EMONMUC_USER -R $EMONMUC_DIR/conf
 
     systemctl restart emonmuc.service

@@ -15,6 +15,26 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+API_KEY=""
+while [[ $# -gt 0 ]]; do
+case "$1" in
+    -d|--dir)
+    WEB_DIR="$2"
+    shift
+    shift
+    ;;
+    -a|--apikey)
+    API_KEY="$2"
+    shift
+    shift
+    ;;
+    *)
+    echo "Usage: emonmuc setup [-d|--dir][-a|--apikey]"
+    exit 1
+    ;;
+esac
+done
+
 if type -p java >/dev/null 2>&1; then
     JAVA_CMD=java
 elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
@@ -89,7 +109,7 @@ FLUSH PRIVILEGES;"
     echo "root:$SQL_ROOT" >> ./setup_pwd.txt
     echo "emoncms:$SQL_USER" >> ./setup_pwd.txt
 fi
-$ROOT_DIR/bin/emonmuc install
+$ROOT_DIR/bin/emonmuc install -d "$WEB_DIR/emoncms" -a "$API_KEY"
 
 echo "Successfully installed the emonmuc framework"
 

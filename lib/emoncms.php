@@ -2,9 +2,28 @@
 define('EMONCMS_EXEC', 1);
 
 $root = dirname(dirname(__FILE__));
-$emoncms = "/var/www/html/emoncms";
 
-chdir($emoncms);
+$options_short = "d:a:";
+$options_long  = array(
+    "dir:",
+    "apikey:"
+);
+$options = getopt($options_short, $options_long);
+
+if (isset($options['d'])) {
+    $dir = $options['d'];
+}
+else if (isset($options['dir'])) {
+    $dir = $options['dir'];
+}
+else {
+    $dir = "/var/www/html/emoncms";
+}
+if(substr_compare($dir, '/', strlen($dir)-1, 1) !== 0) {
+    $dir = $dir."/";
+}
+chdir($dir);
+
 require_once "core.php";
 require_once "process_settings.php";
 require_once "Lib/EmonLogger.php";
