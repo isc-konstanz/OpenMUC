@@ -44,22 +44,25 @@ class MucTemplate extends DeviceTemplate
         require_once "Modules/muc/Models/driver_model.php";
         $driver = new Driver($this->ctrl);
         $drivers = array();
-        foreach ($driver->get_registered($userid, null) as $drv) {
-            $drivers[] = $drv['id'];
-        }
-        
-        $dir = $this->get_template_dir();
-        $it = new RecursiveDirectoryIterator($dir);
-        foreach (new RecursiveIteratorIterator($it) as $file) {
-            if ($file->getExtension() == "json") {
-                $type = substr(pathinfo($file, PATHINFO_DIRNAME), strlen($dir)).'/'.pathinfo($file, PATHINFO_FILENAME);
-                
-                $result = $this->get_template($userid, $type);
-                if (is_array($result) && isset($result['success']) && $result['success'] == false) {
-                    return $result;
-                }
-                if (empty($result->driver) || in_array($result->driver, $drivers)) {
-                    $list[$type] = $result;
+        $registered = $driver->get_registered($userid, null);
+        if (is_array($registered) && count($registered)>0 && !isset($registered['success'])) {
+            foreach ($registered as $drv) {
+                $drivers[] = $drv['id'];
+            }
+            
+            $dir = $this->get_template_dir();
+            $it = new RecursiveDirectoryIterator($dir);
+            foreach (new RecursiveIteratorIterator($it) as $file) {
+                if ($file->getExtension() == "json") {
+                    $type = substr(pathinfo($file, PATHINFO_DIRNAME), strlen($dir)).'/'.pathinfo($file, PATHINFO_FILENAME);
+                    
+                    $result = $this->get_template($userid, $type);
+                    if (is_array($result) && isset($result['success']) && $result['success'] == false) {
+                        return $result;
+                    }
+                    if (empty($result->driver) || in_array($result->driver, $drivers)) {
+                        $list[$type] = $result;
+                    }
                 }
             }
         }
@@ -195,8 +198,26 @@ class MucTemplate extends DeviceTemplate
             if (isset($response['success']) && $response['success'] == false) {
                 return $response;
             }
+            $this->create_inputs($userid, $channels);
         }
-        parent::init_template($device, $template);
+        else {
+            $channels = array();
+        }
+        
+        if (isset($template->feeds)) {
+            $feeds = $template->feeds;
+            $this->create_feeds($userid, $feeds);
+        }
+        else {
+            $feeds = array();
+        }
+        
+        if (!empty($feeds)) {
+            $this->create_feed_processes($userid, $feeds, $channels);
+        }
+        if (!empty($channels)) {
+            $this->create_input_processes($userid, $feeds, $channels);
+        }
         
         return array('success'=>true, 'message'=>'Device initialized');
     }
@@ -233,25 +254,28 @@ class MucTemplate extends DeviceTemplate
         return array('success'=>true, 'message'=>'Devices successfully created');
     }
 
-    private function parse_channels($result, $parameters, $channels) {
+    private function parse_channels($result, $parameters, &$channels) {
         return $this->parse_configs($result, $parameters, $channels, 'channel');
     }
 
     // Create the channels
-    private function create_channels($userid, $ctrlid, $devices, $channels) {
+    private function create_channels($userid, $ctrlid, $devices, &$channels) {
         foreach($channels as $id=>$c) {
             $configs = (array) $c;
             $configs['id'] = $c->name;
             
-            if (empty($c->logging) || empty($c->logging->loggingInterval)) {
-                // Remove the channel from list to avoid the unnecessary input creation
-                unset($channels[$id]);
+            if (empty($c->logging)) {
+                if (empty($c->logging->loggingInterval)) {
+                    // Remove the channel from list to avoid the unnecessary input creation
+                    unset($channels[$id]);
+                }
+                $logging = array();
             }
             else if (isset($c->logging)) {
                 $logging = (array) $c->logging;
-                $logging['nodeid'] = $c->node;
-                $configs['logging'] = $logging;
             }
+            $logging['nodeid'] = $c->node;
+            $configs['logging'] = $logging;
             
             if (isset($configs['device'])) {
                 $deviceid = $configs['device'];
@@ -303,17 +327,19 @@ class MucTemplate extends DeviceTemplate
         // Iterate all options as configured in the template and parse them accordingly, 
         // if they exist in the passed key value options array
         foreach ($template->options as $option) {
-            if (empty($option->syntax) || empty($parameters[$option->id])) {
-                continue;
-            }
             $value = $parameters[$option->id];
             
             $types = explode(',', $option->syntax);
             foreach($types as $type) {
-                if ($option->syntax !== $key || empty($template->syntax) || empty($template->syntax->$type)) {
+                if ($option->syntax !== $key) {
                     continue;
                 }
-                $syntax = $template->syntax->$type;
+                if (isset($template->syntax) && isset($template->syntax->$type)) {
+                    $syntax = $template->syntax->$type;
+                }
+                else {
+                    $syntax = true;
+                }
                 
                 // Default syntax is <key1>:<value1>,<key2>:<value2>,...
                 if (!empty($result)) {

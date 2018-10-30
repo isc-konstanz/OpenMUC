@@ -62,7 +62,7 @@ class Channel
             $description = '';
         }
         
-        $logging = $this->parse_log_settings($userid, $nodeid, $id, $description, $logging);
+        $logging = $this->parse_log_settings($userid, $nodeid, $logging);
         
         $input = $this->get_input_by_node_name($userid, $logging['nodeid'], $id);
         if (isset($input)) {
@@ -375,7 +375,7 @@ class Channel
         return $info;
     }
 
-    private function parse_log_settings($userid, $nodeid, $name, $description, $logging) {
+    private function parse_log_settings($userid, $nodeid, $logging) {
         $auth = isset($logging['authorization']) ? $logging['authorization'] : 'DEFAULT';
         
         $key = null;
@@ -535,7 +535,7 @@ class Channel
             $description = '';
         }
         
-        $logging = $this->parse_log_settings($userid, $nodeid, $id, $description, $logging);
+        $logging = $this->parse_log_settings($userid, $newnode, $logging);
         $channel = $this->parse_channel($newid, $description, $logging, $configs);
         
         $response = $this->ctrl->request($ctrlid, 'channels/'.$id.'/configs', 'PUT', array('configs' => $channel));
@@ -546,7 +546,7 @@ class Channel
         $input = $this->get_input_by_node_name($userid, $nodeid, $id);
         if (isset($input)) {
             $inputid = $input['id'];
-            if ($id !== $newid) {
+            if ($id !== $newid || $nodeid !== $newnode) {
                 $this->mysqli->query("UPDATE input SET `name`='$newid',`description`='$description',`nodeid`='$newnode' WHERE `id` = '$inputid'");
             }
             else {

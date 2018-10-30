@@ -208,10 +208,6 @@ class MucScan extends DeviceScan
         // Iterate all options as configured in the template and decode them accordingly,
         // if they exist in the passed settings string
         foreach (array(self::DEVICE_ADDRESS, self::DEVICE_SETTINGS) as $type) {
-            if (empty($template->syntax) || empty($template->syntax->$type)) {
-                continue;
-            }
-            
             $options = array();
             foreach ($template->options as $option) {
                 if (empty($option->syntax)) {
@@ -222,7 +218,12 @@ class MucScan extends DeviceScan
                     if ($t === $type) $options[] = $option;
                 }
             }
-            $syntax = $template->syntax->$type;
+            if (isset($template->syntax) && isset($template->syntax->$type)) {
+                $syntax = $template->syntax->$type;
+            }
+            else {
+                $syntax = true;
+            }
             
             $separator = isset($syntax->separator) ? $syntax->separator : ',';
             if ($type == self::DEVICE_ADDRESS) {
@@ -233,7 +234,7 @@ class MucScan extends DeviceScan
             }
             
             for($i=0; $i<count($options); $i++) {
-                if (!isset($syntax->keyValue) || !$syntax->keyValue) {
+                if (isset($syntax->keyValue) && !$syntax->keyValue) {
                     $result[$options[$i]->id] = $arr[$i];
                 }
                 else {

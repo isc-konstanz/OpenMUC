@@ -365,7 +365,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                 String id = nameAttribute.getTextContent().trim();
                 
                 Option option;
-                if (options != null && options.containsKey(id)) {
+                if (options != null && options.containsKey(id) && !childNode.hasChildNodes()) {
                     option = options.get(id);
                 }
                 else {

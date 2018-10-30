@@ -5,19 +5,26 @@
 # Add JVM options here.
 JVM_OPTS="-Djava.library.path=/usr/lib/jni -cp /usr/share/java/RXTXcomm.jar"
 
-# Set location for PID and Error output file. Default is "$EMONMUC_HOME/log/emonmuc.pid" or ".log"
+# Set location for PID and Error output file. Default is "$EMONMUC_DIR/log/emonmuc.pid" or ".log"
 PID_FILE=/var/run/emonmuc/emonmuc.pid
 #ERR_FILE=/var/log/emonmuc/emonmuc.out
 ERR_FILE=/dev/null
 
+# Configure location and authorization options to install and
+# register the framework to the emoncms webserver
+EMONCMS_DIR="/var/www/html/emoncms"
+EMONCMS_USER="www-data"
+EMONMUC_PORT=8080
+
 # Optionally set the location of the emonmuc framework. If the
 # variable is not set, it is assumed that this script is located
 # within the "bin" folder of the emonmuc framework folder.
-# EMONMUC_HOME="/path/to/emonmuc/"
+#EMONMUC_DIR="/path/to/emonmuc/"
+
 
 find_home_dir()
 {
-    # Attempt to set EMONMUC_HOME
+    # Attempt to set EMONMUC_DIR
     # Resolve links: $0 may be a link
     PRG="$0"
     # Need this for relative symlinks.
@@ -32,20 +39,22 @@ find_home_dir()
     done
     SAVED="`pwd`"
     cd "`dirname \"$PRG\"`/.." >/dev/null
-    EMONMUC_HOME="`pwd -P`"
+    EMONMUC_DIR="`pwd -P`"
     cd "$SAVED" >/dev/null
 }
 
-if [ -z ${EMONMUC_HOME+x} ]; then
+if [ -z ${EMONMUC_DIR+x} ]; then
     find_home_dir
 fi
-cd "$EMONMUC_HOME"
+cd "$EMONMUC_DIR"
+
+EMONMUC_USER=`stat -c "%U" bin/emonmuc`
 
 find_gradle() {
     if hash gradle 2>/dev/null; then
         GRADLE="gradle"
     else
-        GRADLE="$EMONMUC_HOME/gradlew"
+        GRADLE="$EMONMUC_DIR/gradlew"
     fi
 }
 
@@ -53,34 +62,82 @@ find_gradle
 
 # If root change user to owner of this script
 if [ $UID -eq 0 ] ; then
-    SCRIPT_OWNER=`stat -c "%U" bin/emonmuc`
-    if [ "$SCRIPT_OWNER" != "root" ] ; then
-        echo "Executed as root, will run as owner of this script: $SCRIPT_OWNER"
-        exec sudo -u $SCRIPT_OWNER bin/emonmuc "$@"
+    if [ "$EMONMUC_USER" != "root" ] && [ "$1" != "install" ]; then
+        echo "Executed as root, will run as owner of this script: $EMONMUC_USER"
+        exec sudo -u $EMONMUC_USER bin/emonmuc "$@"
     fi
+elif [ "$1" == "install" ];  then
+    echo "Please make sure to run the emonmuc installation as root user"
+    exit 1
 fi
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
-    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ]; then
         # IBM's JDK on AIX uses strange locations for the executables
-        JAVACMD="$JAVA_HOME/jre/sh/java"
+        JAVA_CMD="$JAVA_HOME/jre/sh/java"
     else
-        JAVACMD="$JAVA_HOME/bin/java"
+        JAVA_CMD="$JAVA_HOME/bin/java"
     fi
-    if [ ! -x "$JAVACMD" ] ; then
+    if [ ! -x "$JAVA_CMD" ] ; then
         die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
 
 Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."
     fi
 else
-    JAVACMD="java"
+    JAVA_CMD="java"
     which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
 
 Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."
 fi
+
+install() {
+    API_KEY=""
+    while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -d|--dir)
+        EMONCMS_DIR="$2"
+        shift
+        shift
+        ;;
+        -a|--apikey)
+        API_KEY="$2"
+        shift
+        shift
+        ;;
+        *)
+        echo "Usage: emonmuc install [-d|--dir][-a|--apikey]"
+        exit 1
+        ;;
+    esac
+    done
+
+    mkdir -p /var/{lib,run}/emonmuc /var/log/emoncms
+    chown $EMONMUC_USER /var/{lib,run}/emonmuc /var/log/emoncms
+    chown $EMONCMS_USER -R $EMONMUC_DIR/web
+
+    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Modules/channel $EMONCMS_DIR/Modules/
+    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Modules/muc $EMONCMS_DIR/Modules/
+    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Theme/seal $EMONCMS_DIR/Theme/
+
+    ln -sf $EMONMUC_DIR/bin/emonmuc /usr/local/bin/emonmuc
+    ln -sf $EMONMUC_DIR/lib/systemd/emonmuc.service /lib/systemd/system/emonmuc.service
+    echo "d /var/run/emonmuc 0755 $EMONMUC_USER root -" | sudo tee /usr/lib/tmpfiles.d/emonmuc.conf  >/dev/null 2>&1
+
+    systemctl enable emonmuc.service
+    systemctl start emonmuc.service
+    while ! netcat -z localhost $EMONMUC_PORT; do
+        sleep 0.1
+    done
+
+    php $EMONMUC_DIR/lib/upgrade.php --dir $EMONCMS_DIR
+    php $EMONMUC_DIR/lib/setup.php --dir $EMONCMS_DIR --apikey $API_KEY
+    chown $EMONMUC_USER -R $EMONMUC_DIR/conf
+
+    systemctl restart emonmuc.service
+}
 
 start_emonmuc() {
     if [ -f $PID_FILE ]; then
@@ -93,22 +150,22 @@ start_emonmuc() {
         fi
     fi
 
-    if [ -e "$EMONMUC_HOME"/conf/bundles.conf ] ; then
+    if [ -e "$EMONMUC_DIR"/conf/bundles.conf ] ; then
         while IFS= read -r line
         do
             ln -sf $line 2>/dev/null
-        done < "$EMONMUC_HOME"/conf/bundles.conf
+        done < "$EMONMUC_DIR"/conf/bundles.conf
     fi
 
-    echo -e "\e[96m\e[1m$(cat $EMONMUC_HOME/lib/framework/welcome.txt)\e[0m"
+    echo -e "\e[96m\e[1m$(cat $EMONMUC_DIR/lib/framework/welcome.txt)\e[0m"
 
     if [ "$2" != "-fg" ]
     then
         echo "Starting in background. To start EmonMUC in foreground run this script with the -fg flag."
         # Option: -Dgosh.args=--nointeractive is necessary for running emonmuc in background
-        exec "$JAVACMD" $JVM_OPTS -Dgosh.args=--nointeractive -jar "$EMONMUC_HOME"/lib/felix.jar >"$ERR_FILE" 2>&1 &
+        exec "$JAVA_CMD" $JVM_OPTS -Dgosh.args=--nointeractive -jar "$EMONMUC_DIR"/lib/felix.jar >"$ERR_FILE" 2>&1 &
     else
-        exec "$JAVACMD" $JVM_OPTS -jar "$EMONMUC_HOME"/lib/felix.jar
+        exec "$JAVA_CMD" $JVM_OPTS -jar "$EMONMUC_DIR"/lib/felix.jar
     fi
 
     if [ $? = 0 ]; then
@@ -209,33 +266,33 @@ enable_bundle() {
     case "$2" in
         app)
             echo "Enabling app $3."
-            echo "$EMONMUC_HOME/bundles-available/openmuc-app-$3-*.jar $EMONMUC_HOME/bundles-enabled/openmuc-app-$3.jar" >> "$EMONMUC_HOME"/conf/bundles.conf
-            ln -sf "$EMONMUC_HOME"/bundles-available/openmuc-app-$3-*.jar "$EMONMUC_HOME"/bundles-enabled/openmuc-app-$3.jar
+            echo "$EMONMUC_DIR/bundles-available/openmuc-app-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-app-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
+            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-app-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-app-$3.jar
             ;;
         datalogger)
             echo "Enabling datalogger $3."
-            echo "$EMONMUC_HOME/bundles-available/openmuc-datalogger-$3-*.jar $EMONMUC_HOME/bundles-enabled/openmuc-datalogger-$3.jar" >> "$EMONMUC_HOME"/conf/bundles.conf
-            ln -sf "$EMONMUC_HOME"/bundles-available/openmuc-datalogger-$3-*.jar "$EMONMUC_HOME"/bundles-enabled/openmuc-datalogger-$3.jar
+            echo "$EMONMUC_DIR/bundles-available/openmuc-datalogger-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-datalogger-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
+            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-datalogger-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-datalogger-$3.jar
             ;;
         driver)
             echo "Enabling driver $3."
-            echo "$EMONMUC_HOME/bundles-available/openmuc-driver-$3-*.jar $EMONMUC_HOME/bundles-enabled/openmuc-driver-$3.jar" >> "$EMONMUC_HOME"/conf/bundles.conf
-            ln -sf "$EMONMUC_HOME"/bundles-available/openmuc-driver-$3-*.jar "$EMONMUC_HOME"/bundles-enabled/openmuc-driver-$3.jar
+            echo "$EMONMUC_DIR/bundles-available/openmuc-driver-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-driver-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
+            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-driver-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-driver-$3.jar
             ;;
         server)
             echo "Enabling server $3."
-            echo "$EMONMUC_HOME/bundles-available/openmuc-server-$3-*.jar $EMONMUC_HOME/bundles-enabled/openmuc-server-$3.jar" >> "$EMONMUC_HOME"/conf/bundles.conf
-            ln -sf "$EMONMUC_HOME"/bundles-available/openmuc-server-$3-*.jar "$EMONMUC_HOME"/bundles-enabled/openmuc-server-$3.jar
+            echo "$EMONMUC_DIR/bundles-available/openmuc-server-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-server-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
+            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-server-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-server-$3.jar
             ;;
         webui)
             echo "Enabling webui bundle $3."
-            echo "$EMONMUC_HOME/bundles-available/openmuc-webui-$3-*.jar $EMONMUC_HOME/bundles-enabled/openmuc-webui-$3.jar" >> "$EMONMUC_HOME"/conf/bundles.conf
-            ln -sf "$EMONMUC_HOME"/bundles-available/openmuc-webui-$3-*.jar "$EMONMUC_HOME"/bundles-enabled/openmuc-webui-$3.jar
+            echo "$EMONMUC_DIR/bundles-available/openmuc-webui-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-webui-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
+            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-webui-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-webui-$3.jar
             ;;
         *)
             echo "Enabling bundle $2."
-            echo "$3 $EMONMUC_HOME/bundles-enabled/$3.jar" >> "$EMONMUC_HOME"/conf/bundles.conf
-            ln -sf $3 "$EMONMUC_HOME"/bundles-enabled/$3.jar
+            echo "$3 $EMONMUC_DIR/bundles-enabled/$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
+            ln -sf $3 "$EMONMUC_DIR"/bundles-enabled/$3.jar
             ;;
     esac
 
@@ -247,33 +304,33 @@ disable_bundle() {
     case "$2" in
         app)
             echo "Disabling app $3."
-            sed -i "/openmuc-app-$3/d" "$EMONMUC_HOME"/conf/bundles.conf
-            rm -f "$EMONMUC_HOME"/bundles-enabled/openmuc-app-$3.jar
+            sed -i "/openmuc-app-$3/d" "$EMONMUC_DIR"/conf/bundles.conf
+            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-app-$3.jar
             ;;
         datalogger)
             echo "Disabling datalogger $3."
-            sed -i "/openmuc-datalogger-$3/d" "$EMONMUC_HOME"/conf/bundles.conf
-            rm -f "$EMONMUC_HOME"/bundles-enabled/openmuc-datalogger-$3.jar
+            sed -i "/openmuc-datalogger-$3/d" "$EMONMUC_DIR"/conf/bundles.conf
+            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-datalogger-$3.jar
             ;;
         driver)
             echo "Disabling driver $3."
-            sed -i "/openmuc-driver-$3/d" "$EMONMUC_HOME"/conf/bundles.conf
-            rm -f "$EMONMUC_HOME"/bundles-enabled/openmuc-driver-$3.jar
+            sed -i "/openmuc-driver-$3/d" "$EMONMUC_DIR"/conf/bundles.conf
+            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-driver-$3.jar
             ;;
         server)
             echo "Disabling server $3."
-            sed -i "/openmuc-server-$3/d" "$EMONMUC_HOME"/conf/bundles.conf
-            rm -f "$EMONMUC_HOME"/bundles-enabled/openmuc-server-$3.jar
+            sed -i "/openmuc-server-$3/d" "$EMONMUC_DIR"/conf/bundles.conf
+            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-server-$3.jar
            ;;
         webui)
             echo "Disabling webui bundle $3."
-            sed -i "/openmuc-webui-$2/d" "$EMONMUC_HOME"/conf/bundles.conf
-            rm -f "$EMONMUC_HOME"/bundles-enabled/openmuc-webui-$3.jar
+            sed -i "/openmuc-webui-$2/d" "$EMONMUC_DIR"/conf/bundles.conf
+            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-webui-$3.jar
             ;;
         *)
             echo "Disabling bundle $3."
-            sed -i "/$2/d" "$EMONMUC_HOME"/conf/bundles.conf
-            rm -f "$EMONMUC_HOME"/bundles-enabled/$3.jar
+            sed -i "/$2/d" "$EMONMUC_DIR"/conf/bundles.conf
+            rm -f "$EMONMUC_DIR"/bundles-enabled/$3.jar
             ;;
     esac
 
@@ -299,12 +356,15 @@ case "$1" in
     disable)
         disable_bundle $*
         ;;
+    update)
+        echo "Not yet implemented"
+        ;;
     update-bundles)
         if [ "$2" = "-i" ]
         then
-            eval $GRADLE -p "$EMONMUC_HOME" install
+            eval $GRADLE -p "$EMONMUC_DIR" install
         fi
-        eval $GRADLE -b "$EMONMUC_HOME"/conf/bundles.gradle updateBundles
+        eval $GRADLE -b "$EMONMUC_DIR"/conf/bundles.gradle updateBundles
         ;;
     remote-shell)
         echo "Using netcat to connect to remote shell at 127.0.0.1:6666"
@@ -315,10 +375,14 @@ case "$1" in
         echo "reaload configuration"
         { echo "emonmuc:reload"; sleep 1; } | telnet localhost 6666
         ;;
+    install)
+        install $*
+        ;;
     *)
-        echo "Usage: emonmuc {start|stop|restart|reload|update-bundles|remote-shell}"
+        echo "Usage: emonmuc {start|stop|restart|reload|update|update-bundles|remote-shell|install}"
         exit 1
         ;;
 esac
 
 exit 0
+

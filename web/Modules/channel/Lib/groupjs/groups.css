@@ -118,10 +118,13 @@
     opacity: 0.666;
 }
 .group-body .group-item .group-select {
-    width: 14px;
     padding-left: 12px;
     padding-right: 12px;
     text-align: center;
+}
+.group-body .group-item .group-select input[type="checkbox"] {
+    width: 14px;
+    margin: 14px 0px;
 }
 .group-body .alert {
     margin: 5px;

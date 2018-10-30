@@ -5,6 +5,6 @@ $schema['muc'] = array(
     'userid' => array('type' => 'int(11)'),
     'type' => array('type' => 'text'),
     'address' => array('type' => 'text'),
-    'description' => array('type' => 'text','default'=>''),
+    'description' => array('type' => 'text'),
     'password' => array('type' => 'varchar(64)')
 );
