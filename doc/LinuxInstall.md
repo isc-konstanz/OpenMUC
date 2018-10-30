@@ -26,9 +26,8 @@ sudo mkdir -p /var/{lib,run}/emonmuc /var/log/emoncms
 sudo chown pi /var/{lib,run}/emonmuc /var/log/emoncms
 ~~~
 
-Now, the emonmuc application can be installed either via git or simply copied in a subdirection */opt/emonmuc*.
-
-Git is a source code management and revision control system but at this stage it is just used to download and update the emoncms application. After downloading, the right permissions need to be set:
+Now, the framework can be downloaded either via git or simply copied into a directory like `/opt/emonmuc`.  
+Git is a source code management and revision control system, but here it is used to download and update the emonmuc application. After downloading, the right permissions need to be set:
 
 ~~~
 sudo git clone -b stable https://github.com/isc-konstanz/emonmuc.git /opt/emonmuc
@@ -42,7 +41,6 @@ sudo chown www-data -R /opt/emonmuc/web
 To provide the comfortable starting, stopping or automatic execution at boot, a systemd service is provided to install:
 
 ~~~
-sudo chmod ugo+x /opt/emonmuc/bin/emonmuc
 sudo ln -s /opt/emonmuc/lib/systemd/emonmuc.service /lib/systemd/system/emonmuc.service
 sudo systemctl enable emonmuc.service
 ~~~
@@ -114,6 +112,7 @@ Several drivers can be enabled at once, while each needs to be selected individu
   - **csv**: Read CSV files
   - **dlms**: DLMS/COSEM
   - **ehz**: eHz
+  - **homematic-cc1101**: [HomeMatic (CC1101)](https://github.com/isc-konstanz/OpenHomeMatic)
   - **iec60870**: IEC 60870-5-104
   - **iec61850**: IEC 61850
   - **iec62056p21**: IEC 62056-21
@@ -121,17 +120,13 @@ Several drivers can be enabled at once, while each needs to be selected individu
   - **mbus**: M-Bus (wired)
   - **wmbus**: M-Bus (wireless)
   - **modbus**: Modbus
+  - **pcharge**: [P-CHARGE](https://github.com/isc-konstanz/OpenPCharge)
   - **rpi-gpio**: GPIO (Raspberry Pi)
   - **rpi-w1**: 1-Wire (Raspberry Pi)
   - **snmp**: SNMP
+  - **solaredge**: [SolarEdge API](https://github.com/isc-konstanz/OpenSolarEdge)
 
 Details about most drivers and specific information about their usage and configuration may be found in the [OpenMUC User Guide](https://www.openmuc.org/openmuc/user-guide/).
-
-Additionally, external communication protocols may be installed separately:
-
-  - **homematic-cc1101**: [HomeMatic (CC1101)](https://github.com/isc-konstanz/OpenHomeMatic)
-  - **pcharge**: [P-CHARGE](https://github.com/isc-konstanz/OpenPCharge)
-  - **solaredge**: [SolarEdge API](https://github.com/isc-konstanz/OpenSolarEdge)
 
 
 ## 2.2 Emoncms modules
