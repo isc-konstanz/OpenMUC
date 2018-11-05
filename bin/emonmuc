@@ -10,379 +10,232 @@ PID_FILE=/var/run/emonmuc/emonmuc.pid
 #ERR_FILE=/var/log/emonmuc/emonmuc.out
 ERR_FILE=/dev/null
 
-# Configure location and authorization options to install and
-# register the framework to the emoncms webserver
-EMONCMS_DIR="/var/www/html/emoncms"
-EMONCMS_USER="www-data"
-EMONMUC_PORT=8080
-
 # Optionally set the location of the emonmuc framework. If the
 # variable is not set, it is assumed that this script is located
 # within the "bin" folder of the emonmuc framework folder.
 #EMONMUC_DIR="/path/to/emonmuc/"
 
 
-find_home_dir()
-{
-    # Attempt to set EMONMUC_DIR
-    # Resolve links: $0 may be a link
-    PRG="$0"
-    # Need this for relative symlinks.
-    while [ -h "$PRG" ] ; do
-        ls=`ls -ld "$PRG"`
-        link=`expr "$ls" : '.*-> \(.*\)$'`
-        if expr "$link" : '/.*' > /dev/null; then
-            PRG="$link"
-        else
-            PRG=`dirname "$PRG"`"/$link"
-        fi
-    done
-    SAVED="`pwd`"
-    cd "`dirname \"$PRG\"`/.." >/dev/null
-    EMONMUC_DIR="`pwd -P`"
-    cd "$SAVED" >/dev/null
+find_home_dir() {
+  # Attempt to set EMONMUC_DIR
+  # Resolve links: $0 may be a link
+  PRG="$0"
+  # Need this for relative symlinks.
+  while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+      PRG="$link"
+    else
+      PRG=`dirname "$PRG"`"/$link"
+    fi
+  done
+  SAVED="`pwd`"
+  cd "`dirname \"$PRG\"`/.." >/dev/null
+  EMONMUC_DIR="`pwd -P`"
+  cd "$SAVED" >/dev/null
 }
 
 if [ -z ${EMONMUC_DIR+x} ]; then
-    find_home_dir
+  find_home_dir
 fi
 cd "$EMONMUC_DIR"
 
 EMONMUC_USER=`stat -c "%U" bin/emonmuc`
 
-find_gradle() {
-    if hash gradle 2>/dev/null; then
-        GRADLE="gradle"
-    else
-        GRADLE="$EMONMUC_DIR/gradlew"
-    fi
-}
-
-find_gradle
-
 # If root change user to owner of this script
 if [ $UID -eq 0 ] ; then
-    if [ "$EMONMUC_USER" != "root" ] && [ "$1" != "install" ]; then
-        echo "Executed as root, will run as owner of this script: $EMONMUC_USER"
-        exec sudo -u $EMONMUC_USER bin/emonmuc "$@"
-    fi
-elif [ "$1" == "install" ];  then
-    echo "Please make sure to run the emonmuc installation as root user"
-    exit 1
+  if [ "$EMONMUC_USER" != "root" ]; then
+    echo "Executed as root, will run as owner of this script: $EMONMUC_USER"
+    exec sudo -u $EMONMUC_USER bin/emonmuc "$@"
+  fi
 fi
 
 # Determine the Java command to use to start the JVM.
-if [ -n "$JAVA_HOME" ] ; then
-    if [ -x "$JAVA_HOME/jre/sh/java" ]; then
-        # IBM's JDK on AIX uses strange locations for the executables
-        JAVA_CMD="$JAVA_HOME/jre/sh/java"
+# if [ -n "$JAVA_HOME" ] ; then
+  # if [ -x "$JAVA_HOME/jre/sh/java" ]; then
+    # # IBM's JDK on AIX uses strange locations for the executables
+    # JAVA_CMD="$JAVA_HOME/jre/sh/java"
+  # else
+    # JAVA_CMD="$JAVA_HOME/bin/java"
+  # fi
+  # if [ ! -x "$JAVA_CMD" ] ; then
+    # echo "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+# Please set the JAVA_HOME variable in your environment to match the
+# location of your Java installation."
+    # exit 1
+  # fi
+# else
+  # JAVA_CMD="java"
+  # type java >/dev/null 2>&1 || { echo "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+# Please set the JAVA_HOME variable in your environment to match the
+# location of your Java installation."; exit 1; }
+# fi
+
+start() {
+  if [ -f $PID_FILE ]; then
+    if ps -p `cat $PID_FILE` > /dev/null
+    then
+      echo "EmonMUC is already running. Stop it first before running EmonMUC again."
+      exit 2
     else
-        JAVA_CMD="$JAVA_HOME/bin/java"
+      rm -f $PID_FILE
     fi
-    if [ ! -x "$JAVA_CMD" ] ; then
-        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+  fi
 
-Please set the JAVA_HOME variable in your environment to match the
-location of your Java installation."
-    fi
-else
-    JAVA_CMD="java"
-    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+  if [ -e "$EMONMUC_DIR"/conf/bundles.conf ] ; then
+    while IFS= read -r line
+    do
+      ln -sf $line 2>/dev/null
+    done < "$EMONMUC_DIR"/conf/bundles.conf
+  fi
 
-Please set the JAVA_HOME variable in your environment to match the
-location of your Java installation."
-fi
+  echo -e "\e[96m\e[1m$(cat $EMONMUC_DIR/lib/framework/welcome.txt)\e[0m"
 
-install() {
-    API_KEY=""
-    while [[ $# -gt 0 ]]; do
-    case "$1" in
-        -d|--dir)
-        EMONCMS_DIR="$2"
-        shift
-        shift
-        ;;
-        -a|--apikey)
-        API_KEY="$2"
-        shift
-        shift
-        ;;
-        *)
-        echo "Usage: emonmuc install [-d|--dir][-a|--apikey]"
-        exit 1
-        ;;
-    esac
-    done
+  if [ "$2" != "-fg" ]
+  then
+    echo "Starting in background. To start EmonMUC in foreground run this script with the -fg flag."
+    # Option: -Dgosh.args=--nointeractive is necessary for running emonmuc in background
+    exec "$JAVA_CMD" $JVM_OPTS -Dgosh.args=--nointeractive -jar "$EMONMUC_DIR"/bin/felix.jar >"$ERR_FILE" 2>&1 &
+  else
+    exec "$JAVA_CMD" $JVM_OPTS -jar "$EMONMUC_DIR"/bin/felix.jar
+  fi
 
-    mkdir -p /var/{lib,run}/emonmuc /var/log/emoncms
-    chown $EMONMUC_USER /var/{lib,run}/emonmuc /var/log/emoncms
-    chown $EMONCMS_USER -R $EMONMUC_DIR/web
-
-    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Modules/channel $EMONCMS_DIR/Modules/
-    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Modules/muc $EMONCMS_DIR/Modules/
-    sudo -u $EMONCMS_USER ln -sf $EMONMUC_DIR/web/Theme/seal $EMONCMS_DIR/Theme/
-
-    ln -sf $EMONMUC_DIR/bin/emonmuc /usr/local/bin/emonmuc
-    ln -sf $EMONMUC_DIR/lib/systemd/emonmuc.service /lib/systemd/system/emonmuc.service
-    echo "d /var/run/emonmuc 0755 $EMONMUC_USER root -" | sudo tee /usr/lib/tmpfiles.d/emonmuc.conf  >/dev/null 2>&1
-
-    systemctl enable emonmuc.service
-    systemctl start emonmuc.service
-    while ! netcat -z localhost $EMONMUC_PORT; do
-        sleep 0.1
-    done
-
-    php $EMONMUC_DIR/lib/upgrade.php --dir $EMONCMS_DIR
-    php $EMONMUC_DIR/lib/setup.php --dir $EMONCMS_DIR --apikey $API_KEY
-    chown $EMONMUC_USER -R $EMONMUC_DIR/conf
-
-    systemctl restart emonmuc.service
+  if [ $? = 0 ]; then
+    # save PID of the emonmuc background process
+    echo $! > $PID_FILE
+    exit 0;
+  else
+    exit 1;
+  fi
+  echo "done"
 }
 
-start_emonmuc() {
-    if [ -f $PID_FILE ]; then
-        if ps -p `cat $PID_FILE` > /dev/null
-        then
-            echo "EmonMUC is already running. Stop it first before running EmonMUC again."
-            exit 2
-        else
-            rm -f $PID_FILE
-        fi
-    fi
-
-    if [ -e "$EMONMUC_DIR"/conf/bundles.conf ] ; then
-        while IFS= read -r line
-        do
-            ln -sf $line 2>/dev/null
-        done < "$EMONMUC_DIR"/conf/bundles.conf
-    fi
-
-    echo -e "\e[96m\e[1m$(cat $EMONMUC_DIR/lib/framework/welcome.txt)\e[0m"
-
-    if [ "$2" != "-fg" ]
-    then
-        echo "Starting in background. To start EmonMUC in foreground run this script with the -fg flag."
-        # Option: -Dgosh.args=--nointeractive is necessary for running emonmuc in background
-        exec "$JAVA_CMD" $JVM_OPTS -Dgosh.args=--nointeractive -jar "$EMONMUC_DIR"/lib/felix.jar >"$ERR_FILE" 2>&1 &
-    else
-        exec "$JAVA_CMD" $JVM_OPTS -jar "$EMONMUC_DIR"/lib/felix.jar
-    fi
-
-    if [ $? = 0 ]; then
-        # save PID of the emonmuc background process
-        echo $! > $PID_FILE
-        exit 0;
-    else
-        exit 1;
-    fi
-    echo "done"
+stop() {
+  echo -n "Stopping EmonMUC"
+  terminate
+  RET_STATUS=$?
+  case "$RET_STATUS" in
+    0)
+      echo "done"
+      exit 0
+      ;;
+    1)
+    echo "No EmonMUC process is running"
+      exit 1
+      ;;
+    2)
+      echo "Unable to stop EmonMUC, try -f flag to kill by brute force"
+      exit 2
+      ;;
+    3)
+      echo "Unable to stop EmonMUC, user has no permission to stop process."
+      exit 3
+      ;;
+  esac
 }
 
-stop_emonmuc() {
-    echo -n "Stopping EmonMUC"
-        do_stop
-    RET_STATUS=$?
-    echo ""
-        case "$RET_STATUS" in
-                0)
-            echo "done"
-                        exit 0
-                ;;
-                1)
-            echo "No EmonMUC process is running"
-                        exit 1
-                ;;
-                2)
-            echo "Unable to stop EmonMUC, try -f flag to kill by brute force"
-                        exit 2
-                ;;
-                3)
-            echo "Unable to stop EmonMUC, user has no permission to stop process."
-                        exit 3
-                ;;                        
+terminate() {
+    # Return
+    #   0 if daemon has been stopped
+    #   1 if daemon was not running
+    #   2 if daemon could not be stopped (likely because kill level was too low)
+    #   3 if user has no right to stop the daemon
 
-    esac
-}
+  if [ ! -e $PID_FILE ]; then
+    return 1
+  fi
 
-#
-# Function that stops the daemon/service
-#
-do_stop()
-{
-        # Return
-        #   0 if daemon has been stopped
-        #   1 if daemon was not running
-        #   2 if daemon could not be stopped (likely because kill level was too low)
-        #   3 if user has no right to stop the daemon
+  #TODO check if PID from file matches a java felix process
 
-    if [ ! -e $PID_FILE ]; then
-        return 1
-    fi
+  TMP_PID=`cat $PID_FILE`
 
-    #TODO check if PID from file matches a java felix process
-
-    TMP_PID=`cat $PID_FILE`
-
-    if ! ps -p "${TMP_PID}" >/dev/null 2>&1;
-    then
-        rm -f $PID_FILE
-        return 1
-    fi
-    
-    if ! kill -0 "${TMP_PID}" >/dev/null 2>&1;
-    then
-        return 3
-    fi
-    
-    if [ "$2" = "-f" ]
-    then
-        kill -9 $TMP_PID >/dev/null 2>&1
-        RET_STATUS=$?
-    else
-        kill $TMP_PID >/dev/null 2>&1
-        RET_STATUS=$?
-    fi
-
-    if [ $RET_STATUS -ne 0 ]; then
-        return 2
-    fi
-
-
-    local i=0        
-        while kill -0 "${TMP_PID}" 2> /dev/null;  do
-            if [ $i = '5' ]; then
-                return 2
-            fi
-            echo -n "."
-            sleep 1
-            i=$(($i+1))
-        done
-
+  if ! ps -p "${TMP_PID}" >/dev/null 2>&1;
+  then
     rm -f $PID_FILE
-    return 0
+    return 1
+  fi
+  
+  if ! kill -0 "${TMP_PID}" >/dev/null 2>&1;
+  then
+    return 3
+  fi
+  
+  if [ "$2" = "-f" ]
+  then
+    kill -9 $TMP_PID >/dev/null 2>&1
+    RET_STATUS=$?
+  else
+    kill $TMP_PID >/dev/null 2>&1
+    RET_STATUS=$?
+  fi
+
+  if [ $RET_STATUS -ne 0 ]; then
+    return 2
+  fi
+
+  local i=0    
+    while kill -0 "${TMP_PID}" 2> /dev/null;  do
+      if [ $i = '5' ]; then
+        return 2
+      fi
+      echo -n "."
+      sleep 1
+      i=$(($i+1))
+    done
+
+  rm -f $PID_FILE
+  return 0
 }
 
-enable_bundle() {
-    case "$2" in
-        app)
-            echo "Enabling app $3."
-            echo "$EMONMUC_DIR/bundles-available/openmuc-app-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-app-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
-            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-app-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-app-$3.jar
-            ;;
-        datalogger)
-            echo "Enabling datalogger $3."
-            echo "$EMONMUC_DIR/bundles-available/openmuc-datalogger-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-datalogger-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
-            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-datalogger-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-datalogger-$3.jar
-            ;;
-        driver)
-            echo "Enabling driver $3."
-            echo "$EMONMUC_DIR/bundles-available/openmuc-driver-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-driver-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
-            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-driver-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-driver-$3.jar
-            ;;
-        server)
-            echo "Enabling server $3."
-            echo "$EMONMUC_DIR/bundles-available/openmuc-server-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-server-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
-            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-server-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-server-$3.jar
-            ;;
-        webui)
-            echo "Enabling webui bundle $3."
-            echo "$EMONMUC_DIR/bundles-available/openmuc-webui-$3-*.jar $EMONMUC_DIR/bundles-enabled/openmuc-webui-$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
-            ln -sf "$EMONMUC_DIR"/bundles-available/openmuc-webui-$3-*.jar "$EMONMUC_DIR"/bundles-enabled/openmuc-webui-$3.jar
-            ;;
-        *)
-            echo "Enabling bundle $2."
-            echo "$3 $EMONMUC_DIR/bundles-enabled/$3.jar" >> "$EMONMUC_DIR"/conf/bundles.conf
-            ln -sf $3 "$EMONMUC_DIR"/bundles-enabled/$3.jar
-            ;;
-    esac
+bundles() {
+  source $EMONMUC_DIR/lib/framework/bundles.sh
+  if [ "$1" == "update" ]; then
+    install_framework
 
-    echo "To start the new bundle, you need to run:"
-    echo "  systemctl restart emonmuc"
-}
+  elif [ $# -gt 1 ]; then
+    for bundle in "${@:2}"; do
+      "$1_bundle" "$bundle"
+    done
+  else
+    echo "Specify one or more bundles to be installed"
+    exit 1
+  fi
 
-disable_bundle() {
-    case "$2" in
-        app)
-            echo "Disabling app $3."
-            sed -i "/openmuc-app-$3/d" "$EMONMUC_DIR"/conf/bundles.conf
-            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-app-$3.jar
-            ;;
-        datalogger)
-            echo "Disabling datalogger $3."
-            sed -i "/openmuc-datalogger-$3/d" "$EMONMUC_DIR"/conf/bundles.conf
-            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-datalogger-$3.jar
-            ;;
-        driver)
-            echo "Disabling driver $3."
-            sed -i "/openmuc-driver-$3/d" "$EMONMUC_DIR"/conf/bundles.conf
-            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-driver-$3.jar
-            ;;
-        server)
-            echo "Disabling server $3."
-            sed -i "/openmuc-server-$3/d" "$EMONMUC_DIR"/conf/bundles.conf
-            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-server-$3.jar
-           ;;
-        webui)
-            echo "Disabling webui bundle $3."
-            sed -i "/openmuc-webui-$2/d" "$EMONMUC_DIR"/conf/bundles.conf
-            rm -f "$EMONMUC_DIR"/bundles-enabled/openmuc-webui-$3.jar
-            ;;
-        *)
-            echo "Disabling bundle $3."
-            sed -i "/$2/d" "$EMONMUC_DIR"/conf/bundles.conf
-            rm -f "$EMONMUC_DIR"/bundles-enabled/$3.jar
-            ;;
-    esac
-
-    echo "To remove the bundle, you need to run:"
-    echo "  systemctl restart emonmuc"
+  echo "For the changes to take effect, please restart the framework:"
+  echo "  systemctl restart emonmuc"
 }
 
 case "$1" in
-    start)
-        start_emonmuc $*
-        ;;
-    stop)
-        stop_emonmuc
-        ;;
-    restart)
-        stop_emonmuc
-        sleep 10
-        start_emonmuc $*
-        ;;
-    enable)
-        enable_bundle $*
-        ;;
-    disable)
-        disable_bundle $*
-        ;;
-    update)
-        echo "Not yet implemented"
-        ;;
-    update-bundles)
-        if [ "$2" = "-i" ]
-        then
-            eval $GRADLE -p "$EMONMUC_DIR" install
-        fi
-        eval $GRADLE -b "$EMONMUC_DIR"/conf/bundles.gradle updateBundles
-        ;;
-    remote-shell)
-        echo "Using netcat to connect to remote shell at 127.0.0.1:6666"
-        echo "Press ctrl+d to close connection"
-        exec netcat 127.0.0.1 6666
-        ;;
-    reload)
-        echo "reaload configuration"
-        { echo "emonmuc:reload"; sleep 1; } | telnet localhost 6666
-        ;;
-    install)
-        install $*
-        ;;
-    *)
-        echo "Usage: emonmuc {start|stop|restart|reload|update|update-bundles|remote-shell|install}"
-        exit 1
-        ;;
+  start)
+    start $@
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    stop
+    sleep 10
+    start $@
+    ;;
+  reload)
+    echo "Reaload configuration"
+    { echo "emonmuc:reload"; sleep 1; } | nc 127.0.0.1 6666
+    ;;
+  update | install |remove)
+    bundles $@
+    ;;
+  shell)
+    echo "Using nc to connect to remote shell at 127.0.0.1:6666"
+    echo "Press ctrl+d to close connection"
+    exec nc 127.0.0.1 6666
+    ;;
+  *)
+    echo "Synopsis: emonmuc {start|stop|restart|reload|update|install|remove|shell}"
+    exit 1
+    ;;
 esac
 
 exit 0
-

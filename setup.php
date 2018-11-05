@@ -1,7 +1,9 @@
 <?php
-require_once dirname(__FILE__)."/emoncms.php";
+require_once dirname(__FILE__)."/lib/emoncms/core.php";
 require_once "Modules/muc/muc_model.php";
 require_once "Modules/user/user_model.php";
+require_once "Lib/dbschemasetup.php";
+db_schema_setup($mysqli,load_db_schema(),true);
 $ctrl = new Controller($mysqli,$redis);
 $user = new User($mysqli,$redis);
 
