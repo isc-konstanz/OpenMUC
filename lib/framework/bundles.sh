@@ -1,6 +1,6 @@
 #!/bin/bash
 #Description: Setup script to install EmonMUC bundles
-EMONMUC_VERSION="3.0.0"
+EMONMUC_VERSION="0.17.1"
 
 TMP_DIR="/var/tmp/emonmuc"
 
