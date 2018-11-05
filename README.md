@@ -14,23 +14,7 @@ This project is developed as an extension to [emoncms](https://emoncms.org/) and
 
 - **Modularity:** Drivers, data loggers etc. are all individual components. By selecting only the components you need you can create a very light weight system.
 
-- **Drivers:** Out of the box support for several popular communication protocols
-
-    - CSV
-    - DLMS/COSEM
-    - eHz
-    - IEC 60870-5-104
-    - IEC 61850
-    - IEC 62056-21
-    - [HomeMatic (CC1101)](https://github.com/isc-konstanz/OpenHomeMatic)
-    - KNX
-    - M-Bus (Wired and wireless)
-    - Modbus (RTU and TCP/IP)
-    - [P-CHARGE](https://github.com/isc-konstanz/OpenPCharge)
-    - 1-Wire (Raspberry Pi)
-    - GPIO (Raspberry Pi)
-    - SNMP
-    - [SolarEdge API](https://github.com/isc-konstanz/OpenSolarEdge)
+- **Drivers:** With a default installation, support for several popular communication protocols, e.g. Modbus TCP/IP and RTU.
 
 - **Embedded systems:** The framework is designed to run on low-power embedded devices. It is currently being used on embedded x86 and ARM systems. Because OpenMUC is based on Java and OSGi it is platform independent.
 
@@ -39,7 +23,7 @@ This project is developed as an extension to [emoncms](https://emoncms.org/) and
 
 # Installation
 
-These setup instructions were documented for Debian Linux based platforms, specifically *Raspbian Stretch*, but may work for other Linux systems without many adjustments. Further guides may follow in the future.
+These setup instructions were documented for Debian Linux based platforms, specifically for a user *pi* on *Raspbian Stretch*, but may work for other Linux systems with slight adjustments to the setup script. Further guides may follow in the future.
 
 First, the framework can be downloaded either via git or simply copied into a directory like `/opt/emonmuc`.  
 Git is a source code management and revision control system, but here it is used to download and update the emonmuc application. After downloading, the right permissions need to be set:
@@ -64,12 +48,54 @@ A more detailed installation guide, containing separate steps executed in the se
 - [Ubuntu / Debian Linux via git](doc/LinuxInstall.md)
 
 
+## Drivers
+
+With a default installation, no drivers are enabled and need to be installed separately. As a first step, a set of protocol drivers ought to be used should be selected.  
+This can be done with their unique ID, e.g. to install the **CSV** driver:
+
+~~~
+emonmuc install csv
+~~~
+
+To disable the driver, use
+
+~~~
+emonmuc remove csv
+~~~
+
+Several drivers can be enabled at once, while each needs to be selected individually. A list of possible integrated drivers are:
+
+  - **csv**: Read CSV files
+  - **dlms**: [DLMS/COSEM](https://www.openmuc.org/openmuc/user-guide/#_dlms_cosem)
+  - **ehz**: [eHz for SML and IEC 62056-21](https://www.openmuc.org/openmuc/user-guide/#_ehz)
+  - **homematic-cc1101**: [HomeMatic (CC1101)](https://github.com/isc-konstanz/OpenHomeMatic)
+  - **iec60870**: [IEC 60870-5-104](https://www.openmuc.org/openmuc/user-guide/#_iec_60870_5_104)
+  - **iec61850**: [IEC 61850](https://www.openmuc.org/openmuc/user-guide/#_iec_61850)
+  - **iec62056p21**: [IEC 62056 part 21](https://www.openmuc.org/openmuc/user-guide/#_iec_62056_part_21)
+  - **knx**: [KNX](https://www.openmuc.org/openmuc/user-guide/#_knx)
+  - **mbus**: [M-Bus (Wired)](https://www.openmuc.org/openmuc/user-guide/#_m_bus_wired)
+  - **wmbus**: [M-Bus (Wireless)](https://www.openmuc.org/openmuc/user-guide/#_m_bus_wireless)
+  - **modbus**: [Modbus (RTU and TCP/IP)](https://www.openmuc.org/openmuc/user-guide/#_modbus)
+  - **pcharge**: [P-CHARGE](https://github.com/isc-konstanz/OpenPCharge)
+  - **rpi-gpio**: GPIO (Raspberry Pi)
+  - **rpi-w1**: 1-Wire (Raspberry Pi)
+  - **snmp**: [SNMP](https://www.openmuc.org/openmuc/user-guide/#_snmp)
+  - **solaredge**: [SolarEdge API](https://github.com/isc-konstanz/OpenSolarEdge)
+
+Details about drivers and specific information about their usage and configuration may be found by clicking corresponding links or for most of them in the [OpenMUC User Guide](https://www.openmuc.org/openmuc/user-guide/).
+
+
 ----------
 
 # Guides
 
 With the system being prepared, some first steps can be taken to learn about the features of emonmuc.  
 For this purpose, a [First Steps guide](doc/FirstSteps.md) was documented to be followed.
+
+To get accustomed with the some of the drivers or the general emonmuc framework, a set of specified guides were written:
+
+  - [Switching Raspberry Pi GPIOs](doc/FirstStepsGpio.md)
+  - [Scanning HomeMatic Smart Plugs](https://github.com/isc-konstanz/OpenHomeMatic/blob/master/doc/FirstSteps.md)
 
 
 ----------

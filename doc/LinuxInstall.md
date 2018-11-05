@@ -90,44 +90,7 @@ emonmuc start -fg
 Further, the script allows the configuration of apps, drivers, or other bundles, registered to the framework.
 
 
-### 2.2.1 Protocol drivers
-
-By default, no drivers are enabled. As a first step, a set of protocol drivers ought to be used should be selected.  
-This can be done with their unique ID, e.g. to enable the **CSV** driver:
-
-~~~
-emonmuc enable driver csv
-~~~
-
-To disable the driver, use
-
-~~~
-emonmuc disable driver csv
-~~~
-
-Several drivers can be enabled at once, while each needs to be selected individually. A list of possible integrated drivers are:
-
-  - **csv**: Read CSV files
-  - **dlms**: DLMS/COSEM
-  - **ehz**: eHz
-  - **homematic-cc1101**: [HomeMatic (CC1101)](https://github.com/isc-konstanz/OpenHomeMatic)
-  - **iec60870**: IEC 60870-5-104
-  - **iec61850**: IEC 61850
-  - **iec62056p21**: IEC 62056-21
-  - **knx**: KNX
-  - **mbus**: M-Bus (wired)
-  - **wmbus**: M-Bus (wireless)
-  - **modbus**: Modbus
-  - **pcharge**: [P-CHARGE](https://github.com/isc-konstanz/OpenPCharge)
-  - **rpi-gpio**: GPIO (Raspberry Pi)
-  - **rpi-w1**: 1-Wire (Raspberry Pi)
-  - **snmp**: SNMP
-  - **solaredge**: [SolarEdge API](https://github.com/isc-konstanz/OpenSolarEdge)
-
-Details about most drivers and specific information about their usage and configuration may be found in the [OpenMUC User Guide](https://www.openmuc.org/openmuc/user-guide/).
-
-
-## 2.2 Emoncms modules
+## 2.3 Emoncms modules
 
 To enable the comfortable configuration of e.g. metering devices for enabled protocol drivers via emoncms, the designated emoncms module needs to be linked to the emoncms modules dir
 
@@ -140,7 +103,7 @@ sudo -u www-data ln -s /opt/emonmuc/web/Modules/ /var/www/emoncms/Modules/channe
 **Check for Database upates in the Administration pane, for the necessary tables to be created**
 
 
-## 2.1 Emonmuc settings
+## 2.4 Emonmuc settings
 
 If emonmuc was installed in a custom directory, its location should be configured in the emoncms settings. Open `/var/www/emoncms/settings.php` in an editor and add the lines, pointing to the specific location: 
    >     // Emonmuc module
@@ -174,7 +137,7 @@ To do this, **uncomment the lines** related to authorization and authentication,
 
 # 3 Setup
 
-With both components installed and running, the OpenMUC framework needs to be registered to the emoncms user. This can be done in the Controllers page, accessible at **Setup->Channels->Controller** from the menu.
+With both components installed and running, the OpenMUC framework needs to be registered to the emoncms user. This can be done in the **Controllers** page, accessible at the users **My Account** from the menu.
 
 ![emonmuc user](img/emonmuc-user.jpg)
 
