@@ -65,8 +65,6 @@ download_emonmuc() {
 install emonmuc() {
   echo "Installing emonmuc framework"
 
-  apt-get install -y -qq unzip nc
-
   mkdir -p /var/{lib,run}/emonmuc /var/log/emoncms
   chown $EMONMUC_USER /var/{lib,run}/emonmuc /var/log/emoncms
   chown $EMONCMS_USER -R $EMONMUC_DIR/web

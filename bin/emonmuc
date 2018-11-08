@@ -52,27 +52,27 @@ if [ $UID -eq 0 ] ; then
 fi
 
 # Determine the Java command to use to start the JVM.
-# if [ -n "$JAVA_HOME" ] ; then
-  # if [ -x "$JAVA_HOME/jre/sh/java" ]; then
-    # # IBM's JDK on AIX uses strange locations for the executables
-    # JAVA_CMD="$JAVA_HOME/jre/sh/java"
-  # else
-    # JAVA_CMD="$JAVA_HOME/bin/java"
-  # fi
-  # if [ ! -x "$JAVA_CMD" ] ; then
-    # echo "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+if [ -n "$JAVA_HOME" ] ; then
+  if [ -x "$JAVA_HOME/jre/sh/java" ]; then
+    # IBM's JDK on AIX uses strange locations for the executables
+    JAVA_CMD="$JAVA_HOME/jre/sh/java"
+  else
+    JAVA_CMD="$JAVA_HOME/bin/java"
+  fi
+  if [ ! -x "$JAVA_CMD" ] ; then
+    echo "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
 
-# Please set the JAVA_HOME variable in your environment to match the
-# location of your Java installation."
-    # exit 1
-  # fi
-# else
-  # JAVA_CMD="java"
-  # type java >/dev/null 2>&1 || { echo "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    exit 1
+  fi
+else
+  JAVA_CMD="java"
+  type java >/dev/null 2>&1 || { echo "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
 
-# Please set the JAVA_HOME variable in your environment to match the
-# location of your Java installation."; exit 1; }
-# fi
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."; exit 1; }
+fi
 
 start() {
   if [ -f $PID_FILE ]; then
@@ -83,13 +83,6 @@ start() {
     else
       rm -f $PID_FILE
     fi
-  fi
-
-  if [ -e "$EMONMUC_DIR"/conf/bundles.conf ] ; then
-    while IFS= read -r line
-    do
-      ln -sf $line 2>/dev/null
-    done < "$EMONMUC_DIR"/conf/bundles.conf
   fi
 
   echo -e "\e[96m\e[1m$(cat $EMONMUC_DIR/lib/framework/welcome.txt)\e[0m"
@@ -191,21 +184,21 @@ terminate() {
 }
 
 bundles() {
-  source $EMONMUC_DIR/lib/framework/bundles.sh
+  source "$EMONMUC_DIR"/lib/framework/bundles.sh
   if [ "$1" == "update" ]; then
-    install_framework
+    update
 
   elif [ $# -gt 1 ]; then
     for bundle in "${@:2}"; do
-      "$1_bundle" "$bundle"
+      bundle "$1" "$bundle"
     done
   else
     echo "Specify one or more bundles to be installed"
     exit 1
   fi
 
-  echo "For the changes to take effect, please restart the framework:"
-  echo "  systemctl restart emonmuc"
+  echo "For the changes to take effect, please restart the framework:
+  systemctl restart emonmuc"
 }
 
 case "$1" in
@@ -224,7 +217,7 @@ case "$1" in
     echo "Reaload configuration"
     { echo "emonmuc:reload"; sleep 1; } | nc 127.0.0.1 6666
     ;;
-  update | install |remove)
+  update | install | remove)
     bundles $@
     ;;
   shell)

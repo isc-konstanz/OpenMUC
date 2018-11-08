@@ -3,17 +3,19 @@
 OWNER="isc-konstanz"
 PROJECT="emonjava"
 SERVICE="datalogger"
-BUNDLE="emoncms"
+ID="emoncms"
+
 VERSION="1.1.5"
 
 install() {
   # Verify, if the specific version does exists already
-  if [ ! -f "$EMONMUC_DIR/bundles/openmuc-$SERVICE-$BUNDLE-$VERSION.jar" ]; then
+  if ! installed "openmuc-$SERVICE-$ID" "$VERSION"; then
     remove
-    github_bundle "$OWNER" "$PROJECT" "openmuc-$SERVICE-$BUNDLE" "$VERSION"
+    github "$OWNER" "$PROJECT" "$VERSION"
+    install_bundle "$PROJECT" "openmuc-$SERVICE-$ID" "$VERSION"
   fi
 }
 
 remove() {
-  rm -f "$EMONMUC_DIR/bundles/openmuc-$SERVICE-$BUNDLE"*
+  remove_bundle "openmuc-$SERVICE-$ID"
 }

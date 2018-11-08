@@ -3,16 +3,17 @@
 OWNER="isc-konstanz"
 PROJECT="OpenMUC"
 SERVICE="driver"
-BUNDLE="knx"
+ID="knx"
 
 install() {
   # Verify, if the specific version does exists already
-  if [ ! -f "$EMONMUC_DIR/bundles/openmuc-$SERVICE-$BUNDLE-$EMONMUC_VERSION.jar" ]; then
+  if ! installed "openmuc-$SERVICE-$ID" "$OPENMUC_VERSION"; then
     remove
-    github_bundle "$OWNER" "$PROJECT" "openmuc-$SERVICE-$BUNDLE" "$EMONMUC_VERSION"
+    github "$OWNER" "$PROJECT" "$OPENMUC_VERSION"
+    install_bundle "$PROJECT" "openmuc-$SERVICE-$ID" "$OPENMUC_VERSION"
   fi
 }
 
 remove() {
-  rm -f "$EMONMUC_DIR/bundles/openmuc-$SERVICE-$BUNDLE"*
+  remove_bundle "openmuc-$SERVICE-$ID"
 }
