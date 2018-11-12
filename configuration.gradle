@@ -1,19 +1,29 @@
+
 project.ext {
 
-  cfgVersion = "2.3.2"
-
+  cfgVersion = "0.17.1"
+  
   cfgGroup = "org.openmuc.framework"
 
   cfgCopyDependencies = false
 
   cfgCopyToRoot = true
 
-  javaProjects = subprojects
+  cfgSignPom = true
 
+  cfgRepository = project.properties.sonatypeRepository
+
+  cfgSnapshotRepository = project.properties.sonatypeSnapshotRepository
+
+  cfgRepositoryUser = project.properties.sonatypeUser
+
+  cfgRepositoryPass = project.properties.sonatypePass
+
+  javaProjects = subprojects
+  
   jarDefaultImportPackageVersion = ";version=0"
 
   distributionProjects = javaProjects.findAll {
-    it.getPath() == ":openmuc-app-household" ||
     it.getPath() == ":openmuc-app-simpledemo" ||
     it.getPath() == ":openmuc-core-api" ||
     it.getPath() == ":openmuc-core-datamanager" ||
@@ -31,8 +41,6 @@ project.ext {
     it.getPath() == ":openmuc-driver-mbus" ||
     it.getPath() == ":openmuc-driver-modbus" ||
     it.getPath() == ":openmuc-driver-rest" ||
-    it.getPath() == ":openmuc-driver-rpi-gpio" ||
-    it.getPath() == ":openmuc-driver-rpi-w1" ||
     it.getPath() == ":openmuc-driver-snmp" ||
     it.getPath() == ":openmuc-driver-wmbus" ||
     it.getPath() == ":openmuc-server-restws" ||
@@ -52,6 +60,8 @@ project.ext {
     it.getPath() == ":openmuc-core-spi" ||
     it.getPath() == ":openmuc-webui-spi"
   }
+
+  repositoryProjects = distributionProjects
 
 }
 
@@ -78,23 +88,22 @@ configure(javaProjects) {
 
 }
 
-task bundles {
-  apply from: "./conf/bundles.gradle"
-
+task updateBundles(type:Exec) {
   dependsOn(distributionProjects.install)
-  dependsOn(updateBundles)
+  commandLine "./framework/bin/openmuc", "update-bundles"
 }
 
 tasks.withType(Tar) {
 
-  dependsOn(bundles)
-
+  dependsOn(updateBundles)
+  
   into(project.name) {
 
     from("./") {
       include "build.gradle"
       include "configuration.gradle"
-      include "LICENSE**"
+      include "license/**"
+      include "doc/CHANGELOG.txt"
       include "gradle/wrapper/**"
       include "gradlew"
       include "gradlew.bat"
@@ -102,11 +111,15 @@ tasks.withType(Tar) {
       include "dependencies/**"
       include "src/**"
 
-      include "bin/**"
-      include "bundle-available/**"
-      include "bundle-enabled/**"
-      include "conf/**"
-      include "lib/**"
+      include "framework/felix/**"
+      include "framework/bundle/**"
+      include "framework/conf/**"
+      include "framework/bin/"
+      include "framework/media/README.txt/"
+      include "framework/log/README.txt"
+      include "framework/dependencies/**"
+      include "framework/csv-driver/**"
+      include "framework/README.txt"
 
       exclude "**/projects/**/bin"
       exclude "**/projects/**/build"
@@ -118,6 +131,7 @@ tasks.withType(Tar) {
       for (Project myproject: distributionProjects) {
         include myproject.getProjectDir().toString().substring((int)(getProjectDir().toString().size() + 1)) + "/**";
       }
+
     }
 
     if (name.equals("tar") ){
@@ -129,9 +143,26 @@ tasks.withType(Tar) {
     }
   }
 
+  into(project.name + "/doc/user-guide/") {
+    from("./build/asciidoc/html5/") {
+      include "**"
+    }
+    from("./build/asciidoc/pdf/") {
+      include "*.pdf"
+    }
+  }
+
+  into(project.name + "/framework/media/") {
+    from("./build/asciidoc/pdf/") {
+      include "*.pdf"
+    }
+  }
+
+  
   into(project.name + "/doc/") {
     from("./build/docs/") {
       include "javadoc/**"
     }
   }
+
 }

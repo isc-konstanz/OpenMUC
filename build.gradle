@@ -5,11 +5,33 @@ buildscript {
     }
   }
   dependencies {
+    classpath group: "org.asciidoctor", name: "asciidoctorj-pdf", version: "1.5.0-alpha.16"
     classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:3.5.0"
   }
 }
 
+plugins {
+  id "org.asciidoctor.convert" version "1.5.6"
+}
+
+apply plugin: "org.asciidoctor.convert"
 apply from: "configuration.gradle"
+
+asciidoctor {
+  backends = ["pdf", "html5"]
+  attributes    "stylesheet": "openmuc-asciidoc.css",
+  "toc2": "left",
+  "sampleSrc": file("src/sample/java"),
+  "source-highlighter" : "coderay",
+  "pdf-stylesdir": "./",
+  "pdf-style": "pdf"
+
+  resources {
+    from("$sourceDir") {
+      include "images/**"
+    }
+  }
+}
 
 configure(allprojects) {
   version = cfgVersion
@@ -21,8 +43,11 @@ configure(javaProjects) {
   apply plugin: "eclipse"
   apply plugin: "osgi"
   apply plugin: "maven"
+  apply plugin: "signing"
   apply plugin: "biz.aQute.bnd.builder"
 
+  uploadArchives.enabled = false
+  
   group = cfgGroup
 
   if (!project.properties.containsKey('cfgJavaVersion')) {
@@ -64,7 +89,7 @@ configure(javaProjects) {
       version = project.version.replace("-",".");
     }
   }
-  
+
   task instrument {
     ext.outputDir = buildDir.path + '/classes-instrumented'
     doLast {
@@ -100,6 +125,7 @@ configure(javaProjects) {
     }
   }
   
+  
   task report {
     doLast {
       if (!file(buildDir.path + '/jacoco/tests.exec').exists()) {
@@ -127,7 +153,7 @@ configure(javaProjects) {
   
   report.dependsOn instrument
   report.dependsOn test
-  
+
   task jarAll(type: Copy) {
     dependsOn(configurations.default.getAllArtifacts().getBuildDependencies())
 
@@ -152,11 +178,13 @@ configure(javaProjects) {
       }
     }
   }
-
+  
+  build.dependsOn {asciidoctor}
   build.dependsOn {jarAll}
 
   eclipse.pathVariables([GRADLE_USER_HOME:file(gradle.gradleUserHomeDir)])
   tasks.eclipse.dependsOn(cleanEclipse)
+
 
   task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = "sources"
@@ -176,6 +204,64 @@ configure(javaProjects) {
   javadoc {
     exclude "**/internal/**"
     exclude "**/java-gen/**"
+  }
+}
+
+
+configure(repositoryProjects) {
+
+  uploadArchives.enabled = true
+
+  if (cfgSignPom) {
+    signing {
+      if ( project.hasProperty("signing.keyId") ) {
+        sign configurations.archives
+      }
+    }
+  }
+  
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+
+        if (cfgSignPom) {
+          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        }
+
+        repository(url: cfgRepository) {
+          authentication(userName: cfgRepositoryUser, password: cfgRepositoryPass)
+          if (cfgRepository != null && System.getProperty("https.proxyHost") != null && ((System.getProperty("https.nonProxyHosts") == null) || !cfgRepository.contains(System.getProperty("https.nonProxyHosts")))) {
+            proxy(host: System.getProperty("https.proxyHost"), port:  Integer.parseInt(System.getProperty("https.proxyPort")), type: "https")
+          }
+        }
+        snapshotRepository(url: cfgSnapshotRepository) {
+          authentication(userName: cfgRepositoryUser, password: cfgRepositoryPass)
+          if (cfgSnapshotRepository != null && System.getProperty("https.proxyHost") != null && ((System.getProperty("https.nonProxyHosts") == null) || !cfgSnapshotRepository.contains(System.getProperty("https.nonProxyHosts")))) {
+            proxy(host: System.getProperty("https.proxyHost"), port:  Integer.parseInt(System.getProperty("https.proxyPort")), type: "https")
+          }
+        }
+
+        pom.project {
+          
+          //additional pom information can be found in subproject build.gradle files
+
+          packaging "jar"
+          url "http://www.openmuc.org/"
+
+          scm {
+            url "none"
+            connection "none"
+          }
+
+          developers {
+            developer {
+              id "openmuc"
+              name "OpenMUC Team"
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -214,6 +300,7 @@ task writeSettings {
       else {
         out.write ", ";
       }
+      out.write '"' + myproject.name + '"'
     }
     out .write "\n\n";
 
@@ -238,6 +325,7 @@ tasks.withType(Tar) {
   dependsOn(writeSettings)
   dependsOn(distributionProjects.build)
   dependsOn(javadocAll)
+  dependsOn(asciidoctor)
 
   compression = Compression.GZIP
   
