@@ -179,7 +179,7 @@ configure(javaProjects) {
     }
   }
   
-  build.dependsOn {asciidoctor}
+  //build.dependsOn {asciidoctor}
   build.dependsOn {jarAll}
 
   eclipse.pathVariables([GRADLE_USER_HOME:file(gradle.gradleUserHomeDir)])
@@ -320,25 +320,16 @@ task buildDistProjects {
   dependsOn(distributionProjects.build)
 }
 
-tasks.withType(Tar) {
-
-  dependsOn(writeSettings)
-  dependsOn(distributionProjects.build)
-  dependsOn(javadocAll)
-  dependsOn(asciidoctor)
-
+task (tar, type: Tar) {
+  archiveName = project.name + "-" + project.version + ".tar.gz"
   compression = Compression.GZIP
-  
   destinationDir = file("build/distributions/")
 }
 
-task (tar, type: Tar) {
-  archiveName = project.name + "-" + project.version + ".tgz"
-}
-
-task (tarFull, type: Tar) {
+task release {
+  dependsOn(distributionProjects.build)
+  dependsOn(javadocAll)
   dependsOn(tar)
-  archiveName = project.name + "-" + project.version + "_full.tgz"
 }
 
 subprojects {
