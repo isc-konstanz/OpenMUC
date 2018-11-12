@@ -16,20 +16,7 @@ In summary OpenMUC features the following highlights:
     
 - **Simple and flexible configuration:** All communication and data logging parameters can be dynamically configured through a central file, the framework’s configuration service or a web interface.
 
-- **Communication support:** Out of the box support for several popular communication protocols. New communication protocol drivers can easily be added through a plug-in interface. Existing protocol drivers:  
-
-    - Modbus TCP
-    - IEC 61850
-    - IEC 60870-5-104
-    - DLMS/COSEM
-    - KNX
-    - M-Bus (wired)
-    - wireless M-Bus
-    - eHz meters
-    - IEC 62056-21
-    - REST
-    - SNMP
-    - CSV
+- **Communication support:** Out of the box support for several popular communication protocols. New communication protocol drivers can easily be added through a plug-in interface.
 
 - **Data logging:** Data can be logged in two formats (ASCII & binary). New data loggers can easily be added through a plug-in interface.
 

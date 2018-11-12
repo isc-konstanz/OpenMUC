@@ -3,8 +3,9 @@
 *.ap_
 
 # Generated files
-bin/
 gen/
+bin/
+!/bin/
 
 # Compiled class file
 *.class
@@ -40,10 +41,4 @@ local.properties
 *.gradletasknamecache
 *.gradle/
 build/
-!/build
-/build/*
-!/build/libs-all
-
-# Framework
-felix-cache
-shadow
+/build/
