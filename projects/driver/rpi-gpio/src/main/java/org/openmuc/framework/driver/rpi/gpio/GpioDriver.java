@@ -98,7 +98,7 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
             Pin[] pins = RaspiPin.allPins(board);
             
             logger.info("Scan for {}s of the Raspberry Pi platform: {}", 
-            		mode.name().toLowerCase().replace('_', ' '), board.name().replace('_', ' '));
+                    mode.name().toLowerCase().replace('_', ' '), board.name().replace('_', ' '));
             
             int counter = 1;
             for (Pin pin : pins) {
@@ -152,23 +152,23 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
             
             GpioPinDigital gpioPin = null;
             switch(settings.getPinMode()) {
-            case DIGITAL_INPUT:
-                gpioPin = gpio.provisionDigitalInputPin(pin, settings.getPullResistance());
-                
-                if (settings.isCounter()) {
-                    connection = new EdgeCounter(this, gpioPin, settings.getPullResistance(), settings.getBounceTime());
-                }
-                else {
-                    connection = new InputPin(this, gpioPin);
-                }
-                break;
-            case DIGITAL_OUTPUT:
-                gpioPin = gpio.provisionDigitalOutputPin(pin, settings.getDefaultState());
-
-                connection = new OutputPin(this, gpioPin);
-                break;
-            default:
-                throw new ArgumentSyntaxException("GPIO pins not supported for mode: " + settings.getPinMode());
+                case DIGITAL_INPUT:
+                    gpioPin = gpio.provisionDigitalInputPin(pin, settings.getPullResistance());
+                    
+                    if (settings.isCounter()) {
+                        connection = new EdgeCounter(this, gpioPin, settings.getPullResistance(), settings.getBounceTime());
+                    }
+                    else {
+                        connection = new InputPin(this, gpioPin);
+                    }
+                    break;
+                case DIGITAL_OUTPUT:
+                    gpioPin = gpio.provisionDigitalOutputPin(pin, settings.getDefaultState());
+                    
+                    connection = new OutputPin(this, gpioPin);
+                    break;
+                default:
+                    throw new ArgumentSyntaxException("GPIO pins not supported for mode: " + settings.getPinMode());
             }
             gpioPin.setShutdownOptions(true, settings.getShutdownState(), settings.getShutdownPullResistance());
             
@@ -176,7 +176,7 @@ public class GpioDriver implements DriverService, GpioConnectionCallbacks {
             
             return connection;
 
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             throw new ArgumentSyntaxException("Unable to configure GPIO pin: " + e.getMessage());
         }
     }

@@ -37,7 +37,6 @@ public class Const {
     public static final String ALIAS_CONTROLS = "/rest/controlls";
     public static final String ALIAS_CONNECT = "/rest/connect";
 
-    public static final String REGISTERED = "registered";
     public static final String RUNNING = "running";
     public static final String STATE = "state";
     public static final String RECORD = "record";
@@ -47,7 +46,6 @@ public class Const {
     public static final String FLAG = "flag";
     public static final String VALUE_STRING = "value";
     public static final String CONFIGS = "configs";
-    public static final String DETAILS = "details";
     public static final String INFOS = "infos";
     public static final String SCAN = "scan";
     public static final String WRITE = "write";

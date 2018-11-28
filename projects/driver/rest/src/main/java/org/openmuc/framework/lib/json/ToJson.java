@@ -22,7 +22,6 @@ package org.openmuc.framework.lib.json;
 
 import static org.openmuc.framework.lib.json.Const.VALUE_STRING;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,6 @@ import org.openmuc.framework.config.DeviceConfig;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverConfig;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.TypeConversionException;
@@ -44,17 +42,10 @@ import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.lib.json.rest.objects.RestChannelConfig;
 import org.openmuc.framework.lib.json.rest.objects.RestChannelConfigMapper;
-import org.openmuc.framework.lib.json.rest.objects.RestChannelDetail;
-import org.openmuc.framework.lib.json.rest.objects.RestChannelInfo;
 import org.openmuc.framework.lib.json.rest.objects.RestDeviceConfig;
 import org.openmuc.framework.lib.json.rest.objects.RestDeviceConfigMapper;
-import org.openmuc.framework.lib.json.rest.objects.RestDeviceDetail;
-import org.openmuc.framework.lib.json.rest.objects.RestDeviceInfo;
 import org.openmuc.framework.lib.json.rest.objects.RestDriverConfig;
 import org.openmuc.framework.lib.json.rest.objects.RestDriverConfigMapper;
-import org.openmuc.framework.lib.json.rest.objects.RestDriverDetail;
-import org.openmuc.framework.lib.json.rest.objects.RestDriverInfo;
-import org.openmuc.framework.lib.json.rest.objects.RestDriverSyntax;
 import org.openmuc.framework.lib.json.rest.objects.RestRecord;
 import org.openmuc.framework.lib.json.rest.objects.RestScanProgressInfo;
 import org.openmuc.framework.lib.json.rest.objects.RestUserConfig;
@@ -239,6 +230,16 @@ public class ToJson {
         jsonObject.add(Const.DRIVERS, jsa);
     }
 
+    public void addDeviceList(List<DeviceConfig> deviceConfigList) {
+
+        JsonArray jsa = new JsonArray();
+
+        for (DeviceConfig deviceConfig : deviceConfigList) {
+            jsa.add(gson.toJsonTree(deviceConfig.getId()));
+        }
+        jsonObject.add(Const.DEVICES, jsa);
+    }
+
     public void addChannelList(List<Channel> channelList) {
 
         JsonArray jsa = new JsonArray();
@@ -249,49 +250,9 @@ public class ToJson {
         jsonObject.add(Const.CHANNELS, jsa);
     }
 
-    public void addDriverDescriptionList(List<DriverInfo> infoList) {
+    public void addDriverInfo(DriverInfo driverInfo) {
 
-        JsonArray jsa = new JsonArray();
-
-        for (DriverInfo driverInfo : infoList) {
-            RestDriverInfo restDriverDesc = RestDriverInfo.getRestDriverDescription(driverInfo);
-            jsa.add(gson.toJsonTree(restDriverDesc, RestDriverInfo.class).getAsJsonObject());
-        }
-        jsonObject.add(Const.DRIVERS, jsa);
-    }
-
-    public void addDriverSyntax(DriverInfo driverInfo) {
-
-        RestDriverSyntax restDriverSyntax = RestDriverSyntax.setDriverSyntax(driverInfo);
-        jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverSyntax, RestDriverSyntax.class).getAsJsonObject());
-    }
-
-    public void addDriverInfoFull(DriverInfo driverInfo) throws ParseException, IOException {
-
-        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfoFull(driverInfo);
-        jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
-    }
-
-    public void addDriverInfo(DriverInfo driverInfo) throws ParseException, IOException {
-
-        RestDriverInfo restDriverInfo = RestDriverInfo.getRestDriverInfo(driverInfo);
-        jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
-    }
-
-    public void addDeviceInfo(DriverInfo driverInfo) throws ParseException, IOException {
-
-        RestDeviceInfo restDeviceInfo = RestDeviceInfo.getRestDeviceInfo(driverInfo);
-        restDeviceInfo.setDescription(driverInfo.getDescription());
-        
-        jsonObject.add(Const.INFOS, gson.toJsonTree(restDeviceInfo, RestDeviceInfo.class).getAsJsonObject());
-    }
-
-    public void addChannelInfo(DriverInfo driverInfo) throws ParseException, IOException {
-
-        RestChannelInfo restChannelInfo = RestChannelInfo.getRestChannelInfo(driverInfo);
-        restChannelInfo.setDescription(driverInfo.getDescription());
-        
-        jsonObject.add(Const.INFOS, gson.toJsonTree(restChannelInfo, RestChannelInfo.class).getAsJsonObject());
+        jsonObject.add(Const.INFOS, gson.toJsonTree(driverInfo));
     }
 
     public void addDriverConfig(DriverConfig config) {
@@ -300,97 +261,16 @@ public class ToJson {
         jsonObject.add(Const.CONFIGS, gson.toJsonTree(restConfig, RestDriverConfig.class).getAsJsonObject());
     }
 
-    public void addDriverConfigList(List<DriverConfig> configList) {
-
-        JsonArray jsa = new JsonArray();
-
-        for (DriverConfig driverConfig : configList) {
-            RestDriverConfig restConfig = RestDriverConfigMapper.getRestDriverConfig(driverConfig);
-            jsa.add(gson.toJsonTree(restConfig, RestDriverConfig.class).getAsJsonObject());
-        }
-        jsonObject.add(Const.CONFIGS, jsa);
-    }
-
-    public void addDriverDetail(DriverInfo info, DriverConfig config) {
-
-        RestDriverDetail restDetail = RestDriverDetail.getRestDriverDetail(info, config);
-        jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestDriverDetail.class).getAsJsonObject());
-    }
-
-    public void addDriverDetailList(List<RestDriverDetail> detailList) {
-
-        JsonArray jsa = new JsonArray();
-        
-        for (RestDriverDetail detail : detailList) {
-            jsa.add(gson.toJsonTree(detail, RestDriverDetail.class).getAsJsonObject());
-        }
-        jsonObject.add(Const.DETAILS, jsa);
-    }
-
     public void addDeviceConfig(DeviceConfig config) {
 
         RestDeviceConfig restConfig = RestDeviceConfigMapper.getRestDeviceConfig(config);
         jsonObject.add(Const.CONFIGS, gson.toJsonTree(restConfig, RestDeviceConfig.class).getAsJsonObject());
     }
 
-    public void addDeviceConfigList(List<DeviceConfig> configList) {
-
-        JsonArray jsa = new JsonArray();
-
-        for (DeviceConfig deviceConfig : configList) {
-            RestDeviceConfig restConfig = RestDeviceConfigMapper.getRestDeviceConfig(deviceConfig);
-            jsa.add(gson.toJsonTree(restConfig, RestDeviceConfig.class).getAsJsonObject());
-        }
-        jsonObject.add(Const.CONFIGS, jsa);
-    }
-
-    public void addDeviceDetail(DeviceState state, DeviceConfig config, DriverInfo info) {
-
-        RestDeviceDetail restDetail = RestDeviceDetail.getRestDeviceDetail(state, config, info);
-        jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestDeviceDetail.class).getAsJsonObject());
-    }
-
-    public void addDeviceDetailList(List<RestDeviceDetail> detailList) {
-
-        JsonArray jsa = new JsonArray();
-        
-        for (RestDeviceDetail detail : detailList) {
-            jsa.add(gson.toJsonTree(detail, RestDeviceDetail.class).getAsJsonObject());
-        }
-        jsonObject.add(Const.DETAILS, jsa);
-    }
-
     public void addChannelConfig(ChannelConfig config) {
 
         RestChannelConfig restConfig = RestChannelConfigMapper.getRestChannelConfig(config);
         jsonObject.add(Const.CONFIGS, gson.toJsonTree(restConfig, RestChannelConfig.class).getAsJsonObject());
-    }
-
-    public void addChannelConfigList(List<ChannelConfig> configList) {
-
-        JsonArray jsa = new JsonArray();
-        
-        for (ChannelConfig channelConfig : configList) {
-            RestChannelConfig restConfig = RestChannelConfigMapper.getRestChannelConfig(channelConfig);
-            jsa.add(gson.toJsonTree(restConfig, RestChannelConfig.class).getAsJsonObject());
-        }
-        jsonObject.add(Const.CONFIGS, jsa);
-    }
-
-    public void addChannelDetail(Channel channel, ChannelConfig config) {
-
-        RestChannelDetail restDetail = RestChannelDetail.getRestChannelDetail(channel, config);
-        jsonObject.add(Const.DETAILS, gson.toJsonTree(restDetail, RestChannelDetail.class).getAsJsonObject());
-    }
-
-    public void addChannelDetailList(List<RestChannelDetail> detailList) {
-
-        JsonArray jsa = new JsonArray();
-        
-        for (RestChannelDetail detail : detailList) {
-            jsa.add(gson.toJsonTree(detail, RestChannelDetail.class).getAsJsonObject());
-        }
-        jsonObject.add(Const.DETAILS, jsa);
     }
 
     public void addDeviceScanProgressInfo(RestScanProgressInfo restScanProgressInfo) {
