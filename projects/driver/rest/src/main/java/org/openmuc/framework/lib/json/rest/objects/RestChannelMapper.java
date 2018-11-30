@@ -22,9 +22,81 @@ package org.openmuc.framework.lib.json.rest.objects;
 
 import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.IdCollisionException;
+import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.Value;
+import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
 
-public class RestChannelConfigMapper {
+public class RestChannelMapper {
+
+    public static RestChannel getRestChannel(Channel c) {
+
+        RestChannel rc = new RestChannel();
+        rc.setId(c.getId());
+        if (c.getLatestRecord() != null) {
+            Record r = c.getLatestRecord();
+            
+            RestRecord rr = new RestRecord();
+            rr.setTimestamp(r.getTimestamp());
+            
+            Flag flag = r.getFlag();
+            Value value = r.getValue();
+            if (value != null) {
+                switch (c.getValueType()) {
+                case FLOAT:
+                    if (Float.isInfinite(value.asFloat())) {
+                        flag = Flag.VALUE_IS_INFINITY;
+                    }
+                    else if (Float.isNaN(value.asFloat())) {
+                        flag = Flag.VALUE_IS_NAN;
+                    }
+                    rr.setValue(value.asFloat());
+                    break;
+                case DOUBLE:
+                    if (Double.isInfinite(value.asDouble())) {
+                        flag = Flag.VALUE_IS_INFINITY;
+                    }
+                    else if (Double.isNaN(value.asDouble())) {
+                        flag = Flag.VALUE_IS_NAN;
+                    }
+                    rr.setValue(value.asDouble());
+                    break;
+                case SHORT:
+                    rr.setValue(value.asShort());
+                    break;
+                case INTEGER:
+                    rr.setValue(value.asInt());
+                    break;
+                case LONG:
+                    rr.setValue(value.asLong());
+                    break;
+                case BYTE:
+                    rr.setValue(value.asByte());
+                    break;
+                case BOOLEAN:
+                    rr.setValue(value.asBoolean());
+                    break;
+                case BYTE_ARRAY:
+                    rr.setValue(value.asByteArray());
+                    break;
+                case STRING:
+                    rr.setValue(value.asString());
+                    break;
+                default:
+                    rr.setValue(null);
+                    break;
+                }
+            }
+            else {
+                rr.setValue(null);
+            }
+            rr.setFlag(flag);
+            rc.setRecord(rr);
+        }
+        
+        return rc;
+    }
 
     public static RestChannelConfig getRestChannelConfig(ChannelConfig cc) {
 

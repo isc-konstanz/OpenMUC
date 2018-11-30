@@ -20,11 +20,23 @@
  */
 package org.openmuc.framework.lib.json.rest.objects;
 
+import java.util.List;
+
 import org.openmuc.framework.config.DeviceConfig;
 import org.openmuc.framework.config.IdCollisionException;
+import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
 
-public class RestDeviceConfigMapper {
+public class RestDeviceMapper {
+
+    public static RestDevice getRestDevice(DeviceConfig dc, DeviceState state, List<RestChannel> channels) {
+
+        RestDevice rd = new RestDevice();
+        rd.setId(dc.getId());
+        rd.setState(state);
+        rd.setRecords(channels);
+        return rd;
+    }
 
     public static RestDeviceConfig getRestDeviceConfig(DeviceConfig dc) {
 

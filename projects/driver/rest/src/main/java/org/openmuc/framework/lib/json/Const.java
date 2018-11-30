@@ -47,6 +47,7 @@ public class Const {
     public static final String VALUE_STRING = "value";
     public static final String CONFIGS = "configs";
     public static final String INFOS = "infos";
+    public static final String OPTIONS = "options";
     public static final String SCAN = "scan";
     public static final String WRITE = "write";
     public static final String HISTORY = "history";

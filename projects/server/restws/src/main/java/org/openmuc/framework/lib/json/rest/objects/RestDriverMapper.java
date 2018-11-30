@@ -20,11 +20,16 @@
  */
 package org.openmuc.framework.lib.json.rest.objects;
 
+import java.io.IOException;
+
 import org.openmuc.framework.config.DriverConfig;
+import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.IdCollisionException;
+import org.openmuc.framework.config.ParseException;
+import org.openmuc.framework.config.options.OptionCollection;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
 
-public class RestDriverConfigMapper {
+public class RestDriverMapper {
 
     public static RestDriverConfig getRestDriverConfig(DriverConfig dc) {
 
@@ -55,6 +60,45 @@ public class RestDriverConfigMapper {
                 throw new RestConfigIsNotCorrectException();
             }
         }
+    }
 
+    public static RestDriverInfo getRestDriverDescription(DriverInfo driverInfo) {
+
+        RestDriverInfo restDriverInfo = new RestDriverInfo();
+        restDriverInfo.setId(driverInfo.getId());
+        restDriverInfo.setName(driverInfo.getName());
+        restDriverInfo.setDescription(driverInfo.getDescription());
+        
+        return restDriverInfo;
+    }
+
+    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo) throws ParseException, IOException {
+
+        RestDriverInfo restDriverInfo = new RestDriverInfo();
+        restDriverInfo.setId(driverInfo.getId());
+        restDriverInfo.setName(driverInfo.getName());
+        restDriverInfo.setDescription(driverInfo.getDescription());
+        
+        RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDriverConfig());
+        configs.setSyntax(null);
+        restDriverInfo.setConfigs(configs);
+        
+        return restDriverInfo;
+    }
+
+    public static RestDriverInfo getRestDriverInfoFull(DriverInfo driverInfo) throws ParseException, IOException {
+
+        RestDriverInfo restDriverInfo = new RestDriverInfo();
+        restDriverInfo.setId(driverInfo.getId());
+        restDriverInfo.setName(driverInfo.getName());
+        restDriverInfo.setDescription(driverInfo.getDescription());
+        restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
+        restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
+        
+        RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDriverConfig());
+        configs.setSyntax(null);
+        restDriverInfo.setConfigs(configs);
+        
+        return restDriverInfo;
     }
 }

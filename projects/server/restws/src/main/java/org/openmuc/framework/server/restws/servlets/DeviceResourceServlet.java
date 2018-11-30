@@ -51,7 +51,7 @@ import org.openmuc.framework.lib.json.FromJson;
 import org.openmuc.framework.lib.json.ToJson;
 import org.openmuc.framework.lib.json.exceptions.MissingJsonObjectException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
-import org.openmuc.framework.lib.json.rest.objects.RestDeviceDetail;
+import org.openmuc.framework.lib.json.rest.objects.RestDeviceWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +61,10 @@ import com.google.gson.JsonSyntaxException;
 
 public class DeviceResourceServlet extends GenericServlet {
 
+    private static final String REQUESTED_REST_PATH_IS_NOT_AVAILABLE = "Requested rest path is not available";
+    private static final String REQUESTED_ID_IS_NOT_AVAILABLE = "Requested device is not available";
+    private static final String REST_PATH = " Rest Path = ";
+    private static final String REST_ID = " Device ID = ";
     private static final String APPLICATION_JSON = "application/json";
     private static final long serialVersionUID = 4619892734239871891L;
     private static final Logger logger = LoggerFactory.getLogger(DeviceResourceServlet.class);
@@ -74,291 +78,135 @@ public class DeviceResourceServlet extends GenericServlet {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
 
-        if (pathAndQueryString != null) {
+        if (pathAndQueryString == null) {
+            return;
+        }
 
-            setConfigAccess();
+        setConfigAccess();
 
-            String deviceId, configField;
-            String pathInfo = pathAndQueryString[0];
-            String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            List<String> deviceList = doGetDeviceList();
+        String pathInfo = pathAndQueryString[0];
+        String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
 
-            response.setStatus(HttpServletResponse.SC_OK);
+        response.setStatus(HttpServletResponse.SC_OK);
 
-            ToJson json = new ToJson();
+        ToJson json = new ToJson();
 
-            if (pathInfo.equals("/")) {
-                json.addStringList(Const.DEVICES, deviceList);
-            }
-            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.STATES)) {
-                doGetStateList(json);
-            }
-            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
-                doGetConfigsList(json);
-            }
-            else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.DETAILS)) {
-                doGetDetailsList(json);
+        if (pathInfo.equals("/")) {
+            boolean details = Boolean.parseBoolean(request.getParameter("details"));
+            if (details) {
+                doGetDeviceList(json);
             }
             else {
-                deviceId = pathInfoArray[0].replace("/", "");
-
-                if (deviceList.contains(deviceId)) {
-
-                    List<Channel> deviceChannelList = doGetDeviceChannelList(deviceId);
-                    DeviceState deviceState = configService.getDeviceState(deviceId);
-
-                    if (pathInfoArray.length == 1) {
-                        json.addChannelRecordList(deviceChannelList);
-                        json.addDeviceState(deviceState);
-                    }
-                    else if (pathInfoArray[1].equalsIgnoreCase(Const.STATE)) {
-                        json.addDeviceState(deviceState);
-                    }
-                    else if (pathInfoArray.length > 1 && pathInfoArray[1].equals(Const.CHANNELS)) {
-                        json.addChannelList(deviceChannelList);
-                        json.addDeviceState(deviceState);
-                    }
-                    else if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
-                        doGetConfigs(json, deviceId, response);
-                    }
-                    else if (pathInfoArray.length == 3 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
-                        configField = pathInfoArray[2];
-                        doGetConfigField(json, deviceId, configField, response);
-                    }
-                    else if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.DETAILS)) {
-                        doGetDetails(json, deviceId, response);
-                    }
-                    else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN)) {
-                        String settings = request.getParameter(Const.SETTINGS);
-                        List<ChannelScanInfo> channelScanInfoList = scanForAllChannels(deviceId, settings, response);
-                        json.addChannelScanInfoList(channelScanInfoList);
-                    }
-                    else {
-                        ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                                "Requested rest device is not available, DeviceID = " + deviceId);
-                    }
-                }
-                else {
-                    ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                            "Requested rest device is not available, DeviceID = " + deviceId);
-                }
+                doGetDeviceIdList(json);
             }
-            sendJson(json, response);
         }
+        else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.STATES)) {
+            doGetStateList(json);
+        }
+        else if (pathInfoArray.length == 1 && pathInfoArray[0].equalsIgnoreCase(Const.CONFIGS)) {
+            doGetConfigsList(json);
+        }
+        else {
+            doGetDevice(request, response, pathInfoArray, json);
+        }
+        sendJson(json, response);
     }
 
-    @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType(APPLICATION_JSON);
-        String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+    private void doGetDeviceIdList(ToJson json) throws IOException {
+        List<String> deviceList = getDeviceIdList();
 
-        if (pathAndQueryString != null) {
+        json.addStringList(Const.DEVICES, deviceList);
+    }
 
-            setConfigAccess();
+    private void doGetDeviceList(ToJson json) throws IOException {
+        List<RestDeviceWrapper> deviceList = new LinkedList<RestDeviceWrapper>();
 
-            String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
-            String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            String deviceId = pathInfoArray[0].replace("/", "");
-            FromJson json = new FromJson(ServletLib.getJsonText(request));
+        Collection<DeviceConfig> deviceConfigs = getConfigsList();
+        for (DeviceConfig config : deviceConfigs) {
+            deviceList.add(RestDeviceWrapper.getDevice(config, configService, dataAccess));
+        }
+        json.addDeviceList(deviceList);
+    }
 
+    private void doGetDevice(HttpServletRequest request, HttpServletResponse response, String[] pathInfoArray,
+            ToJson json) throws IOException {
+
+        String deviceId = pathInfoArray[0].replace("/", "");
+
+        List<String> deviceList = getDeviceIdList();
+        if (deviceList.contains(deviceId)) {
             if (pathInfoArray.length == 1) {
-                setAndWriteDeviceConfig(deviceId, response, json, false);
-            }
-            else {
-                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Requested rest path is not available.", " Rest Path = ", request.getPathInfo());
-            }
-
-        }
-    }
-
-    @Override
-    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType(APPLICATION_JSON);
-        String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-
-        if (pathAndQueryString != null) {
-
-            setConfigAccess();
-
-            String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
-            String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            String deviceId = pathInfoArray[0].replace("/", "");
-            FromJson json = new FromJson(ServletLib.getJsonText(request));
-
-            if (pathInfoArray.length < 1) {
-                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Requested rest path is not available.", " Rest Path = ", request.getPathInfo());
-            }
-            else {
-
-                DeviceConfig deviceConfig = rootConfig.getDevice(deviceId);
-
-                if (deviceConfig != null && pathInfoArray.length == 2
-                        && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
-                    setAndWriteDeviceConfig(deviceId, response, json, true);
+                boolean details = Boolean.parseBoolean(request.getParameter("details"));
+                if (details) {
+                    doGetDevice(json, deviceId, response);
                 }
                 else {
-                    ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                            "Requested rest path is not available.", " Rest Path = ", request.getPathInfo());
+                    json.addRecordList(getChannelList(deviceId));
+                    json.addDeviceState(configService.getDeviceState(deviceId));
                 }
             }
-        }
-    }
-
-    @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType(APPLICATION_JSON);
-        String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-
-        if (pathAndQueryString != null) {
-
-            setConfigAccess();
-
-            String pathInfo = pathAndQueryString[0];
-            String deviceId = null;
-            String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-
-            deviceId = pathInfoArray[0].replace("/", "");
-            DeviceConfig deviceConfig = rootConfig.getDevice(deviceId);
-
-            if (pathInfoArray.length != 1) {
-                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Requested rest path is not available", " Path Info = ", request.getPathInfo());
+            else if (pathInfoArray[1].equalsIgnoreCase(Const.STATE)) {
+                json.addDeviceState(configService.getDeviceState(deviceId));
             }
-            else if (deviceConfig == null) {
-                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Device \"" + deviceId + "\" does not exist.");
+            else if (pathInfoArray.length > 1 && pathInfoArray[1].equals(Const.CHANNELS)) {
+                json.addChannelIdList(getChannelList(deviceId));
+                json.addDeviceState(configService.getDeviceState(deviceId));
+            }
+            else if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
+                doGetConfigs(json, deviceId, response);
+            }
+            else if (pathInfoArray.length == 3 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
+                String configField = pathInfoArray[2];
+                doGetConfigField(json, deviceId, configField, response);
+            }
+            else if (pathInfoArray[1].equalsIgnoreCase(Const.SCAN)) {
+                String settings = request.getParameter(Const.SETTINGS);
+                List<ChannelScanInfo> channelScanInfoList = scanForAllChannels(deviceId, settings, response);
+                json.addChannelScanInfoList(channelScanInfoList);
             }
             else {
-                try {
-                    deviceConfig.delete();
-                    configService.setConfig(rootConfig);
-                    configService.writeConfigToFile();
-
-                    if (rootConfig.getDriver(deviceId) == null) {
-                        response.setStatus(HttpServletResponse.SC_OK);
-                    }
-                    else {
-                        ServletLib.sendHTTPErrorAndLogErr(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                logger, "Not able to delete driver ", deviceId);
-                    }
-                } catch (ConfigWriteException e) {
-                    ServletLib.sendHTTPErrorAndLogErr(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                            "Not able to write into config.");
-                }
+                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_ID, deviceId);
             }
         }
-    }
-
-    private List<ChannelScanInfo> scanForAllChannels(String deviceId, String settings, HttpServletResponse response) {
-        List<ChannelScanInfo> channelList = new ArrayList<>();
-        List<ChannelScanInfo> scannedDevicesList;
-        String deviceIdString = " deviceId = ";
-
-        try {
-            scannedDevicesList = configService.scanForChannels(deviceId, settings);
-
-            for (ChannelScanInfo scannedDevice : scannedDevicesList) {
-                channelList.add(scannedDevice);
-            }
-
-        } catch (UnsupportedOperationException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Device does not support scanning.", deviceIdString, deviceId);
-        } catch (DriverNotAvailableException e) {
+        else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest device is not available.", deviceIdString, deviceId);
-        } catch (ArgumentSyntaxException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_ACCEPTABLE, logger,
-                    "Argument syntax was wrong.", deviceIdString, deviceId, " Settings = ", settings);
-        } catch (ScanException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Error while scan device channels", deviceIdString, deviceId, " Settings = ", settings);
+            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
         }
-        return channelList;
     }
 
-    private List<Channel> doGetDeviceChannelList(String deviceId) {
-        List<Channel> deviceChannelList = new ArrayList<>();
-        Collection<ChannelConfig> channelConfig;
+    private void doGetDevice(ToJson json, String deviceId, HttpServletResponse response) {
+        DeviceConfig deviceConfig = rootConfig.getDevice(deviceId);
 
-        channelConfig = rootConfig.getDevice(deviceId).getChannels();
-        for (ChannelConfig chCf : channelConfig) {
-            deviceChannelList.add(dataAccess.getChannel(chCf.getId()));
-        }
-        return deviceChannelList;
-    }
-
-    private List<DeviceConfig> getConfigsList() {
-        List<DeviceConfig> deviceConfigs = new ArrayList<DeviceConfig>();
-
-        Collection<DriverConfig> driverConfigs;
-        driverConfigs = rootConfig.getDrivers();
-        
-        for (DriverConfig drvCfg : driverConfigs) {
-            String driverId = drvCfg.getId();
-            deviceConfigs.addAll(rootConfig.getDriver(driverId).getDevices());
-        }
-        return deviceConfigs;
-    }
-
-    private List<String> doGetDeviceList() {
-        List<String> deviceList = new ArrayList<>();
-
-        Collection<DeviceConfig> deviceConfig = getConfigsList();
-        for (DeviceConfig devCfg : deviceConfig) {
-            deviceList.add(devCfg.getId());
-        }
-        return deviceList;
+        json.addDevice(RestDeviceWrapper.getDevice(deviceConfig, configService, dataAccess));
     }
 
     private void doGetStateList(ToJson json) {
         Map<String, DeviceState> deviceStates = new HashMap<String, DeviceState>();
 
         Collection<DeviceConfig> deviceConfigs = getConfigsList();
-        for (DeviceConfig devCfg : deviceConfigs) {
-            String deviceId = devCfg.getId();
+        for (DeviceConfig deviceConfig : deviceConfigs) {
+            String deviceId = deviceConfig.getId();
             deviceStates.put(deviceId, configService.getDeviceState(deviceId));
         }
         json.addDeviceStateList(deviceStates);
     }
 
     private void doGetConfigsList(ToJson json) {
-
         List<DeviceConfig> deviceConfigs = getConfigsList();
+
         json.addDeviceConfigList(deviceConfigs);
     }
 
-    private void doGetDetailsList(ToJson json) throws IOException {
-        List<RestDeviceDetail> deviceDetails = new LinkedList<RestDeviceDetail>();
-        try {
-            Collection<DeviceConfig> deviceConfigs = getConfigsList();
-            for (DeviceConfig config : deviceConfigs) {
-                RestDeviceDetail restDetails = RestDeviceDetail.getRestDeviceDetail(
-                        configService.getDeviceState(config.getId()), config, 
-                        configService.getDriverInfo(config.getDriver().getId()));
-                
-                deviceDetails.add(restDetails);
-            }
-            json.addDeviceDetailList(deviceDetails);
-            
-        } catch (DriverNotAvailableException e) {
-            throw new IOException(e);
-        }
-    }
-
     private void doGetConfigs(ToJson json, String deviceId, HttpServletResponse response) throws IOException {
-        DeviceConfig deviceConfig;
-        deviceConfig = rootConfig.getDevice(deviceId);
+        DeviceConfig deviceConfig = rootConfig.getDevice(deviceId);
 
         if (deviceConfig != null) {
             json.addDeviceConfig(deviceConfig);
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest device is not available.", " DeviceID = ", deviceId);
+            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
         }
     }
 
@@ -388,23 +236,66 @@ public class DeviceResourceServlet extends GenericServlet {
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                    "Requested rest device is not available.", " DeviceID = ", deviceId);
+            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
         }
     }
 
-    private void doGetDetails(ToJson json, String deviceId, HttpServletResponse response) throws IOException {
-        DeviceConfig deviceConfig = rootConfig.getDevice(deviceId);
-        try {
-            if (deviceConfig != null) {
-                json.addDeviceDetail(configService.getDeviceState(deviceConfig.getId()), deviceConfig, 
-                        configService.getDriverInfo(deviceConfig.getDriver().getId()));
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType(APPLICATION_JSON);
+        String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+
+        if (pathAndQueryString != null) {
+
+            setConfigAccess();
+
+            String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
+            String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
+            String deviceId = pathInfoArray[0].replace("/", "");
+            FromJson json = new FromJson(ServletLib.getJsonText(request));
+
+            if (pathInfoArray.length == 1) {
+                setAndWriteDeviceConfig(deviceId, response, json, false);
             }
             else {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                        "Requested rest device is not available.", " DeviceID = ", deviceId);
+                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
             }
-        } catch (DriverNotAvailableException e) {
-            throw new IOException(e);
+
+        }
+    }
+
+    @Override
+    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType(APPLICATION_JSON);
+        String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+
+        if (pathAndQueryString != null) {
+
+            setConfigAccess();
+
+            String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
+            String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
+            String deviceId = pathInfoArray[0].replace("/", "");
+            FromJson json = new FromJson(ServletLib.getJsonText(request));
+
+            if (pathInfoArray.length < 1) {
+                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
+            }
+            else {
+
+                DeviceConfig deviceConfig = rootConfig.getDevice(deviceId);
+
+                if (deviceConfig != null && pathInfoArray.length == 2
+                        && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
+                    setAndWriteDeviceConfig(deviceId, response, json, true);
+                }
+                else {
+                    ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                            REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
+                }
+            }
         }
     }
 
@@ -501,6 +392,113 @@ public class DeviceResourceServlet extends GenericServlet {
             ok = true;
         }
         return ok;
+    }
+
+    @Override
+    public void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType(APPLICATION_JSON);
+        String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+
+        if (pathAndQueryString != null) {
+
+            setConfigAccess();
+
+            String pathInfo = pathAndQueryString[0];
+            String deviceId = null;
+            String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
+
+            deviceId = pathInfoArray[0].replace("/", "");
+            DeviceConfig deviceConfig = rootConfig.getDevice(deviceId);
+
+            if (pathInfoArray.length != 1) {
+                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                        REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
+            }
+            else if (deviceConfig == null) {
+                ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                        "Device \"" + deviceId + "\" does not exist.");
+            }
+            else {
+                try {
+                    deviceConfig.delete();
+                    configService.setConfig(rootConfig);
+                    configService.writeConfigToFile();
+
+                    if (rootConfig.getDriver(deviceId) == null) {
+                        response.setStatus(HttpServletResponse.SC_OK);
+                    }
+                    else {
+                        ServletLib.sendHTTPErrorAndLogErr(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                logger, "Not able to delete driver ", deviceId);
+                    }
+                } catch (ConfigWriteException e) {
+                    ServletLib.sendHTTPErrorAndLogErr(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
+                            "Not able to write into config.");
+                }
+            }
+        }
+    }
+
+    private List<ChannelScanInfo> scanForAllChannels(String deviceId, String settings, HttpServletResponse response) {
+        List<ChannelScanInfo> channelList = new ArrayList<>();
+        List<ChannelScanInfo> scannedDevicesList;
+        String deviceIdString = " deviceId = ";
+
+        try {
+            scannedDevicesList = configService.scanForChannels(deviceId, settings);
+
+            for (ChannelScanInfo scannedDevice : scannedDevicesList) {
+                channelList.add(scannedDevice);
+            }
+
+        } catch (UnsupportedOperationException e) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
+                    "Device does not support scanning.", deviceIdString, deviceId);
+        } catch (DriverNotAvailableException e) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
+                    "Requested rest device is not available.", deviceIdString, deviceId);
+        } catch (ArgumentSyntaxException e) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_ACCEPTABLE, logger,
+                    "Argument syntax was wrong.", deviceIdString, deviceId, " Settings = ", settings);
+        } catch (ScanException e) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
+                    "Error while scan device channels", deviceIdString, deviceId, " Settings = ", settings);
+        }
+        return channelList;
+    }
+
+    private List<String> getDeviceIdList() {
+        List<String> deviceList = new ArrayList<>();
+
+        Collection<DeviceConfig> deviceConfigs = getConfigsList();
+        for (DeviceConfig deviceConfig : deviceConfigs) {
+            deviceList.add(deviceConfig.getId());
+        }
+        return deviceList;
+    }
+
+    private List<DeviceConfig> getConfigsList() {
+        List<DeviceConfig> deviceConfigs = new ArrayList<DeviceConfig>();
+
+        Collection<DriverConfig> driverConfigs;
+        driverConfigs = rootConfig.getDrivers();
+        
+        for (DriverConfig driverConfig : driverConfigs) {
+            String driverId = driverConfig.getId();
+            deviceConfigs.addAll(rootConfig.getDriver(driverId).getDevices());
+        }
+        return deviceConfigs;
+    }
+
+    private List<Channel> getChannelList(String deviceId) {
+        List<Channel> channels = new ArrayList<>();
+
+        Collection<ChannelConfig> channelConfigs = rootConfig.getDevice(deviceId).getChannels();
+        for (ChannelConfig channelConfig : channelConfigs) {
+            channels.add(dataAccess.getChannel(channelConfig.getId()));
+        }
+        return channels;
     }
 
     private void setConfigAccess() {

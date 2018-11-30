@@ -78,7 +78,7 @@ public class UserServlet extends GenericServlet {
                         json.addStringList(Const.GROUPS, groupList);
                     }
                     else if (authenticationService.contains(userId)) {
-                        json.addRestUserConfig(new RestUserConfig(userId));
+                        json.addUserConfig(new RestUserConfig(userId));
                     }
 
                     else {

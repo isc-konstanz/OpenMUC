@@ -30,8 +30,6 @@ public class RestDeviceConfig {
     private Integer connectRetryInterval = null;
     private Boolean disabled = null;
 
-    // Device device = null;
-
     public String getId() {
         return id;
     }

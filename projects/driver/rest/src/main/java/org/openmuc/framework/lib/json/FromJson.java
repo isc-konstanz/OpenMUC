@@ -48,11 +48,11 @@ import org.openmuc.framework.lib.json.exceptions.MissingJsonObjectException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
 import org.openmuc.framework.lib.json.rest.objects.RestChannel;
 import org.openmuc.framework.lib.json.rest.objects.RestChannelConfig;
-import org.openmuc.framework.lib.json.rest.objects.RestChannelConfigMapper;
+import org.openmuc.framework.lib.json.rest.objects.RestChannelMapper;
 import org.openmuc.framework.lib.json.rest.objects.RestDeviceConfig;
-import org.openmuc.framework.lib.json.rest.objects.RestDeviceConfigMapper;
+import org.openmuc.framework.lib.json.rest.objects.RestDeviceMapper;
 import org.openmuc.framework.lib.json.rest.objects.RestDriverConfig;
-import org.openmuc.framework.lib.json.rest.objects.RestDriverConfigMapper;
+import org.openmuc.framework.lib.json.rest.objects.RestDriverMapper;
 import org.openmuc.framework.lib.json.rest.objects.RestRecord;
 import org.openmuc.framework.lib.json.rest.objects.RestUserConfig;
 import org.openmuc.framework.lib.json.rest.objects.RestValue;
@@ -152,7 +152,7 @@ public class FromJson {
             throw new MissingJsonObjectException();
         }
 
-        RestChannelConfigMapper.setChannelConfig(channelConfig, gson.fromJson(jse, RestChannelConfig.class), id);
+        RestChannelMapper.setChannelConfig(channelConfig, gson.fromJson(jse, RestChannelConfig.class), id);
     }
 
     public void setDeviceConfig(DeviceConfig deviceConfig, String id) throws JsonSyntaxException, IdCollisionException,
@@ -161,7 +161,7 @@ public class FromJson {
         JsonElement jse = jsonObject.get(Const.CONFIGS);
 
         if (!jse.isJsonNull()) {
-            RestDeviceConfigMapper.setDeviceConfig(deviceConfig, gson.fromJson(jse, RestDeviceConfig.class), id);
+            RestDeviceMapper.setDeviceConfig(deviceConfig, gson.fromJson(jse, RestDeviceConfig.class), id);
         }
         else {
             throw new MissingJsonObjectException();
@@ -174,7 +174,7 @@ public class FromJson {
         JsonElement jse = jsonObject.get(Const.CONFIGS);
 
         if (!jse.isJsonNull()) {
-            RestDriverConfigMapper.setDriverConfig(driverConfig, gson.fromJson(jse, RestDriverConfig.class), id);
+            RestDriverMapper.setDriverConfig(driverConfig, gson.fromJson(jse, RestDriverConfig.class), id);
         }
         else {
             throw new MissingJsonObjectException();

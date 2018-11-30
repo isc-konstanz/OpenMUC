@@ -20,51 +20,38 @@
  */
 package org.openmuc.framework.lib.json.rest.objects;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
-public class RestUserConfig {
+import org.openmuc.framework.dataaccess.DeviceState;
+
+public class RestDevice {
 
     private String id;
-    @SerializedName("password")
-    private String pass;
-    @SerializedName("oldPassword")
-    private String oldPasswd;
-    private String[] groups;
-    private String description;
-
-    protected RestUserConfig() {
-    }
-
-    public RestUserConfig(String id) {
-        this.id = id;
-        this.pass = "*****";
-        this.groups = new String[] { "" };
-        this.description = "";
-    }
+    private DeviceState state;
+    private List<RestChannel> records;
 
     public String getId() {
         return id;
     }
 
-    public String getPassword() {
-        return pass;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getOldPassword() {
-        return oldPasswd;
-    }
+	public DeviceState getState() {
+		return state;
+	}
 
-    public String[] getGroups() {
-        if (groups != null) {
-            return groups.clone();
-        }
-        else {
-            return new String[] {};
-        }
-    }
+	public void setState(DeviceState state) {
+		this.state = state;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public List<RestChannel> getRecords() {
+		return records;
+	}
+
+	public void setRecords(List<RestChannel> records) {
+		this.records = records;
+	}
 
 }
