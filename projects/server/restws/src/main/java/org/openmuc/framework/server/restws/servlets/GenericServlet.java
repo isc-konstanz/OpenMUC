@@ -96,12 +96,14 @@ public abstract class GenericServlet extends HttpServlet implements ConfigChange
     String[] checkIfItIsACorrectRest(HttpServletRequest request, HttpServletResponse response, Logger logger) {
         String pathAndQueryString[] = new String[2];
 
-        String pathInfo = request.getPathInfo();
-        String queryStr = request.getQueryString();
-
-        if (pathInfo == null) {
-            pathInfo = "/";
+        String pathInfo = request.getRequestURI()
+        		.replaceFirst(request.getContextPath(), "")
+        		.replaceFirst(request.getServletPath(), "");
+        if (pathInfo == null || pathInfo.isEmpty()) {
+        	pathInfo = "/";
         }
+
+        String queryStr = request.getQueryString();
         if (queryStr == null) {
             queryStr = "";
         }

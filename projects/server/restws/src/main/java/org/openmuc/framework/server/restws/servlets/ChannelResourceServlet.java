@@ -124,7 +124,7 @@ public class ChannelResourceServlet extends GenericServlet {
     private void doGetChannel(HttpServletRequest request, HttpServletResponse response, String[] pathInfoArray,
             ToJson json) throws IOException {
 
-        String channelId = pathInfoArray[0].replace("/", "");
+        String channelId = pathInfoArray[0];
 
         if (pathInfoArray.length == 1) {
             boolean details = Boolean.parseBoolean(request.getParameter("details"));
@@ -355,10 +355,11 @@ public class ChannelResourceServlet extends GenericServlet {
 
         String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
         String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-        String channelId = pathInfoArray[0].replace("/", "");
         FromJson json = new FromJson(ServletLib.getJsonText(request));
 
         if (pathInfoArray.length == 1) {
+            String channelId = pathInfoArray[0];
+
             doSetAndWriteChannelConfig(channelId, response, json, false);
         }
         else {
@@ -378,7 +379,6 @@ public class ChannelResourceServlet extends GenericServlet {
 
             String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
             String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            String channelId = pathInfoArray[0].replace("/", "");
             FromJson json = new FromJson(ServletLib.getJsonText(request));
 
             if (pathInfoArray.length < 1) {
@@ -386,6 +386,8 @@ public class ChannelResourceServlet extends GenericServlet {
                         REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
             }
             else {
+                String channelId = pathInfoArray[0];
+
                 ChannelConfig channelConfig = getChannelConfig(channelId, response);
 
                 if (channelConfig != null) {
@@ -434,7 +436,7 @@ public class ChannelResourceServlet extends GenericServlet {
                     e.getMessage());
         } catch (MissingJsonObjectException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger, e.getMessage());
-        } catch (IllegalStateException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_CONFLICT, logger, e.getMessage());
         }
         return ok;
@@ -452,8 +454,8 @@ public class ChannelResourceServlet extends GenericServlet {
 
                 configService.setConfig(rootConfig);
                 configService.writeConfigToFile();
+                
             } catch (IdCollisionException e) {
-
             }
             response.setStatus(HttpServletResponse.SC_OK);
             ok = true;
@@ -569,7 +571,7 @@ public class ChannelResourceServlet extends GenericServlet {
             String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
             ChannelConfig channelConfig;
 
-            channelId = pathInfoArray[0].replace("/", "");
+            channelId = pathInfoArray[0];
             channelConfig = getChannelConfig(channelId, response);
 
             if (channelConfig == null) {
