@@ -41,9 +41,9 @@ import com.pi4j.component.temperature.TemperatureSensor;
 import com.pi4j.io.w1.W1Device;
 
 public class W1Connection implements Connection {
-    private final static Logger logger = LoggerFactory.getLogger(W1Connection.class);
+    private static final Logger logger = LoggerFactory.getLogger(W1Connection.class);
 
-    private final DriverPreferences prefs = DriverInfoFactory.getPreferences(W1Connection.class);
+    private static final DriverPreferences prefs = DriverInfoFactory.getPreferences(W1Connection.class);
 
     /**
      * Interface used by {@link W1Connection} to notify the {@link W1Driver} about events

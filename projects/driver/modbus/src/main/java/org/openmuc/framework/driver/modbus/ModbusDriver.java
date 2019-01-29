@@ -46,7 +46,7 @@ public final class ModbusDriver implements DriverService {
 
     private static final Logger logger = LoggerFactory.getLogger(ModbusDriver.class);
 
-    private final DriverInfo info = DriverInfoFactory.getInfo(ModbusDriver.class);
+    private static final DriverInfo info = DriverInfoFactory.getInfo(ModbusDriver.class);
 
     private static final int DEFAULT_TIMEOUT_MS = 3000;
 

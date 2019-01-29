@@ -50,8 +50,8 @@ import com.pi4j.io.w1.W1Master;
 
 @Component
 public class W1Driver implements DriverService, W1ConnectionCallbacks {
-    private final static Logger logger = LoggerFactory.getLogger(W1Driver.class);
-    private final DriverInfo info = DriverInfoFactory.getPreferences(W1Driver.class);
+    private static final Logger logger = LoggerFactory.getLogger(W1Driver.class);
+    private static final DriverInfo info = DriverInfoFactory.getPreferences(W1Driver.class);
 
     // Pass the ClassLoader, as the W1Master may otherwise not be able to load and 
     // recognize available devices according to their DeviceType

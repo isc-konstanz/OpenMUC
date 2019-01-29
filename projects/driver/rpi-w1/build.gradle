@@ -7,7 +7,7 @@ def pi4jversion = '1.2-SNAPSHOT'
 
 repositories {
    flatDir {
-       dirs '/dependencies/pi4j', rootDir.getPath() + '/dependencies/pi4j'
+       dirs 'dependencies/pi4j', rootDir.getPath() + '/dependencies/pi4j'
    }
 }
 

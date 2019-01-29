@@ -66,6 +66,7 @@ public class EdgeListener implements GpioPinListenerDigital {
         else edge = PinEdge.RISING;
         
         this.counter = 0;
+    	logger.debug("Registered edge listener for {}", pin.getName());
     }
 
     public void setRecordListener(List<ChannelRecordContainer> containers, RecordsReceivedListener listener) {
@@ -106,6 +107,7 @@ public class EdgeListener implements GpioPinListenerDigital {
                                     value = new DoubleValue(this.counter/settings.getImpulses());
                                 }
                                 if (value != null) {
+                                	logger.debug("Registered {}. edge for {}", this.counter, pin.getName());
                                     container.setRecord(new Record(value, samplingTime, Flag.VALID));
                                 }
                                 else {

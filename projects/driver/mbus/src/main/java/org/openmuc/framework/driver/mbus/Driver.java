@@ -52,7 +52,7 @@ public class Driver implements DriverService {
 
     private static final Logger logger = LoggerFactory.getLogger(Driver.class);
 
-    private final DriverInfo info = DriverInfoFactory.getInfo(Driver.class);
+    private static final DriverInfo info = DriverInfoFactory.getInfo(Driver.class);
 
     private final Map<String, SerialInterface> interfaces = new HashMap<>();
 

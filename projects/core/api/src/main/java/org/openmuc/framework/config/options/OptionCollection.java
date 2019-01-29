@@ -345,11 +345,11 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
                         NamedNodeMap attributes = syntaxNode.getAttributes();
                         Node nameAttribute = attributes.getNamedItem("assignment");
                         if (nameAttribute != null) {
-                            collection.setAssignmentOperator(nameAttribute.getTextContent().trim());
+                            collection.setAssignmentOperator(nameAttribute.getTextContent());
                         }
                     }
                     else if (syntaxNodeName.equals("separator")) {
-                        collection.setSeparator(syntaxNode.getTextContent().trim());
+                        collection.setSeparator(syntaxNode.getTextContent());
                     }
                     else {
                         throw new ParseException("Unknown tag found:" + syntaxNodeName);

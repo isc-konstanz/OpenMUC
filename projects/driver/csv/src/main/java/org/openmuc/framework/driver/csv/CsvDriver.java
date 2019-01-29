@@ -52,9 +52,9 @@ import org.slf4j.LoggerFactory;
 @Component
 public class CsvDriver implements DriverService {
 
-    private final static Logger logger = LoggerFactory.getLogger(CsvDriver.class);
+    private static final Logger logger = LoggerFactory.getLogger(CsvDriver.class);
 
-    private final DriverInfo info = DriverInfoFactory.getInfo(CsvDriver.class);
+    private static final DriverInfo info = DriverInfoFactory.getInfo(CsvDriver.class);
 
     private static final String DEFAULT_DEVICE_SETTINGS = DeviceSettings.SAMPLING_MODE + "="
             + ESamplingMode.LINE.toString();

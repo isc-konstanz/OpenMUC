@@ -44,9 +44,9 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 public class GpioConnection implements Connection {
-	protected final static Logger logger = LoggerFactory.getLogger(GpioConnection.class);
+	protected static final Logger logger = LoggerFactory.getLogger(GpioConnection.class);
 
-    protected final DriverPreferences prefs = DriverInfoFactory.getPreferences(GpioDriver.class);
+    protected static final DriverPreferences prefs = DriverInfoFactory.getPreferences(GpioDriver.class);
 
     /**
      * Interface used by {@link GpioConnection} to notify the {@link GpioDriver} about events
