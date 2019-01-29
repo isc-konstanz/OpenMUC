@@ -40,7 +40,7 @@
         <keyValue assignment="=">true</keyValue>
         <separator>:</separator>
       </syntax>
-      <option id="SNMPVersion">
+      <option id="SNMP_VERSION">
         <name>Version</name>
         <description>The version of the used SNMP communication protocol.</description>
         <mandatory>true</mandatory>

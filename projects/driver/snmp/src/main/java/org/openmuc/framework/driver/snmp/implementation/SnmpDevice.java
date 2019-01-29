@@ -31,10 +31,10 @@ import java.util.Vector;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
-import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
@@ -267,9 +267,9 @@ public abstract class SnmpDevice implements Connection {
         pdu.add(varBind);
 
         // send SET request
-        ResponseEvent response;
         try {
-            response = snmp.set(pdu, target);
+			snmp.set(pdu, target);
+			
         } catch (IOException e) {
             throw new ConnectionException("SNMP set request failed! " + e.getMessage());
         } catch (NullPointerException e) {
@@ -452,7 +452,7 @@ public abstract class SnmpDevice implements Connection {
                     logger.debug("{}: value = '{}'", container.getChannelAddress(),
                             values.get(container.getChannelAddress()));
                     container.setRecord(new Record(
-                            new ByteArrayValue(values.get(container.getChannelAddress()).getBytes()), receiveTime));
+                            new StringValue(values.get(container.getChannelAddress())), receiveTime));
                 }
             }
         } catch (SnmpTimeoutException e) {

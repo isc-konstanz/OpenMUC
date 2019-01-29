@@ -40,9 +40,9 @@ import org.osgi.service.component.annotations.Component;
 
 @Component
 public final class SnmpDriver implements DriverService {
-//    private final static Logger logger = LoggerFactory.getLogger(SnmpDriver.class);
+//    private static final Logger logger = LoggerFactory.getLogger(SnmpDriver.class);
 
-    private final DriverInfo info = DriverInfoFactory.getPreferences(SnmpDriver.class);
+    private static final DriverInfo info = DriverInfoFactory.getPreferences(SnmpDriver.class);
 
     // AUTHENTICATIONPASSPHRASE is the same COMMUNITY word in SNMP V2c
     public enum SnmpDriverSettingVariableNames {
