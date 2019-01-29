@@ -46,7 +46,10 @@ public class RestChannelWrapper {
     }
 
     public ValueType getValueType() {
-    	return config.getValueType();
+    	if (config.getValueType() != null) {
+    		return config.getValueType();
+    	}
+    	return ChannelConfig.VALUE_TYPE_DEFAULT;
     }
 
     public String getDriver() {
