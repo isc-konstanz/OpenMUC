@@ -97,7 +97,7 @@
         <type>STRING</type>
       </option>
       <option id="-rs">
-        <name>Fixed baud rate</name>
+        <name>Read standard message</name>
         <description><![CDATA[
              Reads the standard message and the manufacture specific message.<br>
              This options has only an affect if the Request message start character is changed.

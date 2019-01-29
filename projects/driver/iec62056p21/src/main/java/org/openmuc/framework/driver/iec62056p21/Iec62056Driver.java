@@ -26,6 +26,7 @@ import java.util.List;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.spi.Connection;
@@ -44,6 +45,8 @@ import org.slf4j.LoggerFactory;
 public final class Iec62056Driver implements DriverService {
 
     private static final Logger logger = LoggerFactory.getLogger(Iec62056Driver.class);
+
+    private static final DriverInfo info = DriverInfoFactory.getPreferences(Iec62056Driver.class);
 
     private static final String BAUD_RATE_CHANGE_DELAY = "-d";
     private static final String TIMEOUT_PARAM = "-t";
@@ -65,32 +68,9 @@ public final class Iec62056Driver implements DriverService {
     private String requestStartCharacter = "";
     private boolean readStandard = false;
 
-    private static final String DRIVER_ID = "iec62056p21";
-    private static final String DRIVER_DESCRIPTION = "This driver can read meters using IEC 62056-21 Mode A, B and C.";
-    private static final String DEVICE_ADDRESS_SYNTAX = "Synopsis: <serial_port>\nExamples: /dev/ttyS0 (Unix), COM1 (Windows)";
-
-    private static final String SETTINGS = "[" + BAUD_RATE_CHANGE_DELAY + " <baud_rate_change_delay>] [" + TIMEOUT_PARAM
-            + " <timeout>] [" + RETRIES_PARAM + " <number_of_read_retries>] [" + INITIAL_BAUD_RATE
-            + " <initial_baud_rate>] [" + DEVICE_ADDRESS + " <device_address>] [" + FIXED_BAUD_RATE + "] ["
-            + REQUEST_START_CHARACTER + " <request_message_start_character>]\n" + BAUD_RATE_CHANGE_DELAY
-            + " sets the waiting time between a baude rate change, default: 0; \n" + TIMEOUT_PARAM
-            + " sets the response timeout, default: 2000\n" + INITIAL_BAUD_RATE
-            + " sets a initial baud rate e.g. for devices with modem configuration, default: 300\n" + DEVICE_ADDRESS
-            + " is mostly needed for devices with RS485, default: empty\n" + FIXED_BAUD_RATE
-            + " activates fixed baud rate, default: deactivated\n" + REQUEST_START_CHARACTER
-            + " Used for manufacture specific request messages\n" + READ_STANDARD
-            + " Reads the standard message and the manufacture specific message. Only if " + REQUEST_START_CHARACTER
-            + " is setetd\n";
-    private static final String SETTINGS_SYNTAX = "Synopsis: " + SETTINGS;
-    private static final String CHANNEL_ADDRESS_SYNTAX = "Synopsis: <data_set_id>";
-    private static final String DEVICE_SCAN_SETTINGS_SYNTAX = "Synopsis: <serial_port> " + SETTINGS;
-
-    private static final DriverInfo INFO = new DriverInfo(DRIVER_ID, DRIVER_DESCRIPTION, DEVICE_ADDRESS_SYNTAX,
-            SETTINGS_SYNTAX, CHANNEL_ADDRESS_SYNTAX, DEVICE_SCAN_SETTINGS_SYNTAX);
-
     @Override
     public DriverInfo getInfo() {
-        return INFO;
+        return info;
     }
 
     @Override
