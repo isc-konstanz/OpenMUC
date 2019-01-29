@@ -1,10 +1,10 @@
 (function () {
 
-    var injectParams = ['$scope', '$location', '$alert', '$translate', '$interval', 'DevicesService', 'ChannelsService', 'ChannelDataService'];
+    var injectParams = ['$scope', '$location', 'notify', '$translate', '$interval', 'DevicesService', 'DeviceDataService', 'ChannelsService', 'ChannelDataService'];
 
-    var ChannelsAccessController = function ($scope, $location, $alert, $translate, $interval, DevicesService, ChannelsService, ChannelDataService) {
+    var ChannelsAccessController = function ($scope, $location, notify, $translate, $interval, DevicesService, DeviceDataService, ChannelsService, ChannelDataService) {
 
-        $translate('CHANNEL_VALUE_UPDATED_SUCCESSFULLY').then(text => channelWriteValueOKText = text);
+        $translate('CHANNEL_VALUE_UPDATED_SUCCESSFULLY').then(text =>  channelWriteValueOKText = text);
         $translate('CHANNEL_VALUE_UPDATED_ERROR').then(text => channelWriteValueErrorText = text);
         $translate('CHANNEL_NO_VALUE_TO_WRITE').then(text => channelNoValueToWrite = text);
 
@@ -31,6 +31,12 @@
                 }
             });
 
+            $scope.checkedDevices.forEach((device) => {
+                DeviceDataService.getDeviceConfigs(device).then(function (d) {
+                    device['configs'] = d;
+                });
+            });    
+
             $scope.interval = $interval(() => {
                 $scope.checkedDevices.forEach((device) => {
                     DevicesService.getDeviceRecords(device).then((result) => {
@@ -53,17 +59,17 @@
 
         $scope.setNewValue = (channel, doWrite) => {
             if (!channel.newValue || channel.newValue.trim().length === 0) {
-                $alert({content: channelNoValueToWrite, type: 'warning'});
+                notify({message: channelNoValueToWrite, position: "right", classes: "alert-warning"})
                 return;
             }
 
             try {
                 ChannelsService.writeChannel(channel, doWrite).then(
-                    resp => $alert({content: channelWriteValueOKText, type: 'success'})
-                    , error => $alert({content: channelWriteValueErrorText, type: 'warning'})
+                    resp => notify({message: channelWriteValueOKText, position: "right", classes: "alert-success"})
+                    , error => notify({message: channelWriteValueErrorText, position: "right", classes: "alert-warning"})
                 );
             } catch (e) {
-                $alert({content: channelWriteValueErrorText, type: 'warning'});
+                notify({message: channelWriteValueErrorText, position: "right", classes: "alert-warning"});
             }
 
             channel.newValue = '';

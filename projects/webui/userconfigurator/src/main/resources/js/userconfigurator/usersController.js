@@ -1,8 +1,8 @@
 (function () {
 
-    var injectParams = ['$scope', '$alert', '$translate', 'UsersService'];
+    var injectParams = ['$scope', '$translate', 'notify', 'UsersService'];
 
-    var UsersController = function ($scope, $alert, $translate, UsersService) {
+    var UsersController = function ($scope, $translate, notify, UsersService) {
 
         var userOKText;
         $scope.users = [];
@@ -13,7 +13,7 @@
 
         $scope.deleteUser = function (id) {
             var data = {configs: {id: id}};
-            UsersService.destroy(data).then(data => $alert({content: userOKText, type: 'success'}));
+            UsersService.destroy(data).then(data => notify({message: userOKText, position: "right", classes: "alert-success"}));
 
             UsersService.getUsers().then(users => $scope.users = users);
         };

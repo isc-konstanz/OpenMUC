@@ -1,5 +1,5 @@
 (function(){
-	
+
 	var app = angular.module('openmuc');
 
 	app.config(['$stateProvider', '$urlRouterProvider',
@@ -14,7 +14,7 @@
 	                        return $ocLazyLoad.load(
 	                            {
 	                                name: "openmuc.users",
-	                                files: ['userconfigurator/js/userconfigurator/usersController.js', 
+	                                files: ['userconfigurator/js/userconfigurator/usersController.js',
 	                                        'userconfigurator/js/userconfigurator/usersService.js']
 	                            }
 	                        )
@@ -37,7 +37,7 @@
 	                        return $ocLazyLoad.load(
 	                            {
 	                                name: "openmuc.users",
-	                                files: ['userconfigurator/js/userconfigurator/userNewController.js', 
+	                                files: ['userconfigurator/js/userconfigurator/userNewController.js',
 	                                        'userconfigurator/js/userconfigurator/usersService.js']
 	                            }
 	                        )
@@ -45,7 +45,7 @@
 	        	    }
 	        	}).
 	        	state('userconfigurator.edit', {
-	        		url: "/edit/:id",
+	        		url: "/edit/id",
 	        		templateUrl: "userconfigurator/html/edit.html",
 	        		controller: 'UserEditController',
 	        		requireLogin: true,
@@ -55,7 +55,7 @@
 	                            {
 	                                name: "openmuc.users",
 	                                files: ['openmuc/js/authentication/authService.js',
-	                                        'userconfigurator/js/userconfigurator/userEditController.js', 
+	                                        'userconfigurator/js/userconfigurator/userEditController.js',
 	                                        'userconfigurator/js/userconfigurator/usersService.js']
 	                            }
 	                        )
@@ -63,5 +63,5 @@
 	        	    }
 	        	})
 	}]);
-	
+
 })();

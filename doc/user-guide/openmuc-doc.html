@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.5">
+<meta name="generator" content="Asciidoctor 1.5.8">
 <title>OpenMUC User Guide</title>
 <style>
 /*
@@ -509,67 +509,69 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_quick_start">2. Quick Start</a>
 <ul class="sectlevel2">
 <li><a href="#_starting_the_demo">2.1. Starting the Demo</a></li>
-<li><a href="#_framework_files">2.2. Framework Files</a></li>
-<li><a href="#_configuration">2.3. Configuration</a></li>
-<li><a href="#_webui_walk_through">2.4. WebUI Walk Through</a></li>
+<li><a href="#_webui_walk_through">2.2. WebUI Walk Through</a></li>
 </ul>
 </li>
-<li><a href="#_tutorial_simple_m_bus_data_logger">3. Tutorial - Simple M-Bus Data Logger</a></li>
-<li><a href="#_architecture">4. Architecture</a></li>
-<li><a href="#_distribution">5. Distribution</a></li>
-<li><a href="#anchor-start-script">6. OpenMUC start script</a>
+<li><a href="#_tutorials">3. Tutorials</a>
 <ul class="sectlevel2">
-<li><a href="#_auto_start_at_boot_time">6.1. Auto-start at Boot Time</a></li>
+<li><a href="#_build_a_simple_m_bus_data_logger">3.1. Build a Simple M-Bus Data Logger</a></li>
+<li><a href="#_develop_a_customised_application">3.2. Develop a Customised Application</a></li>
+<li><a href="#anchor-tutorial-webui-plugin">3.3. Develop a Customised WebUI Plugin</a></li>
 </ul>
 </li>
-<li><a href="#_install_a_driver">7. Install a Driver</a>
+<li><a href="#anchor-architecture">4. Architecture</a>
 <ul class="sectlevel2">
-<li><a href="#_copy_driver">7.1. Copy driver</a></li>
-<li><a href="#_editing_bundles_configuration">7.2. Editing bundles configuration</a></li>
-<li><a href="#_use_a_driver_with_serial_communication">7.3. Use a Driver with Serial Communication</a></li>
+<li><a href="#_file_structure_of_the_distribution">4.1. File Structure of the Distribution</a></li>
+<li><a href="#_framework_files">4.2. Framework Files</a></li>
+<li><a href="#_devices_and_channels">4.3. Devices and Channels</a></li>
+<li><a href="#anchor-configuration">4.4. Configuration via channels.xml</a></li>
+<li><a href="#_sampling_listening_and_logging">4.5. Sampling, Listening and Logging</a></li>
 </ul>
 </li>
-<li><a href="#_devices_and_channels">8. Devices and Channels</a>
+<li><a href="#anchor-start-script">5. OpenMUC start script</a>
 <ul class="sectlevel2">
-<li><a href="#anchor-configuration">8.1. Configuration</a></li>
-<li><a href="#_sampling_listening_and_logging">8.2. Sampling, Listening and Logging</a></li>
+<li><a href="#_auto_start_at_boot_time">5.1. Auto-start at Boot Time</a></li>
 </ul>
 </li>
-<li><a href="#drivers">9. Drivers</a>
+<li><a href="#drivers">6. Drivers</a>
 <ul class="sectlevel2">
-<li><a href="#_modbus">9.1. Modbus</a></li>
-<li><a href="#_m_bus_wired">9.2. M-Bus (wired)</a></li>
-<li><a href="#_m_bus_wireless">9.3. M-Bus (wireless)</a></li>
-<li><a href="#_iec_60870_5_104">9.4. IEC 60870-5-104</a></li>
-<li><a href="#_iec_61850">9.5. IEC 61850</a></li>
-<li><a href="#_iec_62056_part_21">9.6. IEC 62056 part 21</a></li>
-<li><a href="#_dlms_cosem">9.7. DLMS/COSEM</a></li>
-<li><a href="#_knx">9.8. KNX</a></li>
-<li><a href="#_ehz">9.9. eHZ</a></li>
-<li><a href="#_snmp">9.10. SNMP</a></li>
-<li><a href="#_aggregator">9.11. Aggregator</a></li>
-<li><a href="#_rest_json">9.12. REST/JSON</a></li>
+<li><a href="#_install_a_driver">6.1. Install a Driver</a></li>
+<li><a href="#_modbus">6.2. Modbus</a></li>
+<li><a href="#_m_bus_wired">6.3. M-Bus (wired)</a></li>
+<li><a href="#_m_bus_wireless">6.4. M-Bus (wireless)</a></li>
+<li><a href="#_iec_60870_5_104">6.5. IEC 60870-5-104</a></li>
+<li><a href="#_iec_61850">6.6. IEC 61850</a></li>
+<li><a href="#_iec_62056_part_21">6.7. IEC 62056 part 21</a></li>
+<li><a href="#_dlmscosem">6.8. DLMS/COSEM</a></li>
+<li><a href="#_knx">6.9. KNX</a></li>
+<li><a href="#_ehz">6.10. eHZ</a></li>
+<li><a href="#_snmp">6.11. SNMP</a></li>
+<li><a href="#_csv">6.12. CSV</a></li>
+<li><a href="#_aggregator">6.13. Aggregator</a></li>
+<li><a href="#_restjson">6.14. REST/JSON</a></li>
 </ul>
 </li>
-<li><a href="#anchor-web-ui">10. The WebUI</a>
+<li><a href="#anchor-web-ui">7. The WebUI</a>
 <ul class="sectlevel2">
-<li><a href="#_plugins">10.1. Plugins</a></li>
-<li><a href="#_context_root">10.2. Context Root</a></li>
-<li><a href="#_https">10.3. HTTPS</a></li>
+<li><a href="#_plugins">7.1. Plugins</a></li>
+<li><a href="#_context_root">7.2. Context Root</a></li>
+<li><a href="#_https">7.3. HTTPS</a></li>
+<li><a href="#_custom_plugins">7.4. Custom Plugins</a></li>
+<li><a href="#_visualisation">7.5. Visualisation</a></li>
 </ul>
 </li>
-<li><a href="#id_restful_web_services">11. REST Server</a>
+<li><a href="#id_restful_web_services">8. REST Server</a>
 <ul class="sectlevel2">
-<li><a href="#_requirements">11.1. Requirements</a></li>
-<li><a href="#_accessing_channels">11.2. Accessing channels</a></li>
+<li><a href="#_requirements">8.1. Requirements</a></li>
+<li><a href="#_accessing_channels">8.2. Accessing channels</a></li>
 </ul>
 </li>
-<li><a href="#id_modbus_service">12. Modbus Server</a>
+<li><a href="#id_modbus_service">9. Modbus Server</a>
 <ul class="sectlevel2">
-<li><a href="#_example">12.1. Example</a></li>
+<li><a href="#_example">9.1. Example</a></li>
 </ul>
 </li>
-<li><a href="#_authors">13. Authors</a></li>
+<li><a href="#_authors">10. Authors</a></li>
 </ul>
 </div>
 </div>
@@ -626,7 +628,7 @@ own OpenMUC application.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>To start OpenMUC on Window run:</p>
+<p>To start OpenMUC on Windows run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -643,11 +645,6 @@ are started is the Apache Gogo shell. This shell is entered once you
 run OpenMUC.</p>
 </div>
 <div class="paragraph">
-<p>The shell can be used to start, stop, and reload bundles among other
-things. You can stop and exit the OSGi framework any time by typing "ctrl+d"
-or "stop 0".</p>
-</div>
-<div class="paragraph">
 <p>Now type "lb" to list all installed bundles.</p>
 </div>
 <div class="paragraph">
@@ -655,62 +652,14 @@ or "stop 0".</p>
 the OpenMUC core bundles, two data loggers (ASCII and SlotsDB) as well
 as the CSV driver.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_framework_files">2.2. Framework Files</h3>
 <div class="paragraph">
-<p>The folder "framework" contains a configured OpenMUC framework that
-can be used as a basis to create your own customized OpenMUC framework
-for your task. The framework folder contains the following important
-files and folders:</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">felix</dt>
-<dd>
-<p>The main Apache Felix OSGi jar which is run to start OpenMUC.</p>
-</dd>
-<dt class="hdlist1">bin</dt>
-<dd>
-<p>Run scripts for Linux/Unix and Windows.</p>
-</dd>
-<dt class="hdlist1">bundle</dt>
-<dd>
-<p>Contains all bundles that are started by the Felix OSGi
-framework. Note that this folder does not contain all available
-OpenMUC bundles but only a subset for demonstration purposes.</p>
-</dd>
-<dt class="hdlist1">log</dt>
-<dd>
-<p>Log files produced by the running framework.</p>
-</dd>
-<dt class="hdlist1">conf</dt>
-<dd>
-<p>Various configuration files of the framework.</p>
-</dd>
-</dl>
+<p>The shell can be used to start, stop, and reload bundles among other
+things. You can stop and exit the OSGi framework any time by typing "ctrl+d"
+or "stop 0".</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_configuration">2.3. Configuration</h3>
-<div class="paragraph">
-<p>One of the most important configuration files is
-conf/channels.xml. This file tells the OpenMUC Data Manager which data
-it shall sample, listen for, and log. This is done by configuring so
-called channels. Each channel represents a single data point whose
-value can be an integer, double, string or byte array.</p>
-</div>
-<div class="paragraph">
-<p>The demo&#8217;s channels.xml configures among others channels whose values
-are read by the CSV driver. The channels are sampled/read and logged
-every 5 seconds.</p>
-</div>
-<div class="paragraph">
-<p>For more information about the channels.xml see the <a href="#anchor-configuration">configuration</a> chapter.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_webui_walk_through">2.4. WebUI Walk Through</h3>
+<h3 id="_webui_walk_through">2.2. WebUI Walk Through</h3>
 <div class="paragraph">
 <p>This section leads you through the framework&#8217;s WebUI.</p>
 </div>
@@ -725,6 +674,12 @@ various plugins for configuration and visualization. A full
 description of the plugins can be found in the chapter
 <a href="#anchor-web-ui">Web UI</a>.</p>
 </div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="images/webui-dashboard.png"><img src="images/webui-dashboard.png" alt="webui dashboard" width="60%"></a>
+</div>
+<div class="title">Figure 1. WebUI Dashboard</div>
+</div>
 <div class="paragraph">
 <p>Let us first look at the Channel Access Tool which provides the
 current value of each channel and also enables you to write
@@ -736,7 +691,7 @@ OpenMUC. Select the <em>home1</em> and proceed with <em>Access selected</em>.</p
 <div class="content">
 <a class="image" href="images/webui-channelaccesstool-device-selection.png"><img src="images/webui-channelaccesstool-device-selection.png" alt="webui channelaccesstool device selection" width="60%"></a>
 </div>
-<div class="title">Figure 1. WebUI device selection</div>
+<div class="title">Figure 2. WebUI device selection</div>
 </div>
 <div class="paragraph">
 <p>On the next page you will see the latest records of all channels of
@@ -747,7 +702,7 @@ sampled and a quality flag.</p>
 <div class="content">
 <a class="image" href="images/webui-channelaccesstool-channels.png"><img src="images/webui-channelaccesstool-channels.png" alt="webui channelaccesstool channels" width="60%"></a>
 </div>
-<div class="title">Figure 2. WebUI channel access tool</div>
+<div class="title">Figure 3. WebUI channel access tool</div>
 </div>
 <div class="paragraph">
 <p>Let&#8217;s have look at the <em>Data Plotter</em>. To get to the <em>Data Plotter</em>
@@ -758,7 +713,7 @@ Plotter</em>.</p>
 <div class="content">
 <a class="image" href="images/webui-dataplotter.png"><img src="images/webui-dataplotter.png" alt="webui dataplotter" width="60%"></a>
 </div>
-<div class="title">Figure 3. WebUI data plotter</div>
+<div class="title">Figure 4. WebUI data plotter</div>
 </div>
 <div class="paragraph">
 <p>Select the <em>Live</em> Data Plotter. To view the live data select the channels of your choice and
@@ -768,10 +723,19 @@ click <em>Plot Data</em>.</p>
 <div class="content">
 <a class="image" href="images/webui-dataplotter-live.png"><img src="images/webui-dataplotter-live.png" alt="webui dataplotter live" width="60%"></a>
 </div>
-<div class="title">Figure 4. WebUI live plotter</div>
+<div class="title">Figure 5. WebUI live plotter</div>
+</div>
+<div class="paragraph">
+<p>The last WebUI plugin we want to look at is a customised visualisation for our demo application. Click on <em>Applications</em> and select <em>Simple Demo Visualisation</em>. The purpose of this plugin is to show how OpenMUC channels can be accessed and used for individual visualisations. Detailed informations about the development of such a plugin can be found in the <a href="#anchor-tutorial-webui-plugin">Tutorial Develop a Customised WebUI Plugin</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="images/simpleDemoVisualisation.png"><img src="images/simpleDemoVisualisation.png" alt="simpleDemoVisualisation" width="60%"></a>
+</div>
+<div class="title">Figure 6. WebUI customised visualisation</div>
 </div>
 <div class="sect3">
-<h4 id="_add_a_new_channel">2.4.1. Add a New Channel</h4>
+<h4 id="_add_a_new_channel">2.2.1. Add a New Channel</h4>
 <div class="paragraph">
 <p>All channels currently defined get their data using the CSV driver
 from the file "csv-driver/home1.csv". That file contains additional
@@ -811,8 +775,10 @@ of the pv_energy_production channel.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tutorial_simple_m_bus_data_logger">3. Tutorial - Simple M-Bus Data Logger</h2>
+<h2 id="_tutorials">3. Tutorials</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_build_a_simple_m_bus_data_logger">3.1. Build a Simple M-Bus Data Logger</h3>
 <div class="paragraph">
 <p><strong>Objective:</strong> You will learn how to create a simple data logger which reads out a M-Bus meter via serial communication. It uses OpenMUC on-board tools so no programming is required.</p>
 </div>
@@ -882,6 +848,16 @@ osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"</pre>
 <li>
 <p>Now the M-Bus driver appears under <em>Channel Configurator</em> &gt; <em>Tab Drivers</em>. Click on the search icon</p>
 </li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="images/tutorial_mbus_logger_channel_configurator.png"><img src="images/tutorial_mbus_logger_channel_configurator.png" alt="tutorial mbus logger channel configurator" width="400"></a>
+</div>
+<div class="title">Figure 7. WebUI data plotter</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
 <li>
 <p>Enter the serial port the meter is connected to and provide the baud rate if needed (e.g. /dev/ttyS0 or /dev/ttyS0:2400). See M-Bus driver section for more information.</p>
 </li>
@@ -894,7 +870,7 @@ osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"</pre>
 <div class="content">
 <a class="image" href="images/tutorial_mbus_logger_driver_scan.png"><img src="images/tutorial_mbus_logger_driver_scan.png" alt="tutorial mbus logger driver scan" width="400"></a>
 </div>
-<div class="title">Figure 5. WebUI M-Bus device scan</div>
+<div class="title">Figure 8. WebUI M-Bus device scan</div>
 </div>
 </li>
 <li>
@@ -906,7 +882,7 @@ osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"</pre>
 <div class="content">
 <a class="image" href="images/tutorial_mbus_logger_channel_scan.png"><img src="images/tutorial_mbus_logger_channel_scan.png" alt="tutorial mbus logger channel scan" width="400"></a>
 </div>
-<div class="title">Figure 6. WebUI M-Bus channel scan</div>
+<div class="title">Figure 9. WebUI M-Bus channel scan</div>
 </div>
 </li>
 <li>
@@ -918,7 +894,7 @@ osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"</pre>
 <div class="content">
 <a class="image" href="images/tutorial_mbus_logger_channel_access_tool.png"><img src="images/tutorial_mbus_logger_channel_access_tool.png" alt="tutorial mbus logger channel access tool" width="400"></a>
 </div>
-<div class="title">Figure 7. WebUI channel access tool</div>
+<div class="title">Figure 10. WebUI channel access tool</div>
 </div>
 </li>
 </ol>
@@ -937,9 +913,549 @@ osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"</pre>
 </ul>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_develop_a_customised_application">3.2. Develop a Customised Application</h3>
+<div class="paragraph">
+<p><strong>Objective:</strong> You will learn how to develop your own OpenMUC application. This tutorial focuses on the Eclipse integration, build process and how to start your application in the felix OSGi framework.</p>
+</div>
+<div class="paragraph">
+<p><strong>Preparation:</strong> This tutorial is based on Eclipse IDE and Gradle build tool, therefore you need Eclipse IDE and Gradle installed on your pc.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step-by-step</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download and unpack the OpenMUC framework. Open a terminal and navigate to the openmuc folder</p>
+</li>
+<li>
+<p>Create a new project based on the simple demo application. Navigate to openmuc/projects/app and copy the simpledemo folder and rename the copy to <em>ems</em> (Energy Management System).</p>
+</li>
+<li>
+<p>Edit the build.gradle file inside your <em>ems</em> folder. Rename the project name and description and save the file.</p>
+<div class="listingblock">
+<div class="content">
+<pre>def projectName = "EMS"
+...
+description "OpenMUC Energy Management System.."</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Navigate to app/ems/src/main/java/org/openmuc/framework/app/ and rename the folder simpledemo to ems</p>
+</li>
+<li>
+<p>Replace the SimpleDemoApp.java inside this ems folder with EmsApp.java.</p>
+<div class="listingblock">
+<div class="content">
+<pre>package org.openmuc.framework.app.simpledemo;
+
+import org.openmuc.framework.data.Record;
+import org.openmuc.framework.dataaccess.Channel;
+import org.openmuc.framework.dataaccess.DataAccessService;
+import org.openmuc.framework.dataaccess.RecordListener;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Component(service = {})
+public final class EmsApp{
+
+	private static final Logger logger = LoggerFactory.getLogger(EmsApp.class);
+	private static final String APP_NAME = "OpenMUC EMS App";
+
+	private Channel chPowerGrid;
+	private RecordListener powerListener;
+
+	@Reference
+	private DataAccessService dataAccessService;
+
+	@Activate
+	private void activate() {
+		logger.info("Activating {}", APP_NAME);
+		powerListener = new PowerListener();
+		chPowerGrid = dataAccessService.getChannel("power_grid");
+		chPowerGrid.addListener(powerListener);
+	}
+
+	@Deactivate
+	private void deactivate() {
+		logger.info("Deactivating {}", APP_NAME);
+		chPowerGrid.removeListener(powerListener);
+	}
+}
+
+class PowerListener implements RecordListener{
+
+	private static final Logger logger = LoggerFactory.getLogger(PowerListener.class);
+
+	@Override
+	public void newRecord(Record record) {
+		if (record.getValue() != null) {
+			logger.info("&gt;&gt;&gt; grid power: {}", record.getValue().asDouble());
+		}
+	}
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is a light version of the simple demo application and basically adds a listener to the power_grid channel and logs the current value. This class can be used for further development of your application.</p>
+</div>
+</li>
+<li>
+<p>Now we add our project to the gradle build process. For this purpose open the openmuc/settings.gradle in an editor and append following statement to the include statement</p>
+<div class="listingblock">
+<div class="content">
+<pre>, "openmuc-app-ems"</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Furthermore you need to add following line at the end of settings.gradle</p>
+<div class="listingblock">
+<div class="content">
+<pre>project(":openmuc-app-ems").projectDir = file("projects/app/ems")</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Now we create the Eclipse project files by running the following command in the openmuc main directory</p>
+<div class="listingblock">
+<div class="content">
+<pre>gradle eclipse</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start your Eclipse IDE and set the GRADLE_USER_HOME classpath variable: Go to Window&gt;Preferences&gt;Java&gt;Build Path&gt;Classpath Variable. Set the variable GRADLE_USER_HOME to the path of the ~/.gradle folder in your home directory (e.g. /home/&lt;user_name&gt;/.gradle/</p>
+</li>
+<li>
+<p>Import the Openmuc projects into Eclipse: Go to File&gt;Import&gt;General&gt;Existing Projects into Workspace, select your OpenMUC directory and click on Finish. All projects should be imported without any errors.</p>
+</li>
+<li>
+<p>Now add the EMS application to the OpenMUC Framework. Navigate openmuc/framework/conf and and following line to bundles.conf.gradle below the openmuc-app-simpledemo entry:</p>
+<div class="listingblock">
+<div class="content">
+<pre>osgibundles group: "org.openmuc.framework", name: "openmuc-app-ems",                   version: openmucVersion</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Finally we build the framework and start our application. Navigate to openmuc/framework/bin and run:</p>
+<div class="listingblock">
+<div class="content">
+<pre>./openmuc update-bundles -i</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will build all bundles and copies them to /openmuc/framework/bundles. Our EMS app should be now inside this folder e.g. openmuc-app-ems-&lt;version&gt;.jar</p>
+</div>
+</li>
+<li>
+<p>Start the framework with:</p>
+<div class="listingblock">
+<div class="content">
+<pre>./openmuc start -fg</pre>
+</div>
+</div>
+</li>
+<li>
+<p>The log messages of our EMS application are now visible in the terminal e.g:</p>
+<div class="listingblock">
+<div class="content">
+<pre>2018-12-17 19:10:20.015 [...] INFO  o.o.framework.app.simpledemo.EmsApp - &gt;&gt;&gt; grid power: -1.779
+2018-12-17 19:10:25.006 [...] INFO  o.o.framework.app.simpledemo.EmsApp - &gt;&gt;&gt; grid power: -1.761</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Now you know all the steps to build a new application and get it running in OpenMUC. For further development you should have a look at the source code of the SimpleDemoApp.java.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anchor-tutorial-webui-plugin">3.3. Develop a Customised WebUI Plugin</h3>
+<div class="paragraph">
+<p><strong>Objective:</strong> In this tutorial you will learn how to add a plugin to the WebUI as well as how to display data from your configured channels. Examples for such plugins are the <em>simpledemovisualisation</em> bundle or the
+<a href="https://www.openmuc.org/projects/heiphoss/">HeiPhoss WebUI</a></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<strong>This tutorial describes how we developed the simpledemovisualisation. When creating your own plugin you can just replace the name <em>simpledemovisualisation</em> whenever it comes up in the tutorial.</strong>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Preparation:</strong> You should be familiar with OpenMUC&#8217;s <a href="#anchor-architecture">architecture</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step-by-step</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>First we have to create a new Project with the Structure</p>
+<div class="listingblock">
+<div class="content">
+<pre>openmuc/projects/webui/simpledemovisualisation</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Now copy the build.gradle file from one of the existing WebUI plugins, for example:</p>
+<div class="listingblock">
+<div class="content">
+<pre>openmuc/projects/webui/channelaccesstool/build.gradle</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>into this project and change the projectName and projectDescription</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>def projectName = "OpenMUC WebUI - Simple Demo Visualisation"
+def projectDescription = "Simple Demo Visualisation plug-in for the WebUI of the OpenMUC framework."</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open openmuc/configuration.gradle and add the following line under distributionProjects = javaProjects.findAll</p>
+<div class="listingblock">
+<div class="content">
+<pre>it.getPath() == ":openmuc-webui-simpledemovisualisation" ||</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open openmuc/settings.gradle and add the following line under OpenMUC WebUI Bundles</p>
+<div class="listingblock">
+<div class="content">
+<pre>project(":openmuc-webui-simpledemovisualisation").projectDir = file('projects/webui/simpledemovisualisation')</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open openmuc/framework/config/bundles.conf.gradle and add the following line under dependencies</p>
+<div class="listingblock">
+<div class="content">
+<pre>osgibundles group: "org.openmuc.framework", name: "openmuc-webui-simpledemovisualisation", version: openmucVersion</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next we will take a look at how our project should be structured once we are done</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="images/simpleDemoVisualisationTree.png"><img src="images/simpleDemoVisualisationTree.png" alt="simpleDemoVisualisationTree" width="960"></a>
+</div>
+</div>
+</li>
+<li>
+<p>First we will take a look at the java file. Recreate the folder structure above and create the java file SimpleDemoVisualisation.java, and then copy this into it</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">org.openmuc.framework.webui.spi.WebUiPluginService</span>;
+<span class="keyword">import</span> <span class="include">org.osgi.service.component.annotations.Component</span>;
+
+<span class="annotation">@Component</span>(service = WebUiPluginService.class)
+<span class="directive">public</span> <span class="directive">final</span> <span class="type">class</span> <span class="class">SimpleDemoVisualisation</span> <span class="directive">extends</span> WebUiPluginService {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> getAlias() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">simpledemovisualisation</span><span class="delimiter">&quot;</span></span>;
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> getName() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Simple Demo Visualisation</span><span class="delimiter">&quot;</span></span>;
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The two functions getAlias and getName have to be overridden. The alias is used to identify the plugin while the name will be displayed in the WebUI. In order to display an icon above the plugin&#8217;s name, the file needs to be called icon and put in the images folder.</p>
+</div>
+</li>
+<li>
+<p>Next we will take a look at app.js and app.routes.js. In app.js all we do is creating a module and naming it.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">(<span class="keyword">function</span>(){
+        angular.module(<span class="string"><span class="delimiter">'</span><span class="content">openmuc.openmuc-visu</span><span class="delimiter">'</span></span>, []);
+})();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The more interesting one is app.routes.js because it is responsible for allowing us to get from the main page to the page of our plugin. It also allows us to specify which files have to be loaded.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">(<span class="keyword">function</span>(){
+
+    <span class="keyword">var</span> app = angular.module(<span class="string"><span class="delimiter">'</span><span class="content">openmuc</span><span class="delimiter">'</span></span>);
+
+    app.config([<span class="string"><span class="delimiter">'</span><span class="content">$stateProvider</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">$urlRouterProvider</span><span class="delimiter">'</span></span>,
+        <span class="keyword">function</span>(<span class="predefined">$stateProvider</span>, <span class="predefined">$urlRouterProvider</span>) {
+            <span class="predefined">$stateProvider</span>.
+            state(<span class="string"><span class="delimiter">'</span><span class="content">simpledemovisualisation</span><span class="delimiter">'</span></span>, {
+                <span class="key">url</span>: <span class="string"><span class="delimiter">'</span><span class="content">/simpledemovisualisation</span><span class="delimiter">'</span></span>,
+                <span class="key">templateUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">simpledemovisualisation/html/index.html</span><span class="delimiter">'</span></span>,
+                <span class="key">requireLogin</span>: <span class="predefined-constant">true</span>
+            }).
+            state(<span class="string"><span class="delimiter">'</span><span class="content">simpledemovisualisation.index</span><span class="delimiter">'</span></span>, {
+                <span class="key">url</span>: <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>,
+                <span class="key">templateUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">simpledemovisualisation/html/graphic.html</span><span class="delimiter">'</span></span>,
+                <span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">VisualisationController</span><span class="delimiter">'</span></span>,
+                <span class="key">requireLogin</span>: <span class="predefined-constant">true</span>,
+                <span class="key">resolve</span>: {
+                    <span class="function">openmuc</span>: <span class="keyword">function</span> (<span class="predefined">$ocLazyLoad</span>) {
+                        <span class="keyword">return</span> <span class="predefined">$ocLazyLoad</span>.load(
+                            {
+                                <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">openmuc.simpledemovisualisation</span><span class="delimiter">'</span></span>,
+                                <span class="key">files</span>: [<span class="string"><span class="delimiter">'</span><span class="content">openmuc/js/channels/channelsService.js</span><span class="delimiter">'</span></span>,
+                                    <span class="string"><span class="delimiter">'</span><span class="content">openmuc/js/channels/channelDataService.js</span><span class="delimiter">'</span></span>,
+                                    <span class="string"><span class="delimiter">'</span><span class="content">simpledemovisualisation/css/simpledemovisualisation/main.css</span><span class="delimiter">'</span></span>,
+                                   <span class="string"><span class="delimiter">'</span><span class="content">simpledemovisualisation/js/visu/VisualisationController.js</span><span class="delimiter">'</span></span>]
+                            }
+                        )
+                    }
+                }
+            })
+        }]);
+
+})();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All files you need have to be added to the list "files" in order for the plugin to work. The first two files we load are necessary to access the defined channels. Then we load in our css file and lastly the javascript file of this plugin.</p>
+</div>
+</li>
+<li>
+<p>For the Plugin created in this tutorial we will need an svg that is put into the image folder. The SimpleDemoGraphic.svg used in this tutorial is made up of multiple images, paths as well as text fields. In this case only the text fields are of interest.</p>
+</li>
+<li>
+<p>The two html files used in this app are very simple, index.html sets the headline and then calls on graphic.html through ui-view. Ui-view calls upon the route defined in app.routes.js.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="HTML"><span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">page-header</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>OpenMUC Visualisation<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attribute-name">ui-view</span><span class="tag">&gt;</span><span class="tag">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In graphic.html we create a div element and assign it the class svg-container. We then create an object HTML element inside the div and assign it the class svg-content.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="HTML"><span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">svg-container</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;object</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">simpleDemoGraphic</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">image/svg+xml</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">data</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">simpledemovisualisation/images/SimpleDemoGraphic.svg</span><span class="delimiter">&quot;</span></span>
+  <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">svg-content</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">onload</span>=<span class="string"><span class="delimiter">&quot;</span>display_visualisation()<span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/object&gt;</span>
+<span class="tag">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Further we also assign it an Id, in this case simpleDemoGraphic, specify that it is of the type svg and tell it where our svg is located. This way our svg is now displayed on the page, but in order to change elements of the svg we need a javascript function which is called through onload.</p>
+</div>
+</li>
+<li>
+<p>In order to specify how our page should be displayed we use a css file.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="CSS"><span class="tag">html</span>, <span class="tag">body</span> {
+    <span class="key">font-family</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Arial</span><span class="delimiter">&quot;</span></span>;
+    <span class="key">margin</span>: <span class="float">0px</span>;
+    <span class="key">padding</span>: <span class="float">0px</span>;
+}
+
+<span class="class">.svg-container</span> {
+    <span class="key">display</span>: <span class="value">inline-block</span>;
+    <span class="key">position</span>: <span class="value">relative</span>;
+    <span class="key">width</span>: <span class="float">1108px</span>;
+    <span class="key">height</span>: <span class="float">760px</span>;
+    <span class="key">border</span>:<span class="float">1px</span> <span class="value">solid</span> <span class="value">black</span>;
+}
+
+<span class="class">.svg-content</span> {
+    <span class="key">display</span>: <span class="value">block</span>;
+    <span class="key">position</span>: <span class="value">absolute</span>;
+    <span class="key">width</span>: <span class="float">1106px</span>;
+    <span class="key">height</span>: <span class="float">740px</span>;
+    <span class="key">top</span>: <span class="float">0</span>;
+    <span class="key">left</span>: <span class="float">0</span>;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this css file we tell the browser how the html elements should look and be positioned. If the declaration starts with a dot it signifies all elements with the specified class being targeted, a hash would signify an element with that Id being targeted and nothing signifies all html elements of that type should be targeted.</p>
+</div>
+</li>
+<li>
+<p>By default the svg will have an eight pixel margin on each side, meaning there will be white space between the border and svg. If you dont want that you need to open the svg in a text editor and add a style tag after the svg tag as shown below</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="HTML"><span class="tag">&lt;svg</span>
+   <span class="attribute-name">xmlns:osb</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.openswatchbook.org/uri/2009/osb</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">xmlns:dc</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://purl.org/dc/elements/1.1/</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">xmlns:cc</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://creativecommons.org/ns#</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">xmlns:rdf</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/1999/02/22-rdf-syntax-ns#</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">xmlns:svg</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/2000/svg</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">xmlns</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/2000/svg</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">xmlns:xlink</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/1999/xlink</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">xmlns:sodipodi</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">xmlns:inkscape</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.inkscape.org/namespaces/inkscape</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">width</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">100%</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">height</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">100%</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">viewBox</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">0 0 573.61664 357.1875</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">version</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">1.1</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">svg8</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">inkscape:version</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">0.92.3 (2405546, 2018-03-11)</span><span class="delimiter">&quot;</span></span>
+   <span class="attribute-name">sodipodi:docname</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">SimpleDemoGraphic.svg</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;style</span>
+     <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text/css</span><span class="delimiter">&quot;</span></span>
+     <span class="attribute-name">media</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">screen</span><span class="delimiter">&quot;</span></span>
+     <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">style5004</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="inline"><span class="error">&lt;</span><span class="error">!</span>[<span class="attribute-name">CDATA[
+      body{
+         margin: 0px;
+      }
+    </span>]<span class="error">]</span>&gt;</span><span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We cannot change the css of the svg from our css file so we have to do it inside the svg.</p>
+</div>
+</li>
+<li>
+<p>Finally we take a look at the javascript file that will allow us to display data in real time.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">(<span class="keyword">function</span>(){
+
+    <span class="keyword">var</span> injectParams = [<span class="string"><span class="delimiter">'</span><span class="content">$scope</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">$interval</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">ChannelsService</span><span class="delimiter">'</span></span>];
+
+    <span class="keyword">var</span> <span class="function">VisualisationController</span> = <span class="keyword">function</span>(<span class="predefined">$scope</span>, <span class="predefined">$interval</span>, ChannelsService) {
+        <span class="keyword">var</span> svg_document;
+
+        <span class="function">display_visualisation</span> = <span class="keyword">function</span>() {</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here we "import" the angular functions $scope and $interval as well as the class ChannelsService. Next we take a look at the function display_visualisation that is called when the html page loads.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">svg_document = document.getElementById(<span class="string"><span class="delimiter">'</span><span class="content">simpleDemoGraphic</span><span class="delimiter">'</span></span>).contentDocument;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Through this line of code we now have access to the svg in javascript. We achieve this by calling document.getElementById with the id of our object element as a parameter. The contentDocument means that the return value is the document object, otherwise the return would have just been the content of the document, in which case we could not use it in the way we need to later.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">    <span class="predefined">$scope</span>.interval = <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>;
+    <span class="predefined">$interval</span>.cancel(<span class="predefined">$scope</span>.interval);
+    <span class="predefined">$scope</span>.interval = <span class="predefined">$interval</span>(<span class="keyword">function</span>(){
+        ...
+    }, <span class="integer">500</span>);
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>What follows is defined inside this interval, meaning it will be repeated every 500 milliseconds.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">ChannelsService.getAllChannels().then(async <span class="keyword">function</span>(channels) {
+                    <span class="predefined">$scope</span>.channels = await channels.records;
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here we call the function getAllChannels of the class ChannelsService. It makes a get call to the REST server and returns all the channels defined in the channels.xml. The "then" means that whatever is in the round brackets will be executed after getAllChannels' return value arrives. Inside these round brackets we define an async function with getAllChannels' return value as a parameter. The list records of the return value contains the requested channels, so we save them in the list $scope.channels. Normally the rest of the code would be exectued while getAllChannels waits for a reply, in which case our code would fail as $scope.channels would be undefined, but the await keyword in conjunction with marking the function as async makes it so the code only resumes executing once the await has been resolved.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="keyword">if</span> (<span class="predefined">$scope</span>.channels != <span class="predefined-constant">undefined</span>){
+    <span class="predefined">$scope</span>.channels.forEach(<span class="keyword">function</span>(channel){
+        <span class="keyword">if</span> (channel.id === <span class="string"><span class="delimiter">&quot;</span><span class="content">power_heatpump</span><span class="delimiter">&quot;</span></span>){
+            textHeatPump = svg_document.getElementById(<span class="string"><span class="delimiter">&quot;</span><span class="content">textHeatPump</span><span class="delimiter">&quot;</span></span>);
+            textHeatPump.textContent = channel.record.value + <span class="string"><span class="delimiter">&quot;</span><span class="content"> kW</span><span class="delimiter">&quot;</span></span>;
+        }
+        <span class="keyword">if</span> (channel.id === <span class="string"><span class="delimiter">&quot;</span><span class="content">power_electric_vehicle</span><span class="delimiter">&quot;</span></span>){
+            textChargingStation = svg_document.getElementById(<span class="string"><span class="delimiter">&quot;</span><span class="content">textChargingStation</span><span class="delimiter">&quot;</span></span>);
+            textChargingStation.textContent = channel.record.value + <span class="string"><span class="delimiter">&quot;</span><span class="content"> kW</span><span class="delimiter">&quot;</span></span>;
+        }
+        <span class="keyword">if</span> (channel.id === <span class="string"><span class="delimiter">&quot;</span><span class="content">power_photovoltaics</span><span class="delimiter">&quot;</span></span>){
+            textPv = svg_document.getElementById(<span class="string"><span class="delimiter">&quot;</span><span class="content">textPv</span><span class="delimiter">&quot;</span></span>);
+            textPv.textContent = channel.record.value + <span class="string"><span class="delimiter">&quot;</span><span class="content"> kW</span><span class="delimiter">&quot;</span></span>;
+        }
+        <span class="keyword">if</span> (channel.id === <span class="string"><span class="delimiter">&quot;</span><span class="content">power_grid</span><span class="delimiter">&quot;</span></span>){
+            textGrid = svg_document.getElementById(<span class="string"><span class="delimiter">&quot;</span><span class="content">textGrid</span><span class="delimiter">&quot;</span></span>);
+            textGrid.textContent = channel.record.value + <span class="string"><span class="delimiter">&quot;</span><span class="content"> kW</span><span class="delimiter">&quot;</span></span>;
+        }
+    });
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First we check if our list is not undefined as it is possible that the during the first interval there wont be any data to work with. Now we iterate through our channels list to find the channels we need. Once we found the right channel, we search for the corresponding text field and save the reference to it in a variable. By setting the textContent of the text field we can change what is displayed, in this case the channel&#8217;s value is displayed in the text field. Now we set the interval and close the function definition as shown above.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">        <span class="predefined">$scope</span>.<span class="predefined">$on</span>(<span class="string"><span class="delimiter">'</span><span class="content">$destroy</span><span class="delimiter">'</span></span>, <span class="keyword">function</span> () {
+            <span class="predefined">$interval</span>.cancel(<span class="predefined">$scope</span>.interval);
+        });
+
+        };
+
+    VisualisationController.<span class="predefined">$inject</span> = injectParams;
+
+    angular.module(<span class="string"><span class="delimiter">'</span><span class="content">openmuc.openmuc-visu</span><span class="delimiter">'</span></span>).controller(<span class="string"><span class="delimiter">'</span><span class="content">VisualisationController</span><span class="delimiter">'</span></span>, VisualisationController);
+
+})();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After that we tell the function to stop the interval if the scope&#8217;s destroy event is triggered and that the in app.js defined module should use this controller.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Tips</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you want to change the css of the svg at runtime you can do so through javascript similarly to the manipulation of the text field above.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">textHeatPump.style.fill = <span class="string"><span class="delimiter">&quot;</span><span class="content">blue</span><span class="delimiter">&quot;</span></span>;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This would set the text color of the text field to blue</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div class="sect1">
-<h2 id="_architecture">4. Architecture</h2>
+<h2 id="anchor-architecture">4. Architecture</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The following image depicts the software layers of an OpenMUC
@@ -949,7 +1465,7 @@ system.</p>
 <div class="content">
 <a class="image" href="images/openmuc-software-layers.png"><img src="images/openmuc-software-layers.png" alt="openmuc software layers" width="60%"></a>
 </div>
-<div class="title">Figure 8. OpenMUC software layers</div>
+<div class="title">Figure 11. OpenMUC software layers</div>
 </div>
 <div class="paragraph">
 <p>The OpenMUC framework runs within an OSGi environment which in turn is
@@ -966,7 +1482,7 @@ main modules that make up OpenMUC.</p>
 <div class="content">
 <a class="image" href="images/openmuc-bundles-with-numbers.png"><img src="images/openmuc-bundles-with-numbers.png" alt="openmuc bundles with numbers" width="60%"></a>
 </div>
-<div class="title">Figure 9. OpenMUC modules</div>
+<div class="title">Figure 12. OpenMUC modules</div>
 </div>
 <div class="paragraph">
 <p>All modules except for the data manager are optional. Thus by
@@ -1073,11 +1589,8 @@ want to create their own individual UI.</p>
 </li>
 </ol>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_distribution">5. Distribution</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_file_structure_of_the_distribution">4.1. File Structure of the Distribution</h3>
 <div class="paragraph">
 <p>The distribution contains the following important files and folders:</p>
 </div>
@@ -1106,235 +1619,43 @@ rebuild OpenMUC using Gradle.</p>
 </dl>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="anchor-start-script">6. OpenMUC start script</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_framework_files">4.2. Framework Files</h3>
 <div class="paragraph">
-<p>To start OpenMUC on Linux run:</p>
+<p>The folder "framework" contains a configured OpenMUC framework that
+can be used as a basis to create your own customized OpenMUC framework
+for your task. The framework folder contains the following important
+files and folders:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>./bin/openmuc start</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This runs OpenMUC as a background process. If you want to run OpenMUC
-in the foreground run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./bin/openmuc start -fg</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To start OpenMUC under Window run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>bin\openmuc.bat</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The Linux start script is a sophisticated bash script that can be used
-to start, stop, restart OpenMUC. The Windows run script is a simple
-bat file that starts OpenMUC. The following explanations will focus on
-using OpenMUC in a Linux environment as it is the more common
-scenario.</p>
-</div>
-<div class="paragraph">
-<p>Starting OpenMUC really means running the Felix OSGi Framework by
-executing</p>
-</div>
-<div class="paragraph">
-<p>java -jar felix/felix.jar</p>
-</div>
-<div class="paragraph">
-<p>The Felix OSGi Framework will then start all bundles located in the
-"bundle" folder.</p>
-</div>
-<div class="paragraph">
-<p>When you start OpenMUC in the foreground you will enter the Felix Gogo
-shell. From the shell you can start, stop and reload bundles among
-many other things. To quit the shell and stop the framework press
-ctrl+d or enter "stop 0".</p>
-</div>
-<div class="paragraph">
-<p>If OpenMUC was started as a background process you can access the Gogo
-shell using telnet:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>netcat 127.0.0.1 6666</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>or using the openmuc run script</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./bin/openmuc remote-shell</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Pressing ctrl+d will exit the remote shell but not stop the openmuc framework.</p>
-</div>
-<div class="paragraph">
-<p>To stop OpenMUC run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./bin/openmuc stop</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To reload a new configuration without restarting:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./bin/openmuc reload</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To restart a running OpenMUC (stop/start):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./bin/openmuc restart</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To update the bundles in the bundle folder after e.g. changing bundles.conf.gradle
-Before using this the first time see the next point.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./bin/openmuc update-bundles</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>For building and installing the sources of OpenMUC with updating the bundles:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./bin/openmuc update-bundles -i</pre>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">felix</dt>
+<dd>
+<p>The main Apache Felix OSGi jar which is run to start OpenMUC.</p>
+</dd>
+<dt class="hdlist1">bin</dt>
+<dd>
+<p>Run scripts for Linux/Unix and Windows.</p>
+</dd>
+<dt class="hdlist1">bundle</dt>
+<dd>
+<p>Contains all bundles that are started by the Felix OSGi
+framework. Note that this folder does not contain all available
+OpenMUC bundles but only a subset for demonstration purposes.</p>
+</dd>
+<dt class="hdlist1">log</dt>
+<dd>
+<p>Log files produced by the running framework.</p>
+</dd>
+<dt class="hdlist1">conf</dt>
+<dd>
+<p>Various configuration files of the framework.</p>
+</dd>
+</dl>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_auto_start_at_boot_time">6.1. Auto-start at Boot Time</h3>
-<div class="paragraph">
-<p>On Debian based Linux distributions it is easy to configure automatic
-start of OpenMUC at boot time. As root execute the following commands:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>ln -s /path/to/openmuc/bin/openmuc /etc/init.d/openmuc
-update-rc.d openmuc defaults</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above solution will not work if the openmuc start script is
-located on a partion that is not yet mounted at the time the boot
-process attempts to open it. In this case you need copy the start
-script to /etc/init.d/ and edit it to set the OPENMUC_HOME variable.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_install_a_driver">7. Install a Driver</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>For installing a new driver you have two possible ways.</p>
-</div>
-<div class="sect2">
-<h3 id="_copy_driver">7.1. Copy driver</h3>
-<div class="paragraph">
-<p>Copy the corresponding driver jar file from the folder "build/libs-all/" to the
-"bundle" folder of the framework. Many drivers are "fat jars" which include their
-dependencies. An exception is the RXTX library which cannot be packed
-with the jars.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_editing_bundles_configuration">7.2. Editing bundles configuration</h3>
-<div class="paragraph">
-<p>In /openmuc/framework/conf/bundles.conf.gradle you can find the list of all used
-bundles e.g.:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv", version: openmucVersion
-
-osgibundles group: "org.openmuc.framework", name: "openmuc-webui-spi",  version: openmucVersion
-osgibundles group: "org.openmuc.framework", name: "openmuc-webui-base", version: openmucVersion</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you want to add a new driver to the list, e.g. M-Bus, you can do this:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv",  version: openmucVersion
-osgibundles group: "org.openmuc.framework", name: "openmuc-driver-mbus", version: openmucVersion
-osgibundles group: "org.openmuc",           name: "jrxtx",               version: "1.0.1"
-
-osgibundles group: "org.openmuc.framework", name: "openmuc-webui-spi",   version: openmucVersion
-osgibundles group: "org.openmuc.framework", name: "openmuc-webui-base",  version: openmucVersion</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Afterwards you have to execute in /openmuc/framework/bin/</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./openmuc update-bundles</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If this is the first time using ./openmuc update-bundles you have to add the parameter -i</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./openmuc update-bundles -i</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_use_a_driver_with_serial_communication">7.3. Use a Driver with Serial Communication</h3>
-<div class="paragraph">
-<p>When you need to use a driver that uses serial communication you have
-to copy the RXTX bundle to the frameworks "bundle" folder.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>cp ../dependencies/rxtx/jrxtx-1.0.1.jar ./bundle/</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Additionally you need to install librxtx-java:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo apt-get install librxtx-java</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The serial ports /dev/tty* are only accessible to members belonging to
-the group dialout. We therefore have to add our user to that
-group. E.g. using:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo adduser &lt;yourUserName&gt; dialout</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_devices_and_channels">8. Devices and Channels</h2>
-<div class="sectionbody">
+<h3 id="_devices_and_channels">4.3. Devices and Channels</h3>
 <div class="paragraph">
 <p>OpenMUC works on the basis of channels. A channel basically represents
 a single data point. Some examples for a channel are the metered
@@ -1347,8 +1668,9 @@ of data point. The following picture illustrates the channel concept.</p>
 <div class="title">OpenMUCs Channel Concept</div>
 <p><span class="image"><a class="image" href="images/openmuc_concept.png"><img src="images/openmuc_concept.png" alt="OpenMUC channel concept" width="60%"></a></span></p>
 </div>
+</div>
 <div class="sect2">
-<h3 id="anchor-configuration">8.1. Configuration</h3>
+<h3 id="anchor-configuration">4.4. Configuration via channels.xml</h3>
 <div class="paragraph">
 <p>The <strong>conf/channels.xml</strong> file is the main configuration file for
 OpenMUC. It tells the OpenMUC framework which channels it should log
@@ -1380,7 +1702,7 @@ device and channel options are explained afterwards.</p>
 <span class="tag">&lt;/configuration&gt;</span></code></pre>
 </div>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. <strong>Driver options</strong></caption>
 <colgroup>
 <col style="width: 22.2222%;">
@@ -1429,7 +1751,7 @@ device and channel options are explained afterwards.</p>
 </tr>
 </tbody>
 </table>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 2. <strong>Device options</strong></caption>
 <colgroup>
 <col style="width: 22.2222%;">
@@ -1499,7 +1821,7 @@ device and channel options are explained afterwards.</p>
 </tr>
 </tbody>
 </table>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 3. <strong>Channel options</strong></caption>
 <colgroup>
 <col style="width: 22.2222%;">
@@ -1667,7 +1989,7 @@ values. Channels are still logged by all available loggers.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_sampling_listening_and_logging">8.2. Sampling, Listening and Logging</h3>
+<h3 id="_sampling_listening_and_logging">4.5. Sampling, Listening and Logging</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1767,10 +2089,233 @@ When listening is true and additional a sampling interval is defined then the sa
 </div>
 </div>
 <div class="sect1">
-<h2 id="drivers">9. Drivers</h2>
+<h2 id="anchor-start-script">5. OpenMUC start script</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To start OpenMUC on Linux run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./bin/openmuc start</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This runs OpenMUC as a background process. If you want to run OpenMUC
+in the foreground run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./bin/openmuc start -fg</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To start OpenMUC under Window run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>bin\openmuc.bat</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Linux start script is a sophisticated bash script that can be used
+to start, stop, restart OpenMUC. The Windows run script is a simple
+bat file that starts OpenMUC. The following explanations will focus on
+using OpenMUC in a Linux environment as it is the more common
+scenario.</p>
+</div>
+<div class="paragraph">
+<p>Starting OpenMUC really means running the Felix OSGi Framework by
+executing</p>
+</div>
+<div class="paragraph">
+<p>java -jar felix/felix.jar</p>
+</div>
+<div class="paragraph">
+<p>The Felix OSGi Framework will then start all bundles located in the
+"bundle" folder.</p>
+</div>
+<div class="paragraph">
+<p>When you start OpenMUC in the foreground you will enter the Felix Gogo
+shell. From the shell you can start, stop and reload bundles among
+many other things. To quit the shell and stop the framework press
+ctrl+d or enter "stop 0".</p>
+</div>
+<div class="paragraph">
+<p>If OpenMUC was started as a background process you can access the Gogo
+shell using telnet:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>netcat 127.0.0.1 6666</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or using the openmuc run script</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./bin/openmuc remote-shell</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Pressing ctrl+d will exit the remote shell but not stop the openmuc framework.</p>
+</div>
+<div class="paragraph">
+<p>To stop OpenMUC run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./bin/openmuc stop</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To reload a new configuration without restarting:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./bin/openmuc reload</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To restart a running OpenMUC (stop/start):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./bin/openmuc restart</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To update the bundles in the bundle folder after e.g. changing bundles.conf.gradle
+Before using this the first time see the next point.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./bin/openmuc update-bundles</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For building and installing the sources of OpenMUC with updating the bundles:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./bin/openmuc update-bundles -i</pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_auto_start_at_boot_time">5.1. Auto-start at Boot Time</h3>
+<div class="paragraph">
+<p>On Debian based Linux distributions it is easy to configure automatic
+start of OpenMUC at boot time. As root execute the following commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ln -s /path/to/openmuc/bin/openmuc /etc/init.d/openmuc
+update-rc.d openmuc defaults</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above solution will not work if the openmuc start script is
+located on a partion that is not yet mounted at the time the boot
+process attempts to open it. In this case you need copy the start
+script to /etc/init.d/ and edit it to set the OPENMUC_HOME variable.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="drivers">6. Drivers</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_modbus">9.1. Modbus</h3>
+<h3 id="_install_a_driver">6.1. Install a Driver</h3>
+<div class="paragraph">
+<p>For installing a new driver you have two possible ways.</p>
+</div>
+<div class="sect3">
+<h4 id="_copy_driver">6.1.1. Copy driver</h4>
+<div class="paragraph">
+<p>Copy the corresponding driver jar file from the folder "build/libs-all/" to the
+"bundle" folder of the framework. Many drivers are "fat jars" which include their
+dependencies. An exception is the RXTX library which cannot be packed
+with the jars.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_editing_bundles_configuration">6.1.2. Editing bundles configuration</h4>
+<div class="paragraph">
+<p>In /openmuc/framework/conf/bundles.conf.gradle you can find the list of all used
+bundles e.g.:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv", version: openmucVersion
+
+osgibundles group: "org.openmuc.framework", name: "openmuc-webui-spi",  version: openmucVersion
+osgibundles group: "org.openmuc.framework", name: "openmuc-webui-base", version: openmucVersion</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want to add a new driver to the list, e.g. M-Bus, you can do this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv",  version: openmucVersion
+osgibundles group: "org.openmuc.framework", name: "openmuc-driver-mbus", version: openmucVersion
+osgibundles group: "org.openmuc",           name: "jrxtx",               version: "1.0.1"
+
+osgibundles group: "org.openmuc.framework", name: "openmuc-webui-spi",   version: openmucVersion
+osgibundles group: "org.openmuc.framework", name: "openmuc-webui-base",  version: openmucVersion</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Afterwards you have to execute in /openmuc/framework/bin/</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./openmuc update-bundles</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If this is the first time using ./openmuc update-bundles you have to add the parameter -i</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./openmuc update-bundles -i</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_use_a_driver_with_serial_communication">6.1.3. Use a Driver with Serial Communication</h4>
+<div class="paragraph">
+<p>When you need to use a driver that uses serial communication you have
+to copy the RXTX bundle to the frameworks "bundle" folder.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cp ../dependencies/rxtx/jrxtx-1.0.1.jar ./bundle/</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Additionally you need to install librxtx-java:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo apt-get install librxtx-java</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The serial ports /dev/tty* are only accessible to members belonging to
+the group dialout. We therefore have to add our user to that
+group. E.g. using:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo adduser &lt;yourUserName&gt; dialout</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modbus">6.2. Modbus</h3>
 <div class="paragraph">
 <p>Modbus Homepage: <a href="http://www.modbus.org" class="bare">http://www.modbus.org</a><br>
 Modbus Protocol Specifications: <a href="http://www.modbus.org/specs.php" class="bare">http://www.modbus.org/specs.php</a><br>
@@ -1779,7 +2324,7 @@ Modbus Master Simulator modpoll: <a href="http://www.modbusdriver.com/modpoll.ht
 <div class="paragraph">
 <p>The Modbus driver supports RTU, TCP and RTU over TCP.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 4. Configuration Synopsis</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -1848,7 +2393,7 @@ the system. Furthermore the user needs to be in the groups dialout and plugdev
 <div class="paragraph">
 <p><strong>Settings</strong></p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 5. Settings</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -1914,7 +2459,7 @@ RTU:SERIAL_ENCODING_RTU:38400:DATABITS_8:PARITY_NONE:STOPBITS_1 :ECHO_FALSE:FLOW
 <p>The ChannelAddress consists of four parts: UnitId, PrimaryTable, Address and
 Datatyp which are explained in detail in the following table.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 6. Parameter Description</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -1931,11 +2476,11 @@ Datatyp which are explained in detail in the following table.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">UnitId</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">In homogenious architecture (when just MODBUS TCP/IP is used)<br>
 On TCP/IP, the MODBUS server is addressed by its IP address; therefore, the MODBUS
-Unit Identifier is useless. The value 255 (0xFF) has to be used.
-</p><p class="tableblock">In heterogeneous architecture (when using MODBUS TCP/IP and MODBUS serial or MODBUS+)<br>
+Unit Identifier is useless. The value 255 (0xFF) has to be used.</p>
+<p class="tableblock">In heterogeneous architecture (when using MODBUS TCP/IP and MODBUS serial or MODBUS+)<br>
 This field is used for routing purpose when addressing a device on a MODBUS+ or
-MODBUS serial line sub-network. In that case, the “Unit Identifier” carries the MODBUS slave address of the remote device. The MODBUS slave device addresses on serial line are assigned from 1 to 247 (decimal). Address 0 is used as broadcast address.
-</p><p class="tableblock">Note: Some MODBUS devices act like a bridge or a gateway and require the UnitId
+MODBUS serial line sub-network. In that case, the “Unit Identifier” carries the MODBUS slave address of the remote device. The MODBUS slave device addresses on serial line are assigned from 1 to 247 (decimal). Address 0 is used as broadcast address.</p>
+<p class="tableblock">Note: Some MODBUS devices act like a bridge or a gateway and require the UnitId
 even if they are accessed through TCP/IP. One of those devices is the Janitza
 UMG. To access data from the Janitza the UnitId has to be 1.</p></td>
 </tr>
@@ -1979,7 +2524,7 @@ Only COILS and HOLDING_REGISTERS are readable and writable.
 DISCRETE_INPUTS and INPUT_REGISTERS are read only. The following table gives an
 overview of valid parameter combinations of PrimaryTable and Datatyp.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 7. Valid Address Parameters for reading a channel</caption>
 <colgroup>
 <col style="width: 12.5%;">
@@ -2005,48 +2550,48 @@ overview of valid parameter combinations of PrimaryTable and Datatyp.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top"><div class="verse">COILS</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> COILS</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><div class="verse">DISCRETE_INPUTS</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> DISCRETE_INPUTS</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><div class="verse">INPUT_REGISTERS</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> INPUT_REGISTERS</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><div class="verse">HOLDING_REGISTERS</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> HOLDING_REGISTERS</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
 </tr>
 </tbody>
 </table>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 8. Valid Address Parameters for writing a channel</caption>
 <colgroup>
 <col style="width: 12.5%;">
@@ -2072,44 +2617,44 @@ overview of valid parameter combinations of PrimaryTable and Datatyp.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top"><div class="verse">COILS</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> COILS</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><div class="verse">DISCRETE_INPUTS</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> DISCRETE_INPUTS</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><div class="verse">INPUT_REGISTERS</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> INPUT_REGISTERS</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><div class="verse">HOLDING_REGISTERS</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> HOLDING_REGISTERS</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
 </tr>
 </tbody>
 </table>
@@ -2137,7 +2682,7 @@ which provides read and write access via modbus.
 Following table shows which modbus function code is used to access the data of
 the channel.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 9. Relation between function code and channel address</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -2224,7 +2769,7 @@ via function code 4.</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_modbus_tcp_and_wago">9.1.1. Modbus TCP and Wago</h4>
+<h4 id="_modbus_tcp_and_wago">6.2.1. Modbus TCP and Wago</h4>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -2305,11 +2850,11 @@ address would be:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_m_bus_wired">9.2. M-Bus (wired)</h3>
+<h3 id="_m_bus_wired">6.3. M-Bus (wired)</h3>
 <div class="paragraph">
 <p>M-Bus is communication protocol to read out meters.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 10. Configuration Synopsis</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -2367,11 +2912,11 @@ for timeout of 5 seconds</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_m_bus_wireless">9.3. M-Bus (wireless)</h3>
+<h3 id="_m_bus_wireless">6.4. M-Bus (wireless)</h3>
 <div class="paragraph">
 <p>Wireless M-Bus is communication protocol to read out meters and sensors.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 11. Configuration Synopsis</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -2430,14 +2975,14 @@ from RadioCrafts.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_iec_60870_5_104">9.4. IEC 60870-5-104</h3>
+<h3 id="_iec_60870_5_104">6.5. IEC 60870-5-104</h3>
 <div class="paragraph">
 <p>IEC 60870-5-104 is an international communication standard for telecontrol.
 The IEC 60870-5-104 driver uses the library from the j60870 project.<br>
 The driver is able to send general interrogation commands for sampling. For writing
 almost all commands are possible.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 80%;">
@@ -2489,7 +3034,7 @@ up to the fourth element, of a sequence. This is only allowed for <em>Binary Sta
 <div class="paragraph">
 <p>With the option <em>Data Type</em> it is possible to get a single quality flag.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 80%;">
@@ -2545,14 +3090,14 @@ up to the fourth element, of a sequence. This is only allowed for <em>Binary Sta
 </table>
 </div>
 <div class="sect2">
-<h3 id="_iec_61850">9.5. IEC 61850</h3>
+<h3 id="_iec_61850">6.6. IEC 61850</h3>
 <div class="paragraph">
 <p>IEC 61850 is an international communication standard used mostly for
 substation automation and controlling distributed energy resources
 (DER). The IEC 61850 driver uses the client library from the
 OpenIEC61850 project.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 80%;">
@@ -2600,11 +3145,11 @@ request.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_iec_62056_part_21">9.6. IEC 62056 part 21</h3>
+<h3 id="_iec_62056_part_21">6.7. IEC 62056 part 21</h3>
 <div class="paragraph">
 <p>The IEC 62056 part 21 driver can be used to read out meter via optical interface</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 12. Configuration Synopsis</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -2666,7 +3211,7 @@ the value of this data set represents.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_dlms_cosem">9.7. DLMS/COSEM</h3>
+<h3 id="_dlmscosem">6.8. DLMS/COSEM</h3>
 <div class="paragraph">
 <p>DLMS/COSEM is a international standardized protocol used mostly to communicate
 with smart meter devices. The DLMS/COSEM driver uses the client library developed
@@ -2676,7 +3221,7 @@ HDLC and TCP/IP using Logical Name Referencing to retrieve values from the devic
 <div class="paragraph">
 <p><strong>Dependencies:</strong> rxtxcomm_api-2.1.7.jar (optional)</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 80%;">
@@ -2713,7 +3258,7 @@ HDLC and TCP/IP using Logical Name Referencing to retrieve values from the devic
 identify and address a physical smart meter and format depends on the used protocol.
 Refer to the following table for the format of the interface address.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 13. Device Address connection type</caption>
 <colgroup>
 <col style="width: 10%;">
@@ -2834,7 +3379,7 @@ the used protocol, defined as first parameter of the device address. All possibl
 settings with a short description and default values are listed in the following
 table.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 14. Settings</caption>
 <colgroup>
 <col style="width: 11.1111%;">
@@ -2939,7 +3484,7 @@ table.</p>
 </tr>
 </tbody>
 </table>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 15. Device Address additional options</caption>
 <colgroup>
 <col style="width: 11.1111%;">
@@ -2976,14 +3521,14 @@ table.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_knx">9.8. KNX</h3>
+<h3 id="_knx">6.9. KNX</h3>
 <div class="paragraph">
 <p>KNX is a standardised protocol for intelligent buildings. The KNX
 driver uses KNXnet/IP to connect to the wired KNX BUS. The driver
 supports group read and writes and is also able to listen to the
 BUS. The driver uses the calimero library.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 16. Configuration Synopsis</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -3027,14 +3572,14 @@ the subtype 001, the DPT_ID of a switch is 1.001.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_ehz">9.9. eHZ</h3>
+<h3 id="_ehz">6.10. eHZ</h3>
 <div class="paragraph">
 <p>OpenMUC driver for SML and IEC 62056-21</p>
 </div>
 <div class="paragraph">
 <p><strong>Dependencies:</strong> rxtxcomm_api-2.1.7.jar</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 17. Configuration Synopsis</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -3066,7 +3611,7 @@ the subtype 001, the DPT_ID of a switch is 1.001.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_snmp">9.10. SNMP</h3>
+<h3 id="_snmp">6.11. SNMP</h3>
 <div class="paragraph">
 <p>Simple Network Management Protocol (SNMP) is an Internet-standard protocol for
 monitoring and management of devices on IP networks.</p>
@@ -3074,7 +3619,7 @@ monitoring and management of devices on IP networks.</p>
 <div class="paragraph">
 <p><strong>Dependencies:</strong> snmp4j-2.2.5.jar</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 18. Configuration Synopsis</caption>
 <colgroup>
 <col style="width: 20%;">
@@ -3121,7 +3666,7 @@ monitoring and management of devices on IP networks.</p>
 <div class="paragraph">
 <p>All settings are stored in "SnmpDriverSettingVariableNames" enum.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 19. Setting Parameters</caption>
 <colgroup>
 <col style="width: 33.3333%;">
@@ -3183,15 +3728,92 @@ provided. This functionality is implemented only for SNMP V2c.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_aggregator">9.11. Aggregator</h3>
+<h3 id="_csv">6.12. CSV</h3>
+<div class="paragraph">
+<p>The csv driver supports sampling from a csv file. This feature can be very helpful during application development or show cases, when no real hardware is available. For example, our SimpleDemoApp uses data provided by the csv driver.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 20. Configuration Synopsis</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 80%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ID</th>
+<th class="tableblock halign-left valign-top">csv</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Device Address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">path to csv file (e.g. /path/to/my.csv)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Settings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">samplingmode=&lt;samplingmode&gt;[;rewind=&lt;rewind&gt;]</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Channel Address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">column name</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Settings</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Samplingmode</strong> configures how the csv file is sampled. Currently, three different modes are supported:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>line - starts sampling from the first line of the csv file. Timestamps are ignored and each sampling reads the next line.</p>
+</li>
+<li>
+<p>unixtimestamp - csv file must contain a column with the name <em>unixtimestamp</em>, values must be in milliseconds. During sampling the driver searches the closest unixtimestamp which is &gt;= the sampling timestamp. Therefore, the driver keeps returning the same value for sampling timestamps which are before the next unixtimestamp of the csv file.</p>
+</li>
+<li>
+<p>hhmmss - csv file must contain a column with the name <em>hhmmss</em> and the time values must be in the format: hhmmss.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>rewind</strong> - If <em>true</em> and the last line of the csv file is reached, then the driver will start sampling again from first line. This option can only be used in combination with sampling mode <em>hhmmss</em> or <em>line</em>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The columns <em>unixtimestamp</em> and <em>hhmmss</em> are part of the log files created by the AsciiLogger, therefore the csv driver supports these files.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example configuration for csv driver</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;device</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">smarthome</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;description</span><span class="tag">/&gt;</span>
+  <span class="tag">&lt;deviceAddress&gt;</span>./csv-driver/smarthome.csv<span class="tag">&lt;/deviceAddress&gt;</span>
+  <span class="tag">&lt;settings&gt;</span>samplingmode=hhmmss;rewind=true<span class="tag">&lt;/settings&gt;</span>
+  <span class="tag">&lt;channel</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">power_pv</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;channelAddress&gt;</span>power_photovoltaics<span class="tag">&lt;/channelAddress&gt;</span>
+    <span class="tag">&lt;unit&gt;</span>W<span class="tag">&lt;/unit&gt;</span>
+    <span class="tag">&lt;samplingInterval&gt;</span>5s<span class="tag">&lt;/samplingInterval&gt;</span>
+    <span class="tag">&lt;loggingInterval&gt;</span>5s<span class="tag">&lt;/loggingInterval&gt;</span>
+<span class="tag">&lt;/channel&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_aggregator">6.13. Aggregator</h3>
 <div class="paragraph">
 <p>The Aggregator which performs aggregation of logged values from a channel. It
 uses the DriverService and the DataAccessService. It is therefore a kind of
 OpenMUC driver/application mix. The aggregator is fully configurable through the
 channels.xml config file.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 20. Configuration Synopsis</caption>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 21. Configuration Synopsis</caption>
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 80%;">
@@ -3312,12 +3934,12 @@ hh:mm:60 respectively hh:mm:00 the aggregated value is logged.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_rest_json">9.12. REST/JSON</h3>
+<h3 id="_restjson">6.14. REST/JSON</h3>
 <div class="paragraph">
 <p>Driver to connect an OpenMUC instance with an remote OpenMUC instance with REST.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 21. Configuration Synopsis</caption>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 22. Configuration Synopsis</caption>
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 80%;">
@@ -3422,10 +4044,10 @@ every 5s if the timestamp has changed.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="anchor-web-ui">10. The WebUI</h2>
+<h2 id="anchor-web-ui">7. The WebUI</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_plugins">10.1. Plugins</h3>
+<h3 id="_plugins">7.1. Plugins</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Plotter</dt>
@@ -3452,7 +4074,7 @@ every 5s if the timestamp has changed.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_context_root">10.2. Context Root</h3>
+<h3 id="_context_root">7.2. Context Root</h3>
 <div class="paragraph">
 <p>The servlet context root of the OpenMUC WebUI can be configured, by setting the <code>org.apache.felix.http.context_path</code>
 system property.</p>
@@ -3467,7 +4089,7 @@ system property.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_https">10.3. HTTPS</h3>
+<h3 id="_https">7.3. HTTPS</h3>
 <div class="paragraph">
 <p>You can access the WebUI over https as well:
 <a href="https://localhost:8889" class="bare">https://localhost:8889</a>. To make the framework more secure you could
@@ -3475,10 +4097,65 @@ disable http by setting org.apache.felix.http.enable in the
 conf/system.properties file to false.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_custom_plugins">7.4. Custom Plugins</h3>
+<div class="paragraph">
+<p>You can include your own Plugins in the OpenMUC WebUI by creating a java class that extends the WebUiPluginService. This class also has to be annotated as a component. The two functions getAlias and getName have to be overridden. The alias is used to identify the plugin while the name will be displayed in the WebUI.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Component</span>(service = WebUiPluginService.class)
+<span class="directive">public</span> <span class="directive">final</span> <span class="type">class</span> <span class="class">SamplePlugin</span> <span class="directive">extends</span> WebUiPluginService {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> getAlias() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">sampleplugin</span><span class="delimiter">&quot;</span></span>;
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> getName() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Sample Plugin</span><span class="delimiter">&quot;</span></span>;
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to display an icon above the plugins name, the file needs to be called icon and saved under <code>samplePlugin/src/main/resources/images</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_visualisation">7.5. Visualisation</h3>
+<div class="paragraph">
+<p>First you need a svg and assign all the svg Elements a unique id. You can include an external svg as an Object Element or you can create the svg directly in html. Either way the Element containing the svg needs an id which you can then use to access the svg in javascript.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">svg_document = document.getElementById(<span class="string"><span class="delimiter">'</span><span class="content">samplePluginGraphic</span><span class="delimiter">'</span></span>).contentDocument;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can manipulate the Elements of the svg, the easiest way to do this is through getElementById for a single Element or getElementsByClass for multiple Elements.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">sampleText = svg_document.getElementById(<span class="string"><span class="delimiter">&quot;</span><span class="content">sampleTextField</span><span class="delimiter">&quot;</span></span>);
+sampleText.textContent = channel.record.value;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Aside from changing what is displayed you can also manipulate the css in this way. The following example would change the displayed texts color to blue.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">sampleText.style.fill = <span class="string"><span class="delimiter">&quot;</span><span class="content">blue</span><span class="delimiter">&quot;</span></span>;</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="id_restful_web_services">11. REST Server</h2>
+<h2 id="id_restful_web_services">8. REST Server</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The openmuc-server-restws bundle manages a RESTful web service to access all
@@ -3498,7 +4175,7 @@ The address to access the web service using the provided demo/framework folder i
 </table>
 </div>
 <div class="sect2">
-<h3 id="_requirements">11.1. Requirements</h3>
+<h3 id="_requirements">8.1. Requirements</h3>
 <div class="paragraph">
 <p>In order to start the RESTful web service, the following bundle must be provided:</p>
 </div>
@@ -3515,7 +4192,7 @@ will start automatically with the framework without additional settings.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_accessing_channels">11.2. Accessing channels</h3>
+<h3 id="_accessing_channels">8.2. Accessing channels</h3>
 <div class="paragraph">
 <p>The latest record of a single channel can be accessed, by sending a
 GET request at the address:
@@ -3575,7 +4252,7 @@ one used to log into the web interface of the OpenMUC Framework.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="id_modbus_service">12. Modbus Server</h2>
+<h2 id="id_modbus_service">9. Modbus Server</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The modus service allows you to access to a OpenMUC channel by ModbusTCP protocol.
@@ -3585,8 +4262,8 @@ For accessing a channel through Modbus the channel has to be mapped with
 <div class="paragraph">
 <p>ServerMapping ID: <em>modbus</em></p>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 22. serverMapping</caption>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 23. serverMapping</caption>
 <colgroup>
 <col style="width: 12.5%;">
 <col style="width: 12.5%;">
@@ -3612,23 +4289,23 @@ For accessing a channel through Modbus the channel has to be mapped with
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">INPUT_REGISTER</p></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">HOLDING_REGISTERS</p></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">x</div></td>
-<td class="tableblock halign-center valign-top"><div class="verse">-</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> x</div></td>
+<td class="tableblock halign-center valign-top"><div class="verse"> -</div></td>
 </tr>
 </tbody>
 </table>
@@ -3650,7 +4327,7 @@ bind Port 502 with setcap.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_example">12.1. Example</h3>
+<h3 id="_example">9.1. Example</h3>
 <div class="listingblock">
 <div class="title">channels.xml</div>
 <div class="content">
@@ -3698,7 +4375,7 @@ org.openmuc.framework.server.modbus.master=false</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_authors">13. Authors</h2>
+<h2 id="_authors">10. Authors</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Developers:</p>
@@ -3706,16 +4383,13 @@ org.openmuc.framework.server.modbus.master=false</pre>
 <div class="ulist">
 <ul>
 <li>
-<p>Stefan Feuerhahn</p>
+<p>Dirk Zimmermann</p>
 </li>
 <li>
 <p>Marco Mittelsdorf</p>
 </li>
 <li>
-<p>Dirk Zimmermann</p>
-</li>
-<li>
-<p>Albrecht Schall</p>
+<p>Chris Dieter Medam</p>
 </li>
 </ul>
 </div>
@@ -3724,6 +4398,12 @@ org.openmuc.framework.server.modbus.master=false</pre>
 </div>
 <div class="ulist">
 <ul>
+<li>
+<p>Stefan Feuerhahn</p>
+</li>
+<li>
+<p>Albrecht Schall</p>
+</li>
 <li>
 <p>Michael Zillgith</p>
 </li>
@@ -3746,7 +4426,7 @@ org.openmuc.framework.server.modbus.master=false</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-07-16 16:10:43 MESZ
+Last updated 2018-12-20 16:36:57 +0100
 </div>
 </div>
 </body>

@@ -1,19 +1,19 @@
 (function(){
-	
-	var injectParams = ['$scope', '$stateParams', '$state', '$alert', '$translate', 'DevicesService', 'DriversService'];
-	
-	var DeviceNewController = function($scope, $stateParams, $state, $alert, $translate, DevicesService, DriversService) {
+
+	var injectParams = ['$scope', '$stateParams', '$state', 'notify', '$translate', 'DevicesService', 'DriversService'];
+
+	var DeviceNewController = function($scope, $stateParams, $state, notify, $translate, DevicesService, DriversService) {
 
 		$translate('DEVICE_CREATED_SUCCESSFULLY').then(function(text) {
 			$scope.deviceOKText = text;
 		});
-		
+
 		$translate('DEVICE_CREATED_ERROR').then(function(text) {
 			$scope.deviceErrorText = text;
 		});
 
         $scope.driverInfo = {};
-		
+
 		if ($stateParams.driverId) {
 			$scope.driver = DriversService.getDriver($stateParams.driverId);
 			DriversService.getInfos($stateParams.driverId).then(function(driverInfo) {
@@ -35,22 +35,22 @@
 				disabled: false
 			}
 		};
-		
+
 		$scope.saveDevice = function() {
-			
+
 			if ($scope.deviceForm.$valid) {
 				DevicesService.create($scope.device).then(function(resp){
-					$alert({content: $scope.deviceOKText, type: 'success'});
+					notify({message: $scope.deviceOKText, position: "right", classes: "alert-success"});
 					return $state.go('channelconfigurator.devices.index');
 				}, function(error) {
-					$alert({content: $scope.deviceErrorText, type: 'warning'});
+					notify({message: $scope.deviceErrorText, position: "right", classes: "alert-warning"});
 					return $state.go('channelconfigurator.devices.index');
 				});
 			} else {
 				$scope.deviceForm.submitted = true;
 			}
 		}
-		
+
 	};
 
 	DeviceNewController.$inject = injectParams;

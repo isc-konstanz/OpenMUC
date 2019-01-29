@@ -1,13 +1,13 @@
 (function(){
-	
-	var injectParams = ['$scope', '$stateParams', '$state', '$alert', '$translate', 'ChannelsService', 'DevicesService'];
-	
-	var ChannelNewController = function($scope, $stateParams, $state, $alert, $translate, ChannelsService, DevicesService) {
+
+	var injectParams = ['$scope', '$stateParams', '$state', '$translate', 'notify', 'ChannelsService', 'DevicesService'];
+
+	var ChannelNewController = function($scope, $stateParams, $state, $translate, notify, ChannelsService, DevicesService) {
 
 		$translate('CHANNEL_CREATED_SUCCESSFULLY').then(function(text) {
 			$scope.channelOKText = text;
 		});
-		
+
 		$translate('CHANNEL_CREATED_ERROR').then(function(text) {
 			$scope.channelErrorText = text;
 		});
@@ -25,21 +25,25 @@
 			}
 		};
 
+		$scope.compareChannels = function(field) {
+			return true;
+		};
+
 		$scope.saveChannel = function() {
-			
+
 			if ($scope.channelForm.$valid) {
 				ChannelsService.create($scope.channel).then(function(resp){
-					$alert({content: $scope.channelOKText, type: 'success'});
+					notify({message: $scope.channelOKText, position: "right", classes: "alert-success"});
 					return $state.go('channelconfigurator.channels.index');
 				}, function(error) {
-					$alert({content: $scope.channelErrorText + error.statusText, type: 'warning'});
+					notify({message: $scope.channelErrorText + error.statusText, position: "right", classes: "alert-warning"});
 					return $state.go('channelconfigurator.channels.index');
 				});
 			} else {
 				$scope.channelForm.submitted = true;
 			}
 		};
-				
+
 	};
 
 	ChannelNewController.$inject = injectParams;

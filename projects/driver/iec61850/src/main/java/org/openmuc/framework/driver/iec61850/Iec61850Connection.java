@@ -22,6 +22,7 @@ package org.openmuc.framework.driver.iec61850;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.FloatValue;
+import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.StringValue;
@@ -43,9 +45,12 @@ import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.BdaBitString;
 import org.openmuc.openiec61850.BdaBoolean;
+import org.openmuc.openiec61850.BdaCheck;
+import org.openmuc.openiec61850.BdaDoubleBitPos;
 import org.openmuc.openiec61850.BdaEntryTime;
 import org.openmuc.openiec61850.BdaFloat32;
 import org.openmuc.openiec61850.BdaFloat64;
+import org.openmuc.openiec61850.BdaInt128;
 import org.openmuc.openiec61850.BdaInt16;
 import org.openmuc.openiec61850.BdaInt16U;
 import org.openmuc.openiec61850.BdaInt32;
@@ -54,7 +59,12 @@ import org.openmuc.openiec61850.BdaInt64;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaInt8U;
 import org.openmuc.openiec61850.BdaOctetString;
+import org.openmuc.openiec61850.BdaOptFlds;
+import org.openmuc.openiec61850.BdaQuality;
+import org.openmuc.openiec61850.BdaReasonForInclusion;
+import org.openmuc.openiec61850.BdaTapCommand;
 import org.openmuc.openiec61850.BdaTimestamp;
+import org.openmuc.openiec61850.BdaTriggerConditions;
 import org.openmuc.openiec61850.BdaUnicodeString;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.ClientAssociation;
@@ -84,11 +94,9 @@ public final class Iec61850Connection implements Connection {
     public List<ChannelScanInfo> scanForChannels(String settings)
             throws UnsupportedOperationException, ConnectionException {
         List<BasicDataAttribute> bdas = serverModel.getBasicDataAttributes();
-
         List<ChannelScanInfo> scanInfos = new ArrayList<>(bdas.size());
 
         for (BasicDataAttribute bda : bdas) {
-
             String channelAddress = bda.getReference() + ":" + bda.getFc();
 
             switch (bda.getBasicType()) {
@@ -100,13 +108,24 @@ public final class Iec61850Connection implements Connection {
             case REASON_FOR_INCLUSION:
             case TAP_COMMAND:
             case TRIGGER_CONDITIONS:
-            case ENTRY_TIME:
-            case OCTET_STRING:
-            case VISIBLE_STRING:
-            case UNICODE_STRING:
                 bda.setDefault();
                 scanInfos.add(new ChannelScanInfo(channelAddress, "", ValueType.BYTE_ARRAY,
                         ((BdaBitString) bda).getValue().length));
+                break;
+            case ENTRY_TIME:
+                scanInfos.add(new ChannelScanInfo(channelAddress, "", ValueType.BYTE, null));
+                break;
+            case OCTET_STRING:
+                scanInfos.add(new ChannelScanInfo(channelAddress, "", ValueType.BYTE_ARRAY,
+                        ((BdaOctetString) bda).getMaxLength()));
+                break;
+            case VISIBLE_STRING:
+                scanInfos.add(new ChannelScanInfo(channelAddress, "", ValueType.BYTE_ARRAY,
+                        ((BdaVisibleString) bda).getMaxLength()));
+                break;
+            case UNICODE_STRING:
+                scanInfos.add(new ChannelScanInfo(channelAddress, "", ValueType.BYTE_ARRAY,
+                        ((BdaUnicodeString) bda).getMaxLength()));
                 break;
             case TIMESTAMP:
                 scanInfos.add(new ChannelScanInfo(channelAddress, "", ValueType.LONG, null));
@@ -132,23 +151,21 @@ public final class Iec61850Connection implements Connection {
                 scanInfos.add(new ChannelScanInfo(channelAddress, "", ValueType.INTEGER, null));
                 break;
             case INT32U:
+                // Long due to setValueFromMmsDataObj in BdaInt64
             case INT64:
                 scanInfos.add(new ChannelScanInfo(channelAddress, "", ValueType.LONG, null));
                 break;
             default:
                 throw new IllegalStateException("unknown BasicType received: " + bda.getBasicType());
             }
-
         }
 
         return scanInfos;
-
     }
 
     @Override
     public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
             throws UnsupportedOperationException, ConnectionException {
-
         for (ChannelRecordContainer container : containers) {
 
             if (container.getChannelHandle() == null) {
@@ -180,7 +197,6 @@ public final class Iec61850Connection implements Connection {
                     container.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_WITH_THIS_ADDRESS_NOT_FOUND));
                     continue;
                 }
-
                 container.setChannelHandle(fcModelNode);
 
             }
@@ -301,51 +317,80 @@ public final class Iec61850Connection implements Connection {
         String result;
         switch (bda.getBasicType()) {
         case CHECK:
+            result = ((BdaCheck) bda).getValueString();
+            break;
         case DOUBLE_BIT_POS:
+            result = ((BdaDoubleBitPos) bda).getValueString();
+            break;
         case OPTFLDS:
+            result = ((BdaOptFlds) bda).toString();
+            break;
         case QUALITY:
+            result = ((BdaQuality) bda).getValueString();
+            break;
         case REASON_FOR_INCLUSION:
+            result = ((BdaReasonForInclusion) bda).getValueString();
+            break;
         case TAP_COMMAND:
+            result = "" + ((BdaTapCommand) bda).getTapCommand().getIntValue();
+            break;
         case TRIGGER_CONDITIONS:
+            result = ((BdaTriggerConditions) bda).getValueString();
+            break;
         case ENTRY_TIME:
+            result = ((BdaEntryTime) bda).getValueString();
+            break;
         case OCTET_STRING:
-        case VISIBLE_STRING:
+            result = Arrays.toString(((BdaOctetString) bda).getValue());
+            break;
         case UNICODE_STRING:
-            result = new String(((BdaBitString) bda).getValue());
+            byte[] byteValue = ((BdaUnicodeString) bda).getValue();
+            if (byteValue == null) {
+                result = "null";
+            }
+            else {
+                result = new String(byteValue);
+            }
+            break;
+        case VISIBLE_STRING:
+            result = ((BdaVisibleString) bda).getValueString();
             break;
         case TIMESTAMP:
             Date date = ((BdaTimestamp) bda).getDate();
             result = date == null ? "<invalid date>" : ("" + date.getTime());
             break;
         case BOOLEAN:
-            result = String.valueOf(((BdaBoolean) bda).getValue());
+            result = ((BdaBoolean) bda).getValueString();
             break;
         case FLOAT32:
-            result = String.valueOf(((BdaFloat32) bda).getFloat());
+            result = ((BdaFloat32) bda).getValueString();
             break;
         case FLOAT64:
-            result = String.valueOf(((BdaFloat64) bda).getDouble());
+            result = ((BdaFloat64) bda).getValueString();
             break;
         case INT8:
-            result = String.valueOf(((BdaInt8) bda).getValue());
+            result = ((BdaInt8) bda).getValueString();
             break;
         case INT8U:
-            result = String.valueOf(((BdaInt8U) bda).getValue());
+            result = "" + ((BdaInt8U) bda).getValue();
             break;
         case INT16:
-            result = String.valueOf(((BdaInt16) bda).getValue());
+            result = "" + ((BdaInt16) bda).getValue();
             break;
         case INT16U:
-            result = String.valueOf(((BdaInt16U) bda).getValue());
+            result = "" + ((BdaInt16U) bda).getValue();
             break;
         case INT32:
-            result = String.valueOf(((BdaInt32) bda).getValue());
+            result = ((BdaInt32) bda).getValueString();
             break;
         case INT32U:
-            result = String.valueOf(((BdaInt32U) bda).getValue());
+            result = ((BdaInt32U) bda).getValueString();
             break;
         case INT64:
-            result = String.valueOf(((BdaInt64) bda).getValue());
+            result = "" + ((BdaInt64) bda).getValue();
+            break;
+        case INT128:
+            result = ((BdaInt128) bda).getValueString();
             break;
         default:
             throw new IllegalStateException("unknown BasicType received: " + bda.getBasicType());
@@ -358,13 +403,28 @@ public final class Iec61850Connection implements Connection {
     }
 
     private void setRecord(ChannelRecordContainer container, BasicDataAttribute bda, long receiveTime) {
+
         switch (bda.getBasicType()) {
         case CHECK:
+            container.setRecord(new Record(new ByteArrayValue(((BdaCheck) bda).getValue(), true), receiveTime));
+            break;
         case DOUBLE_BIT_POS:
+            container.setRecord(new Record(new ByteArrayValue(((BdaDoubleBitPos) bda).getValue(), true), receiveTime));
+            break;
         case OPTFLDS:
+            container.setRecord(new Record(new ByteArrayValue(((BdaOptFlds) bda).getValue(), true), receiveTime));
+            break;
         case QUALITY:
+            container.setRecord(new Record(new ByteArrayValue(((BdaQuality) bda).getValue(), true), receiveTime));
+            break;
         case REASON_FOR_INCLUSION:
+            container.setRecord(
+                    new Record(new ByteArrayValue(((BdaReasonForInclusion) bda).getValue(), true), receiveTime));
+            break;
         case TAP_COMMAND:
+            container.setRecord(
+                    new Record(new IntValue(((BdaTapCommand) bda).getTapCommand().getIntValue()), receiveTime));
+            break;
         case TRIGGER_CONDITIONS:
             container.setRecord(new Record(new ByteArrayValue(((BdaBitString) bda).getValue(), true), receiveTime));
             break;
@@ -418,6 +478,9 @@ public final class Iec61850Connection implements Connection {
             break;
         case INT64:
             container.setRecord(new Record(new DoubleValue(((BdaInt64) bda).getValue()), receiveTime));
+            break;
+        case INT128:
+            container.setRecord(new Record(new DoubleValue(((BdaInt128) bda).getValue()), receiveTime));
             break;
         default:
             throw new IllegalStateException("unknown BasicType received: " + bda.getBasicType());
@@ -635,6 +698,9 @@ public final class Iec61850Connection implements Connection {
         case INT64:
             ((BdaInt64) bda).setValue(Long.parseLong(bdaValueString));
             break;
+        case INT128:
+            ((BdaInt128) bda).setValue(Long.parseLong(bdaValueString));
+            break;
         default:
             throw new IllegalStateException("unknown BasicType received: " + bda.getBasicType());
         }
@@ -695,6 +761,9 @@ public final class Iec61850Connection implements Connection {
             break;
         case INT64:
             ((BdaInt64) bda).setValue(container.getValue().asLong());
+            break;
+        case INT128:
+            ((BdaInt128) bda).setValue(container.getValue().asLong());
             break;
         default:
             throw new IllegalStateException("unknown BasicType received: " + bda.getBasicType());

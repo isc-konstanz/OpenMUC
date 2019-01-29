@@ -51,12 +51,13 @@ public class UserServlet extends GenericServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-
         if (pathAndQueryString != null) {
 
             setServices();
             String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
             ToJson json = new ToJson();
+
+            java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
             if (pathInfo.equals("/")) {
                 Set<String> userSet = authenticationService.getAllUsers();
@@ -101,6 +102,7 @@ public class UserServlet extends GenericServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -136,6 +138,7 @@ public class UserServlet extends GenericServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -181,6 +184,7 @@ public class UserServlet extends GenericServlet {
             throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 

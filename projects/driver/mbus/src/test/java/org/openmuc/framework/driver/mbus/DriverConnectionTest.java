@@ -1,3 +1,23 @@
+/*
+ * Copyright 2011-18 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.openmuc.framework.driver.mbus;
 
 import static org.junit.Assert.assertEquals;
@@ -12,8 +32,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +55,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(DriverConnection.class)
 public class DriverConnectionTest {
 
-    private final Map<String, SerialInterface> interfaces = new HashMap<>();
+    private final Map<String, ConnectionInterface> interfaces = new HashMap<>();
     private static final byte[] NZR_ANSWER = { 104, 50, 50, 104, 8, 5, 114, 8, 6, 16, 48, 82, 59, 1, 2, 2, 0, 0, 0, 4,
             3, -25, 37, 0, 0, 4, -125, 127, -25, 37, 0, 0, 2, -3, 72, 54, 9, 2, -3, 91, 0, 0, 2, 43, 0, 0, 12, 120, 8,
             6, 16, 48, 15, 63, -79, 22 };
@@ -65,7 +83,7 @@ public class DriverConnectionTest {
         vds.decode();
         PowerMockito.when(con.read(anyInt())).thenReturn(vds);
 
-        SerialInterface serialIntervace = new SerialInterface(con, mBusAdresse, interfaces);
+        ConnectionInterface serialIntervace = new ConnectionInterface(con, mBusAdresse, interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = mBusAdresse.trim().split(":");
 
@@ -73,7 +91,7 @@ public class DriverConnectionTest {
         SecondaryAddress secondaryAddress = null;
         if (deviceAddressTokens[1].length() == 16) {
             mBusAddress = 0xfd;
-            byte[] addressData = DatatypeConverter.parseHexBinary(deviceAddressTokens[1]);
+            byte[] addressData = Helper.hexToBytes(deviceAddressTokens[1]);
             secondaryAddress = SecondaryAddress.newFromLongHeader(addressData, 0);
         }
         else {
@@ -144,7 +162,7 @@ public class DriverConnectionTest {
         vds.decode();
         when(con.read(anyInt())).thenReturn(vds);
 
-        SerialInterface serialIntervace = new SerialInterface(con, "/dev/ttyS100:5", interfaces);
+        ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
         DriverConnection mBusConnection = new DriverConnection(serialIntervace,
@@ -186,7 +204,7 @@ public class DriverConnectionTest {
 
         when(con.read(anyInt())).thenReturn(vds);
 
-        SerialInterface serialIntervace = new SerialInterface(con, "/dev/ttyS100:5", interfaces);
+        ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
         DriverConnection mBusConnection = new DriverConnection(serialIntervace,
@@ -253,7 +271,7 @@ public class DriverConnectionTest {
         vds.decode();
         when(con.read(anyInt())).thenThrow(new IOException());
 
-        SerialInterface serialIntervace = new SerialInterface(con, "/dev/ttyS100:5", interfaces);
+        ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
 
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
@@ -275,7 +293,7 @@ public class DriverConnectionTest {
         vds.decode();
         when(con.read(anyInt())).thenThrow(new SerialPortTimeoutException());
 
-        SerialInterface serialIntervace = new SerialInterface(con, "/dev/ttyS100:5", interfaces);
+        ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
 
@@ -296,7 +314,7 @@ public class DriverConnectionTest {
         vds.decode();
         when(con.read(anyInt())).thenThrow(new SerialPortTimeoutException());
 
-        SerialInterface serialIntervace = new SerialInterface(con, "/dev/ttyS100:5", interfaces);
+        ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
         DriverConnection driverCon = new DriverConnection(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
@@ -313,7 +331,7 @@ public class DriverConnectionTest {
         vds.decode();
         when(con.read(anyInt())).thenThrow(new IOException());
 
-        SerialInterface serialIntervace = new SerialInterface(con, "/dev/ttyS100:5", interfaces);
+        ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", interfaces);
         serialIntervace.increaseConnectionCounter();
         String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
         DriverConnection mBusConnection = new DriverConnection(serialIntervace,

@@ -1,5 +1,5 @@
 (function(){
-		
-	angular.module('openmuc.dataexporter', []);
+
+	angular.module('openmuc.dataexporter', ['ui.bootstrap']);
 
 })();

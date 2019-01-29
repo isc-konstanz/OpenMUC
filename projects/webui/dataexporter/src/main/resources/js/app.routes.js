@@ -1,5 +1,5 @@
 (function(){
-	
+
 	var app = angular.module('openmuc');
 
 	app.config(['$stateProvider', '$urlRouterProvider',
@@ -15,8 +15,8 @@
 	                        return $ocLazyLoad.load(
 	                            {
 	                                name: "openmuc.dataexporter",
-	                                files: ['channelconfigurator/js/channels/channelsService.js',
-	                                        'channelconfigurator/js/channels/channelDataService.js',
+	                                files: ['openmuc/js/channels/channelsService.js',
+	                                        'openmuc/js/channels/channelDataService.js',
 	                                        'dataexporter/js/dataexporter/dataExporterController.js',
 	                                        'openmuc/js/libs/checklistmodel/checklist-model.min.js',
 	                                        'openmuc/js/libs/angularjs/angular-sanitize.min.js',
@@ -32,7 +32,7 @@
 				    controller: 'DataExporterController',
 	        		requireLogin: true,
 	        	})
-	        	
+
 	}]);
-	
+
 })();

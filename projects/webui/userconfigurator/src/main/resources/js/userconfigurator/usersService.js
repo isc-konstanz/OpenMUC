@@ -1,7 +1,7 @@
 (function(){
-	
+
 	var injectParams = ['$http', 'SETTINGS', 'RestServerAuthService'];
-	
+
 	var UsersService = function($http, SETTINGS, RestServerAuthService) {
 
 		this.getUsers = function() {
@@ -9,29 +9,29 @@
     			method: 'GET',
         		url: SETTINGS.API_URL + SETTINGS.USERS_URL,
         		headers: {
-        			'Authorization': RestServerAuthService.getAuthHash(), 
+        			'Authorization': RestServerAuthService.getAuthHash(),
         		},
             };
-        	
+
 			return $http(req).then(function(response) {
-    			return response.data['users'];    			
+    			return response.data['users'];
     		});
     	};
-		
+
     	this.getUser = function(id) {
     		var req = {
     			method: 'GET',
         		url: SETTINGS.API_URL + SETTINGS.USERS_URL + id,
         		headers: {
-        			'Authorization': RestServerAuthService.getAuthHash(), 
+        			'Authorization': RestServerAuthService.getAuthHash(),
         		},
             };
-        	
+
 			return $http(req).then(function(response) {
-    			return response.data;    			
-    		});			    		
+    			return response.data;
+    		});
     	};
-    	
+
     	this.create = function(user) {
     		var req = {
     			method: 'POST',
@@ -39,7 +39,7 @@
         		dataType: 'json',
         		data: user,
         		headers: {
-        			'Content-Type': 'application/json', 
+        			'Content-Type': 'application/json',
         			'Authorization': RestServerAuthService.getAuthHash(),
         		},
         	}
@@ -47,7 +47,7 @@
     			return response.data;
     		});
     	};
-    	
+
     	this.destroy = function(data) {
     		var req = {
     			method: 'DELETE',
@@ -63,7 +63,7 @@
 				return response.data;
 			});
     	};
-    	
+
     	this.updatePassword = function(user) {
     		var req = {
         		method: 'PUT',
@@ -71,7 +71,7 @@
         		dataType: 'json',
         		data: user,
         		headers: {
-        			'Content-Type': 'application/json', 
+        			'Content-Type': 'application/json',
         			'Authorization': RestServerAuthService.getAuthHash(),
         		},
         	};
@@ -86,5 +86,5 @@
     UsersService.$inject = injectParams;
 
 	angular.module('openmuc.users').service('UsersService', UsersService);
-    
+
 })();

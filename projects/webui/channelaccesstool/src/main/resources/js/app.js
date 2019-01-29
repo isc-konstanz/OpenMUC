@@ -1,5 +1,5 @@
 (function(){
-	
-	angular.module('openmuc.channelaccesstool', []);
-		
+
+	angular.module('openmuc.channelaccesstool', ['ui.bootstrap']);
+
 })();

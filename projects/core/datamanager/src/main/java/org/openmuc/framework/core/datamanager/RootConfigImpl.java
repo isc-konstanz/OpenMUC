@@ -82,7 +82,7 @@ final class RootConfigImpl implements RootConfig {
         }
 
         if (!configFile.exists()) {
-            throw new FileNotFoundException("Confifg file not found.");
+            throw new FileNotFoundException("Config file not found.");
         }
 
         DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();

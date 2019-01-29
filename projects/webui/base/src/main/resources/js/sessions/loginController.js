@@ -1,8 +1,8 @@
 (function () {
 
-    var injectParams = ['$scope', '$state', '$alert', '$translate', 'AuthService'];
+    var injectParams = ['$scope', '$state', 'notify', '$translate', 'AuthService'];
 
-    var LoginController = function ($scope, $state, $alert, $translate, AuthService) {
+    var LoginController = function ($scope, $state, notify, $translate, AuthService) {
 
         $translate('LOGIN_CREDENTIALS_INCORRECT').then(text => $scope.loginCredentialsErrorErrorText = text);
 
@@ -15,7 +15,7 @@
                 AuthService.login($scope.user).then(res => {
                     $state.go('dashboard');
                 }, err => {
-                    $alert({content: $scope.loginCredentialsErrorErrorText, type: 'warning'});
+                    notify({message: $scope.loginCredentialsErrorText, position: "right", classes: "alert-warning"})
                     $state.go('home');
                 });
             }

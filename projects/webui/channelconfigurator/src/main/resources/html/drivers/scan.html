@@ -2,17 +2,17 @@
 
 <form name="scanDriverForm" class="form-horizontal" ng-init="getDeviceScanSettingsSyntax()" novalidate>
   <div class="form-group">
-    <label for="settings" class="col-sm-2 control-label">
-      <span class="item-icon fa fa-info-circle" aria-hidden="true" data-title="{{'SCAN_DRIVER_SETTINGS_HINT' | translate}}" data-placement="right" data-container="body" bs-tooltip></span>
+    <label for="settings" class="col-md-2 control-label">
+      <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'SCAN_DRIVER_SETTINGS_HINT' | translate}}"></span>
       Settings
     </label>
-    <div class="col-sm-4">
+    <div class="col-md-4">
       <input type="text" class="form-control" name="settings" ng-model="settings">
       <p class="help-block">{{'SCAN_SETTINGS_SYNTAX' | translate}}: {{deviceScanSettingsSyntax}}</p>
     </div>
   </div>
 
-  <div class="col-sm-6 text-right">
+  <div class="col-md-6 text-right">
     <button name="scanInterruptButton" class="btn btn-primary" ng-disabled="!scanDriverForm.submitted" ng-click="interruptScan()">{{'SCAN_INTERRUPT' | translate}}</button>
     <button name="scanDrivertButton" class="btn btn-primary" ng-disabled="scanDriverForm.submitted" ng-click="scanDriver()">
       <span ng-show="scanDriverForm.submitted">{{'SCANNING' | translate}} <i class="fa fa-spinner fa-pulse"></i></span>
@@ -66,8 +66,8 @@
   </tr>
 </table>
 
-<div ng-if="devices.length">
-  <button class="btn btn-primary" ng-click="addDevices()" ng-disabled="selectedDevices.length == 0">{{'ADD_DEVICES' | translate}}</button>
+<div ng-if="devices.length" ng-controller="TabsController">
+  <button class="btn btn-primary" ng-click="addDevices(); setTabIndex(1)" ng-disabled="selectedDevices.length == 0">{{'ADD_DEVICES' | translate}}</button>
 </div>
 
 

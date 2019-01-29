@@ -1,7 +1,7 @@
 (function(){
-	
+
 	var injectParams = [];
-		
+
 	var yesNoIcon = function() {
 	    return function(input) {
 	        return input ? 'fa fa-check' : 'fa fa-times';

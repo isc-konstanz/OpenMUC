@@ -60,12 +60,13 @@ public class IESDataFormatUtils {
         }
 
         DecimalFormat df = new DecimalFormat(format, new DecimalFormatSymbols(Locale.ENGLISH));
-        sbValue.append(df.format(valueWork));
+        String doubleString = df.format(valueWork);
 
-        if (sbValue.length() > maxLength) {
+        if (doubleString.length() > maxLength) {
             throw new WrongScalingException("Double value (" + value + ") too large for conversion into max length "
                     + maxLength + "! Try to scale value.");
         }
+        sbValue.append(doubleString);
     }
 
     private static String getFormat(double value) {

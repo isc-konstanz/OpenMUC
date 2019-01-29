@@ -1,7 +1,7 @@
 (function(){
 
 	var injectParams = [];
-	
+
 	var PlottingTabsDirective = function() {
 		return {
 			restrict: 'E',
@@ -12,5 +12,5 @@
 	PlottingTabsDirective.$inject = injectParams;
 
 	angular.module('openmuc.dataplotter').directive('plottingTabs', PlottingTabsDirective);
-	
+
 })();

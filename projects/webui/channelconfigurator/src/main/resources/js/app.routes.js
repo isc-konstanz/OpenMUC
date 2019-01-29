@@ -1,27 +1,27 @@
 (function(){
-	
+
 	var app = angular.module('openmuc');
 
 	app.config(['$stateProvider', '$urlRouterProvider',
         function($stateProvider, $urlRouterProvider) {
-			
+
         	$stateProvider.
 	        	state('channelconfigurator', {
 	        		url: "/channelconfigurator",
-					templateUrl: 'channelconfigurator/html/index.html',	        		
+					templateUrl: 'channelconfigurator/html/index.html',
 	        		requireLogin: true,
 	        		resolve: {
 	        			drivers: function ($ocLazyLoad) {
 	                        return $ocLazyLoad.load(
 	                            {
 	                                name: "openmuc.drivers",
-	                                files: ['channelconfigurator/js/drivers/driversController.js', 
+	                                files: ['channelconfigurator/js/drivers/driversController.js',
 	                                        'channelconfigurator/js/drivers/driversService.js',
-	                                        'channelconfigurator/js/drivers/driverDataService.js', 
-	                                        'channelconfigurator/js/drivers/driverEditController.js', 
+	                                        'channelconfigurator/js/drivers/driverDataService.js',
+	                                        'channelconfigurator/js/drivers/driverEditController.js',
 	                                        'channelconfigurator/js/drivers/driverNewController.js',
 											'channelconfigurator/js/drivers/driverInfosController.js',
-	                                        'channelconfigurator/js/drivers/driverScanController.js', 
+	                                        'channelconfigurator/js/drivers/driverScanController.js',
 	                                        'channelconfigurator/js/drivers/driversDirective.js',
 	                                        'channelconfigurator/js/channels/channelConfiguratorTabsDirective.js',
 	                                        'openmuc/js/libs/checklistmodel/checklist-model.min.js']
@@ -29,7 +29,7 @@
 	                        )
 	                    }
 	        	    }
-	        	}).	        	
+	        	}).
 	        	state('channelconfigurator.index', {
 	        		url: "/",
 					templateUrl: 'channelconfigurator/html/drivers/list.html',
@@ -85,14 +85,14 @@
 	                        return $ocLazyLoad.load(
 	                            {
 	                                name: "openmuc.drivers",
-	                                files: ['channelconfigurator/js/devices/devicesService.js',
-	                                        'channelconfigurator/js/devices/deviceDataService.js',
+	                                files: ['openmuc/js/devices/devicesService.js',
+	                                        'openmuc/js/devices/deviceDataService.js',
 	                                        'openmuc/js/libs/checklistmodel/checklist-model.min.js']
 	                            }
 	                        )
 	                    }
 	        	    }
-	        		
+
 	        	}).
 	        	state('channelconfigurator.devices', {
 	        		url: "",
@@ -109,8 +109,8 @@
 	                                		'channelconfigurator/js/devices/deviceEditController.js',
 	                                		'channelconfigurator/js/devices/deviceNewController.js',
 	                                		'channelconfigurator/js/devices/devicesDirective.js',
-	                                		'channelconfigurator/js/devices/devicesService.js',
-	                                		'channelconfigurator/js/devices/deviceDataService.js',
+	                                		'openmuc/js/devices/devicesService.js',
+	                                		'openmuc/js/devices/deviceDataService.js',
 	                                		'channelconfigurator/js/channels/channelConfiguratorTabsDirective.js']
 	                            }
 	                        )
@@ -146,15 +146,15 @@
 	                            {
 	                                name: "openmuc.devices",
 	                                files: ['channelconfigurator/js/devices/deviceScanController.js',
-	                                        'channelconfigurator/js/channels/channelsService.js',
-	                                        'channelconfigurator/js/channels/channelDataService.js',
+	                                        'openmuc/js/channels/channelsService.js',
+	                                        'openmuc/js/channels/channelDataService.js',
 	                                        'openmuc/js/libs/checklistmodel/checklist-model.min.js']
 	                            }
 	                        )
 	                    }
 	        	    }
-	        		
-	        	}).	        	
+
+	        	}).
 	        	state('channelconfigurator.channels', {
 	        		url: "",
 					templateUrl: 'channelconfigurator/html/channels/index.html',
@@ -166,12 +166,12 @@
 	                                name: "openmuc.channels",
 	                                files: ['channelconfigurator/js/drivers/driversService.js',
 	                                        'channelconfigurator/js/drivers/driverDataService.js',
-	                                        'channelconfigurator/js/devices/devicesService.js',
-	                                        'channelconfigurator/js/devices/deviceDataService.js',
+	                                        'openmuc/js/devices/devicesService.js',
+	                                        'openmuc/js/devices/deviceDataService.js',
 	                                        'channelconfigurator/js/channels/channelsController.js',
 	                                		'channelconfigurator/js/channels/channelsDirective.js',
-	                                		'channelconfigurator/js/channels/channelsService.js',
-	                                		'channelconfigurator/js/channels/channelDataService.js',
+	                                		'openmuc/js/channels/channelsService.js',
+	                                		'openmuc/js/channels/channelDataService.js',
 	                                		'channelconfigurator/js/channels/channelEditController.js',
 	                                		'channelconfigurator/js/channels/channelNewController.js',
 	                                		'channelconfigurator/js/channels/channelConfiguratorTabsDirective.js']
@@ -179,13 +179,13 @@
 	                        )
 	                    }
 	        	    }
-	        	}).	        	
+	        	}).
 	        	state('channelconfigurator.channels.index', {
 	        		url: "/channels",
 					templateUrl: 'channelconfigurator/html/channels/list.html',
 					controller: "ChannelsController",
 	        		requireLogin: true,
-	        	}).	        	
+	        	}).
 	        	state('channelconfigurator.channels.new', {
 	        		url: "/devices/:deviceId/channels/new",
 					templateUrl: 'channelconfigurator/html/channels/new.html',
@@ -213,9 +213,9 @@
 	                            }
 	                        )
 	                    }
-	        	    }	        		
+	        	    }
 	        	})
-	        	
+
 	}]);
-	
+
 })();

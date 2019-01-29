@@ -64,7 +64,7 @@ public class LogFileReaderTestSingleFile {
 
         System.out.println("### Setup() LogFileReaderTestSingleFile");
 
-        TestSuite.createTestFolder();
+        TestUtils.createTestFolder();
 
         // File file = new File(TestUtils.TESTFOLDERPATH + fileDate0 + "_" + loggingInterval + ext);
 
@@ -107,7 +107,7 @@ public class LogFileReaderTestSingleFile {
     public static void tearDown() {
 
         System.out.println("tearing down");
-        TestSuite.deleteTestFolder();
+        TestUtils.deleteTestFolder();
     }
 
     @Test

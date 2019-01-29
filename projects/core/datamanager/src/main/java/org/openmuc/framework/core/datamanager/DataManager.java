@@ -153,36 +153,40 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     @Activate
     protected void activate() throws TransformerFactoryConfigurationError, IOException, ParserConfigurationException,
             TransformerException, ParseException {
-        logger.info("Activating Data Manager");
-
-        NamedThreadFactory namedThreadFactory = new NamedThreadFactory("OpenMUC Data Manager Pool - thread-");
-        executor = (ThreadPoolExecutor) Executors.newCachedThreadPool(namedThreadFactory);
-
-        String configFileName = System.getProperty("org.openmuc.framework.channelconfig");
-        if (configFileName == null) {
-            configFileName = DEFAULT_CONF_FILE;
-        }
-        configFile = new File(configFileName);
-
         try {
-            rootConfigWithoutDefaults = RootConfigImpl.createFromFile(configFile);
-        } catch (FileNotFoundException e) {
-            // create an empty configuration and store it in a file
-            rootConfigWithoutDefaults = new RootConfigImpl();
-            rootConfigWithoutDefaults.writeToFile(configFile);
-            logger.info("No configuration file found. Created an empty config file at: {}",
-                    configFile.getAbsolutePath());
+            logger.info("Activating Data Manager");
+
+            NamedThreadFactory namedThreadFactory = new NamedThreadFactory("OpenMUC Data Manager Pool - thread-");
+            executor = (ThreadPoolExecutor) Executors.newCachedThreadPool(namedThreadFactory);
+
+            String configFileName = System.getProperty("org.openmuc.framework.channelconfig");
+            if (configFileName == null) {
+                configFileName = DEFAULT_CONF_FILE;
+            }
+            configFile = new File(configFileName);
+
+            try {
+                rootConfigWithoutDefaults = RootConfigImpl.createFromFile(configFile);
+            } catch (FileNotFoundException e) {
+                // create an empty configuration and store it in a file
+                rootConfigWithoutDefaults = new RootConfigImpl();
+                rootConfigWithoutDefaults.writeToFile(configFile);
+                logger.info("No configuration file found. Created an empty config file at: {}",
+                        configFile.getAbsolutePath());
+            } catch (ParseException e) {
+                throw new ParseException("Error parsing openMUC config file: " + e.getMessage(), e);
+            }
+
+            rootConfig = new RootConfigImpl();
+
+            applyConfiguration(rootConfigWithoutDefaults, System.currentTimeMillis());
+
+            start();
+
+            dataManagerActivated = true;
         } catch (ParseException e) {
-            throw new ParseException("Error parsing openMUC config file: " + e.getMessage(), e);
+            logger.error(e.getMessage());
         }
-
-        rootConfig = new RootConfigImpl();
-
-        applyConfiguration(rootConfigWithoutDefaults, System.currentTimeMillis());
-
-        start();
-
-        dataManagerActivated = true;
     }
 
     public void reload() {

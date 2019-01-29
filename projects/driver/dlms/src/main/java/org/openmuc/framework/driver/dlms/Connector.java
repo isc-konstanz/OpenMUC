@@ -1,9 +1,27 @@
+/*
+ * Copyright 2011-18 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.openmuc.framework.driver.dlms;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.dlms.settings.DeviceAddress;
@@ -150,12 +168,23 @@ class Connector {
 
         if (deviceSettings.getPassword().startsWith("0x")) {
             String hexStr = deviceSettings.getPassword().substring(2);
-            return DatatypeConverter.parseHexBinary(hexStr);
+            return hexToBytes(hexStr);
         }
         else {
             return deviceSettings.getPassword().getBytes(StandardCharsets.US_ASCII);
         }
 
+    }
+
+    private static byte[] hexToBytes(String s) {
+        byte[] b = new byte[s.length() / 2];
+        int index;
+
+        for (int i = 0; i < b.length; i++) {
+            index = i * 2;
+            b[i] = (byte) Integer.parseInt(s.substring(index, index + 2), 16);
+        }
+        return b;
     }
 
     /**

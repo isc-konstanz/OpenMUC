@@ -1,8 +1,8 @@
 (function () {
 
-    var injectParams = ['$scope', '$state', '$alert', '$translate', 'AuthService', 'UsersService'];
+    var injectParams = ['$scope', '$state', '$translate', 'notify', 'AuthService', 'UsersService'];
 
-    var UserEditController = function ($scope, $state, $alert, $translate, AuthService, UsersService) {
+    var UserEditController = function ($scope, $state, $translate, notify, AuthService, UsersService) {
 
         $translate('USER_UPDATED_SUCCESSFULLY').then(text => $scope.userOKText = text);
         $translate('USER_UPDATED_ERROR').then(text => $scope.userErrorText = text);
@@ -21,9 +21,9 @@
             }
 
             UsersService.updatePassword($scope.user).then(resp => {
-                $alert({content: $scope.userPasswordOKText, type: 'success'});
+                notify({message: $scope.userPasswordOKText, position: "right", classes: "alert-success"});
                 return $state.go('userconfigurator.index');
-            }, e => $alert({content: $scope.userPasswordErrorText, type: 'warning'}));
+            }, e => notify({message: $scope.userPasswordErrorText, position: "right", classes: "alert-warning"}));
         };
 
     };
