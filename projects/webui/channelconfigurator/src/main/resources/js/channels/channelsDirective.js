@@ -12,5 +12,5 @@
 	ChannelsFormDirective.$inject = injectParams;
 
 	angular.module('openmuc.channels').directive('channelsForm', ChannelsFormDirective);
-	
+
 })();

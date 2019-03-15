@@ -30,8 +30,6 @@ import org.openmuc.framework.driver.csv.exceptions.CsvException;
 
 public class CsvChannelHHMMSS extends CsvTimeChannel {
 
-//    private static final Logger logger = LoggerFactory.getLogger(CsvChannelHHMMSS.class);
-
     public CsvChannelHHMMSS(List<String> data, boolean rewind, long[] timestamps) {
         super(data, rewind, timestamps);
     }
@@ -45,8 +43,8 @@ public class CsvChannelHHMMSS extends CsvTimeChannel {
     }
 
     private int convertTimestamp(long samplingTime) {
-        // TODO add local
-        GregorianCalendar cal = new GregorianCalendar(Locale.GERMANY);
+
+        GregorianCalendar cal = new GregorianCalendar(Locale.getDefault());
         cal.setTime(new Date(samplingTime));
 
         int hour = cal.get(Calendar.HOUR_OF_DAY);

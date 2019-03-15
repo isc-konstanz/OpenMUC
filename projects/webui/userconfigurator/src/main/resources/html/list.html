@@ -1,4 +1,4 @@
-<div class="alert alert-sm alert-warning" ng-show="!users.length">
+<div class="alert alert-md alert-warning" ng-show="!users.length">
   <b class="small">{{'NO_USERS' | translate}}</b>
 </div>
 
@@ -11,8 +11,8 @@
   </thead>
   <tr ng-repeat="user in users">
     <td>{{user}}</td>
-    <td>
-      <a ng-click="deleteUser(user)" class="btn btn-default btn-sm" data-title="{{'DELETE' | translate}}" bs-tooltip>
+    <td id="icons">
+      <a ng-click="deleteUser(user)" class="btn btn-secondary btn-md" uib-tooltip="{{'DELETE' | translate}}">
         <span class="item-icon fa fa-trash-o" aria-hidden="true"></span>
       </a>
     </td>            

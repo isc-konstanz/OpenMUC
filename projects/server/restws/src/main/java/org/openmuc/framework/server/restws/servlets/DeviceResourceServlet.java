@@ -77,6 +77,7 @@ public class DeviceResourceServlet extends GenericServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -244,6 +245,7 @@ public class DeviceResourceServlet extends GenericServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -256,7 +258,7 @@ public class DeviceResourceServlet extends GenericServlet {
             if (pathInfoArray.length == 1) {
                 String deviceId = pathInfoArray[0];
 
-                setAndWriteDeviceConfig(deviceId, response, json, false);
+                doSetConfigs(deviceId, response, json, false);
             }
             else {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
@@ -270,6 +272,7 @@ public class DeviceResourceServlet extends GenericServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -290,7 +293,7 @@ public class DeviceResourceServlet extends GenericServlet {
 
                 if (deviceConfig != null && pathInfoArray.length == 2
                         && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
-                    setAndWriteDeviceConfig(deviceId, response, json, true);
+                    doSetConfigs(deviceId, response, json, true);
                 }
                 else {
                     ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
@@ -300,15 +303,15 @@ public class DeviceResourceServlet extends GenericServlet {
         }
     }
 
-    private boolean setAndWriteDeviceConfig(String deviceId, HttpServletResponse response, FromJson json,
-            boolean isHTTPPut) {
+    private boolean doSetConfigs(String deviceId, HttpServletResponse response, FromJson json,
+            boolean isHttpPut) {
 
         try {
-            if (isHTTPPut) {
-                return setAndWriteHttpPutDeviceConfig(deviceId, response, json);
+            if (isHttpPut) {
+                return doPutConfigs(deviceId, response, json);
             }
             else {
-                return setAndWriteHttpPostDeviceConfig(deviceId, response, json);
+                return doPostConfigs(deviceId, response, json);
             }
         } catch (JsonSyntaxException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_CONFLICT, logger,
@@ -330,7 +333,7 @@ public class DeviceResourceServlet extends GenericServlet {
         return false;
     }
 
-    private boolean setAndWriteHttpPutDeviceConfig(String deviceId, HttpServletResponse response, FromJson json)
+    private synchronized boolean doPutConfigs(String deviceId, HttpServletResponse response, FromJson json)
             throws JsonSyntaxException, ConfigWriteException, RestConfigIsNotCorrectException,
             MissingJsonObjectException, IllegalStateException {
 
@@ -354,8 +357,8 @@ public class DeviceResourceServlet extends GenericServlet {
         return ok;
     }
 
-    private boolean setAndWriteHttpPostDeviceConfig(String deviceId, HttpServletResponse response, FromJson json)
-            throws JsonSyntaxException, ConfigWriteException, RestConfigIsNotCorrectException, Error,
+    private synchronized boolean doPostConfigs(String deviceId, HttpServletResponse response,
+            FromJson json) throws JsonSyntaxException, ConfigWriteException, RestConfigIsNotCorrectException, Error,
             MissingJsonObjectException, IllegalStateException {
 
         boolean ok = false;
@@ -397,10 +400,11 @@ public class DeviceResourceServlet extends GenericServlet {
     }
 
     @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response)
+    public synchronized void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 

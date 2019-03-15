@@ -1,21 +1,36 @@
+/*
+ * Copyright 2011-18 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.openmuc.framework.driver.csv.test;
 
 import org.junit.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.csv.CsvDriver;
-import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openmuc.framework.driver.csv.settings.DeviceScanSettings;
 
 public class DeviceScanSettingsTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(DeviceScanSettingsTest.class);
 
     private final DriverInfo info = DriverInfoFactory.getInfo(CsvDriver.class);
 
@@ -70,39 +85,7 @@ public class DeviceScanSettingsTest {
     @Test(expected = ArgumentSyntaxException.class)
     public void testWrongArgumentPathDoesNotExist() throws ArgumentSyntaxException, UnsupportedOperationException, ScanException, ScanInterruptedException {
         String arguments = "path=/home/does_not_exist";
-        
-        CsvDriver csvDriver = new CsvDriver();
-        csvDriver.scanForDevices(arguments, new DriverDeviceScanListener() {
-
-            @Override
-            public void scanProgressUpdate(int progress) {
-                logger.info("Scan progress: " + progress + " %");
-            }
-
-            @Override
-            public void deviceFound(DeviceScanInfo scanInfo) {
-                logger.info(scanInfo.toString());
-            }
-        });        
-    }
-
-    @Test(expected = ArgumentSyntaxException.class)
-    public void testWrongArgumentNoDirctory() throws ArgumentSyntaxException, UnsupportedOperationException, ScanException, ScanInterruptedException {
-        String arguments = "path=/home/mmittels/git/openmuc/projects/driver/csv/resources/CsvTestDevice_1.csv";
-        
-        CsvDriver csvDriver = new CsvDriver();
-        csvDriver.scanForDevices(arguments, new DriverDeviceScanListener() {
-
-            @Override
-            public void scanProgressUpdate(int progress) {
-                logger.info("Scan progress: " + progress + " %");
-            }
-
-            @Override
-            public void deviceFound(DeviceScanInfo scanInfo) {
-                logger.info(scanInfo.toString());
-            }
-        });  
+        info.parse(arguments, DeviceScanSettings.class).listFiles();
     }
 
 }

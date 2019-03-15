@@ -21,7 +21,22 @@
 package org.openmuc.framework.driver.csv;
 
 public enum ESamplingMode {
+
+    /**
+     * Csv file must contain a column with the name <i>unixtimestamp</i>, values must be in milliseconds. During
+     * sampling the driver searches the closest unixtimestamp which is &gt;= the sampling timestamp. Therefore, the
+     * driver keeps returning the same value x for sampling timestamps until the next unixtimestamp of the file is
+     * reached.
+     */
     UNIXTIMESTAMP,
+
+    /**
+     * Csv file must contain a column with the name <i>hhmmss</i>, values must be in the format: hhmmss.
+     */
     HHMMSS,
+
+    /**
+     * Starts sampling from the first line of the csv file. Timestamps are ignored and each sampling reads the next line
+     */
     LINE
 }

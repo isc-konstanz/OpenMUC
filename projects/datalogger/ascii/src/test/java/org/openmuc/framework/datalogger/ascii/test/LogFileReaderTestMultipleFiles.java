@@ -65,7 +65,7 @@ public class LogFileReaderTestMultipleFiles {
 
         System.out.println("### Setup() LogFileReaderTestMultipleFiles");
 
-        TestSuite.createTestFolder();
+        TestUtils.createTestFolder();
         // drei Dateien
 
         // 1 Kanal im Sekunden-Takt loggen über von 23 Uhr bis 1 Uhr des übernächsten Tages
@@ -125,7 +125,7 @@ public class LogFileReaderTestMultipleFiles {
     public static void tearDown() {
 
         System.out.println("tearing down");
-        TestSuite.deleteTestFolder();
+        TestUtils.deleteTestFolder();
     }
 
     @Test

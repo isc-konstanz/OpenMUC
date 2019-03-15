@@ -31,10 +31,10 @@ public class DeviceSettings extends Preferences {
     public static final String SAMPLING_MODE = "samplingmode";
 
     @Option(SAMPLING_MODE)
-    private ESamplingMode samplingMode;
+    private ESamplingMode samplingMode = ESamplingMode.LINE;
 
     @Option
-    private boolean rewind;
+    private boolean rewind = false;
 
     @Override
     public PreferenceType getPreferenceType() {

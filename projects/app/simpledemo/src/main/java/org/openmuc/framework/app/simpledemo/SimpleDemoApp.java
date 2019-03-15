@@ -38,8 +38,8 @@ public final class SimpleDemoApp extends Thread {
     private static final String ID_POWER_ELECTIC_VEHICLE = "power_electric_vehicle";
     private static final String ID_POWER_GRID = "power_grid";
     private static final String ID_STATUS_ELECTRIC_VEHICLE = "status_electric_vehicle";
-    private static final String ID_ENERGY_EXPORTED = "enery_exported";
-    private static final String ID_ENERGY_IMPORTED = "enery_imported";
+    private static final String ID_ENERGY_EXPORTED = "energy_exported";
+    private static final String ID_ENERGY_IMPORTED = "energy_imported";
 
     private static final double STANDBY_POWER_CHARGING_STATION = 0.020;
 

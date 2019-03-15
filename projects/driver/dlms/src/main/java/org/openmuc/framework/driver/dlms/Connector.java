@@ -23,8 +23,6 @@ package org.openmuc.framework.driver.dlms;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.dlms.settings.DeviceAddress;
 import org.openmuc.framework.driver.dlms.settings.DeviceSettings;
@@ -170,12 +168,23 @@ class Connector {
 
         if (deviceSettings.getPassword().startsWith("0x")) {
             String hexStr = deviceSettings.getPassword().substring(2);
-            return DatatypeConverter.parseHexBinary(hexStr);
+            return hexToBytes(hexStr);
         }
         else {
             return deviceSettings.getPassword().getBytes(StandardCharsets.US_ASCII);
         }
 
+    }
+
+    private static byte[] hexToBytes(String s) {
+        byte[] b = new byte[s.length() / 2];
+        int index;
+
+        for (int i = 0; i < b.length; i++) {
+            index = i * 2;
+            b[i] = (byte) Integer.parseInt(s.substring(index, index + 2), 16);
+        }
+        return b;
     }
 
     /**

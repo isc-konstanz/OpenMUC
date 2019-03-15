@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
@@ -55,14 +53,15 @@ import org.slf4j.LoggerFactory;
 public class DriverConnection implements Connection {
     private static final Logger logger = LoggerFactory.getLogger(DriverConnection.class);
 
-    private final SerialInterface serialInterface;
+    private final ConnectionInterface serialInterface;
     private final int mBusAddress;
     private final SecondaryAddress secondaryAddress;
+    private final static int delay = 100; // delay in ms // ToDo: make it configurable (some devices need 2 s)
 
     private boolean resetApplication = false;
     private boolean resetLink = false;
 
-    public DriverConnection(SerialInterface serialInterface, int mBusAddress, SecondaryAddress secondaryAddress) {
+    public DriverConnection(ConnectionInterface serialInterface, int mBusAddress, SecondaryAddress secondaryAddress) {
         this.serialInterface = serialInterface;
         this.secondaryAddress = secondaryAddress;
         this.mBusAddress = mBusAddress;
@@ -84,14 +83,16 @@ public class DriverConnection implements Connection {
                 else {
                     mBusConnection.linkReset(mBusAddress);
                 }
+                sleep(delay);
+
                 VariableDataStructure variableDataStructure = mBusConnection.read(mBusAddress);
 
                 List<DataRecord> dataRecords = variableDataStructure.getDataRecords();
 
                 for (DataRecord dataRecord : dataRecords) {
 
-                    String vib = DatatypeConverter.printHexBinary(dataRecord.getVib());
-                    String dib = DatatypeConverter.printHexBinary(dataRecord.getDib());
+                    String vib = Helper.bytesToHex(dataRecord.getVib());
+                    String dib = Helper.bytesToHex(dataRecord.getDib());
 
                     ValueType valueType;
                     Integer valueLength;
@@ -314,8 +315,8 @@ public class DriverConnection implements Connection {
 
     private int setDibVibs(List<DataRecord> dataRecords, String[] dibvibs, int i) {
         for (DataRecord dataRecord : dataRecords) {
-            String dibHex = DatatypeConverter.printHexBinary(dataRecord.getDib());
-            String vibHex = DatatypeConverter.printHexBinary(dataRecord.getVib());
+            String dibHex = Helper.bytesToHex(dataRecord.getDib());
+            String vibHex = Helper.bytesToHex(dataRecord.getVib());
             dibvibs[i++] = MessageFormat.format("{0}:{1}", dibHex, vibHex);
         }
         return i;
@@ -451,6 +452,14 @@ public class DriverConnection implements Connection {
 
     void setResetLink(boolean resetLink) {
         this.resetLink = resetLink;
+    }
+
+    private void sleep(long millisec) throws ConnectionException {
+        try {
+            Thread.sleep(millisec);
+        } catch (InterruptedException e) {
+            throw new ConnectionException(e);
+        }
     }
 
 }

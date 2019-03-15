@@ -43,7 +43,7 @@ public class MiscTests {
     public static void tearDown() {
 
         System.out.println("tearing down");
-        TestSuite.deleteTestFolder();
+        TestUtils.deleteTestFolder();
     }
 
     @Test

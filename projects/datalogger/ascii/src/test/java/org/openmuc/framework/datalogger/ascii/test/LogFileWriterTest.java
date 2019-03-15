@@ -97,7 +97,7 @@ public class LogFileWriterTest {
 
         System.out.println("### Setup() LogFileWriterTest");
 
-        TestSuite.createTestFolder();
+        TestUtils.createTestFolder();
 
         // 2 Kanäle im Stunden-Takt loggen von 12 Uhr bis 12 Uhr in den nächsten Tage hinein
         // --> Ergebnis müssten zwei Dateien sein die vom LogFileWriter erstellt wurden
@@ -182,10 +182,10 @@ public class LogFileWriterTest {
     public static void tearDown() {
 
         System.out.println("tearing down");
-        TestSuite.deleteTestFolder();
+        TestUtils.deleteTestFolder();
     }
 
-    // @Test
+    @Test
     public void tc300_check_if_new_file_is_created_on_day_change() {
 
         System.out.println("### Begin test tc300_check_if_new_file_is_created_on_day_change");

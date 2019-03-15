@@ -1,7 +1,7 @@
 (function(){
 
 	var injectParams = [];
-	
+
 	var ChannelConfiguratorTabsDirective = function() {
 		return {
 			restrict: 'E',
@@ -12,5 +12,5 @@
 	ChannelConfiguratorTabsDirective.$inject = injectParams;
 
 	angular.module('openmuc.channels').directive('channelConfiguratorTabs', ChannelConfiguratorTabsDirective);
-	
+
 })();

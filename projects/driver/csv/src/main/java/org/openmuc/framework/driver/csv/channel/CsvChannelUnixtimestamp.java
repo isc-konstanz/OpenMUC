@@ -26,8 +26,6 @@ import org.openmuc.framework.driver.csv.exceptions.CsvException;
 
 public class CsvChannelUnixtimestamp extends CsvTimeChannel {
 
-//    private static final Logger LOGGER = LoggerFactory.getLogger(CsvChannelUnixtimestamp.class);
-
     public CsvChannelUnixtimestamp(List<String> data, boolean rewind, long[] timestamps) {
         super(data, rewind, timestamps);
     }

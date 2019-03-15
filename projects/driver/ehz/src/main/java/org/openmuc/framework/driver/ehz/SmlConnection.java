@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-17 Fraunhofer ISE
+ * Copyright 2011-18 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.data.DoubleValue;
@@ -100,7 +98,7 @@ public class SmlConnection extends GeneralConnection {
 
         try {
             if (receiver != null) {
-                receiver.closeStream();
+                receiver.close();
             }
             if (!serialPort.isClosed()) {
                 serialPort.close();
@@ -262,7 +260,20 @@ public class SmlConnection extends GeneralConnection {
     }
 
     private static String convertBytesToHexString(byte[] data) {
-        return DatatypeConverter.printHexBinary(data);
+        return bytesToHex(data);
+    }
+
+    static final String HEXES = "0123456789ABCDEF";
+
+    private static String bytesToHex(byte[] raw) {
+        if (raw == null) {
+            return null;
+        }
+        final StringBuilder hex = new StringBuilder(2 * raw.length);
+        for (final byte b : raw) {
+            hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F)));
+        }
+        return hex.toString();
     }
 
     private static ValueContainer extractValueOf(SmlListEntry entry) {

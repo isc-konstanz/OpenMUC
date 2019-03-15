@@ -73,6 +73,7 @@ public class ChannelResourceServlet extends GenericServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -346,6 +347,7 @@ public class ChannelResourceServlet extends GenericServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -360,7 +362,7 @@ public class ChannelResourceServlet extends GenericServlet {
         if (pathInfoArray.length == 1) {
             String channelId = pathInfoArray[0];
 
-            doSetAndWriteChannelConfig(channelId, response, json, false);
+            doSetConfigs(channelId, response, json, false);
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
@@ -372,6 +374,7 @@ public class ChannelResourceServlet extends GenericServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -393,7 +396,7 @@ public class ChannelResourceServlet extends GenericServlet {
                 if (channelConfig != null) {
 
                     if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
-                        doSetAndWriteChannelConfig(channelId, response, json, true);
+                        doSetConfigs(channelId, response, json, true);
                     }
                     else if (pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.LATESTRECORD)) {
                         doSetRecord(channelId, response, json);
@@ -410,16 +413,16 @@ public class ChannelResourceServlet extends GenericServlet {
         }
     }
 
-    private boolean doSetAndWriteChannelConfig(String channelId, HttpServletResponse response, FromJson json,
-            boolean isHTTPPut) {
+    private boolean doSetConfigs(String channelId, HttpServletResponse response, FromJson json,
+            boolean isHttpPut) {
         boolean ok = false;
 
         try {
-            if (isHTTPPut) {
-                ok = doSetAndWriteHttpPutChannelConfig(channelId, response, json);
+            if (isHttpPut) {
+                ok = doPutConfigs(channelId, response, json);
             }
             else {
-                ok = doSetAndWriteHttpPostChannelConfig(channelId, response, json);
+                ok = doPostConfigs(channelId, response, json);
             }
         } catch (JsonSyntaxException e) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_CONFLICT, logger,
@@ -442,8 +445,8 @@ public class ChannelResourceServlet extends GenericServlet {
         return ok;
     }
 
-    private boolean doSetAndWriteHttpPutChannelConfig(String channelId, HttpServletResponse response, FromJson json)
-            throws JsonSyntaxException, ConfigWriteException, RestConfigIsNotCorrectException,
+    private synchronized boolean doPutConfigs(String channelId, HttpServletResponse response,
+            FromJson json) throws JsonSyntaxException, ConfigWriteException, RestConfigIsNotCorrectException,
             MissingJsonObjectException, IllegalStateException {
         boolean ok = false;
 
@@ -463,8 +466,8 @@ public class ChannelResourceServlet extends GenericServlet {
         return ok;
     }
 
-    private boolean doSetAndWriteHttpPostChannelConfig(String channelId, HttpServletResponse response, FromJson json)
-            throws JsonSyntaxException, ConfigWriteException, RestConfigIsNotCorrectException, Error,
+    private synchronized boolean doPostConfigs(String channelId, HttpServletResponse response,
+            FromJson json) throws JsonSyntaxException, ConfigWriteException, RestConfigIsNotCorrectException, Error,
             MissingJsonObjectException, IllegalStateException {
         boolean ok = false;
         DeviceConfig deviceConfig;
@@ -557,10 +560,11 @@ public class ChannelResourceServlet extends GenericServlet {
     }
 
     @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response)
+    public synchronized void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 

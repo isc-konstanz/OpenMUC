@@ -3,7 +3,7 @@ def projectName = "OpenMUC Driver - Raspberry Pi GPIO"
 
 configurations.create('embed')
 
-def pi4jversion = '1.2-SNAPSHOT'
+def pi4jVersion = '1.2-SNAPSHOT'
 
 repositories {
    flatDir {
@@ -12,16 +12,16 @@ repositories {
 }
 
 dependencies {
-  compile project(':openmuc-core-spi')
+  implementation project(':openmuc-core-spi')
 
-  compile group: 'com.pi4j', name: 'pi4j-core', version: pi4jversion
-  embed group: 'com.pi4j', name: 'pi4j-core', version: pi4jversion
+  implementation group: 'com.pi4j', name: 'pi4j-core', version: pi4jVersion
+  embed group: 'com.pi4j', name: 'pi4j-core', version: pi4jVersion
 
-  compile group: 'com.pi4j', name: 'pi4j-device', version: pi4jversion
-  embed group: 'com.pi4j', name: 'pi4j-device', version: pi4jversion
+  implementation group: 'com.pi4j', name: 'pi4j-device', version: pi4jVersion
+  embed group: 'com.pi4j', name: 'pi4j-device', version: pi4jVersion
 
-  compile group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jversion
-  embed group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jversion
+  implementation group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jVersion
+  embed group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jVersion
 }
 
 jar {

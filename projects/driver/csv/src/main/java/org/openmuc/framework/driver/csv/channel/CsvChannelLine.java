@@ -28,9 +28,7 @@ import java.util.List;
  */
 public class CsvChannelLine implements CsvChannel {
 
-//    private static final Logger logger = LoggerFactory.getLogger(CsvChannelLine.class);
-
-    private int lastReadIndex = 0;
+    private int lastReadIndex = -1;
     private final int maxIndex;
     private final List<String> data;
     private boolean rewind = false;

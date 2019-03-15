@@ -13,6 +13,6 @@
 
     RestServerAuthService.$inject = injectParams;
 
-	angular.module('openmuc.auth').service('RestServerAuthService', RestServerAuthService);    
+	angular.module('openmuc.auth').service('RestServerAuthService', RestServerAuthService);
 
 })();

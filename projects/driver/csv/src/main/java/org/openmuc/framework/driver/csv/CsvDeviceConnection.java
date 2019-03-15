@@ -38,6 +38,7 @@ import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.driver.csv.channel.ChannelFactory;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
+import org.openmuc.framework.driver.csv.exceptions.EmptyChannelAddressException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
 import org.openmuc.framework.driver.csv.settings.DeviceSettings;
@@ -49,9 +50,6 @@ import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Holds complete data of the CSV file.
- */
 public class CsvDeviceConnection implements Connection {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvDeviceConnection.class);
@@ -98,36 +96,42 @@ public class CsvDeviceConnection implements Connection {
         long samplingTime = System.currentTimeMillis();
 
         for (ChannelRecordContainer container : containers) {
-            CsvChannel channel = channelMap.get(container.getChannelAddress());
-            if (channel == null) {
-                throw new ConnectionException("channel not found");
-            }
-            else {
+            try {
+                CsvChannel channel = getCsvChannel(container);
+                double value = channel.readValue(samplingTime);
+                container.setRecord(new Record(new DoubleValue(value), samplingTime, Flag.VALID));
 
-                double value = Double.NaN;
+            } catch (EmptyChannelAddressException e) {
+                logger.warn("EmptyChannelAddressException: {}", e.getMessage());
+                container.setRecord(new Record(new DoubleValue(Double.NaN), samplingTime,
+                        Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
 
-                try {
+            } catch (NoValueReceivedYetException e) {
+                logger.warn("NoValueReceivedYetException: {}", e.getMessage());
+                container.setRecord(new Record(new DoubleValue(Double.NaN), samplingTime, Flag.NO_VALUE_RECEIVED_YET));
 
-                    value = channel.readValue(samplingTime);
-                    container.setRecord(new Record(new DoubleValue(value), samplingTime, Flag.VALID));
+            } catch (TimeTravelException e) {
+                logger.warn("TimeTravelException: {}", e.getMessage());
+                container.setRecord(
+                        new Record(new DoubleValue(Double.NaN), samplingTime, Flag.DRIVER_ERROR_READ_FAILURE));
 
-                } catch (NoValueReceivedYetException e) {
-                    logger.warn("NoValueReceivedYetException", e);
-                    container.setRecord(new Record(new DoubleValue(value), samplingTime, Flag.NO_VALUE_RECEIVED_YET));
-                } catch (TimeTravelException e) {
-                    logger.warn("TimeTravelException", e);
-                    container.setRecord(
-                            new Record(new DoubleValue(value), samplingTime, Flag.DRIVER_ERROR_READ_FAILURE));
-                } catch (CsvException e) {
-                    logger.error("CsvException", e);
-                    container.setRecord(
-                            new Record(new DoubleValue(value), samplingTime, Flag.DRIVER_THREW_UNKNOWN_EXCEPTION));
-                }
-
+            } catch (CsvException e) {
+                logger.error("CsvException: {}", e.getMessage());
+                container.setRecord(
+                        new Record(new DoubleValue(Double.NaN), samplingTime, Flag.DRIVER_THREW_UNKNOWN_EXCEPTION));
             }
         }
 
         return null;
+    }
+
+    private CsvChannel getCsvChannel(ChannelRecordContainer container) throws EmptyChannelAddressException {
+
+        String channelAddress = container.getChannelAddress();
+        if (channelAddress.isEmpty()) {
+            throw new EmptyChannelAddressException("No ChannelAddress for channel " + container.getChannel().getId());
+        }
+        return channelMap.get(channelAddress);
     }
 
     @Override

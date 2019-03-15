@@ -1,6 +1,6 @@
 <form ng-submit="accessChannels()" novalidate>
 
-    <table id="access-tool-table" class="table table-hover">
+    <table id="accesssListTable" class="table table-hover">
         <thead>
         <tr>
             <th>&nbsp;</th>
@@ -16,7 +16,7 @@
                        ng-click="$event.stopPropagation()" />
             </td>
             <td>{{device.id}}</td>
-            <td>{{device.description}}</td>
+            <td>{{device.configs.description}}</td>
         </tr>
         <tr>
             <td><input type="checkbox" ng-model="check" ng-model-options="{getterSetter: true}" /></td>

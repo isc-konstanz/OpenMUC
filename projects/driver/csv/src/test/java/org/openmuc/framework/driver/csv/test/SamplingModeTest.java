@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.csv.CsvDeviceConnection;
-import org.openmuc.framework.driver.csv.test.helper.CsvChannelRecordContainer;
+import org.openmuc.framework.driver.csv.test.utils.CsvChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class SamplingModeTest {
     public void testHHMMSSMode() {
 
         try {
-            String deviceAddress = DIR + "/src/test/resources/SmartHomeTest.csv";
+            String deviceAddress = DIR + "/src/test/resources/test_data.csv";
             String deviceSettings = "samplingmode=hhmmss";
             CsvDeviceConnection connection = new CsvDeviceConnection(deviceAddress, deviceSettings);
 
@@ -48,7 +48,7 @@ public class SamplingModeTest {
     public void testLineMode() {
 
         try {
-            String deviceAddress = DIR + "/src/test/resources/SmartHomeTest.csv";
+            String deviceAddress = DIR + "/src/test/resources/test_data.csv";
             String deviceSettings = "samplingmode=line";
             CsvDeviceConnection connection = new CsvDeviceConnection(deviceAddress, deviceSettings);
 

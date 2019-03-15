@@ -536,14 +536,14 @@ public abstract class ModbusConnection implements Connection {
 
         try {
             StringBuilder sb = new StringBuilder();
-            sb.append("REQUEST: " + request.getHexMessage() + "\n");
-            sb.append("- transaction ID: " + requestTransactionId + "\n");
-            sb.append("- protocol ID   : " + request.getProtocolID() + "\n");
-            sb.append("- data length   : " + request.getDataLength() + "\n");
-            sb.append("- unit ID       : " + request.getUnitID() + "\n");
-            sb.append("- function code : " + request.getFunctionCode() + "\n");
-            sb.append("- is headless   : " + request.isHeadless() + "\n");
-            sb.append("- max retries   : " + transaction.getRetries());
+            sb.append("REQUEST: ").append(request.getHexMessage()).append('\n');
+            sb.append("- transaction ID: ").append(requestTransactionId).append('\n');
+            sb.append("- protocol ID   : ").append(request.getProtocolID()).append('\n');
+            sb.append("- data length   : ").append(request.getDataLength()).append('\n');
+            sb.append("- unit ID       : ").append(request.getUnitID()).append('\n');
+            sb.append("- function code : ").append(request.getFunctionCode()).append('\n');
+            sb.append("- is headless   : ").append(request.isHeadless()).append('\n');
+            sb.append("- max retries   : ").append(transaction.getRetries());
 
             if (transaction instanceof ModbusTCPTransaction) {
                 sb.append("\n   (NOTE: incorrect transaction Id displayed in hex message due to issue with jamod)");

@@ -60,15 +60,15 @@ public class ChannelFactory {
 
         HashMap<String, CsvChannel> channelMap = new HashMap<>();
 
-        String channelId;
+        String channelAddress;
         Iterator<String> keys = csvMap.keySet().iterator();
         boolean rewind = false;
 
         while (keys.hasNext()) {
-            channelId = keys.next();
-            List<String> data = csvMap.get(channelId);
+            channelAddress = keys.next();
+            List<String> data = csvMap.get(channelAddress);
             long[] timestamps = getTimestamps(csvMap);
-            channelMap.put(channelId, new CsvChannelUnixtimestamp(data, rewind, timestamps));
+            channelMap.put(channelAddress, new CsvChannelUnixtimestamp(data, rewind, timestamps));
         }
 
         return channelMap;
@@ -78,14 +78,14 @@ public class ChannelFactory {
             throws ArgumentSyntaxException {
         HashMap<String, CsvChannel> channelMap = new HashMap<>();
 
-        String channelId;
+        String channelAddress;
         Iterator<String> keys = csvMap.keySet().iterator();
 
         while (keys.hasNext()) {
-            channelId = keys.next();
-            List<String> data = csvMap.get(channelId);
+            channelAddress = keys.next();
+            List<String> data = csvMap.get(channelAddress);
             long[] timestamps = getHours(csvMap);
-            channelMap.put(channelId, new CsvChannelHHMMSS(data, rewind, timestamps));
+            channelMap.put(channelAddress, new CsvChannelHHMMSS(data, rewind, timestamps));
         }
 
         return channelMap;
@@ -93,13 +93,13 @@ public class ChannelFactory {
 
     public static HashMap<String, CsvChannel> createMapLine(Map<String, List<String>> csvMap, boolean rewind) {
         HashMap<String, CsvChannel> channelMap = new HashMap<>();
-        String channelId;
+        String channelAddress;
         Iterator<String> keys = csvMap.keySet().iterator();
 
         while (keys.hasNext()) {
-            channelId = keys.next();
-            List<String> data = csvMap.get(channelId);
-            channelMap.put(channelId, new CsvChannelLine(channelId, data, rewind));
+            channelAddress = keys.next();
+            List<String> data = csvMap.get(channelAddress);
+            channelMap.put(channelAddress, new CsvChannelLine(channelAddress, data, rewind));
         }
 
         return channelMap;

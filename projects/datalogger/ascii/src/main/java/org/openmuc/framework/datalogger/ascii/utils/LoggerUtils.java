@@ -312,6 +312,7 @@ public class LoggerUtils {
      *            string buffer to add the error flag
      */
     public static void buildError(StringBuilder sbValue, Flag flag) {
+        sbValue.setLength(0);
         sbValue.append(Const.ERROR).append(flag.getCode());
     }
 

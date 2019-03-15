@@ -57,7 +57,7 @@
         <description>Start from the beginning of the file again, when the end was reached.</description>
         <mandatory>false</mandatory>
         <type>BOOLEAN</type>
-        <default>true</default>
+        <default>false</default>
       </option>
     </deviceSettings>
     

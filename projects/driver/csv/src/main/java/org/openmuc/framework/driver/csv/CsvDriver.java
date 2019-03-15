@@ -70,7 +70,7 @@ public class CsvDriver implements DriverService {
     public void scanForDevices(String scanSettings, DriverDeviceScanListener listener)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
 
-        logger.info("Scan for CSV files. Settings: " + scanSettings);
+        logger.info("Scan for CSV files. Settings: {}", scanSettings);
 
         resetDeviceScanInterrupted();
 

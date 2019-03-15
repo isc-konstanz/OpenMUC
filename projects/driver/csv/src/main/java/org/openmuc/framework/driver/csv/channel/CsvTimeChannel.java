@@ -171,6 +171,7 @@ public abstract class CsvTimeChannel implements CsvChannel {
     }
 
     private boolean isBeforeFirstTimestamp(long samplingTime) {
+
         if (samplingTime < firstTimestamp) {
             return true;
         }

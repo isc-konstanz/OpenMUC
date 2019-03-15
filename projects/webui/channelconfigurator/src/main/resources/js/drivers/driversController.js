@@ -1,8 +1,8 @@
 ﻿(function () {
 
-    var injectParams = ['$scope', '$alert', '$state', '$translate', 'DriversService'];
+    var injectParams = ['$scope', '$state', '$translate', '$interval', 'notify', 'DriversService'];
 
-    var DriversController = function ($scope, $alert, $state, $translate, DriversService) {
+    var DriversController = function ($scope, $state, $translate, $interval, notify, DriversService) {
 
         $translate('DRIVER_DELETED_SUCCESSFULLY').then(text => $scope.driverOKText = text);
 
@@ -14,13 +14,22 @@
             $scope.drivers = drivers;
         });
 
+        $scope.interval = $interval(() => {
+            DriversService.getDrivers().then(function (drivers) {
+                updateDrivers = drivers;
+            });
+            if (typeof updateDrivers != "undefined"){
+                $scope.drivers = updateDrivers;
+            }
+        }, 5000);
+
         $scope.deleteDriver = function (id) {
             if (!confirm($scope.confirmMessage + " " + id + "?")) {
                 return;
             }
 
             DriversService.destroy(id).then(function (data) {
-                $alert({content: $scope.driverOKText, type: 'success'});
+                notify({message: $scope.driverOKText, position: "right", classes: "alert-success"});
 
                 DriversService.getDrivers().then(function (drivers) {
                     $scope.drivers = drivers;
@@ -28,6 +37,8 @@
             });
 
         };
+
+        $scope.$on('$destroy', () => $interval.cancel($scope.interval));
 
     };
 

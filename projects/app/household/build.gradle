@@ -1,5 +1,5 @@
 dependencies {
-  compile project(':openmuc-core-api')
+  implementation project(':openmuc-core-api')
 }
 
 jar {

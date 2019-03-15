@@ -1,3 +1,23 @@
+/*
+ * Copyright 2011-18 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.openmuc.framework.driver.csv.test;
 
 import java.util.ArrayList;
@@ -10,12 +30,8 @@ import org.openmuc.framework.driver.csv.channel.CsvChannelUnixtimestamp;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CsvTimeChannelUnixtimestampTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(CsvTimeChannelUnixtimestampTest.class);
 
     static List<String> data;
     static long[] timestamps;
@@ -31,11 +47,28 @@ public class CsvTimeChannelUnixtimestampTest {
         data.add("15.0");
         data.add("20.0");
 
-        // TODO map hhmmss und timestamp
-        // TODO ein gleiche parameter für CsvTimeChannelHourTest und CsvTimeChannelUnixtimestampTest
-        timestamps = new long[] { 1436306400000l /* 20150708 000000 */, 1436306405000l /* 20150708 000005 */,
-                1436306410000l /* 20150708 000010 */, 1436306415000l /* 20150708 000015 */,
-                1436306420000l /* 20150708 000020 */ };
+        timestamps = new long[] { //
+                OFFSET /* ........= 20150708 000000 */, //
+                1436306405000l /* = 20150708 000005 */, //
+                1436306410000l /* = 20150708 000010 */, //
+                1436306415000l /* = 20150708 000015 */, //
+                1436306420000l /* = 20150708 000020 */ };
+    }
+
+    @Test
+    public void testRead() throws CsvException {
+
+        CsvChannelUnixtimestamp channel = new CsvChannelUnixtimestamp(data, false, timestamps);
+
+        value = channel.readValue(OFFSET);
+        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+
+        // interval size is 5 seconds, driver returns new value once the new interval is reached
+        value = channel.readValue(OFFSET + 4999);
+        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+
+        value = channel.readValue(OFFSET + 5000);
+        Assert.assertTrue(String.valueOf(value).equals("5.0"));
 
     }
 
@@ -123,7 +156,7 @@ public class CsvTimeChannelUnixtimestampTest {
         value = channel.readValue(OFFSET);
         Assert.assertTrue(String.valueOf(value).equals("0.0"));
 
-        // sampling jumed back before first timestamp of file
+        // sampling jumped back before first timestamp of file
         try {
             value = channel.readValue(OFFSET - 5000);
             Assert.assertTrue(false);
@@ -140,7 +173,7 @@ public class CsvTimeChannelUnixtimestampTest {
         value = channel.readValue(OFFSET);
         Assert.assertTrue(String.valueOf(value).equals("0.0"));
 
-        // sampling jumed back before first timestamp of file
+        // sampling jumped back before first timestamp of file
         try {
             value = channel.readValue(OFFSET - 5000);
             Assert.assertTrue(false);

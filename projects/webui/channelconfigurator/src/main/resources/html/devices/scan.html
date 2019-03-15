@@ -49,6 +49,6 @@
     </tr>
 </table>
 
-<div ng-if="channels.length">
-    <button class="btn btn-primary" ng-click="addChannels()" ng-disabled="selectedChannels.length == 0">{{'ADD_CHANNELS' | translate}}</button>
+<div ng-if="channels.length" ng-controller="TabsController">
+    <button class="btn btn-primary" ng-click="addChannels(); setTabIndex(2)" ng-disabled="selectedChannels.length == 0">{{'ADD_CHANNELS' | translate}}</button>
 </div>

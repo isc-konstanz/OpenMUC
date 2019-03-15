@@ -1,8 +1,8 @@
 (function () {
 
-    var injectParams = ['$scope', '$state', '$alert', '$stateParams', '$translate', 'DriversService', 'DriverDataService'];
+    var injectParams = ['$scope', '$state', '$stateParams', '$translate', 'notify', 'DriversService', 'DriverDataService'];
 
-    var DriverInfosController = function ($scope, $state, $alert, $stateParams, $translate, DriversService) {
+    var DriverInfosController = function ($scope, $state, $stateParams, $translate, notify, DriversService) {
 
 
         var deviceWarningrText;
@@ -14,9 +14,9 @@
         $scope.showInfos = function () {
             $scope.infosDriverForm.submitted = true;
 
-            DriversService.getInfos($scope.driver.id).then(r => $scope.driver.infos = response,
+            DriversService.getInfos($scope.driver.id).then(response => $scope.driver.infos = response,
                 e => {
-                    $alert({content: deviceWarningrText, type: 'warning'});
+                    notify({message: deviceWarningrText, position: "right", classes: "alert-warning"});
                     return $state.go('channelconfigurator.drivers.index');
                 });
         };

@@ -5,6 +5,7 @@
 # Generated files
 gen/
 bin/
+!/bin/
 
 # Compiled class file
 *.class

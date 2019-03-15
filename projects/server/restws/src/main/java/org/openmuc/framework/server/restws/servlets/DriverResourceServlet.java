@@ -80,6 +80,7 @@ public class DriverResourceServlet extends GenericServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -308,6 +309,7 @@ public class DriverResourceServlet extends GenericServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -330,7 +332,7 @@ public class DriverResourceServlet extends GenericServlet {
             DriverConfig driverConfig = rootConfig.getDriver(driverId);
 
             if (driverConfig != null && pathInfoArray.length == 2 && pathInfoArray[1].equalsIgnoreCase(Const.CONFIGS)) {
-                setAndWriteDriverConfig(driverId, response, json);
+                doSetConfigs(driverId, response, json);
             }
             else if (driverConfig != null && pathInfoArray.length == 2
                     && pathInfoArray[1].equalsIgnoreCase(Const.SCAN_INTERRUPT)) {
@@ -348,6 +350,7 @@ public class DriverResourceServlet extends GenericServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -370,7 +373,7 @@ public class DriverResourceServlet extends GenericServlet {
                     configService.setConfig(rootConfig);
                     configService.writeConfigToFile();
 
-                    setAndWriteDriverConfig(driverId, response, json);
+                    doSetConfigs(driverId, response, json);
 
                 } catch (IdCollisionException e) {
                     ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_CONFLICT, logger,
@@ -384,7 +387,7 @@ public class DriverResourceServlet extends GenericServlet {
         }
     }
 
-    private boolean setAndWriteDriverConfig(String driverId, HttpServletResponse response, String json) {
+    private synchronized boolean doSetConfigs(String driverId, HttpServletResponse response, String json) {
         boolean ok = false;
 
         try {
@@ -481,10 +484,11 @@ public class DriverResourceServlet extends GenericServlet {
     }
 
     @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response)
+    public synchronized void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
+        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
