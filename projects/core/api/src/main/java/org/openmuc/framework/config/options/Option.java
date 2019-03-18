@@ -20,8 +20,6 @@
  */
 package org.openmuc.framework.config.options;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.BooleanValue;
@@ -213,7 +211,7 @@ public class Option {
                     }
                     else {
                         try {
-                            arr = DatatypeConverter.parseHexBinary(valueDefault.asString().substring(2).trim());
+                            arr = Option.hexToBytes(valueDefault.asString().substring(2).trim());
                         } catch (IllegalArgumentException e) {
                             throw new ParseException(e);
                         }
@@ -240,4 +238,16 @@ public class Option {
         
         return option;
     }
+
+    static byte[] hexToBytes(String s) {
+        byte[] b = new byte[s.length() / 2];
+        int index;
+
+        for (int i = 0; i < b.length; i++) {
+            index = i * 2;
+            b[i] = (byte) Integer.parseInt(s.substring(index, index + 2), 16);
+        }
+        return b;
+    }
+
 }

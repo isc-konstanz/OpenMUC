@@ -75,9 +75,10 @@ public class DriverInfo {
      */
     DriverInfo(InputStream is) {
         if (is != null) {
-            DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
-            docBFac.setIgnoringComments(true);
             try {
+	            DocumentBuilderFactory docBFac = DocumentBuilderFactory.newInstance();
+	            docBFac.setIgnoringComments(true);
+	            
                 Document doc = docBFac.newDocumentBuilder().parse(is);
                 Node node = doc.getDocumentElement();
                 if (!node.getNodeName().equals("configuration")) {

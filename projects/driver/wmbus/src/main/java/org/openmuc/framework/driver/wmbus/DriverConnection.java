@@ -23,10 +23,9 @@ package org.openmuc.framework.driver.wmbus;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
+import org.openmuc.framework.data.TypeConverter;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -56,7 +55,7 @@ public class DriverConnection implements Connection {
 
             byte[] keyAsBytes;
             try {
-                keyAsBytes = DatatypeConverter.parseHexBinary(keyString);
+                keyAsBytes = TypeConverter.hexToBytes(keyString);
             } catch (IllegalArgumentException e) {
                 serialInterface.connectionClosedIndication(secondaryAddress);
                 throw new ArgumentSyntaxException("The key could not be converted to a byte array.");

@@ -25,9 +25,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.junit.Test;
+import org.openmuc.framework.data.TypeConverter;
 import org.openmuc.framework.driver.modbus.util.DatatypeConversion;
 import org.openmuc.framework.driver.modbus.util.DatatypeConversion.EndianInput;
 import org.openmuc.framework.driver.modbus.util.DatatypeConversion.EndianOutput;
@@ -42,29 +41,29 @@ public class DatatypeConversionTest {
     // BE = BigEndian;
     // LE = LittleEndian
 
-    byte[] bytes8_Value_MaxPositive_BE = DatatypeConverter.parseHexBinary("7FFFFFFFFFFFFFFF");
-    byte[] bytes8_Value_2_BE = DatatypeConverter.parseHexBinary("0000000000000002");
-    byte[] bytes8_Value_1_BE = DatatypeConverter.parseHexBinary("0000000000000001");
-    byte[] bytes8_Value_0_BE = DatatypeConverter.parseHexBinary("0000000000000000");
-    byte[] bytes8_Value_Minus_1_BE = DatatypeConverter.parseHexBinary("FFFFFFFFFFFFFFFF");
-    byte[] bytes8_Value_Minus_2_BE = DatatypeConverter.parseHexBinary("FFFFFFFFFFFFFFFE");
-    byte[] bytes8_Value_MaxNegative_BE = DatatypeConverter.parseHexBinary("8000000000000000");
+    byte[] bytes8_Value_MaxPositive_BE = TypeConverter.hexToBytes("7FFFFFFFFFFFFFFF");
+    byte[] bytes8_Value_2_BE = TypeConverter.hexToBytes("0000000000000002");
+    byte[] bytes8_Value_1_BE = TypeConverter.hexToBytes("0000000000000001");
+    byte[] bytes8_Value_0_BE = TypeConverter.hexToBytes("0000000000000000");
+    byte[] bytes8_Value_Minus_1_BE = TypeConverter.hexToBytes("FFFFFFFFFFFFFFFF");
+    byte[] bytes8_Value_Minus_2_BE = TypeConverter.hexToBytes("FFFFFFFFFFFFFFFE");
+    byte[] bytes8_Value_MaxNegative_BE = TypeConverter.hexToBytes("8000000000000000");
 
-    byte[] bytes4_Value_MaxPositive_BE = DatatypeConverter.parseHexBinary("7FFFFFFF");
-    byte[] bytes4_Value_2_BE = DatatypeConverter.parseHexBinary("00000002");
-    byte[] bytes4_Value_1_BE = DatatypeConverter.parseHexBinary("00000001");
-    byte[] bytes4_Value_0_BE = DatatypeConverter.parseHexBinary("00000000");
-    byte[] bytes4_Value_Minus_1_BE = DatatypeConverter.parseHexBinary("FFFFFFFF");
-    byte[] bytes4_Value_Minus_2_BE = DatatypeConverter.parseHexBinary("FFFFFFFE");
-    byte[] bytes4_Value_MaxNegative_BE = DatatypeConverter.parseHexBinary("80000000");
+    byte[] bytes4_Value_MaxPositive_BE = TypeConverter.hexToBytes("7FFFFFFF");
+    byte[] bytes4_Value_2_BE = TypeConverter.hexToBytes("00000002");
+    byte[] bytes4_Value_1_BE = TypeConverter.hexToBytes("00000001");
+    byte[] bytes4_Value_0_BE = TypeConverter.hexToBytes("00000000");
+    byte[] bytes4_Value_Minus_1_BE = TypeConverter.hexToBytes("FFFFFFFF");
+    byte[] bytes4_Value_Minus_2_BE = TypeConverter.hexToBytes("FFFFFFFE");
+    byte[] bytes4_Value_MaxNegative_BE = TypeConverter.hexToBytes("80000000");
 
-    byte[] bytes2_Value_MaxPositive_BE = DatatypeConverter.parseHexBinary("7FFF");
-    byte[] bytes2_Value_2_BE = DatatypeConverter.parseHexBinary("0002");
-    byte[] bytes2_Value_1_BE = DatatypeConverter.parseHexBinary("0001");
-    byte[] bytes2_Value_0_BE = DatatypeConverter.parseHexBinary("0000");
-    byte[] bytes2_Value_Minus_1_BE = DatatypeConverter.parseHexBinary("FFFF");
-    byte[] bytes2_Value_Minus_2_BE = DatatypeConverter.parseHexBinary("FFFE");
-    byte[] bytes2_Value_MaxNegative_BE = DatatypeConverter.parseHexBinary("8000");
+    byte[] bytes2_Value_MaxPositive_BE = TypeConverter.hexToBytes("7FFF");
+    byte[] bytes2_Value_2_BE = TypeConverter.hexToBytes("0002");
+    byte[] bytes2_Value_1_BE = TypeConverter.hexToBytes("0001");
+    byte[] bytes2_Value_0_BE = TypeConverter.hexToBytes("0000");
+    byte[] bytes2_Value_Minus_1_BE = TypeConverter.hexToBytes("FFFF");
+    byte[] bytes2_Value_Minus_2_BE = TypeConverter.hexToBytes("FFFE");
+    byte[] bytes2_Value_MaxNegative_BE = TypeConverter.hexToBytes("8000");
 
     byte[] bytes8_Value_MaxPositive_LE = DatatypeConversion.reverseByteOrderNewArray(bytes8_Value_MaxPositive_BE);
     byte[] bytes8_Value_2_LE = DatatypeConversion.reverseByteOrderNewArray(bytes8_Value_2_BE);
@@ -109,13 +108,13 @@ public class DatatypeConversionTest {
 
     @Test
     public void test_reverseByteOrder() {
-        byte[] array1 = DatatypeConverter.parseHexBinary("00000002");
-        byte[] array1Reverse = DatatypeConverter.parseHexBinary("02000000");
+        byte[] array1 = TypeConverter.hexToBytes("00000002");
+        byte[] array1Reverse = TypeConverter.hexToBytes("02000000");
         DatatypeConversion.reverseByteOrder(array1);
         assertTrue(Arrays.equals(array1, array1Reverse));
 
-        byte[] array2 = DatatypeConverter.parseHexBinary("00000002");
-        byte[] array2Reverse = DatatypeConverter.parseHexBinary("02000000");
+        byte[] array2 = TypeConverter.hexToBytes("00000002");
+        byte[] array2Reverse = TypeConverter.hexToBytes("02000000");
         assertTrue(Arrays.equals(array2Reverse, DatatypeConversion.reverseByteOrderNewArray(array2)));
     }
 
@@ -427,7 +426,7 @@ public class DatatypeConversionTest {
         byte[] bytes;
 
         bytes = DatatypeConversion.unsingedInt32_To_Bytes(MAX_UNSIGNED_INT32, EndianOutput.BYTES_AS_BIG_ENDIAN);
-        assertTrue(Arrays.equals(bytes, DatatypeConverter.parseHexBinary("FFFFFFFF")));
+        assertTrue(Arrays.equals(bytes, TypeConverter.hexToBytes("FFFFFFFF")));
 
         bytes = DatatypeConversion.unsingedInt32_To_Bytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_2_BE));
@@ -445,7 +444,7 @@ public class DatatypeConversionTest {
         byte[] bytes;
 
         bytes = DatatypeConversion.unsingedInt32_To_Bytes(MAX_UNSIGNED_INT32, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
-        assertTrue(Arrays.equals(bytes, DatatypeConverter.parseHexBinary("FFFFFFFF")));
+        assertTrue(Arrays.equals(bytes, TypeConverter.hexToBytes("FFFFFFFF")));
 
         bytes = DatatypeConversion.unsingedInt32_To_Bytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_2_LE));
@@ -648,7 +647,7 @@ public class DatatypeConversionTest {
         byte[] bytes;
 
         bytes = DatatypeConversion.unsingedInt16_To_Bytes(MAX_UNSIGNED_INT16, EndianOutput.BYTES_AS_BIG_ENDIAN);
-        assertTrue(Arrays.equals(bytes, DatatypeConverter.parseHexBinary("FFFF")));
+        assertTrue(Arrays.equals(bytes, TypeConverter.hexToBytes("FFFF")));
 
         bytes = DatatypeConversion.unsingedInt16_To_Bytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_2_BE));
@@ -666,7 +665,7 @@ public class DatatypeConversionTest {
         byte[] bytes;
 
         bytes = DatatypeConversion.unsingedInt16_To_Bytes(MAX_UNSIGNED_INT16, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
-        assertTrue(Arrays.equals(bytes, DatatypeConverter.parseHexBinary("FFFF")));
+        assertTrue(Arrays.equals(bytes, TypeConverter.hexToBytes("FFFF")));
 
         bytes = DatatypeConversion.unsingedInt16_To_Bytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_2_LE));

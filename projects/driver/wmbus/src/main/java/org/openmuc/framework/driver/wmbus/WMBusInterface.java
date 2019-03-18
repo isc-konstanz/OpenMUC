@@ -28,13 +28,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.StringValue;
+import org.openmuc.framework.data.TypeConverter;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -75,7 +74,7 @@ public class WMBusInterface {
         @Override
         public void discardedBytes(byte[] bytes) {
             if (logger.isDebugEnabled()) {
-                String bytesAsHexStr = DatatypeConverter.printHexBinary(bytes);
+                String bytesAsHexStr = TypeConverter.bytesToHex(bytes);
                 logger.debug("received bytes that will be discarded: {}", bytesAsHexStr);
             }
         }
@@ -130,8 +129,8 @@ public class WMBusInterface {
 
                 int i = 0;
                 for (DataRecord dataRecord : dataRecords) {
-                    String dibHexStr = DatatypeConverter.printHexBinary(dataRecord.getDib());
-                    String vibHexStr = DatatypeConverter.printHexBinary(dataRecord.getVib());
+                    String dibHexStr = TypeConverter.bytesToHex(dataRecord.getDib());
+                    String vibHexStr = TypeConverter.bytesToHex(dataRecord.getVib());
                     dibvibs[i++] = MessageFormat.format("{0}:{1}", dibHexStr, vibHexStr);
                 }
 

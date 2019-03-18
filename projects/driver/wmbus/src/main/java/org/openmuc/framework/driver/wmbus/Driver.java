@@ -20,12 +20,11 @@
  */
 package org.openmuc.framework.driver.wmbus;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.data.TypeConverter;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -133,7 +132,7 @@ public class Driver implements DriverService {
     private SecondaryAddress parseSecondaryAddress(String secondaryAddressAsString) throws ArgumentSyntaxException {
         SecondaryAddress secondaryAddress;
         try {
-            byte[] bytes = DatatypeConverter.parseHexBinary(secondaryAddressAsString);
+            byte[] bytes = TypeConverter.hexToBytes(secondaryAddressAsString);
             secondaryAddress = SecondaryAddress.newFromWMBusLlHeader(bytes, 0);
         } catch (NumberFormatException e) {
             throw new ArgumentSyntaxException(

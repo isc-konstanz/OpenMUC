@@ -26,8 +26,6 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.BooleanValue;
@@ -241,7 +239,7 @@ public class OptionCollection extends LinkedList<Option> implements OptionInfo {
             }
             else {
                 try {
-                    arr = DatatypeConverter.parseHexBinary(valueStr.substring(2).trim());
+                    arr = Option.hexToBytes(valueStr.substring(2).trim());
                 } catch (IllegalArgumentException e) {
                     throw new ArgumentSyntaxException("Unable to parse value as byte array: " + valueStr);
                 }

@@ -22,10 +22,10 @@ package org.openmuc.framework.server.restws;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 
 import org.openmuc.framework.authentication.AuthenticationService;
 import org.osgi.framework.Bundle;
@@ -59,7 +59,7 @@ public class SecurityHandler implements HttpContext {
         }
         String usernameAndPassword;
         try {
-            usernameAndPassword = new String(DatatypeConverter.parseBase64Binary(authzHeader.substring(6)));
+            usernameAndPassword = new String(Base64.getDecoder().decode(authzHeader.substring(6)));
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
         }
