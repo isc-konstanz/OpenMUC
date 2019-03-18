@@ -55,7 +55,7 @@ import com.pi4j.system.SystemInfo;
 import com.pi4j.system.SystemInfo.BoardType;
 import com.pi4j.wiringpi.GpioUtil;
 
-@Component
+@Component(service = DriverService.class)
 public class GpioDriver implements DriverService, GpioConnectionCallbacks {
     private static final Logger logger = LoggerFactory.getLogger(GpioDriver.class);
 

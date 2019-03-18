@@ -48,7 +48,7 @@ import com.pi4j.io.w1.W1Device;
 import com.pi4j.io.w1.W1Master;
 
 
-@Component
+@Component(service = DriverService.class)
 public class W1Driver implements DriverService, W1ConnectionCallbacks {
     private static final Logger logger = LoggerFactory.getLogger(W1Driver.class);
     private static final DriverInfo info = DriverInfoFactory.getPreferences(W1Driver.class);

@@ -21,7 +21,7 @@ dependencies {
 jar {
   manifest {
     name = projectName
-    instruction 'Bundle-ClassPath', '.,lib/pi4j-core.jar,lib/pi4j-device.jar,lib/pi4j-gpio-extension.jar'
+    instruction 'Bundle-ClassPath', '.,lib/pi4j-core-'+pi4jVersion+'.jar,lib/pi4j-device-'+pi4jVersion+'.jar,lib/pi4j-gpio-extension-'+pi4jVersion+'.jar'
     instruction 'Import-Package', '!com.pi4j.*,*' + jarDefaultImportPackageVersion
     instruction 'Export-Package', ''
   }

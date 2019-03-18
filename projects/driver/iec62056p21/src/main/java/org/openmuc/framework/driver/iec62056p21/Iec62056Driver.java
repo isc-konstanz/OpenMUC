@@ -137,7 +137,9 @@ public final class Iec62056Driver implements DriverService {
         if (isScan && settings.isEmpty()) {
             throw new ArgumentSyntaxException("No parameter given. At least serial port is needed");
         }
-
+        else if (settings.isEmpty()) {
+        	return;
+        }
         String[] args = settings.split("\\s+", 0);
 
         if (isScan) {

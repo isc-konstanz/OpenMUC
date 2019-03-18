@@ -32,7 +32,6 @@ import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.rpi.gpio.settings.ChannelSettings;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,6 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
-@Component
 public class EdgeListener implements GpioPinListenerDigital {
     private final static Logger logger = LoggerFactory.getLogger(EdgeListener.class);
     private final DriverPreferences prefs = DriverInfoFactory.getPreferences(EdgeCounter.class);
