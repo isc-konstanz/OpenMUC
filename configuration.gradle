@@ -24,6 +24,7 @@ project.ext {
   jarDefaultImportPackageVersion = ";version=0"
 
   distributionProjects = javaProjects.findAll {
+    it.getPath() == ":openmuc-app-household" ||
     it.getPath() == ":openmuc-app-simpledemo" ||
     it.getPath() == ":openmuc-core-api" ||
     it.getPath() == ":openmuc-core-datamanager" ||
