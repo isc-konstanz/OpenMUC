@@ -20,41 +20,95 @@
  */
 package org.openmuc.framework.app.household;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.openmuc.framework.app.household.grid.PowerType;
+
 public class HouseholdConfig {
 
-    private static final String ID_PV_KEY = "org.openmuc.framework.app.household.pv";
-    private static final String ID_PV_DEFAULT = "pv_energy";
+	private static final String FILE = "org.openmuc.framework.app.household.config";
 
-    private static final String ID_GRID_KEY = "org.openmuc.framework.app.household.grid";
-    private static final String ID_GRID_DEFAULT = "grid_energy";
+    private static final String SOLAR_POWER_KEY = "org.openmuc.framework.app.household.solar.power";
+    private static final String SOLAR_ENERGY_KEY = "org.openmuc.framework.app.household.solar.energy";
+    private static final String SOLAR_ENERGY_DEFAULT = "solar_energy";
 
-    private static final String ID_GRID_EXPORT_KEY = "org.openmuc.framework.app.household.grid.export";
-    private static final String ID_GRID_EXPORT_DEFAULT = "grid_export_energy";
+    private static final String GRID_EXPORT_POWER_KEY = "org.openmuc.framework.app.household.grid.export.power";
+    private static final String GRID_EXPORT_ENERGY_KEY = "org.openmuc.framework.app.household.grid.export.energy";
+    private static final String GRID_EXPORT_ENERGY_DEFAULT = "grid_export";
 
-    private static final String ID_GRID_IMPORT_KEY = "org.openmuc.framework.app.household.grid.import";
-    private static final String ID_GRID_IMPORT_DEFAULT = "grid_import_energy";
+    private static final String GRID_IMPORT_POWER_KEY = "org.openmuc.framework.app.household.grid.import.power";
+    private static final String GRID_IMPORT_ENERGY_KEY = "org.openmuc.framework.app.household.grid.import.energy";
+    private static final String GRID_IMPORT_ENERGY_DEFAULT = "grid_import";
 
-    private static final String ID_CONSUMPTION_KEY = "org.openmuc.framework.app.household.consumption";
-    private static final String ID_CONSUMPTION_DEFAULT = "consumption_energy";
+    private static final String GRID_POWER_KEY = "org.openmuc.framework.app.household.grid.power";
+    private static final String GRID_POWER_DEFAULT = "grid_power";
 
-    public String getPvEnergy() {
-        return System.getProperty(ID_PV_KEY, ID_PV_DEFAULT);
+    private static final String CONSUMPTION_POWER_KEY = "org.openmuc.framework.app.household.consumption.power";
+    private static final String CONSUMPTION_POWER_DEFAULT = "consumption_power";
+
+    private final Properties properties = new Properties();
+
+	public HouseholdConfig() throws IOException {
+		String fileName = System.getProperty(FILE);
+		if (fileName == null) {
+			fileName = "conf" + File.separator + "household.properties";
+		}
+		File file = new File(fileName);
+		if (file.exists()) {
+			properties.load(new FileInputStream(file));
+		}
+	}
+
+    public String get(PowerType type) throws IllegalArgumentException {
+        switch(type) {
+		case SOLAR:
+    		return properties.getProperty(SOLAR_ENERGY_KEY, SOLAR_ENERGY_DEFAULT);
+        case GRID_EXPORT:
+    		return properties.getProperty(GRID_EXPORT_ENERGY_KEY, GRID_EXPORT_ENERGY_DEFAULT);
+        case GRID_IMPORT:
+    		return properties.getProperty(GRID_IMPORT_ENERGY_KEY, GRID_IMPORT_ENERGY_DEFAULT);
+		case GRID:
+    		return properties.getProperty(GRID_POWER_KEY, GRID_POWER_DEFAULT);
+		case CONSUMPTION:
+    		return properties.getProperty(CONSUMPTION_POWER_KEY, CONSUMPTION_POWER_DEFAULT);
+		default:
+			throw new IllegalArgumentException("Invalid energy type: "+type.name());
+        }
     }
 
-    public String getGridEnergy() {
-        return System.getProperty(ID_GRID_KEY, ID_GRID_DEFAULT);
+	public boolean hasPower(PowerType type) throws IllegalArgumentException {
+		return properties.containsKey(getPowerKey(type));
+	}
+
+    public String getPower(PowerType type) throws IllegalArgumentException {
+        switch(type) {
+		case GRID:
+    		return properties.getProperty(GRID_POWER_KEY, GRID_POWER_DEFAULT);
+		case CONSUMPTION:
+    		return properties.getProperty(CONSUMPTION_POWER_KEY, CONSUMPTION_POWER_DEFAULT);
+		default:
+    		return properties.getProperty(getPowerKey(type));
+        }
     }
 
-    public String getGridExportEnergy() {
-        return System.getProperty(ID_GRID_EXPORT_KEY, ID_GRID_EXPORT_DEFAULT);
-    }
-
-    public String getGridImportEnergy() {
-        return System.getProperty(ID_GRID_IMPORT_KEY, ID_GRID_IMPORT_DEFAULT);
-    }
-
-    public String getConsumptionEnergy() {
-        return System.getProperty(ID_CONSUMPTION_KEY, ID_CONSUMPTION_DEFAULT);
-    }
+	private String getPowerKey(PowerType type) throws IllegalArgumentException {
+        switch(type) {
+		case SOLAR:
+			return SOLAR_POWER_KEY;
+        case GRID_EXPORT:
+			return GRID_EXPORT_POWER_KEY;
+        case GRID_IMPORT:
+			return GRID_IMPORT_POWER_KEY;
+		case GRID:
+			return GRID_POWER_KEY;
+		case CONSUMPTION:
+			return CONSUMPTION_POWER_KEY;
+		default:
+			throw new IllegalArgumentException("Invalid power type: "+type.name());
+        }
+	}
 
 }

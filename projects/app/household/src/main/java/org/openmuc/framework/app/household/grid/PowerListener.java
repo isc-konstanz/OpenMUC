@@ -38,9 +38,11 @@ public class PowerListener implements RecordListener {
     /**
      * The Listeners' current callback object, which is notified of changed power values
      */
-    private final PowerCallbacks callbacks;
+    protected final PowerCallbacks callbacks;
 
-    private final PowerType type;
+    protected final PowerType type;
+
+    protected Record power = new Record(Flag.NO_VALUE_RECEIVED_YET);
 
     public PowerListener(PowerCallbacks callbacks, PowerType type) {
         this.callbacks = callbacks;
@@ -51,10 +53,25 @@ public class PowerListener implements RecordListener {
         return type;
     }
 
+    public Flag getFlag() {
+        return power.getFlag();
+    }
+
+    public Long getTimestamp() {
+    	return power.getTimestamp();
+    }
+
+    public Double getPower() {
+    	return power.getValue().asDouble();
+    }
+
     @Override
     public void newRecord(Record record) {
         if (record.getFlag() == Flag.VALID && record.getValue() != null) {
+        	power = record;
+        	
             callbacks.onPowerReceived(type, record);
         }
     }
+
 }

@@ -21,6 +21,10 @@
 package org.openmuc.framework.app.household.grid;
 
 public enum PowerType {
-    IMPORT,
-    EXPORT;
+
+    SOLAR,
+    GRID_IMPORT,
+    GRID_EXPORT,
+    GRID,
+    CONSUMPTION;
 }

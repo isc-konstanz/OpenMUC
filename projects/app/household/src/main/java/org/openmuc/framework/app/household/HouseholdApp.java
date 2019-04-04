@@ -20,6 +20,11 @@
  */
 package org.openmuc.framework.app.household;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.openmuc.framework.app.household.grid.EnergyListener;
 import org.openmuc.framework.app.household.grid.PowerListener;
 import org.openmuc.framework.app.household.grid.PowerListener.PowerCallbacks;
 import org.openmuc.framework.app.household.grid.PowerType;
@@ -42,38 +47,81 @@ public final class HouseholdApp implements PowerCallbacks {
     @Reference
     private DataAccessService dataAccessService;
 
-    private Channel pv;
-    private Channel grid;
-    private Channel consumption;
+    private Map<PowerType, PowerListener> powers = new HashMap<PowerType, PowerListener>();
 
-    private Double consumptionLast;
-    private Record gridExportLast;
-    private Record gridImportLast;
+    private Channel grid;
+    private Channel cons;
 
     @Activate
-    private void activate() {
+    protected void activate() {
         logger.info("Activating Household App");
         try {
             HouseholdConfig config = new HouseholdConfig();
             
             // TODO: Implement properties and verify PV availability
-            pv = initializeChannel(config.getPvEnergy());
-            grid = initializeChannel(config.getGridEnergy());
-            consumption = initializeChannel(config.getConsumptionEnergy());
-            consumptionLast = Double.NaN;
+            initPowerListener(config, PowerType.SOLAR);
             
-            gridExportLast = new Record(Flag.NO_VALUE_RECEIVED_YET);
-            applyPowerListener(config.getGridExportEnergy(), PowerType.EXPORT);
+            initPowerListener(config, PowerType.GRID_EXPORT);
+            initPowerListener(config, PowerType.GRID_IMPORT);
             
-            gridImportLast = new Record(Flag.NO_VALUE_RECEIVED_YET);
-            applyPowerListener(config.getGridImportEnergy(), PowerType.IMPORT);
+            grid = getChannel(config.get(PowerType.GRID));
+            cons = getChannel(config.get(PowerType.CONSUMPTION));
             
-        } catch (IllegalArgumentException e) {
+        } catch (IOException | IllegalArgumentException e) {
             logger.error("Error while applying household configuration: {}", e.getMessage());
         }
     }
 
-    protected Channel initializeChannel(String id) throws IllegalArgumentException {
+    @Deactivate
+    protected void deactivate() {
+        logger.info("Deactivating Household App");
+    }
+
+    @Override
+    public void onPowerReceived(PowerType type, Record record) {
+    	switch(type) {
+		case GRID_EXPORT:
+		case GRID_IMPORT:
+			break;
+		default:
+			return;
+    	}
+        if (powers.get(PowerType.GRID_EXPORT).getTimestamp() != null && 
+        		powers.get(PowerType.GRID_EXPORT).getTimestamp().equals(powers.get(PowerType.GRID_IMPORT).getTimestamp())) {
+        	
+            long time = record.getTimestamp();
+            if (grid.getLatestRecord().getTimestamp() != null && grid.getLatestRecord().getTimestamp() > time) {
+            	return;
+            }
+            double grid = powers.get(PowerType.GRID_IMPORT).getPower() - powers.get(PowerType.GRID_EXPORT).getPower();
+            this.grid.setLatestRecord(new Record(new DoubleValue(grid), time, Flag.VALID));
+            
+            if (powers.get(PowerType.SOLAR).getFlag() != Flag.VALID) {
+            	return;
+            }
+        	double solar = powers.get(PowerType.SOLAR).getPower();
+            
+            // TODO: Implement property to verify self-consumption
+            double consumption = Math.abs(grid + solar);
+            cons.setLatestRecord(new Record(new DoubleValue(consumption), time, Flag.VALID));
+        }
+    }
+
+    private PowerListener initPowerListener(HouseholdConfig config, PowerType type) throws IllegalArgumentException {
+    	PowerListener listener;
+    	if (config.hasPower(type)) {
+    		listener = new PowerListener(this, type);
+            getChannel(config.getPower(type)).addListener(listener);
+    	}
+    	else {
+    		listener = new EnergyListener(this, type);
+            getChannel(config.get(type)).addListener(listener);
+    	}
+        powers.put(type, listener);
+        return listener;
+    }
+
+    private Channel getChannel(String id) throws IllegalArgumentException {
         Channel channel = dataAccessService.getChannel(id);
         if (channel == null) {
             throw new IllegalArgumentException("Unable to find Channel for id: " + id);
@@ -81,46 +129,4 @@ public final class HouseholdApp implements PowerCallbacks {
         return channel;
     }
 
-    protected void applyPowerListener(String id, PowerType type) throws IllegalArgumentException {
-        Channel channel = initializeChannel(id);
-        channel.addListener(new PowerListener(this, type));
-    }
-
-    @Deactivate
-    private void deactivate() {
-        logger.info("Deactivating Household App");
-    }
-
-    @Override
-    public void onPowerReceived(PowerType type, Record record) {
-        switch(type) {
-        case EXPORT:
-            gridExportLast = record;
-            break;
-        case IMPORT:
-            gridImportLast = record;
-            break;
-        }
-        if (gridImportLast.getTimestamp() != null && gridImportLast.getTimestamp().equals(gridExportLast.getTimestamp())) {
-            long timestamp = gridExportLast.getTimestamp();
-            
-            double gridEnergy = gridImportLast.getValue().asDouble() - gridExportLast.getValue().asDouble();
-            Record gridRecord = new Record(new DoubleValue(gridEnergy), timestamp, Flag.VALID);
-            grid.setLatestRecord(gridRecord);
-            
-            double pvEnergy = 0;
-            Record pvRecord = pv.getLatestRecord();
-            if (pvRecord.getFlag() == Flag.VALID && pvRecord.getValue() != null) {
-                pvEnergy = pvRecord.getValue().asDouble();
-            }
-
-            // TODO: Implement property to verify self-consumption
-            double consumptionEnergy = gridEnergy + pvEnergy;
-            if (!consumptionLast.equals(Double.NaN) && consumptionLast <= consumptionEnergy) {
-                Record consumptionRecord = new Record(new DoubleValue(consumptionEnergy), timestamp, Flag.VALID);
-                consumption.setLatestRecord(consumptionRecord);
-            }
-            consumptionLast = consumptionEnergy;
-        }
-    }
 }
