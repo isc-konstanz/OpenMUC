@@ -20,20 +20,12 @@
  */
 package org.openmuc.framework.driver.rpi.w1.options;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 public class DeviceScanSettings extends Preferences {
 
-    public static final PreferenceType TYPE = PreferenceType.SETTINGS_SCAN_DEVICE;
-
     @Option
     private boolean ignore = true;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public boolean ignoreExisting() {
         return ignore;

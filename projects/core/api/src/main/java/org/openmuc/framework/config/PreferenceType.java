@@ -21,10 +21,31 @@
 package org.openmuc.framework.config;
 
 public enum PreferenceType {
-    ADDRESS_DEVICE,
-    ADDRESS_CHANNEL,
-    SETTINGS_DEVICE,
-    SETTINGS_CHANNEL,
-    SETTINGS_SCAN_DEVICE,
-    SETTINGS_SCAN_CHANNEL;
+    DEVICE_ADDRESS("DeviceAddress"),
+    DEVICE_SETTINGS("DeviceSettings"),
+    DEVICE_SETTINGS_SCAN("DeviceScanSettings"),
+    CHANNEL_ADDRESS("ChannelAddress"),
+    CHANNEL_SETTINGS("ChannelSettings"),
+    CHANNEL_SETTINGS_SCAN("ChannelScanSettings");
+
+	private final String simpleName;
+
+	private PreferenceType(String simpleName) {
+		this.simpleName = simpleName;
+	}
+
+	private String getSimpleName() {
+		return simpleName;
+	}
+
+	public static PreferenceType valueOf(Class<? extends Preferences> preferenceClass) throws IllegalArgumentException {
+		String simpleName = preferenceClass.getSimpleName();
+		for (PreferenceType type : PreferenceType.values()) {
+			if (simpleName.equals(type.getSimpleName())) {
+				return type;
+			}
+		}
+		throw new IllegalArgumentException("Unknown PreferenceType: "+simpleName);
+	}
+
 }

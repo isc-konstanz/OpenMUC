@@ -20,22 +20,14 @@
  */
 package org.openmuc.framework.driver.rpi.w1.options;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 public class DeviceSettings extends Preferences {
-
-    public static final PreferenceType TYPE = PreferenceType.SETTINGS_DEVICE;
 
     public static final String TYPE_KEY = "type";
 
     @Option
     private W1Type type;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public W1Type getType() {
         return type;

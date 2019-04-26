@@ -20,22 +20,14 @@
  */
 package org.openmuc.framework.driver.rpi.w1.options;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 public class DeviceAddress extends Preferences {
-
-    public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
 
     public static final String ID_KEY = "id";
 
     @Option
     private String id;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public String getId() {
         return id.trim().replace("\n", "").replace("\r", "");

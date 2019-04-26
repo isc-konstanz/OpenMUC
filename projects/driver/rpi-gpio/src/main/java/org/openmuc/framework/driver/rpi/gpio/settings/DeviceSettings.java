@@ -20,7 +20,6 @@
  */
 package org.openmuc.framework.driver.rpi.gpio.settings;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 import com.pi4j.io.gpio.PinMode;
@@ -28,8 +27,6 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 
 public class DeviceSettings extends Preferences {
-
-    public static final PreferenceType TYPE = PreferenceType.SETTINGS_DEVICE;
 
     public static final String MODE_KEY = "mode";
 
@@ -53,11 +50,6 @@ public class DeviceSettings extends Preferences {
 
     @Option
     private int bounceTime = 60;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public PinMode getPinMode() {
         return mode;
