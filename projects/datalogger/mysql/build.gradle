@@ -1,0 +1,27 @@
+def projectName = "OpenMUC Data Logger - MySQL"
+
+def mysqlVersion = '5.1.6'
+
+configurations.create('embed')
+
+dependencies {
+  implementation project(':openmuc-core-spi')
+
+  compile group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
+  embed group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
+}
+
+jar {
+  manifest {
+    name = projectName
+    instruction 'Bundle-ClassPath', '.,lib/mysql-connector-java-' + mysqlVersion + '.jar'
+    instruction 'Import-Package', '!com.mysql.jdbc.*,javax.naming,*' + jarDefaultImportPackageVersion
+    instruction 'Export-Package', ''
+  }
+}
+
+jar {
+  into('lib') {
+    from configurations.embed
+  }
+}
