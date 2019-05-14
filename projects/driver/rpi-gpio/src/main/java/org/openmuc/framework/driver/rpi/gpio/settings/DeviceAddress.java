@@ -20,22 +20,14 @@
  */
 package org.openmuc.framework.driver.rpi.gpio.settings;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 public class DeviceAddress extends Preferences {
-
-    public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
 
     public static final String PIN_KEY = "pin";
 
     @Option
     private int pin;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public int getPin() {
         return pin;

@@ -20,12 +20,9 @@
  */
 package org.openmuc.framework.driver.rpi.gpio.settings;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 public class ChannelSettings extends Preferences {
-
-    public static final PreferenceType TYPE = PreferenceType.SETTINGS_CHANNEL;
 
     @Option
     private boolean inverted = false;
@@ -38,11 +35,6 @@ public class ChannelSettings extends Preferences {
 
     @Option
     private Integer derivativeTime = null;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public boolean isInverted() {
         return inverted;

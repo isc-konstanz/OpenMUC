@@ -20,22 +20,14 @@
  */
 package org.openmuc.framework.driver.rpi.w1.options;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 import com.pi4j.temperature.TemperatureScale;
 
 public class ChannelSettings extends Preferences {
 
-    public static final PreferenceType TYPE = PreferenceType.SETTINGS_CHANNEL;
-
     @Option
     private TemperatureScale unit = TemperatureScale.CELSIUS;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public TemperatureScale getUnit() {
         return unit;

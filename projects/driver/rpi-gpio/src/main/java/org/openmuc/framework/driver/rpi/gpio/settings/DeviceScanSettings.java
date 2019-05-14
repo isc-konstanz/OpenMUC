@@ -20,7 +20,6 @@
  */
 package org.openmuc.framework.driver.rpi.gpio.settings;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 import com.pi4j.io.gpio.PinMode;
@@ -28,18 +27,11 @@ import com.pi4j.system.SystemInfo.BoardType;
 
 public class DeviceScanSettings extends Preferences {
 
-    public static final PreferenceType TYPE = PreferenceType.SETTINGS_SCAN_DEVICE;
-
     @Option
     private PinMode mode;
 
     @Option
     private BoardType board = BoardType.RaspberryPi_Unknown;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public PinMode getPinMode() {
         return mode;

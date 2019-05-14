@@ -41,13 +41,13 @@ public class DeviceScanSettingsTest {
     @Test
     public void testArgumentCorrectEndingWithSlash() throws ArgumentSyntaxException {
         String settings = "path=" + dir + "/src/test/resources";
-        info.parse(settings, PreferenceType.SETTINGS_SCAN_DEVICE);
+        info.parse(settings, PreferenceType.DEVICE_SETTINGS_SCAN);
     }
 
     @Test
     public void testArgumentCorrectendingWithoutSlash() throws ArgumentSyntaxException {
         String settings = "path=" + dir + "/src/test/resources/";
-        info.parse(settings, PreferenceType.SETTINGS_SCAN_DEVICE);
+        info.parse(settings, PreferenceType.DEVICE_SETTINGS_SCAN);
     }
 
     // Tests expected to FAIL
@@ -55,31 +55,31 @@ public class DeviceScanSettingsTest {
     @Test(expected = ArgumentSyntaxException.class)
     public void testArgumentsNull() throws ArgumentSyntaxException {
         String arguments = null;
-        info.parse(arguments, PreferenceType.SETTINGS_SCAN_DEVICE);
+        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
     }
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testArgumentsEmptyString() throws ArgumentSyntaxException {
         String arguments = "";
-        info.parse(arguments, PreferenceType.SETTINGS_SCAN_DEVICE);
+        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
     }
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testWrongArgument() throws ArgumentSyntaxException {
         String arguments = "paaaaath";
-        info.parse(arguments, PreferenceType.SETTINGS_SCAN_DEVICE);
+        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
     }
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testArgumentIncomplete1() throws ArgumentSyntaxException {
         String arguments = "path";
-        info.parse(arguments, PreferenceType.SETTINGS_SCAN_DEVICE);
+        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
     }
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testArgumentIncomplete2() throws ArgumentSyntaxException {
         String arguments = "path=";
-        info.parse(arguments, PreferenceType.SETTINGS_SCAN_DEVICE);
+        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
     }
 
     @Test(expected = ArgumentSyntaxException.class)

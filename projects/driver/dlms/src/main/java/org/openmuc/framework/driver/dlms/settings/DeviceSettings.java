@@ -20,12 +20,9 @@
  */
 package org.openmuc.framework.driver.dlms.settings;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 public class DeviceSettings extends Preferences {
-
-    public static final PreferenceType TYPE = PreferenceType.SETTINGS_DEVICE;
 
     @Option("ld")
     private int logicalDeviceAddress = 1;
@@ -62,11 +59,6 @@ public class DeviceSettings extends Preferences {
 
     @Option("did")
     private long deviceId = 1;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public int getLogicalDeviceAddress() {
         return logicalDeviceAddress;

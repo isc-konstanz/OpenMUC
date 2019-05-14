@@ -22,12 +22,9 @@ package org.openmuc.framework.driver.dlms.settings;
 
 import java.net.InetAddress;
 
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.Preferences;
 
 public class DeviceAddress extends Preferences {
-
-    public static final PreferenceType TYPE = PreferenceType.ADDRESS_DEVICE;
 
     @Option("t")
     private String connectionType = null;
@@ -58,11 +55,6 @@ public class DeviceAddress extends Preferences {
 
     @Option("pd")
     private int physicalDeviceAddress = 0;
-
-    @Override
-    public PreferenceType getPreferenceType() {
-        return TYPE;
-    }
 
     public String getConnectionType() {
         return connectionType;

@@ -167,17 +167,17 @@ public class DriverInfo {
 
     public Map<String, Value> parse(String str, PreferenceType type) throws ArgumentSyntaxException {
         switch(type) {
-        case ADDRESS_DEVICE:
+        case DEVICE_ADDRESS:
             return deviceAddress.parse(str);
-        case SETTINGS_DEVICE:
+        case DEVICE_SETTINGS:
             return deviceSettings.parse(str);
-        case SETTINGS_SCAN_DEVICE:
+        case DEVICE_SETTINGS_SCAN:
             return deviceScanSettings.parse(str);
-        case ADDRESS_CHANNEL:
+        case CHANNEL_ADDRESS:
             return channelAddress.parse(str);
-        case SETTINGS_CHANNEL:
+        case CHANNEL_SETTINGS:
             return channelSettings.parse(str);
-        case SETTINGS_SCAN_CHANNEL:
+        case CHANNEL_SETTINGS_SCAN:
             return channelScanSettings.parse(str);
         default:
             throw new ArgumentSyntaxException("Unknown preference type");
@@ -189,17 +189,17 @@ public class DriverInfo {
             P preferences = type.getConstructor().newInstance();
 
             switch(preferences.getPreferenceType()) {
-            case ADDRESS_DEVICE:
+            case DEVICE_ADDRESS:
                 return deviceAddress.getSyntax();
-            case SETTINGS_DEVICE:
+            case DEVICE_SETTINGS:
                 return deviceSettings.getSyntax();
-            case SETTINGS_SCAN_DEVICE:
+            case DEVICE_SETTINGS_SCAN:
                 return deviceScanSettings.getSyntax();
-            case ADDRESS_CHANNEL:
+            case CHANNEL_ADDRESS:
                 return channelAddress.getSyntax();
-            case SETTINGS_CHANNEL:
+            case CHANNEL_SETTINGS:
                 return channelSettings.getSyntax();
-            case SETTINGS_SCAN_CHANNEL:
+            case CHANNEL_SETTINGS_SCAN:
                 return channelScanSettings.getSyntax();
             default:
                 break;

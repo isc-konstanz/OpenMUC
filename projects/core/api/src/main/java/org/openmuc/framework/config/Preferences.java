@@ -38,7 +38,9 @@ import org.openmuc.framework.data.Value;
 
 public abstract class Preferences {
 
-    public abstract PreferenceType getPreferenceType();
+    public PreferenceType getPreferenceType() throws IllegalArgumentException {
+        return PreferenceType.valueOf(this.getClass());
+    }
 
     public int parseFields(Map<String, Value> settings) throws ArgumentSyntaxException {
         Class<? extends Preferences> settingsClass = this.getClass();
