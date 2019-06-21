@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 18, 2016 1:29:07 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class entity-name="entity">
+        <id name="timestamp" type="long">
+            <column name="time" />
+        </id>
+        <property name="value" type="java.lang.Object">
+            <column name="data" />
+        </property>
+        <property name="flag" type="java.lang.Byte">
+            <column name="flag" />
+        </property>
+    
+    </class>
+</hibernate-mapping>

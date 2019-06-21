@@ -1,0 +1,33 @@
+def projectName = "OpenMUC Data Logger - Hibernate"
+
+def mysqlVersion = '5.1.6'
+def hibernateVersion = '5.2.10.Final'
+
+configurations.create('embed')
+
+dependencies {
+  implementation project(':openmuc-core-spi')
+  implementation project(':openmuc-core-datamanager')
+  
+  compile group: 'org.hibernate' , name: 'hibernate-core', version: hibernateVersion
+  embed group: 'org.hibernate' , name: 'hibernate-core', version: hibernateVersion
+  compile group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
+  embed group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
+ 
+}
+
+jar {
+  manifest {
+    name = projectName
+    instruction 'Bundle-ClassPath', '.,lib/mysql-connector-java-' + mysqlVersion + '.jar' + 
+    								',lib/hibernate-core-' + hibernateVersion + '.jar'
+    instruction 'Import-Package', '!com.mysql.jdbc.*,!org.hibernate.*,javax.naming,*' + jarDefaultImportPackageVersion
+    instruction 'Export-Package', ''
+  }
+}
+
+jar {
+  into('lib') {
+    from configurations.embed
+  }
+}
