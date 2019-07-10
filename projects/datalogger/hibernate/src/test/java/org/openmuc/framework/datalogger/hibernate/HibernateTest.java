@@ -122,6 +122,19 @@ class HibernateTest {
 		containers.add(container);
 		log.log(containers, time);
 
+		List<LogChannel> logChannels2 = new ArrayList<LogChannel>();
+		logChannels2.add(new LogChannelTestImpl(tableName, ValueType.BOOLEAN));
+		log.setChannelsToLog(logChannels2);
+		Long time2 = System.currentTimeMillis();
+		List<LogRecordContainer> containers2 = new ArrayList<LogRecordContainer>();
+		BooleanValue boolVal = new BooleanValue(true);
+		Record record2 = new Record(boolVal, time2, Flag.VALID);
+		LogRecordContainer container2 = new LogRecordContainerImpl(tableName, record2);
+		containers2.add(container2);
+		log.log(containers2, time2);
+
+		log.setChannelsToLog(logChannels);
+
 		try {
 			List<Record> recs = log.getRecords(tableName, time, time - 5);
 			Record rec = recs.get(0);

@@ -5,14 +5,13 @@
 <hibernate-mapping>
     <class entity-name="entity">
         <id name="timestamp" type="long">
-            <column name="time" />
+            <column name="timestamp" />
         </id>
         <property name="value" type="java.lang.Object">
-            <column name="data" />
+            <column name="value" />
         </property>
-        <property name="flag" type="java.lang.Byte">
-            <column name="flag" />
+        <property name="code" type="java.lang.Byte">
+            <column name="code" />
         </property>
-    
     </class>
 </hibernate-mapping>
