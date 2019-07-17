@@ -6,10 +6,15 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -25,22 +30,20 @@ import org.openmuc.framework.data.ValueType;
 
 public class HibernateTimeSeries {
 
-	private static final String VALUE_COLUMN = "value"; 
-	private static final String TIME_COLUMN = "timestamp"; 
-	private static final String FLAG_COLUMN = "code"; 
+	protected static final String VALUE_COLUMN = "value"; 
+	protected static final String TIME_COLUMN = "timestamp"; 
+	protected static final String FLAG_COLUMN = "code"; 
 	
-	private static final String DEFAULT_CONFIG_PATH = "conf/";
-	private static final String DEFAULT_MAPPING_TEMPLATE = "hibernate.record.hbm.xml";
+	protected static final String CONFIG_PATH = "hibernate.configPath";
+	protected static final String DEFAULT_CONFIG_PATH = "conf/";
+	protected static final String MAPPING_TEMPLATE_FILE = "hibernate.record.template";
+	protected static final String DEFAULT_MAPPING_TEMPLATE = "hibernate.record.hbm.xml";
 
 	protected static String MAPPING_TEMPLATE = null;
 
 	protected final String id;
 	protected final ValueType type;
 	
-	private Long timestamp;
-    private Byte code;
-    private Value value;
-    
 	public HibernateTimeSeries(String id, ValueType type) {
 		this.id = id;
 		this.type = type;
@@ -51,7 +54,9 @@ public class HibernateTimeSeries {
 	}
 	
 	protected void loadMappingTemplate() {
-		String templateFileStr = DEFAULT_CONFIG_PATH + DEFAULT_MAPPING_TEMPLATE;
+		String configPath = System.getProperty(CONFIG_PATH, DEFAULT_CONFIG_PATH);
+		String mappingTemplateFile = System.getProperty(MAPPING_TEMPLATE_FILE, DEFAULT_MAPPING_TEMPLATE);
+		String templateFileStr = configPath + mappingTemplateFile;
 		try {
 			MAPPING_TEMPLATE = new String(Files.readAllBytes(Paths.get(templateFileStr)));
 		} 
@@ -95,19 +100,7 @@ public class HibernateTimeSeries {
 		
 	}
 	
-    public void setSeries(Record record, long timestamp) {
-        if (record.getFlag().equals(Flag.VALID) ||
-        	record.getTimestamp() != null) {
-        	this.timestamp = record.getTimestamp();
-        }
-        else {
-        	this.timestamp = timestamp;	        	
-        }
-        value = record.getValue();
-    	code = record.getFlag().getCode();
-    }
-    
-    public void log(Session session) {
+	protected Map<String, Object> buildMap(long timestamp, Value value, byte code) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(TIME_COLUMN, timestamp);
         switch (type) {
@@ -140,11 +133,33 @@ public class HibernateTimeSeries {
 			break;
         }
         map.put(FLAG_COLUMN, code);
+		return map;
+	}
+	
+    public void log(SessionFactory factory, Record record, long timestamp) {
+    	//Get Record Values
+    	long time = timestamp;
+        if (record.getFlag().equals(Flag.VALID) ||
+        	record.getTimestamp() != null) {
+        	time = record.getTimestamp();
+        }
+        Value value = record.getValue();
+        byte code = record.getFlag().getCode();
+
+    	// Build Map
+        Map<String, Object> map = buildMap(time, value, code);
+        
+        //Save Dynamic Map with Hibernate
+		Session session = factory.openSession();
+		Transaction t = session.beginTransaction();
         
     	session.save(id, map);
+		
+		t.commit();
+		session.close();
      }
     
-    public Record createRecord(@SuppressWarnings("rawtypes") Map map) {
+    protected Record createRecord(@SuppressWarnings("rawtypes") Map map) {
 		Flag flag = null;
 		Object fl = map.get(FLAG_COLUMN);
 		if (fl != null) {
@@ -162,4 +177,25 @@ public class HibernateTimeSeries {
 		else if (val instanceof String) value = new StringValue((String)val);
 		return new Record(value, (long)map.get(TIME_COLUMN), flag);
     }
+
+	public List<Record> getRecords(SessionFactory factory, String channelId, long startTime, long endTime) {
+		Session session = factory.openSession();
+		Transaction t = session.beginTransaction();
+		
+		Query<?> query = session.createQuery("from " + channelId + 
+				" where timestamp <= " + startTime + " and timestamp >= " + endTime);
+		
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		List<Map> list = (List<Map>) query.list();
+		List<Record> records = new ArrayList<Record>(list.size());
+		for (@SuppressWarnings("rawtypes") Map map: list) {
+			Record rec = createRecord(map);
+			records.add(rec);
+		}
+		
+//        System.out.println(records);
+        t.commit();
+        session.close();
+		return records;
+	}
 }
