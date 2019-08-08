@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.type.BasicType;
 import org.junit.jupiter.api.Test;
 import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.BooleanValue;
@@ -45,7 +46,7 @@ class HibernateTest {
 			List<Record> recs = log.getRecords(tableName, time, time - 5);
 			Record rec = recs.get(0);
 			assertEquals(rec.getValue().asBoolean(), new Boolean(val));
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.CHANNEL_DELETED);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -72,7 +73,7 @@ class HibernateTest {
 			List<Record> recs = log.getRecords(tableName, time, time - 5);
 			Record rec = recs.get(0);
 			assertEquals(rec.getValue().asByte(), val);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -99,7 +100,7 @@ class HibernateTest {
 			List<Record> recs = log.getRecords(tableName, time, time - 5);
 			Record rec = recs.get(0);
 			assertEquals(rec.getValue().asDouble(), val, new Double(0));
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -139,7 +140,7 @@ class HibernateTest {
 			List<Record> recs = log.getRecords(tableName, time, time - 5);
 			Record rec = recs.get(0);
 			assertEquals(rec.getValue().asFloat(), new Float(val), new Float(0));
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -166,11 +167,21 @@ class HibernateTest {
 			List<Record> recs = log.getRecords(tableName, time, time - 5);
 			Record rec = recs.get(0);
 			assertEquals(rec.getValue().asInt(), val);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void checkTimestamp(Long timestamp, Long time) {
+		BasicType userType = log.getUserType();
+		if (userType instanceof  LongIntegerType) {
+			Integer i = ((LongIntegerType)userType).getJavaTypeDescriptor().unwrap(time, Integer.class, null);
+			time = ((LongIntegerType)userType).getJavaTypeDescriptor().wrap(i, null);
+		}
+		assertEquals(timestamp, time);
+		
 	}
 
 	@Test
@@ -193,7 +204,7 @@ class HibernateTest {
 			List<Record> recs = log.getRecords(tableName, time, time - 5);
 			Record rec = recs.get(0);
 			assertEquals(rec.getValue().asLong(), val);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -220,7 +231,7 @@ class HibernateTest {
 			List<Record> recs = log.getRecords(tableName, time, time - 5);
 			Record rec = recs.get(0);
 			assertEquals(rec.getValue().asShort(), val);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -247,7 +258,7 @@ class HibernateTest {
 			List<Record> recs = log.getRecords(tableName, time, time - 5);
 			Record rec = recs.get(0);
 			assertEquals(rec.getValue().asString(), val);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -331,49 +342,49 @@ class HibernateTest {
 			List<Record> recs = log.getRecords(booleanName, time, time - 5);
 			Record rec = recs.get(0);
 			assertEquals(rec.getValue().asBoolean(), new Boolean(boolVal));
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.CHANNEL_DELETED);
 
 			recs = log.getRecords(byteName, time, time - 5);
 			rec = recs.get(0);
 			assertEquals(rec.getValue().asByte(), bytVal);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 
 			recs = log.getRecords(doubleName, time, time - 5);
 			rec = recs.get(0);
 			assertEquals(rec.getValue().asDouble(), dVal, new Double(0));
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 
 			recs = log.getRecords(floatName, time, time - 5);
 			rec = recs.get(0);
 			assertEquals(rec.getValue().asFloat(), new Float(fVal), new Float(0));
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 
 			recs = log.getRecords(integerName, time, time - 5);
 			rec = recs.get(0);
 			assertEquals(rec.getValue().asInt(), iVal);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 
 			recs = log.getRecords(longName, time, time - 5);
 			rec = recs.get(0);
 			assertEquals(rec.getValue().asLong(), lVal);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 
 			recs = log.getRecords(shortName, time, time - 5);
 			rec = recs.get(0);
 			assertEquals(rec.getValue().asShort(), sVal);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 
 			recs = log.getRecords(stringName, time, time - 5);
 			rec = recs.get(0);
 			assertEquals(rec.getValue().asString(), strVal);
-			assertEquals(rec.getTimestamp(), time);
+			checkTimestamp(rec.getTimestamp(), time);
 			assertEquals(rec.getFlag(), Flag.VALID);
 		} catch (IOException e) {
 			e.printStackTrace();

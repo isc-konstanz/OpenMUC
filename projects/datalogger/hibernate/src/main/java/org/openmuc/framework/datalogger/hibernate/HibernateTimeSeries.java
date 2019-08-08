@@ -15,6 +15,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.hibernate.type.BasicType;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -63,6 +64,10 @@ public class HibernateTimeSeries {
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public boolean containsUserType(String type) {
+		return MAPPING_TEMPLATE.contains(type); 
 	}
 
 	public InputStream createMappingInputStream() {
@@ -178,12 +183,21 @@ public class HibernateTimeSeries {
 		return new Record(value, (long)map.get(TIME_COLUMN), flag);
     }
 
-	public List<Record> getRecords(SessionFactory factory, String channelId, long startTime, long endTime) {
+	public List<Record> getRecords(SessionFactory factory, String channelId, BasicType userType, long startTime, long endTime) {
 		Session session = factory.openSession();
 		Transaction t = session.beginTransaction();
 		
-		Query<?> query = session.createQuery("from " + channelId + 
-				" where timestamp <= " + startTime + " and timestamp >= " + endTime);
+		Query<?> query;
+		if (userType == null) {
+			query = session.createQuery("from " + channelId + 
+					" where timestamp <= " + startTime + " and timestamp >= " + endTime);
+		}
+		else {
+			query = session.createQuery("from " + channelId + 
+					" c where c.timestamp <= :start and c.timestamp >= :end");
+			query.setParameter("start", startTime, userType)
+				 .setParameter("end", endTime, userType);
+		}
 		
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		List<Map> list = (List<Map>) query.list();

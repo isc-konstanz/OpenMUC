@@ -8,7 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.type.BasicType;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
@@ -22,6 +27,8 @@ public class HibernateDataLogger  implements DataLoggerService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HibernateDataLogger.class);
 	
+	public static final String LONG_INTEGER_TYPE = "LongInteger";
+	
 	private static final String CONFIG_PATH = "hibernate.configPath";
 	private static final String DEFAULT_CONFIG_PATH = "conf/";
 	private static final String HIBERNATE_CONFIG = "hibernate.config.file";
@@ -30,6 +37,7 @@ public class HibernateDataLogger  implements DataLoggerService {
 	protected final File hibernatePropsFile;
 	protected SessionFactory factory;
 	protected Map<String, HibernateTimeSeries> idTimeSeriesMap;
+	protected BasicType userType;
 	
 	public HibernateDataLogger() {
 		String configPath = System.getProperty(CONFIG_PATH, DEFAULT_CONFIG_PATH);
@@ -56,6 +64,9 @@ public class HibernateDataLogger  implements DataLoggerService {
             }
             
 	        HibernateTimeSeries ts = new HibernateTimeSeries(logChannel.getId(), logChannel.getValueType());
+	        if (ts.containsUserType(LONG_INTEGER_TYPE)) {
+	        	userType = LongIntegerType.INSTANCE;
+	        }
         	InputStream inputStream = ts.createMappingInputStream();
         	idTimeSeriesMap.put(logChannel.getId(), ts);
     		config.addInputStream(inputStream);
@@ -63,6 +74,13 @@ public class HibernateDataLogger  implements DataLoggerService {
 		if (factory != null) {
 			factory.close();
 		}
+		
+		if (userType !=  null) {
+			config.registerTypeContributor( (typeContributions, serviceRegistry) -> {
+					typeContributions.contributeType(userType, LONG_INTEGER_TYPE);
+			} );
+		}
+
 		factory = config.buildSessionFactory();
 	}
 	
@@ -81,8 +99,12 @@ public class HibernateDataLogger  implements DataLoggerService {
 	public List<Record> getRecords(String channelId, long startTime, long endTime) throws IOException {
 		
 		 HibernateTimeSeries ts = idTimeSeriesMap.get(channelId);
-		 List<Record> records = ts.getRecords(factory, channelId, startTime, endTime);
+		 List<Record> records = ts.getRecords(factory, channelId, userType, startTime, endTime);
 		
 		return records;
+	}
+	
+	public BasicType getUserType() {
+		return userType;
 	}
 }
