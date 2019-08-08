@@ -29,6 +29,8 @@ project.ext {
     it.getPath() == ":openmuc-core-datamanager" ||
     it.getPath() == ":openmuc-core-spi" ||
     it.getPath() == ":openmuc-datalogger-ascii" ||
+   	it.getPath() == ":openmuc-datalogger-mysql" ||
+   	it.getPath() == ":openmuc-datalogger-hibernate" ||
     it.getPath() == ":openmuc-datalogger-slotsdb" ||
     it.getPath() == ":openmuc-driver-aggregator" ||
     it.getPath() == ":openmuc-driver-csv" ||
