@@ -176,9 +176,9 @@ class HibernateTest {
 
 	private void checkTimestamp(Long timestamp, Long time) {
 		BasicType userType = log.getUserType();
-		if (userType instanceof  LongIntegerType) {
-			Integer i = ((LongIntegerType)userType).getJavaTypeDescriptor().unwrap(time, Integer.class, null);
-			time = ((LongIntegerType)userType).getJavaTypeDescriptor().wrap(i, null);
+		if (userType instanceof  ScaleIntegerType) {
+			Integer i = ((ScaleIntegerType)userType).getJavaTypeDescriptor().unwrap(time, Integer.class, null);
+			time = ((ScaleIntegerType)userType).getJavaTypeDescriptor().wrap(i, null);
 		}
 		assertEquals(timestamp, time);
 		

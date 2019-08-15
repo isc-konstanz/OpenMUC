@@ -4,11 +4,11 @@
 <!-- Generated Jun 18, 2016 1:29:07 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
     <class entity-name="entity">
-        <id name="timestamp" type="LongInteger">
-            <column name="timestamp"/>
+        <id name="timestamp" type="ScaleInteger">
+            <column name="time" sql-type="int unsigned"/>
         </id>
         <property name="value" type="java.lang.Object">
-            <column name="value" />
+            <column name="data" />
         </property>
         <property name="code" type="java.lang.Byte">
             <column name="code" />

@@ -5,18 +5,28 @@ import org.hibernate.type.descriptor.java.AbstractTypeDescriptor;
 import org.hibernate.type.descriptor.java.ImmutableMutabilityPlan;
 import org.hibernate.type.descriptor.java.JavaTypeDescriptor;
 
-public class LongJavaDescriptor extends AbstractTypeDescriptor<Long> {
+public class ScaleIntegerDescriptor extends AbstractTypeDescriptor<Long> {
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = -4711264359790671417L;
 	
+	private static final String FACTOR = "Factor";
+	// Factor should be greater or equal 1000 and of type Integer. Factor 1000 converts
+	// milliseconds in seconds. 
+	private static final String DEFAULT_FACTOR = "1000";
+
 	public static final JavaTypeDescriptor<Long> INSTANCE = 
-    	      new LongJavaDescriptor();
+    	      new ScaleIntegerDescriptor();
+	
+	private double factor;
     	 
-	protected LongJavaDescriptor() {
+	protected ScaleIntegerDescriptor() {
 		super(Long.class, ImmutableMutabilityPlan.INSTANCE);
+		int intFactor = Integer.valueOf(System.getProperty(FACTOR, DEFAULT_FACTOR));
+		if (intFactor < 1000) intFactor = 1000;
+		factor = Double.valueOf(intFactor);
 	}
 
 	@Override
@@ -32,7 +42,8 @@ public class LongJavaDescriptor extends AbstractTypeDescriptor<Long> {
 	@Override
 	public <X> X unwrap(Long value, Class<X> type, WrapperOptions options) {
 		if (value == null) return null;
-		Integer intValue = (int) Math.round(((Long)value)/1000.0);
+		Integer intValue = (int) Math.round(((long)value)/factor);
+		value.intValue();
 		return (X) intValue;
 	}
 
@@ -41,7 +52,7 @@ public class LongJavaDescriptor extends AbstractTypeDescriptor<Long> {
 		if (value == null) return null;
 		if (Integer.class.isInstance(value)) {
 			Long newValue = new Long((Integer)value);
-			newValue *= 1000;
+			newValue = (long) Math.round(newValue * factor);
 			return newValue;
 		}
 		throw unknownWrap(value.getClass());

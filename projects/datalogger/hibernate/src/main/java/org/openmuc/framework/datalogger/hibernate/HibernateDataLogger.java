@@ -8,11 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.BasicType;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
@@ -27,7 +23,7 @@ public class HibernateDataLogger  implements DataLoggerService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HibernateDataLogger.class);
 	
-	public static final String LONG_INTEGER_TYPE = "LongInteger";
+	public static final String SCALE_INTEGER_TYPE = "ScaleInteger";
 	
 	private static final String CONFIG_PATH = "hibernate.configPath";
 	private static final String DEFAULT_CONFIG_PATH = "conf/";
@@ -64,8 +60,8 @@ public class HibernateDataLogger  implements DataLoggerService {
             }
             
 	        HibernateTimeSeries ts = new HibernateTimeSeries(logChannel.getId(), logChannel.getValueType());
-	        if (ts.containsUserType(LONG_INTEGER_TYPE)) {
-	        	userType = LongIntegerType.INSTANCE;
+	        if (ts.containsUserType(SCALE_INTEGER_TYPE)) {
+	        	userType = ScaleIntegerType.INSTANCE;
 	        }
         	InputStream inputStream = ts.createMappingInputStream();
         	idTimeSeriesMap.put(logChannel.getId(), ts);
@@ -77,7 +73,7 @@ public class HibernateDataLogger  implements DataLoggerService {
 		
 		if (userType !=  null) {
 			config.registerTypeContributor( (typeContributions, serviceRegistry) -> {
-					typeContributions.contributeType(userType, LONG_INTEGER_TYPE);
+					typeContributions.contributeType(userType, SCALE_INTEGER_TYPE);
 			} );
 		}
 
