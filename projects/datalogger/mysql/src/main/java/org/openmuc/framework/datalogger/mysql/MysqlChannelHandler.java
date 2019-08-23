@@ -43,6 +43,7 @@ public class MysqlChannelHandler {
 	private String password;
 	
 	LogChannel logChannel;
+	Connection connection = null;
 
 	public MysqlChannelHandler(String dbAddress, String userName, String password, LogChannel logChannel) {
 		this.dbAddress = dbAddress;
@@ -51,11 +52,18 @@ public class MysqlChannelHandler {
 		
 		this.logChannel = logChannel;
 		
-		createChannelTable();
+		createTable(getTableName(), logChannel.getValueType().toString(),
+				logChannel.getValueTypeLength());
 	}
 	
-	protected void createChannelTable() {		
-		String createTableCommand = getCreateTableSqlCommand();	
+	public MysqlChannelHandler(String dbAddress, String userName, String password) {
+		this.dbAddress = dbAddress;
+		this.userName = userName;
+		this.password = password;
+	}
+	
+	protected void createTable(String tableName, String valueType, Integer valueTypeLength) {		
+		String createTableCommand = getCreateTableSqlCommand(tableName, valueType, valueTypeLength);	
 		Connection connection = null;
 		Statement stmt = null;
 		try {
@@ -71,13 +79,12 @@ public class MysqlChannelHandler {
 		}
 	}
 	
-	protected String getCreateTableSqlCommand() {
+	protected String getCreateTableSqlCommand(String tableName, String valueType, Integer valueTypeLength) {
 		if (logChannel == null) {
 			return String.format(ceateTableSqlCommand, "test", "VARCHAR(" + DEFAULT_MAX_ARRAY_LENGTH + ")");
 		}
-		return String.format(ceateTableSqlCommand, getTableName(), 
-				convert2SqlTypes(logChannel.getValueType().toString(),
-						logChannel.getValueTypeLength()));
+		return String.format(ceateTableSqlCommand, tableName, 
+				convert2SqlTypes(valueType, valueTypeLength));
 	}
 	
 	protected String getTableName() {
@@ -86,6 +93,8 @@ public class MysqlChannelHandler {
 
 	public static Object convert2SqlTypes(String string, Integer valueTypeLength) {
 		switch (string) {
+			case "DOUBLE":
+				return "FLOAT";
 			case "FLOAT":
 				return "REAL";
 			case "INTEGER":
@@ -114,7 +123,7 @@ public class MysqlChannelHandler {
         return string;
 	}
 
-	private Connection connect() throws SQLException {
+	public Connection connect() throws SQLException {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -169,6 +178,19 @@ public class MysqlChannelHandler {
         	logger.debug("Container " + container.getChannelId() + ": Record null is not allowed!");
         	return;
         }
+        
+		Connection connection = connect();
+	    Statement stmt = connection.createStatement();
+	    stmt.execute(insertCommand);
+	    close(connection, stmt);		
+	}
+
+	public void log(String topic, Long time, String key, Double value) throws SQLException {
+		String insertCommand = "";
+		
+		createTable(topic+"_"+key, "DOUBLE", null);
+		
+		insertCommand = getInsertSqlValueCommand(String.valueOf(time), String.valueOf(value), String.valueOf(null));
         
 		Connection connection = connect();
 	    Statement stmt = connection.createStatement();
@@ -317,7 +339,7 @@ public class MysqlChannelHandler {
 		return val;
 	}
 
-	private void close(Connection connection, Statement stmt) {
+	public void close(Connection connection, Statement stmt) {
 	    try {
 	    	if (stmt != null) {
 	    		stmt.close();

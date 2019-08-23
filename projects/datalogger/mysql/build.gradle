@@ -7,7 +7,6 @@ configurations.create('embed')
 dependencies {
   implementation project(':openmuc-core-spi')
 
-  compile group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
   embed group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
 }
 
