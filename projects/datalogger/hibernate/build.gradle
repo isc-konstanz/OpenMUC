@@ -1,13 +1,24 @@
 def projectName = "OpenMUC Data Logger - Hibernate"
 
-def mysqlVersion = '5.1.6'
 def hibernateVersion = '5.2.10.Final'
+def hibernateJar = 'hibernate-core-'+hibernateVersion+'.jar'
+
+def hibernateC3p0Jar = 'hibernate-c3p0-'+hibernateVersion+'.jar'
 
 def hibernateJpaVersion = '1.0.0.Final'
 def hibernateJpaJar = 'hibernate-jpa-2.1-api-'+hibernateJpaVersion+'.jar'
 
 def hibernateAnnotationsVersion = '5.0.1.Final'
 def hibernateAnnotationsJar = 'hibernate-commons-annotations-'+hibernateAnnotationsVersion+'.jar'
+
+def c3p0Version = '0.9.5.4'
+def c3p0Jar = 'c3p0-'+c3p0Version+'.jar'
+
+def mchangeVersion = '0.2.16'
+def mchangeJar = 'mchange-commons-java-'+mchangeVersion+'.jar'
+
+def mysqlConnectorVersion = '8.0.11'
+def mysqlConnectorJar = 'mysql-connector-java-'+mysqlConnectorVersion+'.jar'
 
 def jbossLoggingVersion = '3.3.0.Final'
 def jbossLoggingJar = 'jboss-logging-'+jbossLoggingVersion+'.jar'
@@ -21,56 +32,56 @@ def dom4jJar = 'dom4j-'+dom4jVersion+'.jar'
 def classmateVersion = '1.3.0'
 def classmateJar = 'classmate-'+classmateVersion+'.jar'
 
-configurations.create('embed')
-
 dependencies {
   implementation project(':openmuc-core-spi')
   implementation project(':openmuc-core-datamanager')
   
-  compile group: 'org.hibernate' , name: 'hibernate-c3p0', version: hibernateVersion
-  embed group: 'org.hibernate' , name: 'hibernate-c3p0', version: hibernateVersion
-  compile group: 'org.hibernate' , name: 'hibernate-core', version: hibernateVersion
-  embed group: 'org.hibernate' , name: 'hibernate-core', version: hibernateVersion
-  compile group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
-  embed group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
+  implementation group: 'org.hibernate' , name: 'hibernate-core', version: hibernateVersion
+  implementation group: 'org.hibernate' , name: 'hibernate-c3p0', version: hibernateVersion
+  implementation group: 'mysql', name: 'mysql-connector-java', version: mysqlConnectorVersion
  
+  implementation group: 'com.mchange', name: 'c3p0', version: '0.9.5.4'
+  implementation group: 'com.mchange', name: 'mchange-commons-java', version: '0.2.16'
 }
 
 jar {
+  into('libs') {
+    from(configurations.default) {
+      include hibernateJar, hibernateJpaJar, hibernateAnnotationsJar, 
+      		  jbossLoggingJar, jbossTransactionJar, dom4jJar, mysqlConnectorJar, classmateJar, hibernateC3p0Jar, c3p0Jar, mchangeJar
+    }
+  }
   manifest {
-    name = projectName
-    instruction 'Bundle-ClassPath', '.,lib/mysql-connector-java-' + mysqlVersion + '.jar' + 
-    								',lib/hibernate-c3p0-' + hibernateVersion + '.jar' + 
-    								',lib/hibernate-core-' + hibernateVersion + '.jar' +
-                                    ',lib/'+hibernateJpaJar +
-                                    ',lib/'+hibernateAnnotationsJar +
-                                    ',lib/'+jbossLoggingJar +
-                                    ',lib/'+jbossTransactionJar +
-                                    ',lib/'+dom4jJar +
-                                    ',lib/'+classmateJar
-    instruction 'Import-Package',   '!com.mysql.jdbc.*,' +
+    attributes('Bundle-Name':        projectName,
+    		   'Bundle-ClassPath': '.,libs/'+mysqlConnectorJar + 
+    								',libs/'+hibernateC3p0Jar + 
+    								',libs/'+hibernateJar +
+                                    ',libs/'+hibernateJpaJar +
+                                    ',libs/'+hibernateAnnotationsJar +
+                                    ',libs/'+jbossLoggingJar +
+                                    ',libs/'+jbossTransactionJar +
+                                    ',libs/'+dom4jJar +
+                                    ',libs/'+mchangeJar +
+                                    ',libs/'+c3p0Jar +
+                                    ',libs/'+classmateJar,
+    	       'Import-Package':    '!com.mysql.jdbc.*,' +
     								'!org.hibernate.*,' +
-                                    '!javax.persistence.*,' +
                                     '!org.jboss.logging.*,' +
                                     '!javax.transaction.*,' +
                                     '!org.dom4j.*,' +
-                                    '!com.fasterxml.classmate.*,' +
-                                    '!com.mysql.jdbc.*,' +
-                                    '!org.gjt.mm.mysql.*,' +
+                                    '!com.mchange.*,' +
+                                    '!com.mysql.*,' +
+                                    '!com.fasterxml.*,' +
+                                    'org.osgi.*;version=0,' +
+                                    'org.slf4j;version=0,' +
+                                    'javax.sql.*;version=0,' + 
                                     'javax.net.*;version=0,' +
-    								'javax.naming,*;version=0,' +
-    								'org.w3c.dom;version=0,' +
                                     'javax.xml.*;version=0,' +
+    								'javax.naming.*;version=0,' +
+    								'javax.management.*;version=0,' +
                                     'org.xml.sax;version=0,' +
-                                    'org.openmuc.framework.*;version=0,' +
-                                    'javax.management.*;version=0' +
-    								 jarDefaultImportPackageVersion
-    instruction 'Export-Package', ''
-  }
-}
-
-jar {
-  into('lib') {
-    from configurations.embed
+    								'org.w3c.dom;version=0,' +
+                                    'org.openmuc.framework.*;version=0,',
+               'Export-Package':     '')
   }
 }

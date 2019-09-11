@@ -22,6 +22,7 @@ public class ScaleIntegerDescriptor extends AbstractTypeDescriptor<Long> {
 	
 	private double factor;
     	 
+	@SuppressWarnings("unchecked")
 	protected ScaleIntegerDescriptor() {
 		super(Long.class, ImmutableMutabilityPlan.INSTANCE);
 		int intFactor = Integer.valueOf(System.getProperty(FACTOR, DEFAULT_FACTOR));
@@ -39,6 +40,7 @@ public class ScaleIntegerDescriptor extends AbstractTypeDescriptor<Long> {
 		return Long.valueOf(string);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <X> X unwrap(Long value, Class<X> type, WrapperOptions options) {
 		if (value == null) return null;

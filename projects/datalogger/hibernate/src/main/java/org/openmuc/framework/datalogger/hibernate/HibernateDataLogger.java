@@ -34,6 +34,7 @@ public class HibernateDataLogger  implements DataLoggerService {
 	protected SessionFactory factory;
 	protected Map<String, HibernateTimeSeries> idTimeSeriesMap;
 	protected BasicType userType;
+	protected boolean isInitialized = false;
 	
 	public HibernateDataLogger() {
 		String configPath = System.getProperty(CONFIG_PATH, DEFAULT_CONFIG_PATH);
@@ -50,34 +51,46 @@ public class HibernateDataLogger  implements DataLoggerService {
 	@Override
 	public void setChannelsToLog(List<LogChannel> logChannels) {
         logger.trace("channels to log:");
-        idTimeSeriesMap = new HashMap<String, HibernateTimeSeries>();
-        Configuration config = new Configuration().configure(hibernatePropsFile);
-		for (LogChannel logChannel : logChannels) {
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("channel.getId() " + logChannel.getId());
-                logger.trace("channel.getLoggingInterval() " + logChannel.getLoggingInterval());
-            }
-            
-	        HibernateTimeSeries ts = new HibernateTimeSeries(logChannel.getId(), logChannel.getValueType());
-	        if (ts.containsUserType(SCALE_INTEGER_TYPE)) {
-	        	userType = ScaleIntegerType.INSTANCE;
-	        }
-        	InputStream inputStream = ts.createMappingInputStream();
-        	idTimeSeriesMap.put(logChannel.getId(), ts);
-    		config.addInputStream(inputStream);
-        }
-		if (factory != null) {
-			factory.close();
-		}
-		
-		if (userType !=  null) {
-			config.registerTypeContributor( (typeContributions, serviceRegistry) -> {
-					typeContributions.contributeType(userType, SCALE_INTEGER_TYPE);
-			} );
-		}
-
-		factory = config.buildSessionFactory();
+		Thread initThread = new Thread() {
+			@Override
+			public void run() {
+				try {
+			        idTimeSeriesMap = new HashMap<String, HibernateTimeSeries>();
+			        Configuration config = new Configuration().configure(hibernatePropsFile);
+					for (LogChannel logChannel : logChannels) {
+			
+			            if (logger.isTraceEnabled()) {
+			                logger.trace("channel.getId() " + logChannel.getId());
+			                logger.trace("channel.getLoggingInterval() " + logChannel.getLoggingInterval());
+			            }
+			            
+				        HibernateTimeSeries ts = new HibernateTimeSeries(logChannel.getId(), logChannel.getValueType());
+				        if (ts.containsUserType(SCALE_INTEGER_TYPE)) {
+				        	userType = ScaleIntegerType.INSTANCE;
+				        }
+			        	InputStream inputStream = ts.createMappingInputStream();
+			        	idTimeSeriesMap.put(logChannel.getId(), ts);
+			    		config.addInputStream(inputStream);
+			        }
+					if (factory != null) {
+						factory.close();
+					}
+					
+					if (userType !=  null) {
+						config.registerTypeContributor( (typeContributions, serviceRegistry) -> {
+								typeContributions.contributeType(userType, SCALE_INTEGER_TYPE);
+						} );
+					}
+			
+					factory = config.buildSessionFactory();
+					isInitialized = true;
+					logger.info("Hibernate is initialized");
+				} catch (Exception e) {
+					logger.warn("Error while configuring channels:", e);
+				}
+			}
+		};
+		initThread.start();
 	}
 	
 	@Override
@@ -87,7 +100,9 @@ public class HibernateDataLogger  implements DataLoggerService {
 	        Record record = container.getRecord();
 	        
 	        HibernateTimeSeries ts = idTimeSeriesMap.get(container.getChannelId());
-	        ts.log(factory, record, timestamp);
+			if (isInitialized) {
+				ts.log(factory, record, timestamp);
+			}
         }
 	}
 
@@ -95,7 +110,10 @@ public class HibernateDataLogger  implements DataLoggerService {
 	public List<Record> getRecords(String channelId, long startTime, long endTime) throws IOException {
 		
 		 HibernateTimeSeries ts = idTimeSeriesMap.get(channelId);
-		 List<Record> records = ts.getRecords(factory, channelId, userType, startTime, endTime);
+		 List<Record> records = null;
+		 if (isInitialized) {
+			 records = ts.getRecords(factory, channelId, userType, startTime, endTime);
+		 }
 		
 		return records;
 	}
