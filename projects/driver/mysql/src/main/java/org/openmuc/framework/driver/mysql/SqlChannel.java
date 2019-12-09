@@ -20,34 +20,11 @@
  */
 package org.openmuc.framework.driver.mysql;
 
-import org.openmuc.framework.driver.spi.Channel;
+import org.openmuc.framework.driver.spi.ChannelConfigs;
 import org.openmuc.framework.options.Address;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class SqlChannel extends Channel {
-    private static final Logger logger = LoggerFactory.getLogger(SqlChannel.class);
+public class SqlChannel extends ChannelConfigs {
 
-    public static int TYPE_LENGTH_DEFAULT = 10;
-    public static String TYPE_DEFAULT = "FLOAT";
-    public static String TYPE_NOT_NULL = " NOT NULL";
-    public static String[] TYPES = new String[] {
-            "FLOAT",
-            "REAL",
-            "BIGINT",
-            "INT",
-            "SMALLINT",
-            "TINYINT",
-            "BIT",
-            "VARBINARY",
-            "VARCHAR"
-    };
-
-    private static String QUERY_CREATE = "CREATE TABLE IF NOT EXISTS %s ("
-            + "time INT UNSIGNED NOT NULL, "
-            + "data %s, "
-            + "PRIMARY KEY (time)"
-            + ") ENGINE=MYISAM";
     private static String QUERY_SELECT = "SELECT * FROM %s WHERE time >= %s AND time <= %s";
     private static String QUERY_INSERT = "INSERT INTO %s (time,data) VALUES ('%s','%s') ON DUPLICATE KEY UPDATE data=VALUES(data)";
 //  private static String QUERY_UPDATE = "UPDATE feeds SET time = %s, value = %s WHERE id = %i";
@@ -57,24 +34,6 @@ public class SqlChannel extends Channel {
 
     @Address
     protected String table;
-
-//    @Override
-//    protected void onCreate() throws ArgumentSyntaxException {
-//        if (type == null) {
-//            type = TYPE_DEFAULT;
-//        }
-//        else if (!Arrays.asList(TYPES).contains(type) && 
-//                !type.startsWith("VARCHAR(") && !type.startsWith("VARBINARY(")) {
-//            throw new EmoncmsException("Value type not allowed: "+type);
-//        }
-//        if (!empty) {
-//            type += TYPE_NOT_NULL;
-//        }
-//        String query = String.format(QUERY_CREATE, feed.table, type);
-//        logger.debug("Query  {}", query);
-//        
-//        transaction.execute(query);
-//    }
 
     public String readQuery(long start, long end, int interval) {
         return String.format(QUERY_SELECT, getTable(), start, end);

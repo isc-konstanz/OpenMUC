@@ -31,7 +31,6 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.driver.spi.Channel;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DeviceConnection;
 import org.openmuc.framework.options.Address;
@@ -86,33 +85,32 @@ public class SqlClient extends DeviceConnection<SqlChannel> {
         source = null;
     }
 
+    @Override
     public Object onRead(List<SqlChannel> channels, Object containerListHandle, String samplingGroup) throws ConnectionException {
         try (Connection connection = source.getConnection(user, password)) {
-            connection.setAutoCommit(false);
+        	// TODO: google better solution to utilize mysql statement pooling
+            //connection.setAutoCommit(false);
         	
-            try (Statement statement = connection.createStatement()) {
-            	// TODO build query with the help of channels
-            	String query = "";
-            	
-                for (SqlChannel channel : channels) {
-                    if (channel instanceof Channel) {
-                    	// TODO: google better solution to utilize mysql statement pooling
-                    	try (ResultSet result = statement.executeQuery(query)) {
-                            if (result.next()) {
-                                long time = result.getLong(SqlChannel.COLUMN_TIME)*1000;
-                                double value = result.getInt(SqlChannel.COLUMN_DATA);
-                                
-                            	channel.setRecord(new Record(new DoubleValue(value), time, Flag.VALID));
-                            }
-                            else {
-                            	// TODO: log more details
-                            	channel.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
-                            }
+            for (SqlChannel channel : channels) {
+            	try (Statement statement = connection.createStatement()) {
+                	// TODO build query with the help of channel configurations
+                	String query = channel.readQuery(1, 2, 3);
+                	
+                	try (ResultSet result = statement.executeQuery(query)) {
+                        if (result.first()) {
+                            long time = result.getLong(SqlChannel.COLUMN_TIME);
+                            double value = result.getInt(SqlChannel.COLUMN_DATA);
+                            
+                        	channel.setRecord(new Record(new DoubleValue(value), time, Flag.VALID));
+                        }
+                        else {
+                        	// TODO: log more details
+                        	channel.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
                         }
                     }
                 }
             }
-            connection.commit();
+            //connection.commit();
         	
         } catch (SQLException e) {
 			throw new ConnectionException(e);
@@ -120,13 +118,11 @@ public class SqlClient extends DeviceConnection<SqlChannel> {
         return null;
     }
 
+    @Override
     public Object onWrite(List<SqlChannel> channels, Object containerListHandle) throws ConnectionException {
         for (SqlChannel channel : channels) {
-            if (channel instanceof Channel) {
-            	
-            	
-            	channel.setFlag(Flag.VALID);
-            }
+            
+        	channel.setFlag(Flag.VALID);
         }
         return null;
     }
