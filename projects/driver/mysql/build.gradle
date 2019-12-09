@@ -1,0 +1,44 @@
+
+def projectName = "OpenMUC Driver - MySQL"
+
+configurations.create('embed')
+
+def c3poVersion = '0.9.5.4'
+def c3poJar = 'c3p0-'+c3poVersion+'.jar'
+
+def mchangeVersion = '0.2.16'
+def mchargeJar = 'mchange-commons-java-'+mchangeVersion+'.jar'
+
+def mysqlVersion = '8.0.17'
+def mysqlJar = 'mysql-connector-java-'+mysqlVersion+'.jar'
+
+dependencies {
+  implementation project(':openmuc-core-spi')
+
+  implementation group: 'com.mchange', name: 'c3p0', version: c3poVersion
+  embed group: 'com.mchange', name: 'c3p0', version: c3poVersion
+
+  implementation group: 'com.mchange', name: 'mchange-commons-java', version: mchangeVersion
+  embed group: 'com.mchange', name: 'mchange-commons-java', version: mchangeVersion
+
+  embed group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
+}
+
+jar {
+  manifest {
+    name = projectName
+    instruction 'Bundle-ClassPath', '.,libs/'+mysqlJar+',' +
+                                      'libs/'+mchargeJar+',' +
+                                      'libs/'+c3poJar
+    instruction 'Import-Package', '!com.mchange.*,' +
+                                  '!com.mysql.*,' +
+                                  '*' + jarDefaultImportPackageVersion
+    instruction 'Export-Package', ''
+  }
+}
+
+jar {
+  into('libs') {
+    from configurations.embed
+  }
+}
