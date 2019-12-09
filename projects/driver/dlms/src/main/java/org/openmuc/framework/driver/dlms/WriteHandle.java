@@ -30,8 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.DriverInfoFactory;
-import org.openmuc.framework.config.DriverPreferences;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.StringValue;
@@ -55,8 +53,6 @@ import org.slf4j.LoggerFactory;
 class WriteHandle {
 
     private static final Logger logger = LoggerFactory.getLogger(WriteHandle.class);
-
-    private final DriverPreferences prefs = DriverInfoFactory.getPreferences(DlmsCosemConnection.class);
 
     private final DlmsConnection dlmsConnection;
 
@@ -106,7 +102,7 @@ class WriteHandle {
 
         for (ChannelValueContainer channelContainer : writeList) {
             try {
-                ChannelAddress channelAddress = prefs.get(channelContainer.getChannelAddress(), ChannelAddress.class);
+                ChannelAddress channelAddress = new ChannelAddress(channelContainer.getChannelAddress());
                 Type type = channelAddress.getType();
 
                 if (type == null) {

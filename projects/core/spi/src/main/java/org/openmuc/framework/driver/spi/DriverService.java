@@ -78,10 +78,8 @@ public interface DriverService {
      * @throws ScanInterruptedException
      *             if the scan was interrupted through a call of <code>interruptDeviceScan()</code> before it was done.
      */
-    default void scanForDevices(String settings, DriverDeviceScanListener listener)
-            throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
-    	throw new UnsupportedOperationException();
-    }
+    void scanForDevices(String settings, DriverDeviceScanListener listener)
+            throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException;
 
     /**
      * A call of this function signals the driver to stop the device scan as soon as possible. The function should
@@ -93,9 +91,7 @@ public interface DriverService {
      * @throws UnsupportedOperationException
      *             if the method is not implemented by the driver
      */
-    default void interruptDeviceScan() throws UnsupportedOperationException {
-    	throw new UnsupportedOperationException();
-    }
+    void interruptDeviceScan() throws UnsupportedOperationException;
 
     /**
      * Attempts to connect to the given communication device using the given settings. The resulting connection shall be

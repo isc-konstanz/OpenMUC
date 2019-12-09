@@ -28,8 +28,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.csv.CsvDeviceConnection;
-import org.openmuc.framework.driver.csv.test.utils.CsvChannelRecordContainer;
+import org.openmuc.framework.driver.csv.CsvFile;
+import org.openmuc.framework.driver.csv.test.utils.CsvTestFactory;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
@@ -46,8 +46,8 @@ public class SamplingModeLineTest {
     public void setup() {
 
         containers = new ArrayList<>();
-        containers.add(INDEX_HHMMSS, new CsvChannelRecordContainer("hhmmss"));
-        containers.add(INDEX_POWER, new CsvChannelRecordContainer("power_grid"));
+        containers.add(INDEX_HHMMSS, CsvTestFactory.newRecodContainer("hhmmss"));
+        containers.add(INDEX_POWER, CsvTestFactory.newRecodContainer("power_grid"));
     }
 
     /**
@@ -60,7 +60,7 @@ public class SamplingModeLineTest {
     public void testLineModeWithoutRewind() throws ConnectionException, ArgumentSyntaxException {
 
         String deviceSettings = "samplingmode=line";
-        CsvDeviceConnection connection = new CsvDeviceConnection(DEVICE_ADDRESS, deviceSettings);
+        CsvFile connection = CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings);
         System.out.println(String.format("%10s, %10s", "hhmmss", "power_grid"));
 
         read(connection, containers);
@@ -82,7 +82,7 @@ public class SamplingModeLineTest {
     public void testLineModeWitRewind() throws ConnectionException, ArgumentSyntaxException {
 
         String deviceSettings = "samplingmode=line;rewind=true";
-        CsvDeviceConnection connection = new CsvDeviceConnection(DEVICE_ADDRESS, deviceSettings);
+        CsvFile connection = CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings);
 
         System.out.println(String.format("%10s, %10s", "hhmmss", "power_grid"));
 
@@ -101,7 +101,7 @@ public class SamplingModeLineTest {
 
     }
 
-    private void read(CsvDeviceConnection connection, List<ChannelRecordContainer> containers)
+    private void read(CsvFile connection, List<ChannelRecordContainer> containers)
             throws UnsupportedOperationException, ConnectionException {
         connection.read(containers, null, null);
         System.out.println(String.format("%10s, %10s", containers.get(INDEX_HHMMSS).getRecord().getValue(),

@@ -1,0 +1,24 @@
+
+def projectName = "OpenMUC Core - Data Logger"
+
+dependencies {
+  api project(':openmuc-core-settings')
+}
+
+jar {
+  manifest {
+    name = projectName
+    instruction 'Export-Package', 'org.openmuc.framework.datalogger.*'
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name projectName
+        description "The core data logger of the OpenMUC framework."
+      }
+    }
+  }
+}

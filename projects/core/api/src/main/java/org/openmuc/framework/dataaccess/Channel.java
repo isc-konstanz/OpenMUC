@@ -168,7 +168,7 @@ public interface Channel {
      * 
      * @return the name of the communication device that this channel belongs to.
      */
-    String getDeviceName();
+    String getDeviceId();
 
     /**
      * Returns the description of the communication device that this channel belongs to. The empty string if not

@@ -22,53 +22,39 @@ package org.openmuc.framework.driver.rpi.gpio;
 
 import java.util.List;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.gpio.settings.ChannelSettings;
-import org.openmuc.framework.driver.spi.ChannelRecordContainer;
+import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.pi4j.io.gpio.GpioPinDigital;
 import com.pi4j.io.gpio.PinState;
 
-public class InputPin extends GpioConnection {
-	private final static Logger logger = LoggerFactory.getLogger(InputPin.class);
+public class InputPin extends GpioPin {
 
-    public InputPin(GpioConnectionCallbacks callbacks, GpioPinDigital pin) {
-		super(callbacks, pin);
+    public InputPin(GpioPinDigital pin) {
+		super(pin);
 	}
 
     @Override
-    public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
-            throws UnsupportedOperationException, ConnectionException {
-
+    public Object onRead(List<GpioChannel> channels, Object containerListHandle, String samplingGroup)
+            throws ConnectionException {
+    	
         long samplingTime = System.currentTimeMillis();
-
-        for (ChannelRecordContainer container : containers) {
-            try {
-                ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
-
-                PinState state = pin.getState();
-                Value value;
-                if (!settings.isInverted()) {
-                    value = new BooleanValue(state.isHigh());
-                }
-                else {
-                    value = new BooleanValue(state.isLow());
-                }
-                container.setRecord(new Record(value, samplingTime, Flag.VALID));
-
-            } catch (ArgumentSyntaxException e) {
-                logger.warn("Unable to configure channel address \"{}\": {}", container.getChannelAddress(), e);
-                container.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_READ_FAILURE));
-            }
-        }
         
+        for (GpioChannel channel : channels) {
+            PinState state = pin.getState();
+            Value value;
+            if (!channel.isInverted()) {
+                value = new BooleanValue(state.isHigh());
+            }
+            else {
+                value = new BooleanValue(state.isLow());
+            }
+            channel.setRecord(new Record(value, samplingTime, Flag.VALID));
+        }
         return null;
     }
 

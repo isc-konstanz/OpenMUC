@@ -27,6 +27,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -64,6 +67,8 @@ import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.openmuc.framework.lib.json.Const;
 
 public class RestConnection implements Connection {
+
+    private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     private final JsonWrapper wrapper;
     private URL url;
@@ -209,7 +214,7 @@ public class RestConnection implements Connection {
     private InputStream get(String suffix) throws ConnectionException {
         InputStream stream = null;
         try {
-            url = new URL(baseAddress + suffix);
+            url = new URL(baseAddress + URLEncoder.encode(suffix, CHARSET));
             con = url.openConnection();
             setConnectionProberties();
             stream = con.getInputStream();
@@ -225,7 +230,7 @@ public class RestConnection implements Connection {
 
     private Flag put(String suffix, String output) throws ConnectionException {
         try {
-            url = new URL(baseAddress + suffix);
+            url = new URL(baseAddress + URLEncoder.encode(suffix, CHARSET));
             con = url.openConnection();
             con.setDoOutput(true);
             setConnectionProberties();

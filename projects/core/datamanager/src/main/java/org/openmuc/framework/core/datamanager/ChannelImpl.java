@@ -174,7 +174,7 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
-    public String getDeviceName() {
+    public String getDeviceId() {
         return config.deviceParent.getId();
     }
 

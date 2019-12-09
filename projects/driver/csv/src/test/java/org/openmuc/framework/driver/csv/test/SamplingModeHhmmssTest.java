@@ -29,8 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.csv.CsvDeviceConnection;
-import org.openmuc.framework.driver.csv.test.utils.CsvChannelRecordContainer;
+import org.openmuc.framework.driver.csv.CsvFile;
+import org.openmuc.framework.driver.csv.test.utils.CsvTestFactory;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.powermock.api.mockito.PowerMockito;
@@ -38,7 +38,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ System.class, CsvDeviceConnection.class })
+@PrepareForTest({ System.class, CsvFile.class })
 public class SamplingModeHhmmssTest {
 
     private static final String DEVICE_ADDRESS = System.getProperty("user.dir") + "/src/test/resources/test_data.csv";
@@ -59,15 +59,15 @@ public class SamplingModeHhmmssTest {
     public void before() {
 
         containers = new ArrayList<>();
-        containers.add(INDEX_HHMMSS, new CsvChannelRecordContainer("hhmmss"));
-        containers.add(INDEX_POWER, new CsvChannelRecordContainer("power_grid"));
+        containers.add(INDEX_HHMMSS, CsvTestFactory.newRecodContainer("hhmmss"));
+        containers.add(INDEX_POWER, CsvTestFactory.newRecodContainer("power_grid"));
     }
 
     @Test
     public void testNormal() throws Exception {
 
         String deviceSettings = "samplingmode=hhmmss";
-        CsvDeviceConnection connectionSpy = PowerMockito.spy(new CsvDeviceConnection(DEVICE_ADDRESS, deviceSettings));
+        CsvFile connectionSpy = PowerMockito.spy(CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings));
         System.out.println(String.format("%10s, %10s", "hhmmss", "power_grid"));
 
         PowerMockito.mockStatic(System.class);
@@ -94,7 +94,7 @@ public class SamplingModeHhmmssTest {
 
         String deviceSettings = "samplingmode=hhmmss;rewind=true";
 
-        CsvDeviceConnection connectionSpy = PowerMockito.spy(new CsvDeviceConnection(DEVICE_ADDRESS, deviceSettings));
+        CsvFile connectionSpy = PowerMockito.spy(CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings));
 
         System.out.println(String.format("%10s, %10s", "hhmmss", "power_grid"));
 
@@ -114,7 +114,7 @@ public class SamplingModeHhmmssTest {
     public void testNewDayWithoutRewind() throws ConnectionException, ArgumentSyntaxException {
 
         String deviceSettings = "samplingmode=hhmmss";
-        CsvDeviceConnection connectionSpy = PowerMockito.spy(new CsvDeviceConnection(DEVICE_ADDRESS, deviceSettings));
+        CsvFile connectionSpy = PowerMockito.spy(CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings));
         System.out.println(String.format("%10s, %10s", "hhmmss", "power_grid"));
 
         PowerMockito.mockStatic(System.class);
@@ -133,7 +133,7 @@ public class SamplingModeHhmmssTest {
     public void testBeforeAvailableData() throws ConnectionException, ArgumentSyntaxException {
 
         String deviceSettings = "samplingmode=hhmmss";
-        CsvDeviceConnection connectionSpy = PowerMockito.spy(new CsvDeviceConnection(DEVICE_ADDRESS, deviceSettings));
+        CsvFile connectionSpy = PowerMockito.spy(CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings));
         System.out.println(String.format("%10s, %10s", "hhmmss", "power_grid"));
 
         PowerMockito.mockStatic(System.class);
@@ -147,7 +147,7 @@ public class SamplingModeHhmmssTest {
     public void testAfterAvailableData() throws ConnectionException, ArgumentSyntaxException {
 
         String deviceSettings = "samplingmode=hhmmss";
-        CsvDeviceConnection connectionSpy = PowerMockito.spy(new CsvDeviceConnection(DEVICE_ADDRESS, deviceSettings));
+        CsvFile connectionSpy = PowerMockito.spy(CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings));
         System.out.println(String.format("%10s, %10s", "hhmmss", "power_grid"));
 
         // last line of file should be returned
@@ -158,7 +158,7 @@ public class SamplingModeHhmmssTest {
 
     }
 
-    private void read(CsvDeviceConnection connection, List<ChannelRecordContainer> containers)
+    private void read(CsvFile connection, List<ChannelRecordContainer> containers)
             throws UnsupportedOperationException, ConnectionException {
         connection.read(containers, null, null);
         System.out.println(String.format("%10s, %10s", containers.get(INDEX_HHMMSS).getRecord().getValue(),

@@ -56,7 +56,6 @@ import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DeviceScanListener;
 import org.openmuc.framework.config.DriverConfig;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.DriverNotAvailableException;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.config.RootConfig;
@@ -81,9 +80,11 @@ import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.driver.spi.Driver;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
+import org.openmuc.framework.options.DriverInfoFactory;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 import org.openmuc.framework.server.spi.ServerService;
 import org.osgi.service.component.annotations.Activate;
@@ -552,10 +553,13 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 if (driverConfig == null) {
                     continue;
                 }
-
-                driverConfig.activeDriver = newDriverEntry.getValue();
+                DriverService newDriver = newDriverEntry.getValue();
+                driverConfig.activeDriver = newDriver;
                 for (DeviceConfigImpl deviceConfig : driverConfig.deviceConfigsById.values()) {
                     deviceConfig.device.driverRegisteredSignal();
+                }
+                if (newDriver instanceof Driver<?>) {
+                	((Driver<?>) newDriver).onActivate();
                 }
             }
             newDrivers.clear();
@@ -574,42 +578,43 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
         if (driverToBeRemovedId != null) {
 
-            DriverService removedDriverService;
+            DriverService removedDriver;
             synchronized (activeDrivers) {
-                removedDriverService = activeDrivers.remove(driverToBeRemovedId);
+                removedDriver = activeDrivers.remove(driverToBeRemovedId);
             }
 
-            if (removedDriverService == null) {
+            if (removedDriver == null) {
                 // drivers was removed before it was added to activeDrivers
                 newDrivers.remove(driverToBeRemovedId);
+                driverToBeRemovedId = null;
                 driverRemovedSignal.countDown();
             }
             else {
                 DriverConfigImpl driverConfig = rootConfig.driverConfigsById.get(driverToBeRemovedId);
-
+                
                 if (driverConfig != null) {
                     activeDeviceCountDown = driverConfig.deviceConfigsById.size();
                     if (activeDeviceCountDown > 0) {
-
+                    	
                         // all devices have to be given a chance to finish their current task and disconnect:
                         for (DeviceConfigImpl deviceConfig : driverConfig.deviceConfigsById.values()) {
                             deviceConfig.device.driverDeregisteredSignal();
                         }
-                        synchronized (driverRemovedSignal) {
-                            if (activeDeviceCountDown == 0) {
-                                driverRemovedSignal.countDown();
-                            }
-                        }
-                    }
-                    else {
-                        driverRemovedSignal.countDown();
                     }
                 }
                 else {
-                    driverRemovedSignal.countDown();
+                	activeDeviceCountDown = 0;
+                }
+                synchronized (driverRemovedSignal) {
+                    if (activeDeviceCountDown == 0) {
+                        if (removedDriver instanceof Driver<?>) {
+                        	((Driver<?>) removedDriver).onDeactivate();
+                        }
+                        driverToBeRemovedId = null;
+                        driverRemovedSignal.countDown();
+                    }
                 }
             }
-            driverToBeRemovedId = null;
         }
 
         if (dataLoggerToBeRemoved != null) {
@@ -1349,7 +1354,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     @Override
     public DriverInfo getDriverInfo(String driverId) throws DriverNotAvailableException {
     	if (driverId.equals(DriverInfoFactory.VIRTUAL)) {
-    		return DriverInfoFactory.getVirtualInfo();
+    		return DriverInfoFactory.readVirtualInfo();
     	}
         DriverService driver = activeDrivers.get(driverId);
         if (driver == null) {

@@ -22,39 +22,103 @@ package org.openmuc.framework.driver.dlms.settings;
 
 import java.net.InetAddress;
 
-import org.openmuc.framework.config.Preferences;
+import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.options.Address;
+import org.openmuc.framework.options.AddressSyntax;
+import org.openmuc.framework.options.Configurable;
 
-public class DeviceAddress extends Preferences {
+@AddressSyntax(separator = ";", assignmentOperator = "=")
+public class DeviceAddress extends Configurable {
 
-    @Option("t")
+    @Address(id = "t",
+             name = "Connection type",
+             description = "The connection type used. Currently, the DLMS/COSEM driver supports serial communication and TCP/IP.",
+             valueSelection = "serial:Serial,tcp:TCP/IP"
+    )
     private String connectionType = null;
 
-    @Option("h")
-    private InetAddress hostAddress = null;
-
-    @Option("p")
-    private int port = 4059;
-
-    @Option("hdlc")
-    private boolean useHdlc = false;
-
-    @Option("sp")
+    @Address(id = "sp",
+             name = "Serial Port",
+             description = "<b>Example:</b>" +
+                           "<ol>" +
+                               "<li>sp=ttyS0</li>" +
+                               "<li>sp=COM1</li>" +
+                           "</ol>" +
+                           "<br>" +
+                           "<i>Only used for Serial connection types</i>",
+             mandatory = false
+    )
     private String serialPort = "";
 
-    @Option("bd")
+    @Address(id = "bd",
+             name = "Baud rate",
+             description = "<i>Only used for Serial connection types</i>",
+             valueDefault = "9600",
+             mandatory = false
+    )
     private int baudrate = 9600;
 
-    @Option("d")
+    @Address(id = "h",
+             name = "Host name",
+             description = "<b>Example:</b>" +
+                           "<ol>" +
+                               "<li>h=127.0.0.1</li>" +
+                               "<li>h=192.168.178.88</li>" +
+                           "</ol>" +
+                           "<br>" +
+                           "<i>Only used for TCP/IP connection types</i>",
+             mandatory = false
+    )
+    private InetAddress hostAddress = null;
+
+    @Address(id = "p",
+             name = "Port",
+             description = "<i>Only used for TCP/IP connection types</i>",
+             valueDefault = "4059",
+             mandatory = false
+    )
+    private int port = 4059;
+
+    @Address(id = "hdlc",
+             name = "HDLC",
+             description = "Use HDLC (<a href='https://en.wikipedia.org/wiki/High-Level_Data_Link_Control'>High-Level Data Link Control</a>",
+             valueDefault = "false",
+             mandatory = false
+    )
+    private boolean useHdlc = false;
+
+    @Address(id = "d",
+             name = "Baud rate change delay",
+             description = "The baud rate change delay in milliseconds",
+             valueDefault = "0",
+             mandatory = false
+    )
     private long baudRateChangeDelay = 0;
 
-    @Option("eh")
+    @Address(id = "eh",
+             name = "Handshake",
+             description = "Use initial handshake to negotiate baud rate",
+             valueDefault = "false",
+             mandatory = false
+    )
     private boolean enableBaudRateHandshake = false;
 
-    @Option("iec")
+    @Address(id = "iec",
+             name = "IEC 21 address",
+             mandatory = false
+    )
     private String iec21Address = "";
 
-    @Option("pd")
+    @Address(id = "pd",
+             name = "Physical Device Address",
+             valueDefault = "0",
+             mandatory = false
+    )
     private int physicalDeviceAddress = 0;
+
+    public DeviceAddress(String address) throws ArgumentSyntaxException {
+        configureAddress(address);
+    }
 
     public String getConnectionType() {
         return connectionType;

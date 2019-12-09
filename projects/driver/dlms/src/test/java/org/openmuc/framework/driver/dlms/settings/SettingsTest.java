@@ -30,33 +30,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
-import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
-import org.openmuc.framework.config.Preferences;
-import org.openmuc.framework.driver.dlms.DlmsCosemDriver;
+import org.openmuc.framework.options.Options;
 
 public class SettingsTest {
 
-    private static final DriverInfo info = DriverInfoFactory.getInfo(DlmsCosemDriver.class);
-
     @Test
     public void testChannelAddress() throws Exception {
-        check(ChannelAddress.class, 2);
+        check(Options.parseAddress(ChannelAddress.class).getSyntax(), 2);
     }
 
     @Test
     public void testDeviceAddress() throws Exception {
-        check(DeviceAddress.class, 10);
+        check(Options.parseAddress(DeviceAddress.class).getSyntax(), 10);
     }
 
     @Test
     public void testDeviceSetting() throws Exception {
-        check(DeviceSettings.class, 12);
+        check(Options.parseSettings(DeviceSettings.class).getSyntax(), 12);
     }
 
-    private static void check(Class<? extends Preferences> clazz, int numArgs) {
+    private static void check(String pat, int numArgs) {
         Pattern p = Pattern.compile("(\\w+:) *(\\[?\\w+=.*\\]?)+$");
-        String pat = info.syntax(clazz);
         Matcher m1 = p.matcher(pat);
         assertTrue(pat, m1.matches());
 
@@ -82,7 +76,7 @@ public class SettingsTest {
         boolean eh = true;
         int port = 1234;
         String str = MessageFormat.format("t={0};sp={1};bd={2,number,#};\r\b hdlc=true;\t eh={3};  p={4,number,#}", t, sp, bd, eh, port);
-        DeviceAddress deviceAddress = info.parse(str, DeviceAddress.class);
+        DeviceAddress deviceAddress = new DeviceAddress(str);
 
         assertEquals(t, deviceAddress.getConnectionType());
         assertEquals(sp, deviceAddress.getSerialPort());

@@ -57,7 +57,7 @@ public class RestChannelWrapper {
     }
 
     public String getDevice() {
-    	return channel.getDeviceName();
+    	return channel.getDeviceId();
     }
 
     public ChannelState getState() {

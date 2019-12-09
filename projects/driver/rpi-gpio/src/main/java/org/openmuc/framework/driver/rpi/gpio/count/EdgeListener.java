@@ -20,16 +20,14 @@
  */
 package org.openmuc.framework.driver.rpi.gpio.count;
 
+import java.util.LinkedList;
 import java.util.List;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.DriverInfoFactory;
-import org.openmuc.framework.config.DriverPreferences;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.gpio.settings.ChannelSettings;
+import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.slf4j.Logger;
@@ -43,9 +41,8 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 public class EdgeListener implements GpioPinListenerDigital {
     private final static Logger logger = LoggerFactory.getLogger(EdgeListener.class);
-    private final DriverPreferences prefs = DriverInfoFactory.getPreferences(EdgeCounter.class);
 
-    private List<ChannelRecordContainer> containers = null;
+    private List<GpioChannel> channels = null;
     private RecordsReceivedListener listener = null;
 
     private final int bounceTime;
@@ -67,8 +64,8 @@ public class EdgeListener implements GpioPinListenerDigital {
     	logger.debug("Registered edge listener for {}", pin.getName());
     }
 
-    public void setRecordListener(List<ChannelRecordContainer> containers, RecordsReceivedListener listener) {
-        this.containers = containers;
+    public void setRecordListener(List<GpioChannel> channels, RecordsReceivedListener listener) {
+        this.channels = channels;
         this.listener = listener;
     }
 
@@ -85,39 +82,33 @@ public class EdgeListener implements GpioPinListenerDigital {
                 synchronized (this.counter) {
                     
                     this.counter++;
-                    
-                    if (listener != null && containers != null) {
-                        for (ChannelRecordContainer container : containers) {
-                            try {
-                                ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
-                                
-                                Value value = null;
-                                if (settings.isDerivative()) {
-                                    if (lastSamplingTime != null) {
-                                        double counterDelta = 1.0/settings.getImpulses();
-                                        double timeDelta = (samplingTime - lastSamplingTime)/settings.getDerivariveTime();
-                                        if (timeDelta > 0) {
-                                            value = new DoubleValue(counterDelta/timeDelta);
-                                        }
-                                    }
+
+                    List<ChannelRecordContainer> containers = new LinkedList<ChannelRecordContainer>();
+                    for (GpioChannel channel : channels) {
+                        Value value = null;
+                        if (channel.isDerivative()) {
+                            if (lastSamplingTime != null) {
+                                double counterDelta = 1.0/channel.getImpulses();
+                                double timeDelta = (samplingTime - lastSamplingTime)/channel.getDerivariveTime();
+                                if (timeDelta > 0) {
+                                    value = new DoubleValue(counterDelta/timeDelta);
                                 }
-                                else {
-                                    value = new DoubleValue(this.counter/settings.getImpulses());
-                                }
-                                if (value != null) {
-                                	logger.debug("Registered {}. edge for {}", this.counter, pin.getName());
-                                    container.setRecord(new Record(value, samplingTime, Flag.VALID));
-                                }
-                                else {
-                                    container.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
-                                }
-                            } catch (ArgumentSyntaxException e) {
-                                logger.warn("Unable to configure channel address \"{}\": {}", container.getChannelAddress(), e.getMessage());
-                                container.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID));
                             }
                         }
-                        listener.newRecords(containers);
+                        else {
+                            value = new DoubleValue(this.counter/channel.getImpulses());
+                        }
+                        if (value != null) {
+                        	logger.debug("Registered {}. edge for {}", this.counter, pin.getName());
+                        	channel.setRecord(new Record(value, samplingTime, Flag.VALID));
+                        }
+                        else {
+                        	channel.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
+                        }
+                        containers.add(channel);
                     }
+                    listener.newRecords(containers);
+                    
                     lastSamplingTime = samplingTime;
                 }
             }

@@ -126,7 +126,7 @@ public class SnmpChannel implements Channel {
     }
 
     @Override
-    public String getDeviceName() {
+    public String getDeviceId() {
         // TODO Auto-generated method stub
         return null;
     }

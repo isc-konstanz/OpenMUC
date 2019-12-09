@@ -22,17 +22,11 @@ package org.openmuc.framework.driver.csv.test;
 
 import org.junit.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
-import org.openmuc.framework.config.PreferenceType;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.driver.csv.CsvDriver;
-import org.openmuc.framework.driver.csv.settings.DeviceScanSettings;
+import org.openmuc.framework.driver.csv.CsvScanner;
 
 public class DeviceScanSettingsTest {
-
-    private final DriverInfo info = DriverInfoFactory.getInfo(CsvDriver.class);
 
     // Tests expected to be OK
 
@@ -41,51 +35,51 @@ public class DeviceScanSettingsTest {
     @Test
     public void testArgumentCorrectEndingWithSlash() throws ArgumentSyntaxException {
         String settings = "path=" + dir + "/src/test/resources";
-        info.parse(settings, PreferenceType.DEVICE_SETTINGS_SCAN);
+        new CsvScanner(settings);
     }
 
     @Test
     public void testArgumentCorrectendingWithoutSlash() throws ArgumentSyntaxException {
         String settings = "path=" + dir + "/src/test/resources/";
-        info.parse(settings, PreferenceType.DEVICE_SETTINGS_SCAN);
+        new CsvScanner(settings);
     }
 
     // Tests expected to FAIL
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testArgumentsNull() throws ArgumentSyntaxException {
-        String arguments = null;
-        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
+        String settings = null;
+        new CsvScanner(settings);
     }
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testArgumentsEmptyString() throws ArgumentSyntaxException {
-        String arguments = "";
-        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
+        String settings = "";
+        new CsvScanner(settings);
     }
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testWrongArgument() throws ArgumentSyntaxException {
-        String arguments = "paaaaath";
-        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
+        String settings = "paaaaath";
+        new CsvScanner(settings);
     }
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testArgumentIncomplete1() throws ArgumentSyntaxException {
-        String arguments = "path";
-        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
+        String settings = "path";
+        new CsvScanner(settings);
     }
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testArgumentIncomplete2() throws ArgumentSyntaxException {
-        String arguments = "path=";
-        info.parse(arguments, PreferenceType.DEVICE_SETTINGS_SCAN);
+        String settings = "path=";
+        new CsvScanner(settings);
     }
 
     @Test(expected = ArgumentSyntaxException.class)
     public void testWrongArgumentPathDoesNotExist() throws ArgumentSyntaxException, UnsupportedOperationException, ScanException, ScanInterruptedException {
-        String arguments = "path=/home/does_not_exist";
-        info.parse(arguments, DeviceScanSettings.class).listFiles();
+        String settings = "path=/home/does_not_exist";
+        new CsvScanner(settings);
     }
 
 }

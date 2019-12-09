@@ -21,39 +21,38 @@
 package org.openmuc.framework.driver.csv.channel;
 
 import java.util.List;
+import java.util.Map;
+
+import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.driver.spi.ChannelContainer;
 
 /**
  * Channel to return value of next line in the file. Timestamps are ignored. It always starts with the first line, which
  * can be useful for simulation since every time the framework is started it starts with the same values.
  */
-public class CsvChannelLine implements CsvChannel {
+public class CsvChannelLine extends CsvChannel {
 
-    private int lastReadIndex = -1;
-    private final int maxIndex;
-    private final List<String> data;
-    private boolean rewind = false;
-
-    public CsvChannelLine(String id, List<String> data, boolean rewind) {
-        this.data = data;
-        this.maxIndex = data.size() - 1;
-        this.rewind = rewind;
+    public CsvChannelLine(ChannelContainer channel, Map<String, List<String>> data, boolean rewind) 
+    		throws ArgumentSyntaxException {
+    	super(channel, data, rewind);
+    	this.lastIndexRead = -1;
     }
 
     @Override
     public double readValue(long sampleTime) {
 
-        lastReadIndex++;
-        if (lastReadIndex > maxIndex) {
+        lastIndexRead++;
+        if (lastIndexRead > maxIndex) {
             if (rewind) {
-                lastReadIndex = 0;
+                lastIndexRead = 0;
             }
             else {
                 // once maximum is reached it always returns the maximum (value of last line in file)
-                lastReadIndex = maxIndex;
+                lastIndexRead = maxIndex;
             }
         }
 
-        double value = Double.parseDouble(data.get(lastReadIndex));
+        double value = Double.parseDouble(data.get(lastIndexRead));
         return value;
     }
 

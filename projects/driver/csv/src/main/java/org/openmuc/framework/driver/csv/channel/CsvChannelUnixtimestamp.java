@@ -21,19 +21,41 @@
 package org.openmuc.framework.driver.csv.channel;
 
 import java.util.List;
+import java.util.Map;
 
+import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
+import org.openmuc.framework.driver.spi.ChannelContainer;
 
-public class CsvChannelUnixtimestamp extends CsvTimeChannel {
+public class CsvChannelUnixtimestamp extends CsvChannelTime {
 
-    public CsvChannelUnixtimestamp(List<String> data, boolean rewind, long[] timestamps) {
-        super(data, rewind, timestamps);
+    public static final String INDEX = "unixtimestamp";
+
+    public CsvChannelUnixtimestamp(ChannelContainer channel, Map<String, List<String>> csv, boolean rewind) 
+    		throws ArgumentSyntaxException {
+    	super(channel, csv, rewind);
     }
+
+    public CsvChannelUnixtimestamp(ChannelContainer channel, long[] index, Map<String, List<String>> csv, boolean rewind) 
+    		throws ArgumentSyntaxException {
+    	super(channel, index, csv, rewind);
+    }
+
+	@Override
+	protected long[] parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException {
+        List<String> timestampsList = csv.get(INDEX);
+        
+        long[] timestamps = new long[timestampsList.size()];
+        for (int i = 0; i < timestampsList.size(); i++) {
+            timestamps[i] = Long.parseLong(timestampsList.get(i));
+        }
+        return timestamps;
+	}
 
     @Override
     public double readValue(long samplingTime) throws CsvException {
-        lastReadIndex = searchNextIndex(samplingTime);
-        double value = Double.parseDouble(data.get(lastReadIndex));
+        lastIndexRead = searchNextIndex(samplingTime);
+        double value = Double.parseDouble(data.get(lastIndexRead));
         return value;
     }
 

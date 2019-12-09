@@ -28,7 +28,7 @@ import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.driver.csv.CsvDeviceConnection;
+import org.openmuc.framework.driver.csv.CsvFile;
 import org.openmuc.framework.driver.csv.CsvDriver;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -37,7 +37,7 @@ public class CsvScanDeviceTest {
 
     private String dir = System.getProperty("user.dir");
 
-    @Test
+	@Test
     public void testDeviceScan()
             throws ArgumentSyntaxException, UnsupportedOperationException, ScanException, ScanInterruptedException {
         CsvDriver csvDriver = new CsvDriver();
@@ -67,7 +67,7 @@ public class CsvScanDeviceTest {
         try {
 
             String settings = "SAMPLINGMODE=hhmmss";
-            CsvDeviceConnection csvConnection = (CsvDeviceConnection) csvDriver.connect(deviceAddress, settings);
+            CsvFile csvConnection = (CsvFile) csvDriver.connect(deviceAddress, settings);
 
             List<ChannelScanInfo> channelsScanInfos = csvConnection.scanForChannels("");
 

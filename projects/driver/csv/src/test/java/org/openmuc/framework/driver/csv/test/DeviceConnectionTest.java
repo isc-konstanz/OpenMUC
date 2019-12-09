@@ -22,7 +22,7 @@ package org.openmuc.framework.driver.csv.test;
 
 import org.junit.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.csv.CsvDeviceConnection;
+import org.openmuc.framework.driver.csv.test.utils.CsvTestFactory;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
 public class DeviceConnectionTest {
@@ -33,7 +33,7 @@ public class DeviceConnectionTest {
     public void testCsvWithHhmmss() throws ConnectionException, ArgumentSyntaxException {
         String deviceAddress = DIR + "test_data.csv";
         String deviceSettings = "samplingmode=hhmmss";
-        new CsvDeviceConnection(deviceAddress, deviceSettings);
+        CsvTestFactory.newConnection(deviceAddress, deviceSettings);
     }
 
     // expect exception since csv file has no hhmmss column
@@ -41,14 +41,14 @@ public class DeviceConnectionTest {
     public void testCvsWithoutHhmmss() throws ConnectionException, ArgumentSyntaxException {
         String deviceAddress = DIR + "test_data_no_hhmmss.csv";
         String deviceSettings = "samplingmode=hhmmss";
-        new CsvDeviceConnection(deviceAddress, deviceSettings);
+        CsvTestFactory.newConnection(deviceAddress, deviceSettings);
     }
 
     @Test
     public void testCvsWithUnixtimestamp() throws ConnectionException, ArgumentSyntaxException {
         String deviceAddress = DIR + "test_data.csv";
         String deviceSettings = "samplingmode=unixtimestamp";
-        new CsvDeviceConnection(deviceAddress, deviceSettings);
+        CsvTestFactory.newConnection(deviceAddress, deviceSettings);
     }
 
     // expect exception since csv file has no unixtimestamp column
@@ -56,7 +56,7 @@ public class DeviceConnectionTest {
     public void testCvsWithoutUnixtimestamp() throws ConnectionException, ArgumentSyntaxException {
         String deviceAddress = DIR + "test_data_no_unixtimestamp.csv";
         String deviceSettings = "samplingmode=unixtimestamp";
-        new CsvDeviceConnection(deviceAddress, deviceSettings);
+        CsvTestFactory.newConnection(deviceAddress, deviceSettings);
     }
 
 }

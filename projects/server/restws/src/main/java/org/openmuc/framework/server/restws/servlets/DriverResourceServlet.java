@@ -297,7 +297,7 @@ public class DriverResourceServlet extends GenericServlet {
                     }
                 }
                 else {
-                    json.addDriverInfoFull(driverInfo);
+                    json.addDriverOptions(driverInfo);
                 }
             }
         } catch (DriverNotAvailableException | ParseException e) {

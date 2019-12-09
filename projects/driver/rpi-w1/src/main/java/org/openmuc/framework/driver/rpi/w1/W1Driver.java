@@ -20,149 +20,102 @@
  */
 package org.openmuc.framework.driver.rpi.w1;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.DeviceScanInfo;
-import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
-import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.driver.rpi.w1.W1Connection.W1ConnectionCallbacks;
-import org.openmuc.framework.driver.rpi.w1.options.DeviceAddress;
-import org.openmuc.framework.driver.rpi.w1.options.DeviceScanSettings;
-import org.openmuc.framework.driver.rpi.w1.options.DeviceSettings;
-import org.openmuc.framework.driver.rpi.w1.options.W1Type;
-import org.openmuc.framework.driver.spi.Connection;
+import org.openmuc.framework.driver.rpi.w1.configs.W1Channel;
+import org.openmuc.framework.driver.rpi.w1.configs.W1Configs;
+import org.openmuc.framework.driver.rpi.w1.configs.W1Type;
+import org.openmuc.framework.driver.rpi.w1.device.TemperatureDevice;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
+import org.openmuc.framework.driver.spi.DeviceConnection;
+import org.openmuc.framework.driver.spi.Driver;
+import org.openmuc.framework.driver.spi.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.pi4j.component.temperature.TemperatureSensor;
 import com.pi4j.io.w1.W1Device;
 import com.pi4j.io.w1.W1Master;
 
-
 @Component(service = DriverService.class)
-public class W1Driver implements DriverService, W1ConnectionCallbacks {
+public class W1Driver extends Driver<W1Configs> {
     private static final Logger logger = LoggerFactory.getLogger(W1Driver.class);
-    private static final DriverInfo info = DriverInfoFactory.getPreferences(W1Driver.class);
 
-    // Pass the ClassLoader, as the W1Master may otherwise not be able to load and 
-    // recognize available devices according to their DeviceType
-    private final W1Master master = new W1Master(W1Driver.class.getClassLoader());
+    private static final String ID = "rpi-w1";
+    private static final String NAME = "1-Wire (Raspberry Pi)";
+    private static final String DESCRIPTION = 
+    		"The 1-Wire Driver enables the access to 1-Wire devices, connected to the Raspberry Pi platform.";
 
-    private final Map<String, W1Device> devices = new HashMap<String, W1Device>();
-    private final List<String> connectedDevices = new ArrayList<String>();
+    private final List<String> connected = new ArrayList<String>();
 
-    private volatile boolean isDeviceScanInterrupted = false;
+    private W1Master master;
 
-    @Override
-    public DriverInfo getInfo() {
-        return info;
+	@Override
+    public String getId() {
+    	return ID;
+    }
+
+	@Override
+	protected void onCreate(DriverContext context) {
+		context.setName(NAME)
+				.setDescription(DESCRIPTION)
+				.setDeviceScanner(W1Scanner.class);
+	}
+
+	@Override
+	public void onActivate() {
+	    // Pass the ClassLoader, as the W1Master may otherwise not be able to load and 
+	    // recognize available devices according to their DeviceType
+	    master = new W1Master(W1Driver.class.getClassLoader());
+	}
+
+	@Override
+    protected W1Scanner newScanner(String settings) throws ArgumentSyntaxException {
+		return new W1Scanner(master.getDevices(), connected, settings);
     }
 
     @Override
-    public void scanForDevices(String settingsStr, DriverDeviceScanListener listener)
-            throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
-        resetDeviceScanInterrupt();
+	protected DeviceConnection<W1Channel> newConnection(W1Configs configs) 
+			throws ArgumentSyntaxException, ConnectionException {
         
-        logger.info("Scan for 1-Wire devices connected to the Raspberry Pi platform.");
-        DeviceScanSettings settings = info.parse(settingsStr, DeviceScanSettings.class);
+    	String id = configs.getId();
+        logger.trace("Connect 1-Wire {}: {}", configs.getType(), id);
         
-        List<W1Device> devices = master.getDevices();
-        int size = devices.size();
-        if (size > 0) {
-            logger.debug("Scan discovered {} 1-Wire devices: {}", size, devices.toString());
-            this.devices.clear();
-            
-            int counter = 1;
-            for (W1Device device : devices) {
-                if (isDeviceScanInterrupted) {
-                    break;
-                }
-                
-                String id = device.getId().trim().replace("\n", "").replace("\r", "");
-                if (!settings.ignoreExisting() || !connectedDevices.contains(id)) {
-                    String name = device.getClass().getSimpleName();
-                    W1Type type = W1Type.valueOf(device);
-                    
-                    String scanAddress = DeviceAddress.ID_KEY + ":" + id;
-                    String scanSettings = DeviceSettings.TYPE_KEY + ":" + type.getName();
-                    
-                    listener.deviceFound(new DeviceScanInfo(name.toLowerCase()+"_"+id, 
-                            scanAddress, scanSettings, "1-Wire "+ type.getName() +": "+ name));
-                }
-                this.devices.put(id, device);
-                
-                listener.scanProgressUpdate((int) Math.round(counter/(double) size*100));
-                counter++;
-            }
-        }
-        else logger.debug("Scan discovered no 1-Wire devices");
-    }
-
-    private void resetDeviceScanInterrupt() {
-        isDeviceScanInterrupted = false;
-    }
-
-    @Override
-    public void interruptDeviceScan() throws UnsupportedOperationException {
-        isDeviceScanInterrupted = true;
-    }
-
-    @Override
-    public Connection connect(String addressStr, String settingsStr) throws ArgumentSyntaxException, ConnectionException {
-        
-        logger.trace("Connect 1-Wire device \"{}\": {}", addressStr, settingsStr);
-        DeviceAddress address = info.parse(addressStr, DeviceAddress.class);
-        DeviceSettings settings = info.parse(settingsStr, DeviceSettings.class);
-        
-        W1Connection connection = null;
         try {
-            W1Device device = null;
-            if (devices.containsKey(address.getId())) {
-                device = devices.get(address.getId());
-            }
-            else {
-                devices.clear();
-                
-                List<W1Device> devices = master.getDevices();
-                for (W1Device d : devices) {
-                    String id = d.getId().trim().replace("\n", "").replace("\r", "");
-                    if (address.getId().equals(id)) {
-                        device = d;
+            List<W1Device> devices = master.getDevices();
+            for (W1Device device : devices) {
+                if (device.getId().trim().replace("\n", "").replace("\r", "").equals(id)) {
+                    W1Type type = W1Type.valueOf(device);
+                    if (type != configs.getType()) {
+                        throw new ConnectionException(MessageFormat.format("1-Wire device \"{0}\" not the expected type: {1}", 
+                                id, configs.getType()));
                     }
-                    this.devices.put(id, d);
-                }
-            }
-            if (device != null) {
-                W1Type type = W1Type.valueOf(device);
-                if (type == settings.getType()) {
-                    connection = new W1Connection(this, device, type);
-                    
-                    connectedDevices.add(address.getId());
+                    switch (type) {
+					case SENSOR_TEMPERATURE:
+	                    return new TemperatureDevice((TemperatureSensor) device);
+                    }
                 }
             }
         } catch (IllegalArgumentException e) {
-            throw new ArgumentSyntaxException("Unable to configure 1-Wire device: " + e.getMessage());
+            throw new ArgumentSyntaxException(MessageFormat.format("Unable to configure 1-Wire device \"{0}\" : {1}",
+            		id, e.getMessage()));
         }
-        if (connection == null) {
-            throw new ConnectionException("Unable to find specified 1-Wire device: " + address.getId());
-        }
-        
-        return connection;
+        throw new ConnectionException("Unable to find specified 1-Wire device: " + id);
     }
 
     @Override
-    public void onDisconnect(String id) {
-        if (connectedDevices.contains(id)) {
-            connectedDevices.remove(id);
-        }
+    public void onConnected(W1Configs configs) {
+        connected.add(configs.getId());
     }
+
+    @Override
+    public void onDisconnected(W1Configs configs) {
+        connected.remove(configs.getId());
+    }
+
 }

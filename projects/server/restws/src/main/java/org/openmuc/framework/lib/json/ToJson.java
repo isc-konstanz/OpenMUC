@@ -524,9 +524,9 @@ public class ToJson {
         jsonObject.add(Const.DRIVERS, jsa);
     }
 
-    public void addDriverInfoFull(DriverInfo driverInfo) throws ParseException, IOException {
+    public void addDriverOptions(DriverInfo driverInfo) throws ParseException, IOException {
 
-        RestDriverInfo restDriverInfo = RestDriverMapper.getRestDriverInfoFull(driverInfo);
+        RestDriverInfo restDriverInfo = RestDriverMapper.getRestDriverOptions(driverInfo);
         jsonObject.add(Const.INFOS, gson.toJsonTree(restDriverInfo, RestDriverInfo.class).getAsJsonObject());
     }
 

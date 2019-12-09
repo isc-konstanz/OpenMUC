@@ -39,12 +39,15 @@ public class RestDriverImpl implements DriverService {
     private static final String ID = "rest";
     private static final String DESCRIPTION = "Driver to connect this OpenMUC instance with another, remote OpenMUC instance with rest.";
     private static final String DEVICE_ADDRESS = "https://adress:port or http://adress:port";
-    private static final String SETTINGS = "<username>:<password> or ct;<username>:<password>  ct means check timestamp, only load record if timestamp changed";
-    private static final String CHANNEL_ADDRESS = "channelId";
     private static final String DEVICE_SCAN_SETTINGS = "N.A.";
+    private static final String DEVICE_SETTINGS = "<username>:<password> or ct;<username>:<password>  ct means check timestamp, only load record if timestamp changed";
+    private static final String CHANNEL_ADDRESS = "channelId";
+    private static final String CHANNEL_SETTINGS = "N.A.";
+    private static final String CHANNEL_SCAN_SETTINGS = "N.A.";
 
-    private static final DriverInfo info = new DriverInfo(ID, DESCRIPTION, DEVICE_ADDRESS, SETTINGS, CHANNEL_ADDRESS,
-            DEVICE_SCAN_SETTINGS);
+    private static final DriverInfo info = new DriverInfo(ID, DESCRIPTION, 
+    		DEVICE_ADDRESS, DEVICE_SETTINGS, DEVICE_SCAN_SETTINGS, 
+    		CHANNEL_ADDRESS, CHANNEL_SETTINGS, CHANNEL_SCAN_SETTINGS);
 
     private DataAccessService dataAccessService;
 
