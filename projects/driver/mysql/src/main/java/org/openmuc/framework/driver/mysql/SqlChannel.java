@@ -20,11 +20,11 @@
  */
 package org.openmuc.framework.driver.mysql;
 
-import org.openmuc.framework.driver.spi.ChannelConfigs;
+import org.openmuc.framework.driver.spi.Channel;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.Setting;
 
-public class SqlChannel extends ChannelConfigs {
+public class SqlChannel extends Channel {
 
     private static String QUERY_SELECT = "SELECT * FROM %s WHERE time >= %s AND time <= %s";
     private static String QUERY_INSERT = "INSERT INTO %s (time,data) VALUES ('%s','%s') ON DUPLICATE KEY UPDATE data=VALUES(data)";

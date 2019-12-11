@@ -32,7 +32,7 @@ import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DeviceConnection;
+import org.openmuc.framework.driver.spi.Device;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.Setting;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class SqlClient extends DeviceConnection<SqlChannel> {
+public class SqlClient extends Device<SqlChannel> {
     private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);
 
     @Address

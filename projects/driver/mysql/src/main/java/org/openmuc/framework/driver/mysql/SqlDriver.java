@@ -25,8 +25,8 @@ import org.openmuc.framework.driver.spi.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
-@Component(service = DriverService.class)
-public class SqlDriver extends Driver<SqlClient> {
+@Component
+public class SqlDriver extends Driver<SqlClient> implements DriverService {
 
     private static final String ID = "mysql";
     private static final String NAME = "MySQL";
