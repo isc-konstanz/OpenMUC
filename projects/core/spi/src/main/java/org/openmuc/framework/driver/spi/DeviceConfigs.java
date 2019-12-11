@@ -35,7 +35,7 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
 
     private static final Logger logger = LoggerFactory.getLogger(DeviceConfigs.class);
 
-    private final Map<String, C> channels = new HashMap<String, C>();
+    final Map<String, C> channels = new HashMap<String, C>();
 
     protected DeviceConfigs() {
     }
@@ -55,6 +55,10 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
 
     public final DeviceContext getContext() {
         return this;
+    }
+
+    protected List<C> getChannels() {
+    	return (List<C>) channels.values();
     }
 
     protected <T extends ChannelContainer> List<C> getChannels(List<T> containers) {

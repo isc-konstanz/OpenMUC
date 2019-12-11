@@ -63,7 +63,24 @@ public abstract class Configurable {
             if (option == null) {
                 continue;
             }
-            Value value = address.get(option.id());
+            String id = option.value();
+            if (id.isEmpty() || id.equals(Address.VALUE_DEFAULT)) {
+            	String[] ids = option.id();
+    			for (String i : ids) {
+    				if (i.isEmpty() || i.equals(Address.OPTION_DEFAULT)) {
+    					continue;
+    				}
+    				if (address.containsKey(i)) {
+    					id = i;
+    					break;
+    				}
+    			}
+			}
+            if (id.isEmpty() || id.equals(Address.OPTION_DEFAULT)) {
+            	id = field.getName();
+			}
+            
+            Value value = address.get(id);
             if (value != null) {
                 try {
                     field.set(this, extractValue(field, value));
@@ -90,7 +107,24 @@ public abstract class Configurable {
             if (option == null) {
                 continue;
             }
-            Value value = settings.get(option.id());
+            String id = option.value();
+            if (id.isEmpty() || id.equals(Setting.VALUE_DEFAULT)) {
+            	String[] ids = option.id();
+    			for (String i : ids) {
+    				if (i.isEmpty() || i.equals(Setting.OPTION_DEFAULT)) {
+    					continue;
+    				}
+    				if (settings.containsKey(i)) {
+    					id = i;
+    					break;
+    				}
+    			}
+			}
+            if (id.isEmpty() || id.equals(Setting.OPTION_DEFAULT)) {
+            	id = field.getName();
+			}
+            
+            Value value = settings.get(id);
             if (value != null) {
                 try {
                     field.set(this, extractValue(field, value));

@@ -194,7 +194,7 @@ public class Options extends LinkedList<Option> {
                 }
                 String id = annotation.value();
                 if (id.isEmpty() || id.equals(Address.VALUE_DEFAULT)) {
-                	id = annotation.id();
+                	id = annotation.id()[0];
 				}
                 if (id.isEmpty() || id.equals(Address.OPTION_DEFAULT)) {
                 	id = field.getName();
@@ -249,7 +249,7 @@ public class Options extends LinkedList<Option> {
                 }
                 String id = annotation.value();
                 if (id.isEmpty() || id.equals(Setting.VALUE_DEFAULT)) {
-                	id = annotation.id();
+                	id = annotation.id()[0];
 				}
                 if (id.isEmpty() || id.equals(Setting.OPTION_DEFAULT)) {
                 	id = field.getName();

@@ -105,17 +105,17 @@ public abstract class DriverContext implements DriverService {
 
 	@SuppressWarnings("unchecked")
 	<D extends DeviceConfigs<?>> D newConnection(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
-		D connection;
+		D device;
 		try {
-			connection = (D) this.device.getDeclaredConstructor().newInstance();
-			connection.doConfigure(address, settings);
+			device = (D) this.device.getDeclaredConstructor().newInstance();
+			device.doConfigure(address, settings);
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
             throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-            		deviceScanner.getSimpleName(), e.getMessage()));
+            		this.device.getSimpleName(), e.getMessage()));
 		}
-		return connection;
+		return device;
 	}
 
     public final DriverContext setDevice(Class<? extends DeviceConfigs<?>> device) {
@@ -170,7 +170,7 @@ public abstract class DriverContext implements DriverService {
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
             throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-            		deviceScanner.getSimpleName(), e.getMessage()));
+            		this.channel.getSimpleName(), e.getMessage()));
 		}
 		return channel;
 	}

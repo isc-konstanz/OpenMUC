@@ -20,10 +20,8 @@
  */
 package org.openmuc.framework.driver.spi;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
@@ -34,10 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Device<C extends Channel> extends DeviceConfigs<C> implements Connection {
-
     private static final Logger logger = LoggerFactory.getLogger(Device.class);
-
-    private final Map<String, C> channels = new HashMap<String, C>();
 
     void doConnect() throws ArgumentSyntaxException, ConnectionException {
         this.onConnect();
@@ -107,9 +102,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
             throws UnsupportedOperationException, ConnectionException {
         // Placeholder for the optional implementation
         for (C channel : channels) {
-            if (channel instanceof Channel) {
-                ((Channel) channel).doStartListening(listener);
-            }
+            channel.doStartListening(listener);
         }
     }
 
@@ -127,9 +120,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
         // Placeholder for the optional implementation
         long timestamp = System.currentTimeMillis();
         for (C channel : channels) {
-            if (channel instanceof Channel) {
-                ((Channel) channel).doRead(timestamp);
-            }
+            channel.doRead(timestamp);
         }
         return null;
     }
@@ -147,9 +138,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
             throws UnsupportedOperationException, ConnectionException {
         // Placeholder for the optional implementation
         for (C channel : channels) {
-            if (channel instanceof Channel) {
-                ((Channel) channel).doWrite();
-            }
+            channel.doWrite();
         }
         return null;
     }
