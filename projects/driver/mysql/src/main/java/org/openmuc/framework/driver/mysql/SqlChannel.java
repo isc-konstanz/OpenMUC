@@ -22,6 +22,7 @@ package org.openmuc.framework.driver.mysql;
 
 import org.openmuc.framework.driver.spi.ChannelConfigs;
 import org.openmuc.framework.options.Address;
+import org.openmuc.framework.options.Setting;
 
 public class SqlChannel extends ChannelConfigs {
 
@@ -34,6 +35,9 @@ public class SqlChannel extends ChannelConfigs {
 
     @Address
     protected String table;
+
+    @Setting
+    protected TimeType timeType;
 
     public String readQuery(long start, long end, int interval) {
         return String.format(QUERY_SELECT, getTable(), start, end);
