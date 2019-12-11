@@ -27,7 +27,7 @@ import org.openmuc.framework.config.ScanInterruptedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Driver<D extends Device<?>> extends DriverContext {
+public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     private static final Logger logger = LoggerFactory.getLogger(Driver.class);
 
     private DeviceScanner scanner = null;
@@ -99,50 +99,32 @@ public abstract class Driver<D extends Device<?>> extends DriverContext {
         return doConnect(address, settings);
     }
 
-	D doConnect(String address, String settings) 
+    Device<?> doConnect(String address, String settings) 
 			throws ArgumentSyntaxException, ConnectionException {
-		D device = newConnection(address, settings);
-		device.doCreate(this);
-		device.doConnect();
-		this.newConnection(device);
-		
-		return device;
+		Device<?> device = newConnection(address, settings);
+		if (device != null) {
+			device.doCreate(this);
+			device.doConnect();
+			
+			return device;
+		}
+		return null;
 	}
 
-	protected D newConnection(String address, String settings) 
+	@SuppressWarnings("unchecked")
+	protected Device<?> newConnection(String address, String settings) 
 			throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-		
-		return newDevice(address, settings);
+		return newConnection(super.newConnection(address, settings));
 	}
 
-	protected void newConnection(D configs) 
+	protected Device<?> newConnection(D device) 
 			throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-    }
-
-    @Override
-	@SuppressWarnings("unchecked")
-	final void doConnect(Device<?> device) {
-    	if (device.getClass().isAssignableFrom(super.device)) {
-    		this.onConnect((D) device);
-    	}
-    }
-
-	protected void onConnect(D device) {
-        // Placeholder for the optional implementation
-    }
-
-    @Override
-	@SuppressWarnings("unchecked")
-	final void doDisconnect(Device<?> device) {
-    	if (device.getClass().isAssignableFrom(super.device)) {
-    		this.onDisconnect((D) device);
-    	}
-    }
-
-    protected void onDisconnect(D device) {
-        // Placeholder for the optional implementation
+		if (device instanceof Device) {
+			return (Device<?>) device;
+		}
+		return null;
     }
 
 }

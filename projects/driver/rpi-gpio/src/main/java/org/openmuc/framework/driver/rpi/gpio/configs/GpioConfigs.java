@@ -28,7 +28,7 @@ import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 
-public class GpioConfigs extends DeviceConfigs {
+public class GpioConfigs extends DeviceConfigs<GpioChannel> {
 
     public static final String PIN = "pin";
     public static final String MODE = "mode";

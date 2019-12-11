@@ -54,6 +54,10 @@ public class GpioPin extends Device<GpioChannel> {
         pin.addListener(new GpioListener(channels, listener, pin));
     }
 
+    public GpioPinDigital getPin() {
+    	return pin;
+    }
+
     protected class GpioListener implements GpioPinListenerDigital {
 
         private final List<GpioChannel> channels;

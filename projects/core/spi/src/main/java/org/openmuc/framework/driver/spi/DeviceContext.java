@@ -25,7 +25,7 @@ import org.openmuc.framework.options.Configurable;
 
 public abstract class DeviceContext extends Configurable {
 
-    DriverContext context;
+	DriverContext context;
 
     void doCreate(DriverContext context) throws ArgumentSyntaxException {
     	this.context = context;
@@ -38,15 +38,6 @@ public abstract class DeviceContext extends Configurable {
     }
 
     protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    final void doConfigure(String address, String settings) throws ArgumentSyntaxException {
-        configure(address, settings);
-    	onConfigure();
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 

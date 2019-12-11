@@ -33,22 +33,15 @@ import org.openmuc.framework.data.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Device<C extends Channel> extends DeviceContext implements Connection {
+public abstract class Device<C extends Channel> extends DeviceConfigs<C> implements Connection {
 
     private static final Logger logger = LoggerFactory.getLogger(Device.class);
 
     private final Map<String, C> channels = new HashMap<String, C>();
 
-    protected Device() {
-    }
-
-    protected Device(String address, String settings) throws ArgumentSyntaxException {
-        doConfigure(address, settings);
-    }
-
     void doConnect() throws ArgumentSyntaxException, ConnectionException {
         this.onConnect();
-        context.doConnect(this);
+        context.onConnect(this);
     }
 
     protected void onConnect() throws ArgumentSyntaxException, ConnectionException {
@@ -58,7 +51,7 @@ public abstract class Device<C extends Channel> extends DeviceContext implements
     @Override
     public final void disconnect() {
         this.onDisconnect();
-        context.doDisconnect(this);
+        context.onDisconnect(this);
         
         for (C channel : channels.values()) {
         	if (channel instanceof ChannelContext) {
@@ -71,10 +64,6 @@ public abstract class Device<C extends Channel> extends DeviceContext implements
 
     public void onDisconnect() {
         // Placeholder for the optional implementation
-    }
-
-    public final DeviceContext getContext() {
-        return this;
     }
 
     @Override
@@ -163,50 +152,6 @@ public abstract class Device<C extends Channel> extends DeviceContext implements
             }
         }
         return null;
-    }
-
-    private <T extends ChannelContainer> List<C> getChannels(List<T> containers) {
-        List<C> channels = new LinkedList<C>();
-        for (ChannelContainer container : containers) {
-            try {
-                channels.add(getChannel(container));
-                
-            } catch (ArgumentSyntaxException e) {
-                logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
-                if (container instanceof ChannelRecordContainer) {
-                    ((ChannelRecordContainer) container).setRecord(new Record(null, 
-                            System.currentTimeMillis(), Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
-                }
-                else if (container instanceof ChannelValueContainer) {
-                    ((ChannelValueContainer) container).setFlag(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
-                }
-            }
-        }
-        return channels;
-    }
-
-	protected C getChannel(ChannelContainer container) throws ArgumentSyntaxException {
-        String id = container.getChannel().getId();
-        C channel = channels.get(id);
-        if (channel == null) {
-            channel = newChannel(container);
-            channel.doCreate(this);
-            channels.put(id, channel);
-            this.newChannel(channel);
-        }
-        else {
-            channel.doConfigure(container);
-        }
-        return channel;
-    }
-
-    protected C newChannel(ChannelContainer container) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-		return context.newChannel(this, container);
-	}
-
-	protected void newChannel(C channel) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
     }
 
 }

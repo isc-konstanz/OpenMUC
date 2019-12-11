@@ -20,14 +20,11 @@
  */
 package org.openmuc.framework.driver.rpi.gpio;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.rpi.gpio.configs.GpioConfigs;
 import org.openmuc.framework.driver.rpi.gpio.count.EdgeCounter;
 import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.driver.spi.Device;
 import org.openmuc.framework.driver.spi.Driver;
 import org.openmuc.framework.driver.spi.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
@@ -42,8 +39,8 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.wiringpi.GpioUtil;
 
-@Component(service = DriverService.class)
-public class GpioDriver extends Driver<GpioConfigs> {
+@Component
+public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
     private static final Logger logger = LoggerFactory.getLogger(GpioDriver.class);
 
     private static final String ID = "rpi-gpio";
@@ -52,8 +49,6 @@ public class GpioDriver extends Driver<GpioConfigs> {
     		"This driver enables the access to the variety of pins of the Raspberry Pi platform. " +
             "Devices represent the General-Purpose Inputs/Outputs (GPIOs) of the Raspberry Pi, " +
             "generic pins to be used either as input or output.";
-
-    private List<GpioPinDigital> pins;
 
     private GpioController gpio;
 
@@ -71,8 +66,6 @@ public class GpioDriver extends Driver<GpioConfigs> {
 
 	@Override
     public void onActivate() {
-        pins = Collections.synchronizedList(new ArrayList<GpioPinDigital>());
-        
         // Check if privileged access is required on the running system and enable non-
         // privileged GPIO access if not.
         if (!GpioUtil.isPrivilegedAccessRequired()) {
@@ -97,52 +90,43 @@ public class GpioDriver extends Driver<GpioConfigs> {
         try {
             GpioPin connection;
             
-            Pin pin = RaspiPin.getPinByAddress(configs.getPin());
-            if (pin == null) {
+            Pin p = RaspiPin.getPinByAddress(configs.getPin());
+            if (p == null) {
                 throw new ConnectionException("Unable to configure GPIO pin: " + configs.getPin());
             }
             
-            GpioPinDigital gpio = null;
+            GpioPinDigital pin = null;
             switch(configs.getPinMode()) {
                 case DIGITAL_INPUT:
-                    gpio = this.gpio.provisionDigitalInputPin(pin, configs.getPullResistance());
+                    pin = gpio.provisionDigitalInputPin(p, configs.getPullResistance());
                     
                     if (configs.isCounter()) {
-                        connection = new EdgeCounter(gpio, configs.getPullResistance(), configs.getBounceTime());
+                        connection = new EdgeCounter(pin, configs.getPullResistance(), configs.getBounceTime());
                     }
                     else {
-                        connection = new InputPin(gpio);
+                        connection = new InputPin(pin);
                     }
                     break;
                 case DIGITAL_OUTPUT:
-                    gpio = this.gpio.provisionDigitalOutputPin(pin, configs.getDefaultState());
+                    pin = gpio.provisionDigitalOutputPin(p, configs.getDefaultState());
                     
-                    connection = new OutputPin(gpio);
+                    connection = new OutputPin(pin);
                     break;
                 default:
                     throw new ArgumentSyntaxException("GPIO pins not supported for mode: " + configs.getPinMode());
             }
-            gpio.setShutdownOptions(true, configs.getShutdownState(), configs.getShutdownPullResistance());
+            pin.setShutdownOptions(true, configs.getShutdownState(), configs.getShutdownPullResistance());
             
-            pins.add(gpio);
             return connection;
-
+            
         } catch (RuntimeException e) {
             throw new ArgumentSyntaxException("Unable to configure GPIO pin: " + e.getMessage());
         }
     }
 
     @Override
-    public void onDisconnected(GpioConfigs configs) {
-        synchronized(pins) {
-            // Unprovision pins, to enable getPin() to provision them again later
-            // GpioPinExistsException would be thrown otherwise
-        	for (GpioPinDigital pin : pins) {
-        		if (configs.getPin() == pin.getPin().getAddress()) {
-                    gpio.unprovisionPin(pin);
-                    pins.remove(pin);
-        		}
-        	}
-        }
-    }
+	protected void onDisconnect(Device<?> device) {
+    	gpio.unprovisionPin(((GpioPin) device).getPin());
+	}
+
 }

@@ -36,17 +36,17 @@ public abstract class DriverContext implements DriverService {
 
 	final DriverOptions info;
 
-	Class<? extends DeviceContext> device = null;
-	Class<? extends Configurable> deviceScanner = null;
+	Class<? extends DeviceConfigs<?>> device = null;
+	Class<? extends DeviceScanner> deviceScanner = null;
 
-	Class<? extends ChannelContext> channel = null;
-	Class<? extends Configurable> channelScanner = null;
+	Class<? extends Channel> channel = null;
+	Class<? extends ChannelScanner> channelScanner = null;
 
 	@SuppressWarnings("unchecked")
 	protected DriverContext() {
         this.info = DriverInfoFactory.getInfo(getId());
-        setDevice((Class<? extends DeviceContext>) getType(this.getClass(), Driver.class, DriverContext.class));
-        setChannel((Class<? extends ChannelContext>) getType(device, Device.class, DeviceContext.class));
+        setDevice((Class<? extends DeviceConfigs<?>>) getType(this.getClass(), Driver.class, DriverContext.class));
+        setChannel((Class<? extends Channel>) getType(device, Device.class, DeviceConfigs.class));
     }
 
 	private Type getType(Class<?> clazz, Class<?> type, Class<?> context) {
@@ -60,14 +60,6 @@ public abstract class DriverContext implements DriverService {
         // always return the Type of this class. Because this class is parameterized, the cast is safe
         ParameterizedType superclass = (ParameterizedType) clazz.getGenericSuperclass();
         return superclass.getActualTypeArguments()[0];
-	}
-
-	void doConnect(Device<?> device) {
-        // Placeholder for the optional implementation
-	}
-
-	void doDisconnect(Device<?> device) {
-        // Placeholder for the optional implementation
 	}
 
     /**
@@ -103,22 +95,30 @@ public abstract class DriverContext implements DriverService {
 
     public abstract Driver<?> getDriver();
 
+	protected void onConnect(Device<?> connection) {
+        // Placeholder for the optional implementation
+	}
+
+	protected void onDisconnect(Device<?> connection) {
+        // Placeholder for the optional implementation
+	}
+
 	@SuppressWarnings("unchecked")
-	<D extends Device<?>> D newDevice(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
-		D device;
+	<D extends DeviceConfigs<?>> D newConnection(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
+		D connection;
 		try {
-			device = (D) this.device.getDeclaredConstructor().newInstance();
-			device.doConfigure(address, settings);
+			connection = (D) this.device.getDeclaredConstructor().newInstance();
+			connection.doConfigure(address, settings);
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
             throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
             		deviceScanner.getSimpleName(), e.getMessage()));
 		}
-		return device;
+		return connection;
 	}
 
-    public final DriverContext setDevice(Class<? extends DeviceContext> device) {
+    public final DriverContext setDevice(Class<? extends DeviceConfigs<?>> device) {
     	info.setDeviceAddress(Options.parseAddress(device));
     	info.setDeviceSettings(Options.parseSettings(device));
         this.device = device;
@@ -175,7 +175,7 @@ public abstract class DriverContext implements DriverService {
 		return channel;
 	}
 
-    public final DriverContext setChannel(Class<? extends ChannelContext> channel) {
+    public final DriverContext setChannel(Class<? extends Channel> channel) {
     	info.setChannelAddress(Options.parseAddress(channel));
     	info.setChannelSettings(Options.parseSettings(channel));
     	this.channel = channel;
