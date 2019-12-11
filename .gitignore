@@ -44,4 +44,6 @@ build/
 /build/
 
 #Framework
-!framework/bin
+framework/bin
+framework/data
+framework/conf/shadow
