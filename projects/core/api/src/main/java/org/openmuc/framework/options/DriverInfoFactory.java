@@ -64,7 +64,7 @@ public class DriverInfoFactory {
     public static DriverOptions readInfo(InputStream is) {
     	DriverOptions info = new DriverOptions(is);
     	if (!infos.containsKey(info.getId())) {
-            info = infos.put(info.getId(), info);
+            infos.put(info.getId(), info);
         }
     	return info;
     }

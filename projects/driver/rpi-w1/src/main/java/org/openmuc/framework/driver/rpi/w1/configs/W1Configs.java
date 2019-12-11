@@ -20,13 +20,14 @@
  */
 package org.openmuc.framework.driver.rpi.w1.configs;
 
+import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.spi.DeviceConfigs;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.Setting;
 
-public class W1Configs extends DeviceConfigs {
+public class W1Configs extends DeviceConfigs<W1Channel> {
 
-    public static final String ID = "id";
+	public static final String ID = "id";
     public static final String TYPE = "type";
 
     @Address(id = ID,
@@ -41,6 +42,10 @@ public class W1Configs extends DeviceConfigs {
              valueSelection = "SENSOR_TEMPERATURE:Temperature sensor"
     )
     private W1Type type;
+
+    W1Configs(String address, String settings) throws ArgumentSyntaxException {
+		super(address, settings);
+	}
 
     public String getId() {
         return id.trim().replace("\n", "").replace("\r", "");

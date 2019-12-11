@@ -36,8 +36,8 @@ import org.osgi.service.component.annotations.Component;
  * <li>HHMMSS: With every sampling it reads the line with the closest time HHMMSS regarding to sampling timestamp</li>
  * </ul>
  */
-@Component(service = DriverService.class)
-public class CsvDriver extends Driver<CsvFile> {
+@Component
+public class CsvDriver extends Driver<CsvFile> implements DriverService {
 
     private static final String ID = "csv";
     private static final String NAME = "CSV";

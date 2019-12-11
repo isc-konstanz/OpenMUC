@@ -22,8 +22,8 @@ package org.openmuc.framework.driver.mbus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
@@ -37,7 +37,6 @@ import java.io.InterruptedIOException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openmuc.framework.config.ArgumentSyntaxException;
@@ -52,11 +51,13 @@ import org.openmuc.jmbus.VariableDataStructure;
 import org.openmuc.jrxtx.Parity;
 import org.openmuc.jrxtx.SerialPortTimeoutException;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ Driver.class, MBusConnection.class })
+@PowerMockIgnore({ "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*" })
 public class DriverTest {
 
     @Test
@@ -96,8 +97,8 @@ public class DriverTest {
         Driver mdriver = new Driver();
         MBusConnection mockedMBusSap = PowerMockito.mock(MBusConnection.class);
         PowerMockito.whenNew(MBusConnection.class).withAnyArguments().thenReturn(mockedMBusSap);
-        PowerMockito.doNothing().when(mockedMBusSap).linkReset(Matchers.anyInt());
-        PowerMockito.when(mockedMBusSap.read(Matchers.anyInt())).thenReturn(null);
+        PowerMockito.doNothing().when(mockedMBusSap).linkReset(anyInt());
+        PowerMockito.when(mockedMBusSap.read(anyInt())).thenReturn(null);
         Assert.assertNotNull(mdriver.connect(channelAdress, bautrate));
         Assert.assertNotNull(mdriver.connect(channelAdress, bautrate));
     }
@@ -172,8 +173,8 @@ public class DriverTest {
         Driver mdriver = new Driver();
         MBusConnection mockedMBusSap = PowerMockito.mock(MBusConnection.class);
         PowerMockito.whenNew(MBusConnection.class).withAnyArguments().thenReturn(mockedMBusSap);
-        PowerMockito.doThrow(new IOException()).when(mockedMBusSap).linkReset(Matchers.anyInt());
-        PowerMockito.when(mockedMBusSap.read(Matchers.anyInt())).thenReturn(null);
+        PowerMockito.doThrow(new IOException()).when(mockedMBusSap).linkReset(anyInt());
+        PowerMockito.when(mockedMBusSap.read(anyInt())).thenReturn(null);
         mdriver.connect("/dev/ttyS100:5", "2400:lr");
     }
 
@@ -182,8 +183,8 @@ public class DriverTest {
         Driver mdriver = new Driver();
         MBusConnection mockedMBusSap = PowerMockito.mock(MBusConnection.class);
         PowerMockito.whenNew(MBusConnection.class).withAnyArguments().thenReturn(mockedMBusSap);
-        PowerMockito.doThrow(new SerialPortTimeoutException()).when(mockedMBusSap).read(Matchers.anyInt());
-        PowerMockito.doNothing().when(mockedMBusSap).linkReset(Matchers.anyInt());
+        PowerMockito.doThrow(new SerialPortTimeoutException()).when(mockedMBusSap).read(anyInt());
+        PowerMockito.doNothing().when(mockedMBusSap).linkReset(anyInt());
         mdriver.connect("/dev/ttyS100:5", "2400");
     }
 
@@ -260,8 +261,8 @@ public class DriverTest {
         MBusConnection con = mock(MBusConnection.class);
         when(con.read(anyInt())).thenReturn(new VariableDataStructure(null, 0, 0, null, null));
         whenNew(MBusConnection.class).withAnyArguments().thenReturn(con);
-        doNothing().when(con).linkReset(Matchers.anyInt());
-        PowerMockito.when(con.read(Matchers.anyInt())).thenReturn(null);
+        doNothing().when(con).linkReset(anyInt());
+        PowerMockito.when(con.read(anyInt())).thenReturn(null);
 
         assertNotNull(mdriver.connect("/dev/ttyS100:5", "2400"));
         mdriver.scanForDevices("/dev/ttyS100:2400", ddsl);
@@ -272,8 +273,8 @@ public class DriverTest {
         MBusSerialBuilder builder = mock(MBusSerialBuilder.class);
 
         MBusConnection con = mock(MBusConnection.class);
-        doNothing().when(con).linkReset(Matchers.anyInt());
-        when(con.read(Matchers.anyInt())).thenReturn(null);
+        doNothing().when(con).linkReset(anyInt());
+        when(con.read(anyInt())).thenReturn(null);
         whenNew(MBusSerialBuilder.class).withAnyArguments().thenReturn(builder);
         when(builder.setBaudrate(anyInt())).thenReturn(builder);
         when(builder.setTimeout(anyInt())).thenReturn(builder);

@@ -27,7 +27,7 @@ import org.openmuc.framework.config.ScanInterruptedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Driver<C extends DeviceConfigs> extends DriverContext implements DeviceCallbacks {
+public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     private static final Logger logger = LoggerFactory.getLogger(Driver.class);
 
     private DeviceScanner scanner = null;
@@ -45,7 +45,7 @@ public abstract class Driver<C extends DeviceConfigs> extends DriverContext impl
     }
 
     @Override
-    public final Driver<C> getDriver() {
+    public final Driver<D> getDriver() {
     	return this;
     }
 
@@ -99,53 +99,32 @@ public abstract class Driver<C extends DeviceConfigs> extends DriverContext impl
         return doConnect(address, settings);
     }
 
-	DeviceConnection<?> doConnect(String address, String settings) 
+    Device<?> doConnect(String address, String settings) 
 			throws ArgumentSyntaxException, ConnectionException {
-		DeviceConnection<?> device = newConnection(address, settings);
-		device.doCreate(this);
-		device.doConnect();
-		
-		return device;
+		Device<?> device = newConnection(address, settings);
+		if (device != null) {
+			device.doCreate(this);
+			device.doConnect();
+			
+			return device;
+		}
+		return null;
 	}
 
-	protected DeviceConnection<?> newConnection(String address, String settings) 
+	@SuppressWarnings("unchecked")
+	protected Device<?> newConnection(String address, String settings) 
 			throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-		
-		return newConnection(newDeviceConfigs(address, settings));
+		return newConnection(super.newConnection(address, settings));
 	}
 
-	protected DeviceConnection<?> newConnection(C configs) 
+	protected Device<?> newConnection(D device) 
 			throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-        if (configs instanceof DeviceConnection) {
-        	return (DeviceConnection<?>) configs;
-        }
-        return null;
-    }
-
-    @Override
-	@SuppressWarnings("unchecked")
-	public final void onConnected(DeviceConnection<?> device) {
-    	if (device.getClass().isAssignableFrom(super.device)) {
-    		this.onConnected((C) device);
-    	}
-    }
-
-	public void onConnected(C configs) {
-        // Placeholder for the optional implementation
-    }
-
-    @Override
-	@SuppressWarnings("unchecked")
-	public final void onDisconnected(DeviceConnection<?> device) {
-    	if (device.getClass().isAssignableFrom(super.device)) {
-    		this.onDisconnected((C) device);
-    	}
-    }
-
-	public void onDisconnected(C configs) {
-        // Placeholder for the optional implementation
+		if (device instanceof Device) {
+			return (Device<?>) device;
+		}
+		return null;
     }
 
 }

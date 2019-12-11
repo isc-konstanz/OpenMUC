@@ -25,12 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.rpi.w1.configs.W1Channel;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Configs;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Type;
 import org.openmuc.framework.driver.rpi.w1.device.TemperatureDevice;
+import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DeviceConnection;
+import org.openmuc.framework.driver.spi.Device;
 import org.openmuc.framework.driver.spi.Driver;
 import org.openmuc.framework.driver.spi.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
@@ -42,8 +42,8 @@ import com.pi4j.component.temperature.TemperatureSensor;
 import com.pi4j.io.w1.W1Device;
 import com.pi4j.io.w1.W1Master;
 
-@Component(service = DriverService.class)
-public class W1Driver extends Driver<W1Configs> {
+@Component
+public class W1Driver extends Driver<W1Configs> implements DriverService {
     private static final Logger logger = LoggerFactory.getLogger(W1Driver.class);
 
     private static final String ID = "rpi-w1";
@@ -80,7 +80,7 @@ public class W1Driver extends Driver<W1Configs> {
     }
 
     @Override
-	protected DeviceConnection<W1Channel> newConnection(W1Configs configs) 
+	protected W1Connection newConnection(W1Configs configs) 
 			throws ArgumentSyntaxException, ConnectionException {
         
     	String id = configs.getId();
@@ -97,7 +97,7 @@ public class W1Driver extends Driver<W1Configs> {
                     }
                     switch (type) {
 					case SENSOR_TEMPERATURE:
-	                    return new TemperatureDevice((TemperatureSensor) device);
+	                    return new TemperatureDevice(id, (TemperatureSensor) device);
                     }
                 }
             }
@@ -109,13 +109,13 @@ public class W1Driver extends Driver<W1Configs> {
     }
 
     @Override
-    public void onConnected(W1Configs configs) {
-        connected.add(configs.getId());
+    public void onConnect(Device<?> device) {
+        connected.add(((W1Device) device).getId());
     }
 
     @Override
-    public void onDisconnected(W1Configs configs) {
-        connected.remove(configs.getId());
+    public void onDisconnect(Device<?> device) {
+        connected.remove(((W1Device) device).getId());
     }
 
 }

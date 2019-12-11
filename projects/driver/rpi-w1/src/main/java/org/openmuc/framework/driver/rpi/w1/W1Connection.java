@@ -18,29 +18,28 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.w1.configs;
+package org.openmuc.framework.driver.rpi.w1;
 
-import org.openmuc.framework.driver.spi.Channel;
-import org.openmuc.framework.options.Setting;
+import java.util.List;
 
-import com.pi4j.temperature.TemperatureScale;
+import org.openmuc.framework.driver.rpi.w1.configs.W1Channel;
+import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.driver.spi.Device;
 
-public class W1Channel extends Channel {
+public abstract class W1Connection extends Device<W1Channel> {
 
-    @Setting(id = "unit",
-            name = "Unit",
-            description = "The unit of the value, read from e.g. a 1-Wire temperature sensor.",
-            valueSelection = 
-            		"CELSIUS:Celsius," +
-            		"KELVIN:Kelvin," +
-            		"FARENHEIT:Farenheit," +
-            		"RANKINE:Rankine",
-            valueDefault = "CELSIUS"
-    )
-    private TemperatureScale unit = TemperatureScale.CELSIUS;
+    private final String id;
 
-    public TemperatureScale getScale() {
-        return unit;
+    public W1Connection(String id) {
+        this.id = id;
     }
+
+    public String getId() {
+    	return id;
+    }
+
+    @Override
+    public abstract Object onRead(List<W1Channel> channels, Object containerListHandle, String samplingGroup) 
+    		throws ConnectionException;
 
 }
