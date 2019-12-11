@@ -28,13 +28,13 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Channel;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DeviceConnection;
+import org.openmuc.framework.driver.spi.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.pi4j.component.temperature.TemperatureSensor;
 
-public class TemperatureDevice extends DeviceConnection<W1Channel> {
+public class TemperatureDevice extends Device<W1Channel> {
     private static final Logger logger = LoggerFactory.getLogger(TemperatureDevice.class);
 
     private final TemperatureSensor sensor;

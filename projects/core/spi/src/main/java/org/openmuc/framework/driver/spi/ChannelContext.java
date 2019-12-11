@@ -21,8 +21,9 @@
 package org.openmuc.framework.driver.spi;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.options.Configurable;
 
-public abstract class ChannelContext extends ChannelConfigs {
+public abstract class ChannelContext extends Configurable {
 
     DeviceContext context;
 

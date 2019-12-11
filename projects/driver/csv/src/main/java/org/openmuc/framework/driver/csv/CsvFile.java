@@ -30,7 +30,7 @@ import org.openmuc.framework.driver.csv.channel.CsvChannelLine;
 import org.openmuc.framework.driver.csv.channel.CsvChannelUnixtimestamp;
 import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DeviceConnection;
+import org.openmuc.framework.driver.spi.Device;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.AddressSyntax;
 import org.openmuc.framework.options.Setting;
@@ -38,7 +38,7 @@ import org.openmuc.framework.options.SettingsSyntax;
 
 @AddressSyntax(separator = ";", keyValuePairs = false)
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class CsvFile extends DeviceConnection<CsvChannel> {
+public class CsvFile extends Device<CsvChannel> {
 
 	public static final String SAMPLING_MODE = "samplingmode";
 

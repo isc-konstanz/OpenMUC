@@ -21,8 +21,9 @@
 package org.openmuc.framework.driver.spi;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.options.Configurable;
 
-public abstract class DeviceContext extends DeviceConfigs {
+public abstract class DeviceContext extends Configurable {
 
     DriverContext context;
 
@@ -40,24 +41,21 @@ public abstract class DeviceContext extends DeviceConfigs {
         // Placeholder for the optional implementation
     }
 
+    final void doConfigure(String address, String settings) throws ArgumentSyntaxException {
+        configure(address, settings);
+    	onConfigure();
+    }
+
+    protected void onConfigure() throws ArgumentSyntaxException {
+        // Placeholder for the optional implementation
+    }
+
     protected void onDestroy() {
         // Placeholder for the optional implementation
     }
 
     public DriverContext getDriver() {
         return context;
-    }
-
-	<C extends ChannelConfigs> C newChannelConfigs(ChannelContainer container) throws ArgumentSyntaxException {
-        return context.newChannelConfigs(this, container);
-    }
-
-    boolean hasChannelScanner() {
-        return context.hasChannelScanner();
-    }
-
-    <S extends ChannelScanner> S newChannelScanner(String settings) throws ArgumentSyntaxException, ConnectionException {
-        return context.newChannelScanner(this, settings);
     }
 
 }

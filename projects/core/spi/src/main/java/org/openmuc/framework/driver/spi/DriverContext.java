@@ -46,7 +46,7 @@ public abstract class DriverContext implements DriverService {
 	protected DriverContext() {
         this.info = DriverInfoFactory.getInfo(getId());
         setDevice((Class<? extends DeviceContext>) getType(this.getClass(), Driver.class, DriverContext.class));
-        setChannel((Class<? extends ChannelContext>) getType(device, DeviceConnection.class, DeviceContext.class));
+        setChannel((Class<? extends ChannelContext>) getType(device, Device.class, DeviceContext.class));
     }
 
 	private Type getType(Class<?> clazz, Class<?> type, Class<?> context) {
@@ -60,6 +60,14 @@ public abstract class DriverContext implements DriverService {
         // always return the Type of this class. Because this class is parameterized, the cast is safe
         ParameterizedType superclass = (ParameterizedType) clazz.getGenericSuperclass();
         return superclass.getActualTypeArguments()[0];
+	}
+
+	void doConnect(Device<?> device) {
+        // Placeholder for the optional implementation
+	}
+
+	void doDisconnect(Device<?> device) {
+        // Placeholder for the optional implementation
 	}
 
     /**
@@ -96,7 +104,7 @@ public abstract class DriverContext implements DriverService {
     public abstract Driver<?> getDriver();
 
 	@SuppressWarnings("unchecked")
-	<D extends DeviceConfigs> D newDeviceConfigs(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
+	<D extends Device<?>> D newDevice(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
 		D device;
 		try {
 			device = (D) this.device.getDeclaredConstructor().newInstance();
@@ -153,7 +161,7 @@ public abstract class DriverContext implements DriverService {
     }
 
 	@SuppressWarnings("unchecked")
-	<C extends ChannelConfigs> C newChannelConfigs(DeviceContext context, ChannelContainer container) throws ArgumentSyntaxException {
+	<C extends Channel> C newChannel(DeviceContext context, ChannelContainer container) throws ArgumentSyntaxException {
 		C channel;
 		try {
 			channel = (C) this.channel.getDeclaredConstructor().newInstance();

@@ -20,12 +20,12 @@
  */
 package org.openmuc.framework.driver.rpi.w1.configs;
 
-import org.openmuc.framework.driver.spi.ChannelConfigs;
+import org.openmuc.framework.driver.spi.Channel;
 import org.openmuc.framework.options.Setting;
 
 import com.pi4j.temperature.TemperatureScale;
 
-public class W1Channel extends ChannelConfigs {
+public class W1Channel extends Channel {
 
     @Setting(id = "unit",
             name = "Unit",

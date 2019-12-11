@@ -30,7 +30,7 @@ import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DeviceConnection;
+import org.openmuc.framework.driver.spi.Device;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
-public class GpioPin extends DeviceConnection<GpioChannel> {
+public class GpioPin extends Device<GpioChannel> {
 	protected static final Logger logger = LoggerFactory.getLogger(GpioPin.class);
 
     protected final GpioPinDigital pin;

@@ -33,31 +33,22 @@ import org.openmuc.framework.data.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DeviceConnection<C extends ChannelConfigs> extends DeviceContext implements Connection {
+public abstract class Device<C extends Channel> extends DeviceContext implements Connection {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeviceConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(Device.class);
 
     private final Map<String, C> channels = new HashMap<String, C>();
 
-    private DeviceCallbacks callbacks;
-
-    protected DeviceConnection() {
+    protected Device() {
     }
 
-    protected DeviceConnection(String address, String settings) throws ArgumentSyntaxException {
+    protected Device(String address, String settings) throws ArgumentSyntaxException {
         doConfigure(address, settings);
-    }
-
-    void doCreate(DriverContext context) throws ArgumentSyntaxException {
-        if (callbacks == null) {
-            callbacks = context.getDriver();
-        }
-    	super.doCreate(context);
     }
 
     void doConnect() throws ArgumentSyntaxException, ConnectionException {
         this.onConnect();
-        callbacks.onConnected(this);
+        context.doConnect(this);
     }
 
     protected void onConnect() throws ArgumentSyntaxException, ConnectionException {
@@ -67,7 +58,7 @@ public abstract class DeviceConnection<C extends ChannelConfigs> extends DeviceC
     @Override
     public final void disconnect() {
         this.onDisconnect();
-        callbacks.onDisconnected(this);
+        context.doDisconnect(this);
         
         for (C channel : channels.values()) {
         	if (channel instanceof ChannelContext) {
@@ -98,14 +89,13 @@ public abstract class DeviceConnection<C extends ChannelConfigs> extends DeviceC
     protected ChannelScanner newScanner(String settings) 
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
         
-        if (!hasChannelScanner()) {
+        if (!context.hasChannelScanner()) {
             throw new UnsupportedOperationException();
         }
-        return newChannelScanner(settings);
+        return context.newChannelScanner(this, settings);
     }
 
 	@Override
-    @SuppressWarnings("unchecked")
     public final void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
             throws UnsupportedOperationException, ConnectionException {
         
@@ -195,16 +185,14 @@ public abstract class DeviceConnection<C extends ChannelConfigs> extends DeviceC
         return channels;
     }
 
-    @SuppressWarnings("unchecked")
 	protected C getChannel(ChannelContainer container) throws ArgumentSyntaxException {
         String id = container.getChannel().getId();
         C channel = channels.get(id);
         if (channel == null) {
-            channel = (C) newChannel(container);
-            if (channel instanceof Channel) {
-                ((Channel) channel).doCreate(this);
-            }
+            channel = newChannel(container);
+            channel.doCreate(this);
             channels.put(id, channel);
+            this.newChannel(channel);
         }
         else {
             channel.doConfigure(container);
@@ -212,15 +200,13 @@ public abstract class DeviceConnection<C extends ChannelConfigs> extends DeviceC
         return channel;
     }
 
-    protected Channel newChannel(ChannelContainer container) throws ArgumentSyntaxException {
+    protected C newChannel(ChannelContainer container) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
-    	C context = newChannelConfigs(container);
-		return newChannel(context);
+		return context.newChannel(this, container);
 	}
 
-	protected Channel newChannel(C context) throws ArgumentSyntaxException {
+	protected void newChannel(C channel) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
-    	return (Channel) context;
     }
 
 }
