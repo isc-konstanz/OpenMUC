@@ -32,12 +32,8 @@ import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.driver.spi.Connection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class Device {
-
-    private static final Logger logger = LoggerFactory.getLogger(Device.class);
 
     DeviceConfigImpl deviceConfig;
     DataManager dataManager;
@@ -68,7 +64,6 @@ public final class Device {
         }
         else if (deviceConfig.driverParent.activeDriver == null) {
             state = DeviceState.DRIVER_UNAVAILABLE;
-            logger.warn("No driver bundle available for configured driver: '{}'.", deviceConfig.getDriver().getId());
             for (ChannelConfigImpl channelConfig : deviceConfig.channelConfigsById.values()) {
                 channelConfig.channel = new ChannelImpl(dataManager, channelConfig, ChannelState.DRIVER_UNAVAILABLE,
                         Flag.DRIVER_UNAVAILABLE, currentTime, logChannels);

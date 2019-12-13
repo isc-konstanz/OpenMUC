@@ -24,25 +24,11 @@ package org.openmuc.framework.driver.spi;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openmuc.framework.dataaccess.DataAccessService;
 
 public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
-    private static final Logger logger = LoggerFactory.getLogger(Driver.class);
 
-    private DeviceScanner scanner = null;
-
-    protected Driver() {
-        super();
-        try {
-            onCreate(this);
-            onCreate();
-            
-        } catch(Exception e) {
-            logger.info("Error while creating driver: {}", e.getMessage());
-            throw e;
-        }
-    }
+	private DeviceScanner scanner = null;
 
     @Override
     public final Driver<D> getDriver() {
@@ -53,19 +39,24 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
         return this;
     }
 
-    protected void onCreate(DriverContext context) {
+    public final void activate(DataAccessService dataAccess) throws Exception {
+    	onActivate(dataAccess);
+    	onActivate();
+    }
+
+    public final void deactivate() {
+    	onDeactivate();
+    }
+
+    protected void onActivate(DataAccessService dataAccess) throws Exception {
         // Placeholder for the optional implementation
     }
 
-    protected void onCreate() {
+    protected void onActivate() throws Exception {
         // Placeholder for the optional implementation
     }
 
-    public void onActivate() {
-        // Placeholder for the optional implementation
-    }
-
-    public void onDeactivate() {
+    protected void onDeactivate() {
         // Placeholder for the optional implementation
     }
 

@@ -39,7 +39,7 @@ import org.osgi.service.component.annotations.Component;
 @Component
 public class CsvDriver extends Driver<CsvFile> implements DriverService {
 
-    private static final String ID = "csv";
+	private static final String ID = "csv";
     private static final String NAME = "CSV";
     private static final String DESCRIPTION = 
                     "The CSV Driver reads out values from configured files. Each device represents a specific file " + 

@@ -37,7 +37,7 @@ public @interface Setting {
 
 	String value() default VALUE_DEFAULT;
 
-	String id() default OPTION_DEFAULT;
+	String[] id() default OPTION_DEFAULT;
 	String name() default OPTION_DEFAULT;
 	String description() default OPTION_DEFAULT;
 	String valueDefault() default OPTION_DEFAULT;
