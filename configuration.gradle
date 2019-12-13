@@ -45,8 +45,9 @@ project.ext {
     it.getPath() == ":openmuc-driver-rpi-w1" ||
     it.getPath() == ":openmuc-driver-snmp" ||
     it.getPath() == ":openmuc-driver-wmbus" ||
-    it.getPath() == ":openmuc-server-restws" ||
     it.getPath() == ":openmuc-server-modbus" ||
+    it.getPath() == ":openmuc-server-opcua" ||
+    it.getPath() == ":openmuc-server-restws" ||
     it.getPath() == ":openmuc-webui-base" ||
     it.getPath() == ":openmuc-webui-channelaccesstool" ||
     it.getPath() == ":openmuc-webui-channelconfigurator" ||

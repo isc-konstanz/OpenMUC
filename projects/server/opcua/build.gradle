@@ -1,0 +1,54 @@
+
+def projectName = "OpenMUC Server - OPC UA"
+def projectDescription = "OPC UA server for the OpenMUC framework."
+
+def miloVersion = '0.3.6'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation project(':openmuc-core-spi')
+  implementation group: 'org.eclipse.milo', name: 'sdk-server', version: miloVersion
+}
+
+def embed = configurations.default.findAll {
+  it.getName().startsWith("stack") ||
+  it.getName().startsWith("sdk") ||
+  it.getName().startsWith("bc") ||
+  it.getName().startsWith("netty")
+}
+
+jar {
+  into('libs') {
+    from embed
+  }
+  manifest {
+    attributes('Bundle-Name':        projectName,
+               'Bundle-Description': projectDescription,
+               'Bundle-ClassPath': '.,' + embed.collect { 'libs/'+it.getName() }.join(','),
+               'Import-Package':     '!org.eclipse.*,' +
+                                    ',!io.netty.*' +
+                                    ',!org.bouncycastle.*' +
+                                    ',com.google.common.*'+jarDefaultImportPackageVersion +
+                                    ',com.sun.management.*'+jarDefaultImportPackageVersion +
+                                    ',javax.*'+jarDefaultImportPackageVersion +
+                                    ',org.w3c.*'+jarDefaultImportPackageVersion +
+                                    ',org.xml.sax.*'+jarDefaultImportPackageVersion +
+                                    ',org.openmuc.framework.*'+jarDefaultImportPackageVersion +
+                                    ',org.slf4j'+jarDefaultImportPackageVersion,
+	           'Export-Package':    '')
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name projectName
+        description projectDescription
+      }
+    }
+  }
+}
