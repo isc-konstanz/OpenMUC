@@ -28,9 +28,10 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
-import org.openmuc.framework.data.Record;
+import org.openmuc.framework.driver.mysql.channel.ChannelDateTimeFormat;
+import org.openmuc.framework.driver.mysql.channel.ChannelTimestampFormat;
+import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.Device;
 import org.openmuc.framework.options.Address;
@@ -41,28 +42,41 @@ import org.slf4j.LoggerFactory;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class SqlClient extends Device<SqlChannel> {
+	public static String amount;
     private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);
 
-    @Address
-    private String address;
+    @Address(id="host")
+    private String host;
 
-    @Address
-    private String port;
+    @Address(id="port", mandatory=false)
+    private int port = 3306;
 
-    @Setting
-    private String driver;
+    @Address(id="database")
+    private String database;
 
-    @Setting
+    @Setting(id="driver", mandatory=false)
+    private String driver = "com.mysql.cj.jdbc.Driver";
+
+    @Setting(id="type", mandatory=false)
+    private String type = "jdbc:mysql";
+
+    @Setting(id="user")
     private String user;
 
-    @Setting
+    @Setting(id="password")
     private String password;
+
+    @Setting(id="timeType", mandatory = false)
+    protected TimeType timeType = TimeType.TIMESTAMP_UNIX;
+
+    @Setting(id="timeFormat", mandatory = false)
+    protected String timeFormat = null;
 
     private ComboPooledDataSource source = null;
 
     @Override
     protected void onConnect() throws ArgumentSyntaxException, ConnectionException {
-    	String url = address+":"+port;
+    	String url = type+"://"+host+":"+port+"/"+database+"?autoReconnect=true&useSSL=false";
         logger.info("Initializing MySQL connection \"{}\"", url);
         try {
             if (source != null) {
@@ -94,19 +108,24 @@ public class SqlClient extends Device<SqlChannel> {
             for (SqlChannel channel : channels) {
             	try (Statement statement = connection.createStatement()) {
                 	// TODO build query with the help of channel configurations
-                	String query = channel.readQuery(1, 2, 3);
-                	
+            		String key = channel.getKey();
+            		String table = channel.getTable();
+            		
+                	String query = channel.readQuery(database, table, key);
                 	try (ResultSet result = statement.executeQuery(query)) {
-                        if (result.first()) {
-                            long time = result.getLong(SqlChannel.COLUMN_TIME);
-                            double value = result.getInt(SqlChannel.COLUMN_DATA);
-                            
-                        	channel.setRecord(new Record(new DoubleValue(value), time, Flag.VALID));
+//                		result.first();
+//                        	logger.info("Result: {}", result.getString(key));
+                        while (result.next()) {
+                        	logger.info("Result: {}", result.getString(key));
+//                            long time = result.getLong(SqlChannel.COLUMN_TIME);
+//                            double value = result.getInt(SqlChannel.COLUMN_DATA);
+////                            
+//                        	channel.setRecord(new Record(new DoubleValue(value), time, Flag.VALID));
                         }
-                        else {
-                        	// TODO: log more details
-                        	channel.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
-                        }
+//                        else {
+//                        	// TODO: log more details
+//                        	channel.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
+//                        }
                     }
                 }
             }
@@ -127,4 +146,26 @@ public class SqlClient extends Device<SqlChannel> {
         return null;
     }
 
+    @Override
+	protected SqlChannel newChannel(ChannelContainer container) throws ArgumentSyntaxException {
+        // Placeholder for the optional implementation
+    	
+    	/*switch(timeType) {
+    	case TIMESTAMP_UNIX:
+    		return new ChannelTimestampFormat(container); 
+    	case TIMESTAMP:
+    		return new ChannelTimestampFormat(container); 
+    	case DATETIME:
+    		return new ChannelDateTimeFormat(container); 
+    	case DATETIME_STRING:
+    		return new ChannelDateTimeFormat(container);
+    	default: 	
+    	}*/
+    	return new ChannelDateTimeFormat(container);
+    }
+    
+    public static String getAmount() {
+    	return amount;
+    }
+    
 }

@@ -20,35 +20,45 @@
  */
 package org.openmuc.framework.driver.mysql;
 
+import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.spi.Channel;
+import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.Setting;
 
-public class SqlChannel extends Channel {
+public abstract class SqlChannel extends Channel {
 
-    private static String QUERY_SELECT = "SELECT * FROM %s WHERE time >= %s AND time <= %s";
-    private static String QUERY_INSERT = "INSERT INTO %s (time,data) VALUES ('%s','%s') ON DUPLICATE KEY UPDATE data=VALUES(data)";
-//  private static String QUERY_UPDATE = "UPDATE feeds SET time = %s, value = %s WHERE id = %i";
+	@Address(id="database", mandatory= false)
+	protected String database;
+	
+    @Address(id="key")
+    protected String key;
 
-    public static String COLUMN_TIME = "time";
-    public static String COLUMN_DATA = "data";
-
-    @Address
+    @Address(id="table", mandatory= false)
     protected String table;
 
-    @Setting
-    protected TimeType timeType;
-
-    public String readQuery(long start, long end, int interval) {
-        return String.format(QUERY_SELECT, getTable(), start, end);
+    public SqlChannel(ChannelContainer container) throws ArgumentSyntaxException {
+    	super(container);
+    	
     }
 
-    public String writeQuery(long timestamp, double data) {
-        return String.format(QUERY_INSERT, getTable(), timestamp, data);
+    public String getKey() {
+    	return key;
     }
+    
+    public String getDatabase() {
+    	return database;
+    }
+
+    public abstract String readQuery(String table, String database, String key);
+
+    public abstract String writeQuery();
+    
+//    public abstract String checkQuery(String table, String database);
 
     public String getTable() {
     	return table.toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
     }
+    
+
 
 }
