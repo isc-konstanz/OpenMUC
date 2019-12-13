@@ -1,42 +1,37 @@
 
 def projectName = "OpenMUC Driver - MySQL"
+def projectDescription = "MySQL driver for the OpenMUC framework."
 
-def c3poVersion = '0.9.5.4'
-def c3poJar = 'c3p0-'+c3poVersion+'.jar'
-
-def mchangeVersion = '0.2.15'
-def mchargeJar = 'mchange-commons-java-'+mchangeVersion+'.jar'
-
+def c3poVersion =  '0.9.5.4'
 def mysqlVersion = '8.0.17'
-def mysqlJar = 'mysql-connector-java-'+mysqlVersion+'.jar'
+
+configurations.create('embed')
 
 dependencies {
   implementation project(':openmuc-core-spi')
+  implementation group: 'com.mchange', name: 'c3p0',                 version: c3poVersion
+  embed          group: 'com.mchange', name: 'c3p0',                 version: c3poVersion
+  embed          group: 'mysql',       name: 'mysql-connector-java', version: mysqlVersion
+}
 
-  implementation group: 'com.mchange', name: 'c3p0', version: c3poVersion
-  implementation group: 'com.mchange', name: 'mchange-commons-java', version: mchangeVersion
-  implementation group: 'mysql', name: 'mysql-connector-java', version: mysqlVersion
+def embed = configurations.embed.findAll {
+  !it.getName().contains("protobuf")
 }
 
 jar {
   into('libs') {
-    from(configurations.default) {
-      include c3poJar, mchargeJar, mysqlJar
-    }
+    from embed
   }
   manifest {
     attributes('Bundle-Name':        projectName,
-               'Bundle-ClassPath': '.,libs/'+c3poJar +
-                                    ',libs/'+mchargeJar +
-                                    ',libs/'+mysqlJar,
+               'Bundle-Description': projectDescription,
+               'Bundle-ClassPath': '.,' + embed.collect { 'libs/'+it.getName() }.join(','),
                'Import-Package':    '!com.mchange.*,' +
                                     '!com.mysql.*,' +
-                                    '!com.google.protobuf.*,' +
-                                    '!com.typesafe.config.*,' +
-                                    '!google.protobuf.*,' +
-                                    '!javax.swing.*,' +
-                                    '!org.apache.*,' +
                                     '!org.jboss.*,' +
+                                    '!org.apache.log*,' +
+                                    '!com.typesafe.*,' +
+                                    '!javax.swing.*,' +
                                     '*' + jarDefaultImportPackageVersion,
                'Export-Package':    '')
   }
