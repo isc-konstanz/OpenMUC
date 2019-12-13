@@ -31,8 +31,11 @@ import org.openmuc.framework.options.Configurable;
 import org.openmuc.framework.options.DriverInfoFactory;
 import org.openmuc.framework.options.DriverOptions;
 import org.openmuc.framework.options.Options;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class DriverContext implements DriverService {
+    private static final Logger logger = LoggerFactory.getLogger(DriverContext.class);
 
 	final DriverOptions info;
 
@@ -45,8 +48,24 @@ public abstract class DriverContext implements DriverService {
 	@SuppressWarnings("unchecked")
 	protected DriverContext() {
         this.info = DriverInfoFactory.getInfo(getId());
-        setDevice((Class<? extends DeviceConfigs<?>>) getType(this.getClass(), Driver.class, DriverContext.class));
-        setChannel((Class<? extends Channel>) getType(device, Device.class, DeviceConfigs.class));
+        try {
+            setDevice((Class<? extends DeviceConfigs<?>>) getType(this.getClass(), Driver.class, DriverContext.class));
+            setChannel((Class<? extends Channel>) getType(device, Device.class, DeviceConfigs.class));
+            
+            onCreate(this);
+            onCreate();
+            
+        } catch(Exception e) {
+            logger.info("Error while creating driver: {}", e.getMessage());
+        }
+    }
+
+    protected void onCreate(DriverContext context) throws Exception {
+        // Placeholder for the optional implementation
+    }
+
+    protected void onCreate() throws Exception {
+        // Placeholder for the optional implementation
     }
 
 	private Type getType(Class<?> clazz, Class<?> type, Class<?> context) {

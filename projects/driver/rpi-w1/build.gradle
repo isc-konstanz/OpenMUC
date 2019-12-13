@@ -1,5 +1,6 @@
 
 def projectName = "OpenMUC Driver - Raspberry Pi 1-Wire"
+def projectDescription = "Raspberry Pi 1-Wire driver for the OpenMUC framework."
 
 configurations.create('embed')
 
@@ -30,5 +31,16 @@ jar {
 jar {
   into('lib') {
     from configurations.embed
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name projectName
+        description projectDescription
+      }
+    }
   }
 }

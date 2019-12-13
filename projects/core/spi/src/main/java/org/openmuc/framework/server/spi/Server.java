@@ -21,24 +21,20 @@
 
 package org.openmuc.framework.server.spi;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.dataaccess.DataAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Server<C extends Channel> extends ServerContext {
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
-    protected Server() {
-        super();
-        try {
-            onCreate();
-            
-        } catch(Exception e) {
-            logger.info("Error while creating driver: {}", e.getMessage());
-            throw e;
-        }
-    }
+    final Map<String, C> channels = new HashMap<String, C>();
 
     @Override
     public final Server<C> getServer() {
@@ -49,28 +45,82 @@ public abstract class Server<C extends Channel> extends ServerContext {
         return this;
     }
 
-    protected void onCreate() {
+    public final void activate(DataAccessService dataAccess) throws Exception {
+    	onActivate(dataAccess);
+    	onActivate();
+    }
+
+    public final void deactivate() {
+    	onDeactivate();
+    }
+
+    protected void onActivate(DataAccessService dataAccess) throws Exception {
         // Placeholder for the optional implementation
     }
 
-    public void onActivate() {
+    protected void onActivate() throws Exception {
         // Placeholder for the optional implementation
     }
 
-    public void onDeactivate() {
+    protected void onDeactivate() {
         // Placeholder for the optional implementation
     }
-
-	@Override
-	public final void updatedConfiguration(List<ServerMappingContainer> mappings) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public final void serverMappings(List<ServerMappingContainer> mappings) {
 		// TODO Auto-generated method stub
-		
+		onConfigure(getChannels(mappings));
+	}
+
+    protected abstract void onConfigure(List<C> channels);
+
+	@Override
+	public final void updatedConfiguration(List<ServerMappingContainer> mappings) {
+		// TODO Auto-generated method stub
+		onUpdate(getChannels(mappings));
+	}
+
+	protected void onUpdate(List<C> channels) {
+		// TODO Auto-generated method stub
+    	onConfigure(channels);
+    }
+
+    protected List<C> getChannels() {
+    	return (List<C>) channels.values();
+    }
+
+    protected List<C> getChannels(List<ServerMappingContainer> mappings) {
+        List<C> channels = new LinkedList<C>();
+        for (ServerMappingContainer mapping : mappings) {
+            try {
+                channels.add(getChannel(mapping));
+                
+            } catch (ArgumentSyntaxException e) {
+                logger.warn("Unable to configure channel \"{}\": {}", mapping.getChannel().getId(), e.getMessage());
+            }
+        }
+        return channels;
+    }
+
+	protected C getChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
+        String id = mapping.getChannel().getId();
+        C channel = channels.get(id);
+        if (channel == null) {
+            channel = newChannel(mapping);
+            channel.doCreate(this);
+            channels.put(id, channel);
+        }
+        else {
+            channel.doConfigure(mapping);
+        }
+        return channel;
+    }
+
+	@Override
+	@SuppressWarnings("unchecked")
+    protected C newChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
+        // Placeholder for the optional implementation
+		return super.newChannel(mapping);
 	}
 
 }

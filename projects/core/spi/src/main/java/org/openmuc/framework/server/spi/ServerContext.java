@@ -26,14 +26,27 @@ import java.lang.reflect.Type;
 import java.text.MessageFormat;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ServerContext implements ServerService {
+    private static final Logger logger = LoggerFactory.getLogger(ServerContext.class);
 
 	Class<? extends Channel> channel = null;
 
 	@SuppressWarnings("unchecked")
 	protected ServerContext() {
-		channel = ((Class<? extends Channel>) getType(this.getClass(), Server.class));
+        try {
+    		channel = ((Class<? extends Channel>) getType(this.getClass(), Server.class));
+            onCreate();
+            
+        } catch(Exception e) {
+            logger.info("Error while creating driver: {}", e.getMessage());
+        }
+    }
+
+    protected void onCreate() throws Exception {
+        // Placeholder for the optional implementation
     }
 
 	private Type getType(Class<?> clazz, Class<?> type) {
@@ -52,11 +65,11 @@ public abstract class ServerContext implements ServerService {
     public abstract Server<?> getServer();
 
 	@SuppressWarnings("unchecked")
-	<C extends Channel> C newChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
+	<C extends Channel> C newChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
 		C channel;
 		try {
 			channel = (C) this.channel.getDeclaredConstructor().newInstance();
-			channel.doConfigure(container);
+			channel.doConfigure(mapping);
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {

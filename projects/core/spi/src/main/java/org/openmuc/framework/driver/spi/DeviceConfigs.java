@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
-
     private static final Logger logger = LoggerFactory.getLogger(DeviceConfigs.class);
 
     final Map<String, C> channels = new HashMap<String, C>();
@@ -88,7 +87,6 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
             channel = newChannel(container);
             channel.doCreate(this);
             channels.put(id, channel);
-            this.newChannel(channel);
         }
         else {
             channel.doConfigure(container);
@@ -100,9 +98,5 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
         // Placeholder for the optional implementation
 		return context.newChannel(this, container);
 	}
-
-	protected void newChannel(C channel) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
 
 }
