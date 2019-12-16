@@ -73,6 +73,7 @@ import org.openmuc.framework.dataaccess.LogicalDevice;
 import org.openmuc.framework.dataaccess.LogicalDeviceChangeListener;
 import org.openmuc.framework.dataaccess.ReadRecordContainer;
 import org.openmuc.framework.dataaccess.WriteValueContainer;
+import org.openmuc.framework.datalogger.spi.DataLogger;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
@@ -603,7 +604,16 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 for (DataLoggerService dataLogger : newDataLoggers) {
                 	String dataLoggerId = dataLogger.getId();
                     logger.info("Registered data logger: {}", dataLoggerId);
-                    
+
+                    if (dataLogger instanceof DataLogger) {
+                    	try {
+                            logger.debug("Activating data logger: {}", dataLoggerId);
+    						((DataLogger<?>) dataLogger).activate(this);
+    						
+    					} catch (Exception e) {
+    						logger.warn("Error activating data logger {}: {}", dataLoggerId, e.getMessage());
+    					}
+                    }
                     dataLogger.setChannelsToLog(rootConfig.logChannels);
                 }
                 newDataLoggers.clear();
@@ -652,7 +662,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
         }
 
         if (serverToBeRemoved != null) {
-            if (activeServers.remove(serverToBeRemoved)) {
+            if (!activeServers.remove(serverToBeRemoved)) {
                 newServers.remove(serverToBeRemoved);
             }
             else if (serverToBeRemoved instanceof Server) {
@@ -666,6 +676,10 @@ public final class DataManager extends Thread implements DataAccessService, Conf
         if (dataLoggerToBeRemoved != null) {
             if (!activeDataLoggers.remove(dataLoggerToBeRemoved)) {
                 newDataLoggers.remove(dataLoggerToBeRemoved);
+            }
+            else if (dataLoggerToBeRemoved instanceof DataLogger) {
+				((DataLogger<?>) dataLoggerToBeRemoved).deactivate();
+                logger.debug("Deactivated data logger: {}", dataLoggerToBeRemoved.getId());
             }
             dataLoggerToBeRemoved = null;
             dataLoggerRemovedSignal.countDown();

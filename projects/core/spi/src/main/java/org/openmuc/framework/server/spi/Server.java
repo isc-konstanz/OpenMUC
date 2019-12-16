@@ -68,7 +68,6 @@ public abstract class Server<C extends Channel> extends ServerContext {
 
 	@Override
 	public final void serverMappings(List<ServerMappingContainer> mappings) {
-		// TODO Auto-generated method stub
 		onConfigure(getChannels(mappings));
 	}
 
@@ -76,12 +75,11 @@ public abstract class Server<C extends Channel> extends ServerContext {
 
 	@Override
 	public final void updatedConfiguration(List<ServerMappingContainer> mappings) {
-		// TODO Auto-generated method stub
 		onUpdate(getChannels(mappings));
 	}
 
 	protected void onUpdate(List<C> channels) {
-		// TODO Auto-generated method stub
+        // Placeholder for the optional implementation
     	onConfigure(channels);
     }
 

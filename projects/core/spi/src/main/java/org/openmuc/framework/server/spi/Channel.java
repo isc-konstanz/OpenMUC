@@ -71,10 +71,6 @@ public class Channel extends ChannelContext {
         return channel.getValueType();
     }
 
-	public org.openmuc.framework.dataaccess.Channel getChannel() {
-		return channel;
-	}
-
     public void addListener(RecordListener listener) {
     	channel.addListener(listener);
     }
@@ -86,5 +82,9 @@ public class Channel extends ChannelContext {
     public Record getLatestRecord() {
     	return channel.getLatestRecord();
     }
+
+	public org.openmuc.framework.dataaccess.Channel getChannel() {
+		return channel;
+	}
 
 }
