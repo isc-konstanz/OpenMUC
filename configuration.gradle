@@ -20,7 +20,7 @@ project.ext {
   cfgRepositoryPass = project.properties.sonatypePass
 
   javaProjects = subprojects
-  
+
   jarDefaultImportPackageVersion = ";version=0"
 
   distributionProjects = javaProjects.findAll {
@@ -73,7 +73,6 @@ configure(javaProjects) {
   apply plugin: "java"
   apply plugin: "maven"
 
-
   uploadArchives {
     repositories {
       mavenDeployer {
@@ -89,7 +88,6 @@ configure(javaProjects) {
       }
     }
   }
-
 }
 
 task updateBundles(type:Exec) {
