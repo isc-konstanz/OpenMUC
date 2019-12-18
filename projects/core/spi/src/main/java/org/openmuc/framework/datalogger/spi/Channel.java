@@ -172,6 +172,13 @@ public class Channel extends ChannelContext implements LogChannel, LogRecordCont
         return record;
     }
 
+    public boolean isValid() {
+        if (record != null && record.getFlag() == Flag.VALID && record.getValue() != null) {
+            return true;
+        }
+        return false;
+    }
+
     final List<Record> doRead(long startTime, long endTime) throws IOException {
         return onRead(startTime, endTime);
     }
