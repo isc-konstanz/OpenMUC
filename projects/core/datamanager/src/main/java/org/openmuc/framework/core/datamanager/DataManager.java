@@ -297,7 +297,10 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                     }
                 }
                 for (DataLoggerService dataLogger : activeDataLoggers) {
-                    dataLogger.log(logContainers, currentAction.startTime);
+                	LogTask logTask = new LogTask(dataLogger, 
+                			logContainers, currentAction.startTime);
+                	
+                	executor.execute(logTask);
                 }
             }
 
@@ -564,13 +567,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                     deviceConfig.device.driverRegisteredSignal();
                 }
                 if (newDriver instanceof Driver) {
-                	try {
-                        logger.debug("Activating driver: {}", driverId);
-						((Driver<?>) newDriver).activate(this);
-						
-					} catch (Exception e) {
-						logger.warn("Error activating driver {}: {}", driverId, e.getMessage());
-					}
+                    ((Driver<?>) newDriver).activate(this);
                 }
             }
             newDrivers.clear();
@@ -580,17 +577,11 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             if (!newServers.isEmpty()) {
                 activeServers.addAll(newServers);
                 for (ServerService server : newServers) {
-                	String serverId = server.getId();
+                    String serverId = server.getId();
                     logger.info("Registered server: {}", serverId);
                     
                     if (server instanceof Server) {
-                    	try {
-                            logger.debug("Activating server: {}", serverId);
-    						((Server<?>) server).activate(this);
-    						
-    					} catch (Exception e) {
-    						logger.warn("Error activating server {}: {}", serverId, e.getMessage());
-    					}
+                        ((Server<?>) server).activate(this);
                     }
                     notifyServer(server);
                 }
@@ -602,17 +593,11 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             if (!newDataLoggers.isEmpty()) {
                 activeDataLoggers.addAll(newDataLoggers);
                 for (DataLoggerService dataLogger : newDataLoggers) {
-                	String dataLoggerId = dataLogger.getId();
+                    String dataLoggerId = dataLogger.getId();
                     logger.info("Registered data logger: {}", dataLoggerId);
-
+                    
                     if (dataLogger instanceof DataLogger) {
-                    	try {
-                            logger.debug("Activating data logger: {}", dataLoggerId);
-    						((DataLogger<?>) dataLogger).activate(this);
-    						
-    					} catch (Exception e) {
-    						logger.warn("Error activating data logger {}: {}", dataLoggerId, e.getMessage());
-    					}
+                        ((DataLogger<?>) dataLogger).activate(this);
                     }
                     dataLogger.setChannelsToLog(rootConfig.logChannels);
                 }
@@ -635,7 +620,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 if (driverConfig != null) {
                     activeDeviceCountDown = driverConfig.deviceConfigsById.size();
                     if (activeDeviceCountDown > 0) {
-                    	
+                        
                         // all devices have to be given a chance to finish their current task and disconnect:
                         for (DeviceConfigImpl deviceConfig : driverConfig.deviceConfigsById.values()) {
                             deviceConfig.device.driverDeregisteredSignal();
@@ -655,7 +640,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 }
             }
             if (removedDriver instanceof Driver) {
-				((Driver<?>) removedDriver).deactivate();
+                ((Driver<?>) removedDriver).deactivate();
                 logger.debug("Deactivated driver: {}", driverToBeRemovedId);
             }
             driverToBeRemovedId = null;
@@ -666,7 +651,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 newServers.remove(serverToBeRemoved);
             }
             else if (serverToBeRemoved instanceof Server) {
-				((Server<?>) serverToBeRemoved).deactivate();
+                ((Server<?>) serverToBeRemoved).deactivate();
                 logger.debug("Deactivated server: {}", serverToBeRemoved.getId());
             }
             serverToBeRemoved = null;
@@ -678,7 +663,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 newDataLoggers.remove(dataLoggerToBeRemoved);
             }
             else if (dataLoggerToBeRemoved instanceof DataLogger) {
-				((DataLogger<?>) dataLoggerToBeRemoved).deactivate();
+                ((DataLogger<?>) dataLoggerToBeRemoved).deactivate();
                 logger.debug("Deactivated data logger: {}", dataLoggerToBeRemoved.getId());
             }
             dataLoggerToBeRemoved = null;
@@ -966,7 +951,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
         logger.debug("Registering server: {}", serverService.getId());
         
         synchronized (newServers) {
-        	newServers.add(serverService);
+            newServers.add(serverService);
             interrupt();
         }
     }
@@ -1425,9 +1410,9 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
     @Override
     public DriverInfo getDriverInfo(String driverId) throws DriverNotAvailableException {
-    	if (driverId.equals(DriverInfoFactory.VIRTUAL)) {
-    		return DriverInfoFactory.readVirtualInfo();
-    	}
+        if (driverId.equals(DriverInfoFactory.VIRTUAL)) {
+            return DriverInfoFactory.readVirtualInfo();
+        }
         DriverService driver = activeDrivers.get(driverId);
         if (driver == null) {
             throw new DriverNotAvailableException();

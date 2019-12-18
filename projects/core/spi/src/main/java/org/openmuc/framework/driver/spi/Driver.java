@@ -25,8 +25,11 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.dataaccess.DataAccessService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
+    private static final Logger logger = LoggerFactory.getLogger(DriverContext.class);
 
 	private DeviceScanner scanner = null;
 
@@ -39,9 +42,14 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
         return this;
     }
 
-    public final void activate(DataAccessService dataAccess) throws Exception {
-    	onActivate(dataAccess);
-    	onActivate();
+    public final void activate(DataAccessService dataAccess) {
+    	try {
+			onActivate(dataAccess);
+	    	onActivate();
+	    	
+		} catch (Exception e) {
+			logger.warn("Error activating driver {}: {}", getId(), e.getMessage());
+		}
     }
 
     public final void deactivate() {

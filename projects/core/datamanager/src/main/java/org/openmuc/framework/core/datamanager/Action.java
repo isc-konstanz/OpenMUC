@@ -27,8 +27,8 @@ public final class Action {
 
     long startTime;
 
-    List<ChannelCollection> samplingCollections = null;
     List<SamplingTask> timeouts = null;
+    List<ChannelCollection> samplingCollections = null;
     List<ChannelCollection> loggingCollections = null;
     List<Device> connectionRetryDevices = null;
 

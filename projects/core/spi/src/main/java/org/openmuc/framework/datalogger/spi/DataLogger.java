@@ -50,10 +50,15 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
         return this;
     }
 
-    public final void activate(DataAccessService dataAccess) throws Exception {
+    public final void activate(DataAccessService dataAccess) {
     	this.dataAccess = dataAccess;
-    	onActivate(dataAccess);
-    	onActivate();
+    	try {
+			onActivate(dataAccess);
+	    	onActivate();
+	    	
+		} catch (Exception e) {
+			logger.warn("Error activating data logger {}: {}", getId(), e.getMessage());
+		}
     }
 
     public final void deactivate() {
@@ -128,7 +133,7 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
     		List<C> channels = new LinkedList<C>();
     		for (LogRecordContainer container : containers) {
     			if (!handlers.containsKey(container.getChannelId())) {
-    				logger.warn("Failed to log record for unconfigured channel \"{}\"", container.getChannelId());
+    				logger.trace("Failed to log record for unconfigured channel \"{}\"", container.getChannelId());
     				continue;
     			}
     			try {
