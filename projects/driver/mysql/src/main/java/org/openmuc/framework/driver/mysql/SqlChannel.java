@@ -27,38 +27,36 @@ import org.openmuc.framework.options.Address;
 
 public abstract class SqlChannel extends Channel {
 
-	@Address(id="database", mandatory= false)
-	protected String database;
-	
-    @Address(id="key")
-    protected String key;
+    @Address(id="index", mandatory= false)
+    protected String index = "time";
+
+    @Address(id="data",
+    		mandatory= false,
+    		description="Varies due to the table construction. - Either column name or cell content (if more rows have the same timestamp)")
+    protected String data;
 
     @Address(id="table", mandatory= false)
     protected String table;
-
+    
+    @Address(id="column", mandatory= false)
+    protected String column;
+    
     public SqlChannel(ChannelContainer container) throws ArgumentSyntaxException {
     	super(container);
-    	
     }
 
-    public String getKey() {
-    	return key;
-    }
-    
-    public String getDatabase() {
-    	return database;
+    public String getIndexColumn() {
+    	return index;
     }
 
-    public abstract String readQuery(String table, String database, String key);
-
-    public abstract String writeQuery();
-    
-//    public abstract String checkQuery(String table, String database);
+    public String getDataColumn() {
+    	return data;
+    }
 
     public String getTable() {
-    	return table.toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
+//    	if (table == null) {
+//    		return getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
+//    	}
+    	return table;
     }
-    
-
-
 }

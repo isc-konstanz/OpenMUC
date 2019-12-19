@@ -30,29 +30,27 @@ public class ChannelTimestampFormat extends SqlChannel {
 	 * IVDATA -> Bring TestTime and TestDate together and order them in DESC to get newest value 
 	 */
 	
-    private static String QUERY_SELECT = "SELECT * FROM %s WHERE time >= %s AND time <= %s";
+    private static String QUERY_SELECT = "SELECT %s FROM %s";/* "SELECT %s FROM %s.Run2087 ORDER BY TestDate, DateTime";*/
     private static String QUERY_INSERT = "INSERT INTO %s (time,data) VALUES ('%s','%s') ON DUPLICATE KEY UPDATE data=VALUES(data)";
-//  private static String QUERY_UPDATE = "UPDATE feeds SET time = %s, value = %s WHERE id = %i";
+    private static String QUERY_EXTRA = "SELECT table_name FROM information_schema.tables where table_schema = 'ivdata'";
 
     public ChannelTimestampFormat(ChannelContainer container) throws ArgumentSyntaxException {
     	super(container);
-    	
+   
     }
-
-	@Override
-	public String readQuery(String table, String database, String key) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String writeQuery() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+    
+//    public String extraQuery(String database) {
+//    	return String.format(QUERY_EXTRA);
+//    }
+//
 //	@Override
-//	public String checkQuery(String table, String database) {
+//	public String readQuery(String table) {
+//		// TODO Auto-generated method stub
+//		return String.format(QUERY_SELECT, getTable());
+//	}
+//
+//	@Override
+//	public String writeQuery() {
 //		// TODO Auto-generated method stub
 //		return null;
 //	}

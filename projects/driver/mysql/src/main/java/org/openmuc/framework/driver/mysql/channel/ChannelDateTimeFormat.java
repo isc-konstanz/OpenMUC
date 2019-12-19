@@ -30,36 +30,31 @@ import org.slf4j.LoggerFactory;
 public class ChannelDateTimeFormat extends SqlChannel {
 	private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);
 
-    private static String QUERY_SELECT = "SELECT %s FROM %s.%s ORDER BY TIMESTAMP DESC LIMIT %s";
-    private static String QUERY_HELPER = "SELECT TIMESTAMP FROM %s.%s ORDER BY TIMESTAMP DESC LIMIT 1";
-//    private static String QUERY_INSERT = "INSERT INTO %s (time,data) VALUES ('%s','%s') ON DUPLICATE KEY UPDATE data=VALUES(data)";
-    private static String QUERY_AMOUNT = "SELECT * FROM %s.%s WHERE timestamp = %s";
-    private static String QUERY_TEST = "select %s from %s.%s where timestamp in (\r\n" + 
-    		"	select max(TIMESTAMP) from %s.%s\r\n" + 
-    		") ;";
+    private static String QUERY_SELECT = "SELECT %s FROM %s WHERE timestamp IN (SELECT MAX(TIMESTAMP) FROM %s);";
 
     public ChannelDateTimeFormat(ChannelContainer container) throws ArgumentSyntaxException {
     	super(container);
-    	readQuery(table, database, key);
     }
-    
-//    @Override
-//    public String checkQuery(String table, String database) {
-//    	String usedTimestamp = String.format(QUERY_HELPER, getDatabase(), getTable(), "1");
-//    	return String.format(QUERY_AMOUNT, getDatabase(),getTable(),usedTimestamp);
-//    }
 
-	@Override
-	public String readQuery(String table, String database, String key) {
-		// TODO Auto-generated method stub
-		return String.format(QUERY_TEST, getKey(), getDatabase(), getTable(), getDatabase(), getTable() /*SqlClient.getAmount()*/);
 
-	}
-
-	@Override
-	public String writeQuery() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public String readQuery() {
+//		// TODO Auto-generated method stub
+//		return String.format(QUERY_SELECT, getTable(), getTable());
+//
+//	}
+//
+//	@Override
+//	public String writeQuery() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//
+//	@Override
+//	protected String extraQuery(String database2) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }
