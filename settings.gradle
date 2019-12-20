@@ -1,10 +1,11 @@
-include "openmuc-app-simpledemo", "openmuc-core-api", "openmuc-core-datamanager", "openmuc-core-spi", "openmuc-datalogger-ascii", "openmuc-datalogger-slotsdb", "openmuc-driver-aggregator", "openmuc-driver-csv", "openmuc-driver-dlms", "openmuc-driver-ehz", "openmuc-driver-iec60870", "openmuc-driver-iec61850", "openmuc-driver-iec62056p21", "openmuc-driver-knx", "openmuc-driver-mbus", "openmuc-driver-modbus", "openmuc-driver-mysql", "openmuc-driver-rest", "openmuc-driver-snmp", "openmuc-driver-rpi-gpio", "openmuc-driver-rpi-w1", "openmuc-driver-wmbus", "openmuc-server-modbus", "openmuc-server-restws", "openmuc-webui-base", "openmuc-webui-channelaccesstool", "openmuc-webui-channelconfigurator", "openmuc-webui-dataexporter", "openmuc-webui-dataplotter", "openmuc-webui-mediaviewer", "openmuc-webui-simpledemovisualisation", "openmuc-webui-spi", "openmuc-webui-userconfigurator"
+include "openmuc-app-simpledemo", "openmuc-core-api", "openmuc-core-datamanager", "openmuc-core-spi", "openmuc-datalogger-ascii", "openmuc-datalogger-mysql", "openmuc-datalogger-slotsdb", "openmuc-driver-aggregator", "openmuc-driver-csv", "openmuc-driver-dlms", "openmuc-driver-ehz", "openmuc-driver-iec60870", "openmuc-driver-iec61850", "openmuc-driver-iec62056p21", "openmuc-driver-knx", "openmuc-driver-mbus", "openmuc-driver-modbus", "openmuc-driver-mysql", "openmuc-driver-rest", "openmuc-driver-snmp", "openmuc-driver-rpi-gpio", "openmuc-driver-rpi-w1", "openmuc-driver-wmbus", "openmuc-server-modbus", "openmuc-server-restws", "openmuc-webui-base", "openmuc-webui-channelaccesstool", "openmuc-webui-channelconfigurator", "openmuc-webui-dataexporter", "openmuc-webui-dataplotter", "openmuc-webui-mediaviewer", "openmuc-webui-simpledemovisualisation", "openmuc-webui-spi", "openmuc-webui-userconfigurator"
 
 project(":openmuc-app-simpledemo").projectDir = file("projects/app/simpledemo")
 project(":openmuc-core-api").projectDir = file("projects/core/api")
 project(":openmuc-core-datamanager").projectDir = file("projects/core/datamanager")
 project(":openmuc-core-spi").projectDir = file("projects/core/spi")
 project(":openmuc-datalogger-ascii").projectDir = file("projects/datalogger/ascii")
+project(":openmuc-datalogger-mysql").projectDir = file("projects/datalogger/mysql")
 project(":openmuc-datalogger-slotsdb").projectDir = file("projects/datalogger/slotsdb")
 project(":openmuc-driver-aggregator").projectDir = file("projects/driver/aggregator")
 project(":openmuc-driver-csv").projectDir = file("projects/driver/csv")
