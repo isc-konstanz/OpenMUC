@@ -32,16 +32,14 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface Address {
 
-	public final static String VALUE_DEFAULT = "VALUE_DEFAULT";
-	public final static String OPTION_DEFAULT = "OPTION_DEFAULT";
+	public final static String DEFAULT = "org.openmuc.framework.options.OPTION_DEFAULT";
 
-	String value() default VALUE_DEFAULT;
-
-	String[] id() default OPTION_DEFAULT;
-	String name() default OPTION_DEFAULT;
-	String description() default OPTION_DEFAULT;
-	String valueDefault() default OPTION_DEFAULT;
-	String valueSelection() default OPTION_DEFAULT;
+	String value() default DEFAULT;
+	String[] id() default DEFAULT;
+	String name() default DEFAULT;
+	String description() default DEFAULT;
+	String valueDefault() default DEFAULT;
+	String valueSelection() default DEFAULT;
 	boolean mandatory() default true;
 	double scale() default 1;
 }

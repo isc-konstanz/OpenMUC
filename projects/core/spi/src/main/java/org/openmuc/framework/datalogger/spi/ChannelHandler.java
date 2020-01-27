@@ -42,13 +42,6 @@ class ChannelHandler<C extends Channel> {
     	return channel;
     }
 
-    boolean isValid() {
-        if (channel.record != null && channel.record.getFlag() == Flag.VALID && channel.record.getValue() != null) {
-            return true;
-        }
-        return false;
-    }
-
     boolean isUpdate(Record update) {
         if (channel.record == null) {
             return true;

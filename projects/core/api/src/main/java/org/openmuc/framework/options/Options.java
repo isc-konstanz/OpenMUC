@@ -192,26 +192,28 @@ public class Options extends LinkedList<Option> {
                 if (annotation == null) {
                     continue;
                 }
-                String id = annotation.value();
-                if (id.isEmpty() || id.equals(Address.VALUE_DEFAULT)) {
-                	id = annotation.id()[0];
-				}
-                if (id.isEmpty() || id.equals(Address.OPTION_DEFAULT)) {
-                	id = field.getName();
-				}
-                Option option = parseOption(id, field.getType());
+                String[] ids = annotation.id();
+                if (Arrays.stream(ids).anyMatch(s -> s.isEmpty() || s.equals(Address.DEFAULT))) {
+                	String id = annotation.value();
+                	
+                    if (id.isEmpty() || id.equals(Address.DEFAULT)) {
+                    	id = field.getName();
+    				}
+                    ids = new String[] { id };
+                }
+                Option option = parseOption(ids, field.getType());
                 
-                if (!annotation.name().equals(Address.OPTION_DEFAULT)) {
+                if (!annotation.name().equals(Address.DEFAULT)) {
                 	option.setName(annotation.name());
                 }
-                if (!annotation.description().equals(Address.OPTION_DEFAULT)) {
+                if (!annotation.description().equals(Address.DEFAULT)) {
                 	option.setDescription(annotation.description());
                 }
                 
-                if (!annotation.valueDefault().equals(Address.OPTION_DEFAULT)) {
+                if (!annotation.valueDefault().equals(Address.DEFAULT)) {
                 	option.setValueDefault(parseValue(option.getType(), annotation.valueDefault()));
                 }
-                if (!annotation.valueSelection().equals(Address.OPTION_DEFAULT)) {
+                if (!annotation.valueSelection().equals(Address.DEFAULT)) {
                 	option.setValueSelection(new OptionSelection(option.getType(), annotation.valueSelection()));
                 }
             	option.setMandatory(annotation.mandatory());
@@ -247,26 +249,28 @@ public class Options extends LinkedList<Option> {
                 if (annotation == null) {
                     continue;
                 }
-                String id = annotation.value();
-                if (id.isEmpty() || id.equals(Setting.VALUE_DEFAULT)) {
-                	id = annotation.id()[0];
-				}
-                if (id.isEmpty() || id.equals(Setting.OPTION_DEFAULT)) {
-                	id = field.getName();
-				}
-                Option option = parseOption(id, field.getType());
+                String[] ids = annotation.id();
+                if (Arrays.stream(ids).anyMatch(s -> s.isEmpty() || s.equals(Setting.DEFAULT))) {
+                	String id = annotation.value();
+                	
+                    if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
+                    	id = field.getName();
+    				}
+                    ids = new String[] { id };
+                }
+                Option option = parseOption(ids, field.getType());
                 
-                if (!annotation.name().equals(Setting.OPTION_DEFAULT)) {
+                if (!annotation.name().equals(Setting.DEFAULT)) {
                 	option.setName(annotation.name());
                 }
-                if (!annotation.description().equals(Setting.OPTION_DEFAULT)) {
+                if (!annotation.description().equals(Setting.DEFAULT)) {
                 	option.setDescription(annotation.description());
                 }
                 
-                if (!annotation.valueDefault().equals(Setting.OPTION_DEFAULT)) {
+                if (!annotation.valueDefault().equals(Setting.DEFAULT)) {
                 	option.setValueDefault(parseValue(option.getType(), annotation.valueDefault()));
                 }
-                if (!annotation.valueSelection().equals(Setting.OPTION_DEFAULT)) {
+                if (!annotation.valueSelection().equals(Setting.DEFAULT)) {
                 	option.setValueSelection(new OptionSelection(option.getType(), annotation.valueSelection()));
                 }
             	option.setMandatory(annotation.mandatory());
@@ -280,8 +284,8 @@ public class Options extends LinkedList<Option> {
         return null;
 	}
 
-    private static Option parseOption(String id, Class<?> type) {
-        Option option = new Option(id);
+    private static Option parseOption(String[] ids, Class<?> type) {
+        Option option = new Option(ids);
         
         if (type.isAssignableFrom(boolean.class) || type.isAssignableFrom(Boolean.class)) {
         	option.setType(ValueType.BOOLEAN);

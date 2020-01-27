@@ -99,7 +99,7 @@ public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
             switch(configs.getPinMode()) {
                 case DIGITAL_INPUT:
                     pin = gpio.provisionDigitalInputPin(p, configs.getPullResistance());
-                    
+
                     if (configs.isCounter()) {
                         connection = new EdgeCounter(pin, configs.getPullResistance(), configs.getBounceTime());
                     }
@@ -120,7 +120,7 @@ public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
             return connection;
             
         } catch (RuntimeException e) {
-            throw new ArgumentSyntaxException("Unable to configure GPIO pin: " + e.getMessage());
+            throw new ArgumentSyntaxException("Unable to configure GPIO pin: " + e);
         }
     }
 

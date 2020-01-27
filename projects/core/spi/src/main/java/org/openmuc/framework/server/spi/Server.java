@@ -45,9 +45,14 @@ public abstract class Server<C extends Channel> extends ServerContext {
         return this;
     }
 
-    public final void activate(DataAccessService dataAccess) throws Exception {
-    	onActivate(dataAccess);
-    	onActivate();
+    public final void activate(DataAccessService dataAccess) {
+    	try {
+			onActivate(dataAccess);
+	    	onActivate();
+	    	
+		} catch (Exception e) {
+			logger.warn("Error activating server {}: {}", getId(), e.getMessage());
+		}
     }
 
     public final void deactivate() {
