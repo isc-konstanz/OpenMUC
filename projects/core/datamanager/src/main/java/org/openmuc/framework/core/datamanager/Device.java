@@ -193,8 +193,12 @@ public final class Device {
         newChannelConfig.channel.config = newChannelConfig;
         newChannelConfig.channel.setNewDeviceState(oldChannelConfig.state,
                 newChannelConfig.channel.getLatestRecord().getFlag());
-        if (!newChannelConfig.isDisabled() && (newChannelConfig.getLoggingInterval() > 0)) {
-            dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
+        if (!newChannelConfig.isDisabled() && 
+                (!newChannelConfig.getLoggingSettings().equals(ChannelConfig.LOGGING_SETTINGS_DEFAULT) ||
+                newChannelConfig.getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT)) {
+            if (newChannelConfig.getLoggingInterval() > 0) {
+                dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
+            }
             logChannels.add(newChannelConfig);
         }
         else if (!oldChannelConfig.isDisabled() && oldChannelConfig.getLoggingInterval() > 0) {
@@ -264,9 +268,12 @@ public final class Device {
                 newChannelConfigEntry.getValue().channel = oldChannelConfig.channel;
                 newChannelConfigEntry.getValue().channel.config = newChannelConfigEntry.getValue();
                 newChannelConfigEntry.getValue().channel.setNewDeviceState(channelState, flag);
-                if (!newChannelConfigEntry.getValue().isDisabled()
-                        && (newChannelConfigEntry.getValue().getLoggingInterval() > 0)) {
-                    dataManager.addToLoggingCollections(newChannelConfigEntry.getValue().channel, currentTime);
+                if (!newChannelConfigEntry.getValue().isDisabled() && 
+                        (!newChannelConfigEntry.getValue().getLoggingSettings().equals(ChannelConfig.LOGGING_SETTINGS_DEFAULT) ||
+                        newChannelConfigEntry.getValue().getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT)) {
+                    if (newChannelConfigEntry.getValue().getLoggingInterval() > 0) {
+                        dataManager.addToLoggingCollections(newChannelConfigEntry.getValue().channel, currentTime);
+                    }
                     logChannels.add(newChannelConfigEntry.getValue());
                 }
             }
@@ -309,9 +316,12 @@ public final class Device {
                 newChannelConfig.channel = oldChannelConfig.channel;
                 newChannelConfig.channel.config = newChannelConfig;
                 newChannelConfig.channel.setNewDeviceState(channelState, flag);
-                if (!newChannelConfigEntry.getValue().isDisabled()
-                        && (newChannelConfigEntry.getValue().getLoggingInterval() > 0)) {
-                    dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
+                if (!newChannelConfigEntry.getValue().isDisabled() && 
+                        (!newChannelConfigEntry.getValue().getLoggingSettings().equals(ChannelConfig.LOGGING_SETTINGS_DEFAULT) ||
+                        newChannelConfigEntry.getValue().getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT)) {
+                    if (newChannelConfigEntry.getValue().getLoggingInterval() > 0) {
+                        dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
+                    }
                     logChannels.add(newChannelConfigEntry.getValue());
                 }
             }

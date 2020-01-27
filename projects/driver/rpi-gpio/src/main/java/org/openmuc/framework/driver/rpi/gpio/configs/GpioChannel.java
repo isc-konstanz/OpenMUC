@@ -79,7 +79,7 @@ public class GpioChannel extends Channel {
         return false;
     }
 
-    public double getDerivariveTime() {
+    public double getDerivativeTime() {
         return derivativeTime.doubleValue();
     }
 

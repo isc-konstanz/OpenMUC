@@ -35,7 +35,7 @@ public final class SamplingTask extends DeviceTask {
     private static final Logger logger = LoggerFactory.getLogger(SamplingTask.class);
 
     List<ChannelRecordContainerImpl> channelRecordContainers;
-    private boolean methodNotExceptedExceptionThrown = false;
+    private boolean unsupportedOperationExceptionThrown = false;
     private boolean unknownDriverExceptionThrown = false;
     private volatile boolean disabled = false;
 
@@ -47,7 +47,7 @@ public final class SamplingTask extends DeviceTask {
             String samplingGroup) {
         this.dataManager = dataManager;
         this.device = device;
-        channelRecordContainers = selectedChannels;
+        this.channelRecordContainers = selectedChannels;
         this.samplingGroup = samplingGroup;
     }
 
@@ -57,7 +57,7 @@ public final class SamplingTask extends DeviceTask {
             return;
         }
         disabled = true;
-        if (methodNotExceptedExceptionThrown) {
+        if (unsupportedOperationExceptionThrown) {
             for (ChannelRecordContainerImpl channelRecordContainer : channelRecordContainers) {
                 channelRecordContainer.getChannel().setFlag(Flag.ACCESS_METHOD_NOT_SUPPORTED);
             }
@@ -89,7 +89,7 @@ public final class SamplingTask extends DeviceTask {
         try {
             executeRead();
         } catch (UnsupportedOperationException e) {
-            methodNotExceptedExceptionThrown = true;
+            unsupportedOperationExceptionThrown = true;
         } catch (ConnectionException e) {
             // Connection to device lost. Signal to device instance and end task without notifying DataManager
             logger.warn("Connection to device {} lost because {}. Trying to reconnect...", device.deviceConfig.getId(),
@@ -101,7 +101,7 @@ public final class SamplingTask extends DeviceTask {
             dataManager.interrupt();
             return;
         } catch (Exception e) {
-            logger.warn("unexpected exception thrown by read funtion of driver ", e);
+            logger.warn("Unexpected exception thrown by read funtion of driver ", e);
             unknownDriverExceptionThrown = true;
         }
 

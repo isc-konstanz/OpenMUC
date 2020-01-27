@@ -45,9 +45,14 @@ public abstract class Server<C extends Channel> extends ServerContext {
         return this;
     }
 
-    public final void activate(DataAccessService dataAccess) throws Exception {
-    	onActivate(dataAccess);
-    	onActivate();
+    public final void activate(DataAccessService dataAccess) {
+    	try {
+			onActivate(dataAccess);
+	    	onActivate();
+	    	
+		} catch (Exception e) {
+			logger.warn("Error activating server {}: {}", getId(), e.getMessage());
+		}
     }
 
     public final void deactivate() {
@@ -68,7 +73,6 @@ public abstract class Server<C extends Channel> extends ServerContext {
 
 	@Override
 	public final void serverMappings(List<ServerMappingContainer> mappings) {
-		// TODO Auto-generated method stub
 		onConfigure(getChannels(mappings));
 	}
 
@@ -76,12 +80,11 @@ public abstract class Server<C extends Channel> extends ServerContext {
 
 	@Override
 	public final void updatedConfiguration(List<ServerMappingContainer> mappings) {
-		// TODO Auto-generated method stub
 		onUpdate(getChannels(mappings));
 	}
 
 	protected void onUpdate(List<C> channels) {
-		// TODO Auto-generated method stub
+        // Placeholder for the optional implementation
     	onConfigure(channels);
     }
 

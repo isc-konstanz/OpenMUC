@@ -32,6 +32,7 @@ import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.rpi.gpio.InputPin;
 import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
 import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 
 import com.pi4j.io.gpio.GpioPinDigital;
 import com.pi4j.io.gpio.PinPullResistance;
@@ -46,6 +47,11 @@ public class EdgeCounter extends InputPin {
         
         counter = new EdgeListener(pin, pullResistance, bounceTime);
         pin.addListener(counter);
+    }
+
+    @Override
+    public void onStartListening(List<GpioChannel> channels, RecordsReceivedListener listener) throws ConnectionException {
+    	counter.setRecordListener(channels, listener);
     }
 
     @Override
@@ -70,7 +76,7 @@ public class EdgeCounter extends InputPin {
                 
                 if (channel.isDerivative()) {
                     if (lastRecord != null) {
-                        double timeDelta = (samplingTime - lastRecord.getTimestamp())/channel.getDerivariveTime();
+                        double timeDelta = (samplingTime - lastRecord.getTimestamp())/channel.getDerivativeTime();
                         if (timeDelta > 0) {
                             value = new DoubleValue(counterDelta/timeDelta);
                         }

@@ -41,7 +41,7 @@ public abstract class Configurable {
     }
 
     protected Configurable(String address, String settings) throws ArgumentSyntaxException {
-    	configure(address, settings);
+        configure(address, settings);
     }
 
     public void configure(String address, String settings) throws ArgumentSyntaxException {
@@ -51,89 +51,44 @@ public abstract class Configurable {
 
     protected void configureAddress(String addressStr) throws ArgumentSyntaxException {
         Map<String, Value> address = parse(addressStr, Options.parseAddress(this.getClass()));
-        
-        List<Field> fields = new LinkedList<Field>();
-        Class<?> clazz = this.getClass();
-        while(clazz.getSuperclass() != null) {
-            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-            clazz = clazz.getSuperclass();
-        }
+
+        List<Field> fields = getFields();
         for (Field field : fields) {
             Address option = field.getAnnotation(Address.class);
             if (option == null) {
                 continue;
             }
-            String id = option.value();
-            if (id.isEmpty() || id.equals(Address.VALUE_DEFAULT)) {
-            	String[] ids = option.id();
-    			for (String i : ids) {
-    				if (i.isEmpty() || i.equals(Address.OPTION_DEFAULT)) {
-    					continue;
-    				}
-    				if (address.containsKey(i)) {
-    					id = i;
-    					break;
-    				}
-    			}
-			}
-            if (id.isEmpty() || id.equals(Address.OPTION_DEFAULT)) {
-            	id = field.getName();
-			}
-            
-            Value value = address.get(id);
-            if (value != null) {
-                try {
-                    field.set(this, extractValue(field, value));
-                    
-                } catch (IllegalAccessException | NoSuchFieldException e) {
-                    throw new ArgumentSyntaxException(MessageFormat.format("Error parsing address of \"{0}\": {1}", 
-                            this.getClass().getSimpleName(), e.getMessage()));
-                }
+            String id = option.id()[0];
+            if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
+                id = option.value();
             }
+            if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
+                id = field.getName();
+            }
+            if (id.isEmpty() || id.equals(Address.DEFAULT)) {
+                id = field.getName();
+            }
+            setField(field, address.get(id));
         }
     }
 
     protected void configureSettings(String settingsStr) throws ArgumentSyntaxException {
         Map<String, Value> settings = parse(settingsStr, Options.parseSettings(this.getClass()));
         
-        List<Field> fields = new LinkedList<Field>();
-        Class<?> clazz = this.getClass();
-        while(clazz.getSuperclass() != null) {
-            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-            clazz = clazz.getSuperclass();
-        }
+        List<Field> fields = getFields();
         for (Field field : fields) {
             Setting option = field.getAnnotation(Setting.class);
             if (option == null) {
                 continue;
             }
-            String id = option.value();
-            if (id.isEmpty() || id.equals(Setting.VALUE_DEFAULT)) {
-            	String[] ids = option.id();
-    			for (String i : ids) {
-    				if (i.isEmpty() || i.equals(Setting.OPTION_DEFAULT)) {
-    					continue;
-    				}
-    				if (settings.containsKey(i)) {
-    					id = i;
-    					break;
-    				}
-    			}
-			}
-            if (id.isEmpty() || id.equals(Setting.OPTION_DEFAULT)) {
-            	id = field.getName();
-			}
-            
-            Value value = settings.get(id);
-            if (value != null) {
-                try {
-                    field.set(this, extractValue(field, value));
-                    
-                } catch (IllegalAccessException | NoSuchFieldException e) {
-                    throw new ArgumentSyntaxException(MessageFormat.format("Error parsing settings of \"{0}\": {1}", 
-                            this.getClass().getSimpleName(), e.getMessage()));
-                }
+            String id = option.id()[0];
+            if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
+                id = option.value();
             }
+            if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
+                id = field.getName();
+            }
+            setField(field, settings.get(id));
         }
     }
 
@@ -142,43 +97,48 @@ public abstract class Configurable {
         if (parameterStr != null && !parameterStr.trim().isEmpty()) {
             String[] parameterArr = parameterStr.trim().split(options.getSeparator());
             
-            if (parameterArr.length >= options.getMandatoryCount() && parameterArr.length <= options.size()) {
+            if (parameterArr.length >= options.getMandatoryCount()) {
                 if (options.hasKeyValuePairs()) {
                     for (Option option : options) {
-                        boolean mandatoryOptMissing = option.isMandatory() ? true : false;
-                        
                         String key = option.getId();
                         Value value = null;
+                        
+                        boolean mandatoryOptMissing = option.isMandatory() ? true : false;
+                        
+                        parameterLoop:
                         for (String parameter : parameterArr) {
                             String[] keyValue = parameter.trim().split(options.getAssignmentOperator(), 2);
                             if (keyValue.length != 2) {
                                 throw new ArgumentSyntaxException("Parameter is not a key value pair of type " 
                                         + "<key>" + options.getAssignmentOperator() + "<value> in parsed options: " + parameter);
                             }
-                            if (keyValue[0].trim().equalsIgnoreCase(key)) {
-                                if (keyValue[1].trim().isEmpty()) {
-                                    throw new ArgumentSyntaxException("Parameter " + key + "is empty");
+                            if (keyValue[1].trim().isEmpty()) {
+                                throw new ArgumentSyntaxException("Parameter " + parameter + "is empty");
+                            }
+                            for (String id : option.getIds()) {
+                                if (keyValue[0].trim().equalsIgnoreCase(id)) {
+                                    mandatoryOptMissing = false;
+                                    
+                                    value = Options.parseValue(option.getType(), keyValue[1].trim());
+                                    break parameterLoop;
                                 }
-                                mandatoryOptMissing = false;
-                                
-                                value = Options.parseValue(option.getType(), keyValue[1].trim());
                             }
                         }
                         if (mandatoryOptMissing) {
                             throw new ArgumentSyntaxException("Mandatory parameter " + key + " is not present in parsed Settings");
                         }
                         
-                        if (value != null) {
-                            if (option.getValueSelection() != null 
-                                    && option.getValueSelection().hasValidation() 
-                                    && !option.getValueSelection().contains(value)) {
-                                throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
-                            }
-                        }
-                        else if (option.getValueDefault() != null) {
+                        if (value == null) {
                             value = option.getValueDefault();
                         }
-                        result.put(key, value);
+                        if (value != null) {
+                            if (option.getValueSelection() != null && 
+                                    option.getValueSelection().hasValidation() &&
+                                   !option.getValueSelection().contains(value)) {
+                                throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
+                            }
+                            result.put(key, value);
+                        }
                     }
                 }
                 else {
@@ -200,31 +160,54 @@ public abstract class Configurable {
                             i++;
                         }
                         
-                        if (value != null) {
-                            if (option.getValueSelection() != null 
-                                    && option.getValueSelection().hasValidation() 
-                                    && !option.getValueSelection().contains(value)) {
-                                throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
-                            }
-                        }
-                        else if (option.getValueDefault() != null) {
+                        if (value == null) {
                             value = option.getValueDefault();
                         }
-                        result.put(option.getId(), value);
+                        if (value != null) {
+                            if (option.getValueSelection() != null && 
+                                    option.getValueSelection().hasValidation() &&
+                                   !option.getValueSelection().contains(value)) {
+                                throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
+                            }
+                            result.put(option.getId(), value);
+                        }
                     }
                 }
             }
-            else if (parameterArr.length < options.getMandatoryCount()) {
+            else {
                 throw new ArgumentSyntaxException("Mandatory parameters not configured in parameter string: " + parameterStr);
-            }
-            else if (parameterArr.length > options.size()) {
-                throw new ArgumentSyntaxException("Too many parameters in passed string to be parsed: " + parameterStr);
             }
         }
         else if (options.getMandatoryCount() > 0) {
             throw new ArgumentSyntaxException("Mandatory parameters not configured in empty string");
         }
         return result;
+    }
+
+    private List<Field> getFields() {
+        List<Field> fields = new LinkedList<Field>();
+        
+        Class<?> type = this.getClass();
+        while(type.getSuperclass() != null) {
+            fields.addAll(Arrays.asList(type.getDeclaredFields()));
+            type = type.getSuperclass();
+        }
+        return fields;
+    }
+
+    private void setField(Field field, Value value) throws ArgumentSyntaxException {
+        if (value != null) {
+            try {
+            	Object object = extractValue(field, value);
+            	
+        		field.setAccessible(true);
+                field.set(this, object);
+                
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                throw new ArgumentSyntaxException(MessageFormat.format("Error parsing parameter of \"{0}\": {1}", 
+                        this.getClass().getSimpleName(), e.getMessage()));
+            }
+        }
     }
 
     private Object extractValue(Field field, Value value)

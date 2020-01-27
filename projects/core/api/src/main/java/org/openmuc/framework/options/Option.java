@@ -40,7 +40,7 @@ public class Option {
     public static final boolean MANDATORY_DEFAULT = false;
     public static final ValueType TYPE_DEFAULT = ValueType.DOUBLE;
 
-    private final String id;
+    private final String[] ids;
     private String name = null;
     private String description = null;
     private boolean mandatory = MANDATORY_DEFAULT;
@@ -49,11 +49,11 @@ public class Option {
     private Value valueDefault = null;
     private OptionSelection valueSelection = null;
 
-    Option(String key, String name, ValueType type, 
+    Option(String id, String name, ValueType type, 
             boolean mandatory, String description, 
             Value valueDefault, OptionSelection valueSelection) {
         
-        this.id = key;
+        this(id);
         this.name = name;
         this.type = type;
         this.mandatory = mandatory;
@@ -63,11 +63,19 @@ public class Option {
     }
 
     Option(String id) {
-        this.id = id;
+        this(new String[] { id });
+    }
+
+    Option(String[] ids) {
+        this.ids = ids;
     }
 
     public String getId() {
-        return this.id;
+        return this.ids[0];
+    }
+
+    public String[] getIds() {
+        return this.ids;
     }
 
     public String getName() {
