@@ -79,36 +79,36 @@ public class EdgeListener implements GpioPinListenerDigital {
             long samplingTime = System.currentTimeMillis();
             
             if (lastSamplingTime == null || samplingTime - lastSamplingTime > bounceTime) {
-                synchronized (this.counter) {
+                synchronized (counter) {
+                    counter++;
                     
-                    this.counter++;
-
-                    List<ChannelRecordContainer> containers = new LinkedList<ChannelRecordContainer>();
-                    for (GpioChannel channel : channels) {
-                        Value value = null;
-                        if (channel.isDerivative()) {
-                            if (lastSamplingTime != null) {
-                                double counterDelta = 1.0/channel.getImpulses();
-                                double timeDelta = (samplingTime - lastSamplingTime)/channel.getDerivariveTime();
-                                if (timeDelta > 0) {
-                                    value = new DoubleValue(counterDelta/timeDelta);
+                    if (listener != null && channels.size() > 0) {
+                        List<ChannelRecordContainer> containers = new LinkedList<ChannelRecordContainer>();
+                        for (GpioChannel channel : channels) {
+                            Value value = null;
+                            if (channel.isDerivative()) {
+                                if (lastSamplingTime != null) {
+                                    double counterDelta = 1.0/channel.getImpulses();
+                                    double timeDelta = (samplingTime - lastSamplingTime)/channel.getDerivativeTime();
+                                    if (timeDelta > 0) {
+                                        value = new DoubleValue(counterDelta/timeDelta);
+                                    }
                                 }
                             }
+                            else {
+                                value = new DoubleValue(counter/channel.getImpulses());
+                            }
+                            if (value != null) {
+                            	logger.debug("Registered {}. edge for channel {}: {}", counter, channel.getId(), value);
+                            	channel.setRecord(new Record(value, samplingTime, Flag.VALID));
+                            }
+                            else {
+                            	channel.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
+                            }
+                            containers.add(channel);
                         }
-                        else {
-                            value = new DoubleValue(this.counter/channel.getImpulses());
-                        }
-                        if (value != null) {
-                        	logger.debug("Registered {}. edge for {}", this.counter, pin.getName());
-                        	channel.setRecord(new Record(value, samplingTime, Flag.VALID));
-                        }
-                        else {
-                        	channel.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
-                        }
-                        containers.add(channel);
+                        listener.newRecords(containers);
                     }
-                    listener.newRecords(containers);
-                    
                     lastSamplingTime = samplingTime;
                 }
             }
