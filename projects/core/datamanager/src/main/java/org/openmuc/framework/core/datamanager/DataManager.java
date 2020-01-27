@@ -523,9 +523,9 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             List<ChannelRecordContainer> recordContainers;
             while ((recordContainers = receivedRecordContainers.poll()) != null) {
                 for (ChannelRecordContainer container : recordContainers) {
-                    ChannelRecordContainerImpl containerImpl = (ChannelRecordContainerImpl) container;
-                    if (containerImpl.getChannel().getChannelState() == ChannelState.LISTENING) {
-                        containerImpl.getChannel().setNewRecord(containerImpl.getRecord());
+                	ChannelImpl channelImpl = (ChannelImpl) container.getChannel();
+                    if (channelImpl.getChannelState() == ChannelState.LISTENING) {
+                    	channelImpl.setNewRecord(container.getRecord());
                     }
                 }
             }
