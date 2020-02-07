@@ -52,12 +52,16 @@ public class Channel extends ChannelContext {
     }
 
 	protected void doConfigure(org.openmuc.framework.dataaccess.Channel channel) throws ArgumentSyntaxException {
-        if (this.settings == null || !settings.equals(channel.getLoggingSettings())) {
-            configureSettings(channel.getLoggingSettings());
-        }
-        this.settings = channel.getLoggingSettings();
         this.channel = channel;
+        doConfigure(channel.getLoggingSettings());
     	onConfigure();
+    }
+
+    protected void doConfigure(String settings) throws ArgumentSyntaxException {
+        if (this.settings == null || !this.settings.equals(settings)) {
+            configureSettings(settings);
+        }
+        this.settings = settings;
     }
 
     protected void onConfigure() throws ArgumentSyntaxException {
