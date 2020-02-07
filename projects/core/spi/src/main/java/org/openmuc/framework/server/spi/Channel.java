@@ -73,11 +73,11 @@ public class Channel extends ChannelContext {
         return channel.getValueTypeLength();
     }
 
-	public final String getAddressString() {
+	public final String getAddress() {
 		return channel.getChannelAddress();
 	}
 
-	public final String getSettingsString() {
+	public final String getSettings() {
 		return channel.getChannelSettings();
 	}
 
