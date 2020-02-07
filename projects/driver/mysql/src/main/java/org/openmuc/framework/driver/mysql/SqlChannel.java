@@ -27,36 +27,45 @@ import org.openmuc.framework.options.Address;
 
 public abstract class SqlChannel extends Channel {
 
-    @Address(id="index", mandatory= false)
-    protected String index = "time";
+	@Address(id = "index", mandatory = false)
+	protected String index = "time";
 
-    @Address(id="data",
-    		mandatory= false,
-    		description="Varies due to the table construction. - Either column name or cell content (if more rows have the same timestamp)")
-    protected String data;
+	@Address(id = "data",
+			mandatory = false,
+			description = "Varies due to the table construction. - Either column name or cell content (if more rows have the same timestamp)")
+	protected String data;
 
-    @Address(id="table", mandatory= false)
-    protected String table;
-    
-    @Address(id="column", mandatory= false)
-    protected String column;
-    
-    public SqlChannel(ChannelContainer container) throws ArgumentSyntaxException {
-    	super(container);
-    }
+	@Address(id = "table", mandatory = false)
+	protected String table;
 
-    public String getIndexColumn() {
-    	return index;
-    }
+	@Address(id = "column", mandatory = false)
+	protected String column;
 
-    public String getDataColumn() {
-    	return data;
-    }
+	public SqlChannel(ChannelContainer container) throws ArgumentSyntaxException {
+		super(container);
+		readQuery();
+	}
 
-    public String getTable() {
+	public String readQuery() {
+		return null;
+	}
+
+	public String getIndexColumn() {
+		return index;
+	}
+
+	public String getDataColumn() {
+		return data;
+	}
+
+	public String getTable() {
 //    	if (table == null) {
 //    		return getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
 //    	}
-    	return table;
-    }
+		return table;
+	}
+
+	public String getColumn() {
+		return column;
+	}
 }

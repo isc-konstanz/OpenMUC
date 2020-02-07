@@ -27,17 +27,26 @@ public class SqlChannel extends SqlConfigs {
             + "data %s, "
             + "PRIMARY KEY (time)"
             + ") ENGINE=MYISAM";
-    private static String QUERY_SELECT = "SELECT * FROM %s WHERE time >= %s AND time <= %s";
+    public static String QUERY_SELECT_SINGLEROW = "SELECT %s FROM halm.%s WHERE timestamp >= \"%s\" AND timestamp <= \"%s\"";
+    public static String QUERY_SELECT_DATETIME = "SELECT %s FROM %s.%s WHERE testtime >= \"%s\" AND testtime <= \"%s and testdate >= \"%s\" AND testdate >= \"%s\" ";
+	public static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE SVNAME = '%s' AND  timestamp >= '%s' AND timestamp <= '%s'";
     private static String QUERY_INSERT = "INSERT INTO %s (time,data) VALUES ('%s','%s') ON DUPLICATE KEY UPDATE data=VALUES(data)";
 
     @Setting(mandatory= false)
     protected String index = "time";
 
     @Setting(mandatory= false)
-    protected String column = "data";
+    protected String column;
+
+    @Setting(mandatory= false)
+    protected String data;
 
     @Setting(mandatory= false)
     protected String key = null;
+
+    public String getColumn() {
+    	return column;
+    }
 
 //    public static SqlChannel create(SqlCallbacks callbacks, Transaction transaction, Integer id, 
 //            String table, String type, boolean empty) throws EmoncmsException {

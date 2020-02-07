@@ -30,31 +30,14 @@ import org.slf4j.LoggerFactory;
 public class ChannelDateTimeFormat extends SqlChannel {
 	private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);
 
-    private static String QUERY_SELECT = "SELECT %s FROM %s WHERE timestamp IN (SELECT MAX(TIMESTAMP) FROM %s);";
+    private static String QUERY_SELECT_DATETIME = "SELECT %s FROM %s WHERE (TestTime =  '12:05:42') and (TestDate = '2019-12-10');";
 
     public ChannelDateTimeFormat(ChannelContainer container) throws ArgumentSyntaxException {
     	super(container);
     }
 
-
-//	@Override
-//	public String readQuery() {
-//		// TODO Auto-generated method stub
-//		return String.format(QUERY_SELECT, getTable(), getTable());
-//
-//	}
-//
-//	@Override
-//	public String writeQuery() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//
-//	@Override
-//	protected String extraQuery(String database2) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
+	@Override
+	public String readQuery() {
+		return String.format(QUERY_SELECT_DATETIME, getDataColumn(), getTable());
+	}
 }
