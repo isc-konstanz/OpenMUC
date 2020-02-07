@@ -134,6 +134,11 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
+    public int getValueTypeLength() {
+        return config.getValueTypeLength();
+    }
+
+    @Override
     public double getScalingFactor() {
         if (config.getScalingFactor() == null) {
             return 1d;
@@ -167,13 +172,18 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
-    public String getDriverName() {
+    public String getDriverId() {
         return config.deviceParent.driverParent.getId();
     }
 
     @Override
     public String getDeviceAddress() {
         return config.deviceParent.getDeviceAddress();
+    }
+
+    @Override
+    public String getDeviceSettings() {
+        return config.deviceParent.getSettings();
     }
 
     @Override

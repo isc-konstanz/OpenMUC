@@ -58,7 +58,7 @@ public abstract class CsvChannel extends Channel {
     protected int lastIndexRead = 0;
 
     public CsvChannel(ChannelContainer channel, Map<String, List<String>> csv, boolean rewind) throws ArgumentSyntaxException {
-    	super(channel);
+    	doConfigure(channel);
     	if (!csv.containsKey(column)) {
     		throw new ArgumentSyntaxException("Unknown column header specified: " + column);
     	}

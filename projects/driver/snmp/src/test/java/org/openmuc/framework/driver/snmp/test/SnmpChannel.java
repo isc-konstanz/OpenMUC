@@ -87,6 +87,12 @@ public class SnmpChannel implements Channel {
     }
 
     @Override
+    public int getValueTypeLength() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
     public int getSamplingInterval() {
         return samplingInterval;
     }
@@ -115,7 +121,7 @@ public class SnmpChannel implements Channel {
 	}
 
     @Override
-    public String getDriverName() {
+    public String getDriverId() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -123,6 +129,12 @@ public class SnmpChannel implements Channel {
     @Override
     public String getDeviceAddress() {
         return deviceAddress;
+    }
+
+    @Override
+    public String getDeviceSettings() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
