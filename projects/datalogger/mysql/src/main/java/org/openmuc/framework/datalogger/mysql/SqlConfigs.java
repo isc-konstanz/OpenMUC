@@ -3,6 +3,7 @@ package org.openmuc.framework.datalogger.mysql;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.datalogger.spi.Channel;
 import org.openmuc.framework.options.Setting;
+import org.openmuc.framework.options.SettingsSyntax;
 import org.osgi.service.component.annotations.Component;
 
 @Component
@@ -70,7 +71,23 @@ public class SqlConfigs extends Channel {
 	}
 
 	@Override
+    protected void doConfigure(String settings) throws ArgumentSyntaxException {
+		if (settings != null && settings.equals("*")) {
+			if (getDriverId() != "mysql") {
+				throw new ArgumentSyntaxException("Unable to copy logging settings if not mysql driver");
+			}
+			// TODO: verify if a more generic way to use a separator is necessary
+			settings = getDeviceAddress() + SettingsSyntax.SEPARATOR_DEFAULT + 
+					getDeviceSettings() + SettingsSyntax.SEPARATOR_DEFAULT + 
+					getAddress() + SettingsSyntax.SEPARATOR_DEFAULT + 
+					getSettings();
+		}
+		super.doConfigure(settings);
+    }
+
+	@Override
 	protected void onConfigure() throws ArgumentSyntaxException {
+		super.onConfigure();
 		if (database == null) {
 			database = SqlLogger.DB_NAME;
 		}
