@@ -49,17 +49,18 @@ class ChannelHandlerDynamic<C extends Channel> extends ChannelHandler<C> {
 			return false;
 		}
 		else {
-			switch(channel.type) {
+			switch(channel.getValueType()) {
 			case INTEGER:
 			case SHORT:
 			case LONG:
 			case FLOAT:
 			case DOUBLE:
 				double delta = Math.abs(update.getValue().asDouble() - channel.record.getValue().asDouble());
-				if (channel.tolerance >= delta && (update.getTimestamp() - channel.record.getTimestamp()) < channel.intervalMax) {
+				if (channel.getLoggingTolerance() >= delta && 
+						(update.getTimestamp() - channel.record.getTimestamp()) < channel.getLoggingIntervalMax()) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Skipped logging value inside tolerance: {} -> {} <= {}",
-								channel.record.getValue().asDouble(), update.getValue(), channel.tolerance);
+								channel.record.getValue().asDouble(), update.getValue(), channel.getLoggingTolerance());
 					}
 					return false;
 				}

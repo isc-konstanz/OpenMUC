@@ -53,7 +53,7 @@ public class RestChannelWrapper {
     }
 
     public String getDriver() {
-    	return channel.getDriverName();
+    	return channel.getDriverId();
     }
 
     public String getDevice() {

@@ -26,28 +26,23 @@ import java.util.List;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.dataaccess.ChannelState;
+import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.options.Setting;
 
-public class Channel extends ChannelContext implements LogChannel, LogRecordContainer {
+public class Channel extends ChannelContext {
 
-    protected String id;
-    protected String desc;
-    protected String unit;
-    protected ValueType type;
-    protected Integer typeLength;
+	private org.openmuc.framework.dataaccess.Channel channel;
 
     @Setting(id={"intervalMax", "loggingMaxInterval"}, mandatory = false)
-    protected int intervalMax = 0;
-    protected int interval;
-    protected int timeOffset;
+    private int intervalMax = 0;
 
     @Setting(id= {"tolerance", "loggingTolerance"}, mandatory = false)
-    protected double tolerance = 0;
+    private double tolerance = 0;
 
     @Setting(mandatory = false)
-    protected boolean average = false;
+    private boolean average = false;
 
     private String settings = null;
 
@@ -56,119 +51,126 @@ public class Channel extends ChannelContext implements LogChannel, LogRecordCont
 	protected Channel() {
     }
 
-    protected Channel(LogChannel configs) throws ArgumentSyntaxException {
-        doConfigure(configs);
-    }
-
-    void doConfigure(LogChannel configs) throws ArgumentSyntaxException {
-        this.id = configs.getId();
-        this.desc = configs.getDescription();
-        this.unit = configs.getUnit();
-        this.type = configs.getValueType();
-        this.typeLength = configs.getValueTypeLength();
-        
-        if (this.settings == null || !settings.equals(configs.getLoggingSettings())) {
-            configureSettings(configs.getLoggingSettings());
+	protected void doConfigure(org.openmuc.framework.dataaccess.Channel channel) throws ArgumentSyntaxException {
+        if (this.settings == null || !settings.equals(channel.getLoggingSettings())) {
+            configureSettings(channel.getLoggingSettings());
         }
-        if (intervalMax < 0) {
-            throw new ArgumentSyntaxException("Invalid maximum logging interval for channel: " + id);
-        }
-        else {
-            this.intervalMax = Math.max(interval, intervalMax);
-        }
-        this.interval = configs.getLoggingInterval();
-        this.timeOffset = configs.getLoggingTimeOffset();
-        
-        this.settings = configs.getLoggingSettings();
-        onConfigure();
+        this.settings = channel.getLoggingSettings();
+        this.channel = channel;
+    	onConfigure();
     }
 
     protected void onConfigure() throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
+        if (intervalMax < 0) {
+            throw new ArgumentSyntaxException("Invalid maximum logging interval for channel: " + getId());
+        }
+        else {
+            this.intervalMax = Math.max(getLoggingInterval(), intervalMax);
+        }
     }
 
     public final ChannelContext getContext() {
         return this;
     }
 
-	@Override
-	@Deprecated
-	public String getChannelId() {
-		return id;
-	}
-
     public final String getId() {
-        return id;
+        return channel.getId();
     }
 
     public final String getDescription() {
-        return desc;
+        return channel.getDescription();
     }
 
     public final String getUnit() {
-        return unit;
+        return channel.getUnit();
     }
 
     public final ValueType getValueType() {
-        return type;
+        return channel.getValueType();
     }
 
-    @Override
-    public Integer getValueTypeLength() {
-        return typeLength;
+    public final int getValueTypeLength() {
+        return channel.getValueTypeLength();
     }
 
-    @Override
-    public Integer getLoggingInterval() {
-        return interval;
-    }
+	public final String getAddressString() {
+		return channel.getChannelAddress();
+	}
 
-    public Integer getLoggingIntervalMax() {
+	public final String getSettingsString() {
+		return channel.getChannelSettings();
+	}
+
+	public final double getScalingFactor() {
+		return channel.getScalingFactor();
+	}
+
+	public final int getSamplingInterval() {
+		return channel.getSamplingInterval();
+	}
+
+	public final int getSamplingTimeOffset() {
+		return channel.getSamplingTimeOffset();
+	}
+
+	public final int getLoggingInterval() {
+		return channel.getLoggingInterval();
+	}
+
+    public final int getLoggingIntervalMax() {
     	return intervalMax;
     }
 
-    @Override
-    public Integer getLoggingTimeOffset() {
-        return timeOffset;
-    }
+	public final int getLoggingTimeOffset() {
+		return channel.getLoggingTimeOffset();
+	}
 
-    public double getLoggingTolerance() {
+    public final double getLoggingTolerance() {
         return tolerance;
     }
 
-    @Override
-    @Deprecated
-    public String getLoggingSettings() {
-        return settings;
-    }
-
-    public boolean isAveraging() {
+    public final boolean isAveraging() {
     	return average;
     }
 
-    public Value getValue() {
-        if (record == null) {
-            return null;
-        }
-        return record.getValue();
-    }
+	public final String getDriverId() {
+		return channel.getDriverId();
+	}
 
-    public Long getTime() {
-        if (record == null) {
-            return null;
-        }
-        return record.getTimestamp();
-    }
+	public final String getDeviceId() {
+		return channel.getDeviceId();
+	}
 
-    public Flag getFlag() {
-        if (record == null) {
-            return null;
-        }
-        return record.getFlag();
-    }
+	public final String getDeviceDescription() {
+		return channel.getDeviceDescription();
+	}
 
-	@Override
-    public Record getRecord() {
+	public final String getDeviceAddress() {
+		return channel.getDeviceAddress();
+	}
+
+	public final String getDeviceSettings() {
+		return channel.getDeviceSettings();
+	}
+
+	public final DeviceState getDeviceState() {
+		return channel.getDeviceState();
+	}
+
+	public final ChannelState getState() {
+		return channel.getChannelState();
+	}
+
+	public final boolean isConnected() {
+		return channel.isConnected();
+	}
+
+	org.openmuc.framework.dataaccess.Channel getChannel() {
+		return channel;
+	}
+
+    public final Record getRecord() {
         return record;
     }
 
@@ -199,7 +201,7 @@ public class Channel extends ChannelContext implements LogChannel, LogRecordCont
 
     @Override
     public String toString() {
-        return id+" ("+type.toString()+"): "+record.toString();
+        return getId()+" ("+getValueType().toString()+"): "+record.toString();
     }
 
 }

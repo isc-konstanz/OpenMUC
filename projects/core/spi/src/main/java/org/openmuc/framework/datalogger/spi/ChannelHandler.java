@@ -35,7 +35,7 @@ class ChannelHandler<C extends Channel> {
     }
 
     public String getChannelId() {
-    	return channel.id;
+    	return channel.getId();
     }
 
     public C getChannel() {

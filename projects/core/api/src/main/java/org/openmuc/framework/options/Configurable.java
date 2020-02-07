@@ -40,16 +40,12 @@ public abstract class Configurable {
     protected Configurable() {
     }
 
-    protected Configurable(String address, String settings) throws ArgumentSyntaxException {
-        configure(address, settings);
+    public void configure(String addressStr, String settingsStr) throws ArgumentSyntaxException {
+        configureAddress(addressStr);
+        configureSettings(settingsStr);
     }
 
-    public void configure(String address, String settings) throws ArgumentSyntaxException {
-        configureAddress(address);
-        configureSettings(settings);
-    }
-
-    protected void configureAddress(String addressStr) throws ArgumentSyntaxException {
+    public void configureAddress(String addressStr) throws ArgumentSyntaxException {
         Map<String, Value> address = parse(addressStr, Options.parseAddress(this.getClass()));
 
         List<Field> fields = getFields();
@@ -72,7 +68,7 @@ public abstract class Configurable {
         }
     }
 
-    protected void configureSettings(String settingsStr) throws ArgumentSyntaxException {
+    public void configureSettings(String settingsStr) throws ArgumentSyntaxException {
         Map<String, Value> settings = parse(settingsStr, Options.parseSettings(this.getClass()));
         
         List<Field> fields = getFields();

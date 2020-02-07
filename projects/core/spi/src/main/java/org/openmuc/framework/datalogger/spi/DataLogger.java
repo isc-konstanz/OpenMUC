@@ -39,7 +39,7 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
 
 	private final Map<String, ChannelHandler<C>> handlers = new HashMap<String, ChannelHandler<C>>();
 
-	private DataAccessService dataAccess = null;
+	protected DataAccessService dataAccess = null;
 
     @Override
     public final DataLogger<C> getDataLogger() {
@@ -91,10 +91,8 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
 					ChannelHandler<C> handler;
 					if (channel.isAveraging()) {
 						handler = new ChannelHandlerAverage<C>(channel);
-						if (dataAccess != null && dataAccess.getAllIds().contains(id)) {
-							dataAccess.getChannel(id).addListener((ChannelHandlerAverage<C>) handler);
-							((ChannelHandlerAverage<C>) handler).setListening(true);
-						}
+						channel.getChannel().addListener((ChannelHandlerAverage<C>) handler);
+						((ChannelHandlerAverage<C>) handler).setListening(true);
 					}
 					else if (channel.getLoggingIntervalMax() > channel.getLoggingInterval()) {
 						handler = new ChannelHandlerDynamic<C>(channel);
@@ -179,11 +177,15 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
 		return channel.doRead(startTime, endTime);
     }
 
+    protected C newChannel(LogChannel configs) throws ArgumentSyntaxException {
+		return newChannel(dataAccess.getChannel(configs.getId()));
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
-    protected C newChannel(LogChannel configs) throws ArgumentSyntaxException {
+    protected C newChannel(org.openmuc.framework.dataaccess.Channel channel) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
-		return super.newChannel(configs);
+		return super.newChannel(channel);
 	}
 
 }

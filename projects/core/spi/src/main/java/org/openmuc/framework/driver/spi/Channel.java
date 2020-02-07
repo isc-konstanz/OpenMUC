@@ -25,6 +25,8 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.dataaccess.ChannelState;
+import org.openmuc.framework.dataaccess.DeviceState;
 
 public class Channel extends ChannelContext implements ChannelRecordContainer, ChannelValueContainer {
 
@@ -33,11 +35,7 @@ public class Channel extends ChannelContext implements ChannelRecordContainer, C
 	protected Channel() {
     }
 
-    protected Channel(ChannelContainer container) throws ArgumentSyntaxException {
-    	doConfigure(container);
-    }
-
-    void doConfigure(ChannelContainer container) throws ArgumentSyntaxException {
+    public void doConfigure(ChannelContainer container) throws ArgumentSyntaxException {
         if (this.container == null ||
         		!this.container.getChannelSettings().equals(container.getChannelSettings()) ||
                 !this.container.getChannelAddress().equals(container.getChannelAddress())) {
@@ -107,7 +105,68 @@ public class Channel extends ChannelContext implements ChannelRecordContainer, C
         return container.getChannel().getValueType();
     }
 
+    public int getValueTypeLength() {
+        return container.getChannel().getValueTypeLength();
+    }
+
+	public final double getScalingFactor() {
+		return container.getChannel().getScalingFactor();
+	}
+
+	public final int getSamplingInterval() {
+		return container.getChannel().getSamplingInterval();
+	}
+
+	public final int getSamplingTimeOffset() {
+		return container.getChannel().getSamplingTimeOffset();
+	}
+
+	public final int getLoggingInterval() {
+		return container.getChannel().getLoggingInterval();
+	}
+
+	public final int getLoggingTimeOffset() {
+		return container.getChannel().getLoggingTimeOffset();
+	}
+
+	public final String getLoggingSettings() {
+		return container.getChannel().getLoggingSettings();
+	}
+
+	public final String getDriverId() {
+		return container.getChannel().getDriverId();
+	}
+
+	public final String getDeviceId() {
+		return container.getChannel().getDeviceId();
+	}
+
+	public final String getDeviceDescription() {
+		return container.getChannel().getDeviceDescription();
+	}
+
+	public final String getDeviceAddress() {
+		return container.getChannel().getDeviceAddress();
+	}
+
+	public final String getDeviceSettings() {
+		return container.getChannel().getDeviceSettings();
+	}
+
+	public final DeviceState getDeviceState() {
+		return container.getChannel().getDeviceState();
+	}
+
+	public final ChannelState getState() {
+		return container.getChannel().getChannelState();
+	}
+
+	public final boolean isConnected() {
+		return container.getChannel().isConnected();
+	}
+
 	@Override
+	@Deprecated
 	public org.openmuc.framework.dataaccess.Channel getChannel() {
 		return container.getChannel();
 	}
@@ -170,7 +229,10 @@ public class Channel extends ChannelContext implements ChannelRecordContainer, C
 	@Override
 	public ChannelRecordContainer copy() {
 		try {
-			return new Channel(container);
+			Channel channel = new Channel();
+			channel.doConfigure(container);
+			
+			return channel;
 			
 		} catch (ArgumentSyntaxException e) {
 			// Cannot happen, as only containers with valid syntax will be instanced
