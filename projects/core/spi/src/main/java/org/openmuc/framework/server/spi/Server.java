@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public abstract class Server<C extends Channel> extends ServerContext {
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
-    final Map<String, C> channels = new HashMap<String, C>();
+    private final Map<String, C> channels = new HashMap<String, C>();
 
     @Override
     public final Server<C> getServer() {

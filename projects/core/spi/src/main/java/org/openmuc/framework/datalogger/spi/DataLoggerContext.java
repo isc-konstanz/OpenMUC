@@ -65,11 +65,11 @@ public abstract class DataLoggerContext implements DataLoggerService {
     public abstract DataLogger<?> getDataLogger();
 
 	@SuppressWarnings("unchecked")
-	<C extends Channel> C newChannel(LogChannel configs) throws ArgumentSyntaxException {
+	<C extends Channel> C newChannel(org.openmuc.framework.dataaccess.Channel context) throws ArgumentSyntaxException {
 		C channel;
 		try {
 			channel = (C) this.channel.getDeclaredConstructor().newInstance();
-			channel.doConfigure(configs);
+			channel.doConfigure(context);
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {

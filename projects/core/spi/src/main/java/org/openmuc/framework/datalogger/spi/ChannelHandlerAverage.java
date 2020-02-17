@@ -55,7 +55,7 @@ class ChannelHandlerAverage<C extends Channel> extends ChannelHandlerDynamic<C> 
 			synchronized (listening) {
 				if (valueCount > 1) {
 					double average = valueSum/valueCount;
-					logger.trace("Average of {} values for channel \"{}\": {}", valueCount, channel.id, average);
+					logger.trace("Average of {} values for channel \"{}\": {}", valueCount, channel.getId(), average);
 					
 					valueSum = 0.0;
 					valueCount = 0;
@@ -72,15 +72,15 @@ class ChannelHandlerAverage<C extends Channel> extends ChannelHandlerDynamic<C> 
 	@Override
 	public void newRecord(Record record) {
 		if (record == null) {
-			logger.trace("Failed to log an empty record for channel \"{}\"", channel.id);
+			logger.trace("Failed to log an empty record for channel \"{}\"", channel.getId());
 			return;
 		}
 		if (record.getFlag() != Flag.VALID) {
 			logger.debug("Listener received invalid or empty value for channel \"{}\": {}",
-					channel.id, record.getFlag().toString());
+					channel.getId(), record.getFlag().toString());
 		}
 		logger.trace("Listener received new record for channel \"{}\": {}", 
-				channel.id, record.toString());
+				channel.getId(), record.toString());
 		
 		Long time = record.getTimestamp();
 		Value value = record.getValue();

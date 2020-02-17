@@ -23,6 +23,8 @@ package org.openmuc.framework.server.spi;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.dataaccess.ChannelState;
+import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.dataaccess.RecordListener;
 
 public class Channel extends ChannelContext {
@@ -34,11 +36,7 @@ public class Channel extends ChannelContext {
 	protected Channel() {
     }
 
-    protected Channel(ServerMappingContainer container) throws ArgumentSyntaxException {
-    	doConfigure(container);
-    }
-
-    void doConfigure(ServerMappingContainer container) throws ArgumentSyntaxException {
+	protected void doConfigure(ServerMappingContainer container) throws ArgumentSyntaxException {
         if (this.settings == null || !settings.equals(container.getServerMapping().getServerAddress())) {
             configureSettings(container.getServerMapping().getServerAddress());
         }
@@ -71,20 +69,84 @@ public class Channel extends ChannelContext {
         return channel.getValueType();
     }
 
-    public void addListener(RecordListener listener) {
+    public int getValueTypeLength() {
+        return channel.getValueTypeLength();
+    }
+
+	public final String getAddress() {
+		return channel.getChannelAddress();
+	}
+
+	public final String getSettings() {
+		return channel.getChannelSettings();
+	}
+
+	public final double getScalingFactor() {
+		return channel.getScalingFactor();
+	}
+
+	public final int getSamplingInterval() {
+		return channel.getSamplingInterval();
+	}
+
+	public final int getSamplingTimeOffset() {
+		return channel.getSamplingTimeOffset();
+	}
+
+	public final int getLoggingInterval() {
+		return channel.getLoggingInterval();
+	}
+
+	public final int getLoggingTimeOffset() {
+		return channel.getLoggingTimeOffset();
+	}
+
+	public final String getLoggingSettings() {
+		return channel.getLoggingSettings();
+	}
+
+	public final String getDriverId() {
+		return channel.getDriverId();
+	}
+
+	public final String getDeviceId() {
+		return channel.getDeviceId();
+	}
+
+	public final String getDeviceDescription() {
+		return channel.getDeviceDescription();
+	}
+
+	public final String getDeviceAddress() {
+		return channel.getDeviceAddress();
+	}
+
+	public final String getDeviceSettings() {
+		return channel.getDeviceSettings();
+	}
+
+	public final DeviceState getDeviceState() {
+		return channel.getDeviceState();
+	}
+
+	public final ChannelState getState() {
+		return channel.getChannelState();
+	}
+
+	public final boolean isConnected() {
+		return channel.isConnected();
+	}
+
+    public final void addListener(RecordListener listener) {
     	channel.addListener(listener);
     }
 
-    public void removeListener(RecordListener listener) {
+    public final void removeListener(RecordListener listener) {
     	channel.removeListener(listener);
     }
 
-    public Record getLatestRecord() {
+    public final Record getRecord() {
     	return channel.getLatestRecord();
     }
-
-	public org.openmuc.framework.dataaccess.Channel getChannel() {
-		return channel;
-	}
 
 }
