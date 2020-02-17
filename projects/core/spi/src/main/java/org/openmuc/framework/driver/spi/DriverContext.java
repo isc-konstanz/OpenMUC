@@ -123,11 +123,10 @@ public abstract class DriverContext implements DriverService {
 	}
 
 	@SuppressWarnings("unchecked")
-	<D extends DeviceConfigs<?>> D newConnection(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
+	<D extends DeviceConfigs<?>> D newConnection() throws ArgumentSyntaxException, ConnectionException {
 		D device;
 		try {
 			device = (D) this.device.getDeclaredConstructor().newInstance();
-			device.doConfigure(address, settings);
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
@@ -159,11 +158,10 @@ public abstract class DriverContext implements DriverService {
     }
 
 	@SuppressWarnings("unchecked")
-	<S extends DeviceScanner> S newDeviceScanner(String settings) throws ArgumentSyntaxException {
+	<S extends DeviceScanner> S newDeviceScanner() throws ArgumentSyntaxException {
 		S scanner;
     	try {
 			scanner = (S) deviceScanner.getDeclaredConstructor().newInstance();
-			scanner.doConfigure(settings);
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
@@ -180,11 +178,10 @@ public abstract class DriverContext implements DriverService {
     }
 
 	@SuppressWarnings("unchecked")
-	<C extends Channel> C newChannel(DeviceContext context, ChannelContainer container) throws ArgumentSyntaxException {
+	<C extends Channel> C newChannel() throws ArgumentSyntaxException {
 		C channel;
 		try {
 			channel = (C) this.channel.getDeclaredConstructor().newInstance();
-			channel.doConfigure(container);
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
@@ -216,11 +213,10 @@ public abstract class DriverContext implements DriverService {
     }
 
 	@SuppressWarnings("unchecked")
-	<S extends ChannelScanner> S newChannelScanner(DeviceContext context, String settings) throws ArgumentSyntaxException, ConnectionException {
+	<S extends ChannelScanner> S newChannelScanner() throws ArgumentSyntaxException, ConnectionException {
 		S scanner;
 		try {
 			scanner = (S) channelScanner.getDeclaredConstructor().newInstance();
-			scanner.doConfigure(settings);
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {

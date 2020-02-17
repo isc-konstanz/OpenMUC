@@ -111,6 +111,8 @@ public abstract class Server<C extends Channel> extends ServerContext {
         if (channel == null) {
             channel = newChannel(mapping);
             channel.doCreate(this);
+			channel.doConfigure(mapping);
+			
             channels.put(id, channel);
         }
         else {
@@ -119,11 +121,9 @@ public abstract class Server<C extends Channel> extends ServerContext {
         return channel;
     }
 
-	@Override
-	@SuppressWarnings("unchecked")
     protected C newChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
-		return super.newChannel(mapping);
+		return super.newChannel();
 	}
 
 }

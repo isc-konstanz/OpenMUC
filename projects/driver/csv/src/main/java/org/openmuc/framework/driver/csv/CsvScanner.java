@@ -58,7 +58,7 @@ public class CsvScanner extends DeviceScanner {
     }
 
     public CsvScanner(String settings) throws ArgumentSyntaxException {
-    	super(settings);
+    	super.doConfigure(settings);
     }
 
 	@Override

@@ -65,11 +65,10 @@ public abstract class ServerContext implements ServerService {
     public abstract Server<?> getServer();
 
 	@SuppressWarnings("unchecked")
-	<C extends Channel> C newChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
+	<C extends Channel> C newChannel() throws ArgumentSyntaxException {
 		C channel;
 		try {
 			channel = (C) this.channel.getDeclaredConstructor().newInstance();
-			channel.doConfigure(mapping);
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {

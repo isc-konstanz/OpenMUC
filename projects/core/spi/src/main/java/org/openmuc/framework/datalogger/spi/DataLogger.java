@@ -178,14 +178,18 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
     }
 
     protected C newChannel(LogChannel configs) throws ArgumentSyntaxException {
-		return newChannel(dataAccess.getChannel(configs.getId()));
+        // Placeholder for the optional implementation
+    	org.openmuc.framework.dataaccess.Channel channel = dataAccess.getChannel(configs.getId());
+    	C newChannel = newChannel(channel);
+    	newChannel.doCreate(this);
+    	newChannel.doConfigure(channel);
+    	
+		return newChannel;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
     protected C newChannel(org.openmuc.framework.dataaccess.Channel channel) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
-		return super.newChannel(channel);
+		return super.newChannel();
 	}
 
 }

@@ -53,7 +53,6 @@ public class W1Scanner extends DeviceScanner {
     private volatile boolean interrupt = false;
 
     public W1Scanner(List<W1Device> devices, List<String> connected, String settings) throws ArgumentSyntaxException {
-        super(settings);
         this.devices = devices;
         this.connected = connected;
     }

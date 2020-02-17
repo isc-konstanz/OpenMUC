@@ -57,7 +57,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
         onDestroy();
     }
 
-    public void onDisconnect() {
+    protected void onDisconnect() {
         // Placeholder for the optional implementation
     }
 
@@ -66,6 +66,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
         ChannelScanner scanner = newScanner(settings);
         scanner.doCreate(this);
+		scanner.doConfigure(settings);
         
         return scanner.doScan();
     }
@@ -76,7 +77,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
         if (!context.hasChannelScanner()) {
             throw new UnsupportedOperationException();
         }
-        return context.newChannelScanner(this, settings);
+        return context.newChannelScanner();
     }
 
 	@Override

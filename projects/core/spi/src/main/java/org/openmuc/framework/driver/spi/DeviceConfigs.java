@@ -86,6 +86,8 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
         if (channel == null) {
             channel = newChannel(container);
             channel.doCreate(this);
+			channel.doConfigure(container);
+			
             channels.put(id, channel);
         }
         else {
@@ -96,7 +98,7 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
 
     protected C newChannel(ChannelContainer container) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
-		return context.newChannel(this, container);
+		return context.newChannel();
 	}
 
 }

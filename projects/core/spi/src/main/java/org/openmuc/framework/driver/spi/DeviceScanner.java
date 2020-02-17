@@ -30,11 +30,7 @@ public abstract class DeviceScanner extends Configurable {
 	protected DeviceScanner() {
 	}
 
-	protected DeviceScanner(String settings) throws ArgumentSyntaxException {
-    	doConfigure(settings);
-	}
-
-	final void doConfigure(String settings) throws ArgumentSyntaxException {
+	protected final void doConfigure(String settings) throws ArgumentSyntaxException {
     	configureSettings(settings);
     	onConfigure();
 	}

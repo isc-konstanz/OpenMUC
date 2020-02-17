@@ -26,6 +26,7 @@ import java.util.List;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DeviceState;
@@ -137,7 +138,6 @@ public class Channel extends ChannelContext {
     public final boolean isAveraging() {
     	return average;
     }
-
 	public final String getDriverId() {
 		return channel.getDriverId();
 	}
@@ -176,6 +176,27 @@ public class Channel extends ChannelContext {
 
     public final Record getRecord() {
         return record;
+    }
+
+    public Value getValue() {
+        if (record == null) {
+            return null;
+        }
+        return record.getValue();
+    }
+
+    public Long getTime() {
+        if (record == null) {
+            return null;
+        }
+        return record.getTimestamp();
+    }
+
+    public Flag getFlag() {
+        if (record == null) {
+            return null;
+        }
+        return record.getFlag();
     }
 
     public boolean isValid() {

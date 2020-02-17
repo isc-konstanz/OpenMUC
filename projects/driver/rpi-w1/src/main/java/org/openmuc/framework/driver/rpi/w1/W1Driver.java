@@ -28,7 +28,6 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Configs;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Type;
 import org.openmuc.framework.driver.rpi.w1.device.TemperatureDevice;
-import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.Device;
 import org.openmuc.framework.driver.spi.Driver;

@@ -32,11 +32,7 @@ public abstract class ChannelScanner extends Configurable {
 	protected ChannelScanner() {
 	}
 
-	protected ChannelScanner(String settings) throws ArgumentSyntaxException, ConnectionException {
-    	doConfigure(settings);
-	}
-
-	final void doConfigure(String settings) throws ArgumentSyntaxException, ConnectionException {
+	protected final void doConfigure(String settings) throws ArgumentSyntaxException, ConnectionException {
     	configureSettings(settings);
     	onConfigure();
 	}

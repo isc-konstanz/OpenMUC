@@ -73,6 +73,8 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
         scanner = newScanner(settings);
         scanner.doCreate(this);
+		scanner.doConfigure(settings);
+        
         scanner.onScan(listener);
     }
 
@@ -82,7 +84,7 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
         if (!hasDeviceScanner()) {
             throw new UnsupportedOperationException();
         }
-        return newDeviceScanner(settings);
+        return newDeviceScanner();
     }
 
     @Override
@@ -102,7 +104,6 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
 			throws ArgumentSyntaxException, ConnectionException {
 		Device<?> device = newConnection(address, settings);
 		if (device != null) {
-			device.doCreate(this);
 			device.doConnect();
 			
 			return device;
@@ -110,11 +111,14 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected Device<?> newConnection(String address, String settings) 
 			throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-		return newConnection(super.newConnection(address, settings));
+		D device = super.newConnection();
+		device.doCreate(this);
+		device.doConfigure(address, settings);
+		
+		return newConnection(device);
 	}
 
 	protected Device<?> newConnection(D device) 
