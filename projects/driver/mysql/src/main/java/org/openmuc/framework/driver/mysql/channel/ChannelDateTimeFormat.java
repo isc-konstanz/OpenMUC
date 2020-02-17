@@ -20,21 +20,11 @@
  */
 package org.openmuc.framework.driver.mysql.channel;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.mysql.SqlChannel;
-import org.openmuc.framework.driver.mysql.SqlClient;
-import org.openmuc.framework.driver.spi.ChannelContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ChannelDateTimeFormat extends SqlChannel {
-	private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);
 
-    private static String QUERY_SELECT_DATETIME = "SELECT %s FROM %s WHERE (TestTime =  '12:05:42') and (TestDate = '2019-12-10');";
-
-    public ChannelDateTimeFormat(ChannelContainer container) throws ArgumentSyntaxException {
-    	super(container);
-    }
+    private static String QUERY_SELECT_DATETIME = "SELECT %s FROM %s ORDER BY TestTime DESC LIMIT 1;";
 
 	@Override
 	public String readQuery() {

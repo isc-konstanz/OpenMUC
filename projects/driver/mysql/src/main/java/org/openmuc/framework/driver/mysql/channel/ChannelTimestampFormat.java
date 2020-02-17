@@ -20,27 +20,22 @@
  */
 package org.openmuc.framework.driver.mysql.channel;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.mysql.SqlChannel;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 
 public class ChannelTimestampFormat extends SqlChannel {
-	
+
 	private static String QUERY_SELECT_DATETIME = "SELECT %s FROM %s WHERE timestamp IN (SELECT MAX(timestamp) FROM %s)";
 	private static String QUERY_SELECT_SINGLEROW = "SELECT %s FROM %s ORDER BY timestamp DESC LIMIT 1";
-	private static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE SVNAME = '%s' ORDER BY timestamp DESC LIMIT 1;";
-
-    public ChannelTimestampFormat(ChannelContainer container) throws ArgumentSyntaxException {
-    	super(container);
-    }
+	private static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE SVNAME like '%s%%' ORDER BY timestamp DESC LIMIT 1;";
 
     @Override
   	public String readQuery() {
-    	if(getTable()=="ce") {
+    	switch(getTable()) {
+    	case "ce":
     		return String.format(QUERY_SELECT_SINGLEROW, getDataColumn(), getTable());
-    	}
-    	else{
+    	default:
     		return String.format(QUERY_SELECT_MULTIPLEROW, getDataColumn(), getTable(), getColumn() );
     	}
     }
+
 }

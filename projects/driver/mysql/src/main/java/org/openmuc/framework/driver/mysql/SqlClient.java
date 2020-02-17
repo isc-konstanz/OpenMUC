@@ -25,6 +25,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,8 +34,11 @@ import java.util.List;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.data.FloatValue;
+import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.StringValue;
+import org.openmuc.framework.data.TypeConversionException;
 import org.openmuc.framework.driver.mysql.channel.ChannelDateTimeFormat;
 import org.openmuc.framework.driver.mysql.channel.ChannelTimestampFormat;
 import org.openmuc.framework.driver.spi.ChannelContainer;
@@ -52,7 +57,9 @@ public class SqlClient extends Device<SqlChannel> {
 	@Address(id = "host", description = "IP-Adress of the host")
 	private String host;
 
-	@Address(id = "port", mandatory = false, description = "Portnumber at the particular host")
+	@Address(id = "port",
+			mandatory = false,
+			description = "Portnumber at the particular host")
 	private int port = 3306;
 
 	@Address(id = "database", description = "Name of the database")
@@ -70,13 +77,20 @@ public class SqlClient extends Device<SqlChannel> {
 	@Setting(id = "password")
 	private String password;
 
-	@Setting(id = "timeType", mandatory = false, description = "Time is differently described in different databases, as a timestamp or in seperate columns for date and time.")
+	@Setting(id = "timeType",
+			mandatory = false,
+			description = "Time is differently described in different databases, as a timestamp or in seperate columns for date and time.")
 	private TimeType timeType;
 
-	@Setting(id = "timeFormat", mandatory = false, description = "")
+	@Setting(id = "timeFormat",
+			mandatory = false,
+			description = "")
 	private String timeFormat = null;
 
-	@Setting(id = "table", mandatory = false, description = "Tablename in the database")
+	@Setting(id = "table",
+			mandatory = false,
+			
+			description = "Tablename in the database")
 	private String table;
 
 	private ComboPooledDataSource source = null;
@@ -136,10 +150,29 @@ public class SqlClient extends Device<SqlChannel> {
 				try (Statement statement = connection.createStatement()) {
 					try (ResultSet result = statement.executeQuery(query)) {
 						while (result.next()) {
-							Date date = new Date();
 							long time = System.currentTimeMillis();
-							String value = String.valueOf(result.getString(channel.data));
-							record = new Record(new StringValue(value), time, Flag.VALID);
+							String strValue = result.getString(channel.data);
+							strValue = strValue.replaceAll("\"", "");
+							switch(channel.getValueType()){	
+							case FLOAT:
+								Float floatValue = Float.valueOf(strValue);
+								record = new Record(new FloatValue(floatValue), time, Flag.VALID);
+								break;
+							case DOUBLE:
+								try {
+									Double doubleValue = Double.valueOf(strValue);
+									record = new Record(new DoubleValue(doubleValue), time, Flag.VALID);
+								
+								} catch(NumberFormatException e) {
+									record = new Record(new StringValue(strValue), time, Flag.VALID);
+								} catch(TypeConversionException f) {
+									record = new Record(new StringValue(strValue), time, Flag.VALID);
+								}
+								break;
+							default:
+								record = new Record(new StringValue(strValue), time, Flag.VALID);	
+							}
+							channel.setRecord(record);	
 						}
 					}
 				}
@@ -148,8 +181,8 @@ public class SqlClient extends Device<SqlChannel> {
 		} catch (SQLException e) {
 			throw new ConnectionException(e);
 		}
-
 		return record;
+//		logger.info("Actual Value of {} at {} is: {}",channel.getId(), timeStr, record.getValue());
 	}
 
 	@Override
@@ -163,16 +196,12 @@ public class SqlClient extends Device<SqlChannel> {
 	@Override
 	protected SqlChannel newChannel(ChannelContainer container) throws ArgumentSyntaxException {
 		switch (timeType) {
-    	case TIMESTAMP_UNIX:
-    		return new ChannelTimestampFormat(container); 
 		case TIMESTAMP:
-			return new ChannelTimestampFormat(container);
+			return new ChannelTimestampFormat();
 		case DATETIME:
-			return new ChannelDateTimeFormat(container);
-		case TIMESTAMP_MULTIPLEROW:
-			return new ChannelTimestampFormat(container);
+			return new ChannelDateTimeFormat();
 		default:
-			return null;
+			throw new ArgumentSyntaxException("Invalid time type: " + timeType);
 		}
 	}
 }

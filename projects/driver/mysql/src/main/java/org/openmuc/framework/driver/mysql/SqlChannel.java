@@ -20,9 +20,7 @@
  */
 package org.openmuc.framework.driver.mysql;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.spi.Channel;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.options.Address;
 
 public abstract class SqlChannel extends Channel {
@@ -40,15 +38,6 @@ public abstract class SqlChannel extends Channel {
 
 	@Address(id = "column", mandatory = false)
 	protected String column;
-
-	public SqlChannel(ChannelContainer container) throws ArgumentSyntaxException {
-		super(container);
-		readQuery();
-	}
-
-	public String readQuery() {
-		return null;
-	}
 
 	public String getIndexColumn() {
 		return index;
@@ -68,4 +57,6 @@ public abstract class SqlChannel extends Channel {
 	public String getColumn() {
 		return column;
 	}
+
+	public abstract String readQuery();
 }

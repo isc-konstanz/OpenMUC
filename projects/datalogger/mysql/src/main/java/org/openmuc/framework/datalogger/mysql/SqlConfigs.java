@@ -1,5 +1,9 @@
 package org.openmuc.framework.datalogger.mysql;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.datalogger.spi.Channel;
 import org.openmuc.framework.options.Setting;
@@ -73,14 +77,18 @@ public class SqlConfigs extends Channel {
 	@Override
     protected void doConfigure(String settings) throws ArgumentSyntaxException {
 		if (settings != null && settings.equals("*")) {
-			if (getDriverId() != "mysql") {
+			if (!getDriverId().equals("mysql")) {
 				throw new ArgumentSyntaxException("Unable to copy logging settings if not mysql driver");
 			}
+			List<String> list = new ArrayList<String>(4);
+			list.add(getDeviceAddress());
+			list.add(getDeviceSettings());
+			list.add(getAddress());
+			list.add(getSettings());
+			list.removeAll(Arrays.asList("", null));
+			
 			// TODO: verify if a more generic way to use a separator is necessary
-			settings = getDeviceAddress() + SettingsSyntax.SEPARATOR_DEFAULT + 
-					getDeviceSettings() + SettingsSyntax.SEPARATOR_DEFAULT + 
-					getAddress() + SettingsSyntax.SEPARATOR_DEFAULT + 
-					getSettings();
+			settings = String.join(SettingsSyntax.SEPARATOR_DEFAULT, list);
 		}
 		super.doConfigure(settings);
     }
@@ -88,28 +96,16 @@ public class SqlConfigs extends Channel {
 	@Override
 	protected void onConfigure() throws ArgumentSyntaxException {
 		super.onConfigure();
-		if (database == null) {
-			database = SqlLogger.DB_NAME;
-		}
-		if (database == null) {
+		if (database == null || database.isEmpty()) {
 			throw new ArgumentSyntaxException("Database name needs to be configured");
 		}
 		url = SqlLogger.DB_TYPE + "://" + host + ":" + port + "/" + database + "?autoReconnect=true&useSSL=false";
-
-		if (user == null) {
-			user = SqlLogger.DB_USER;
-		}
-		if (password == null) {
-			password = SqlLogger.DB_PASSWORD;
-		}
-		if (password == null || user == null) {
+		
+		if (user == null || user.isEmpty() || password == null || password.isEmpty()) {
 			throw new ArgumentSyntaxException("Database login credentials need to be configured");
 		}
-
-		if (table == null) {
-			table = SqlLogger.TABLE;
-		}
-		if (table == null) {
+		
+		if (table == null || table.isEmpty()) {
 			table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
 		} else {
 			String valid = table.replaceAll("[^a-zA-Z0-9]", "_");
@@ -117,15 +113,6 @@ public class SqlConfigs extends Channel {
 				throw new ArgumentSyntaxException(
 						"Table name invalid. Only alphanumeric letters separated by underscore are allowed: " + valid);
 			}
-		}
-		if (timeType == null) {
-			timeType = TimeType.valueOf(SqlLogger.TIME_TYPE.toUpperCase());
-		}
-		if (timeScale == null) {
-			timeScale = Double.valueOf(SqlLogger.TIME_SCALE);
-		}
-		if (timeFormat == null) {
-			timeFormat = SqlLogger.TIME_FORMAT;
 		}
 	}
 
