@@ -1,23 +1,13 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright (c) 2019 the Eclipse Milo Authors
  *
- * This file is part of OpenMUC.
- * For more information visit http://www.openmuc.org
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
  *
- * OpenMUC is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenMUC is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openmuc.framework.server.opcua;
 
 import java.io.File;
@@ -30,11 +20,11 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateBuilder;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
@@ -42,13 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class KeyStoreLoader {
-    private static final Logger logger = LoggerFactory.getLogger(KeyStoreLoader.class);
 
     private static final Pattern IP_ADDR_PATTERN = Pattern.compile(
         "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    private static final String SERVER_ALIAS = "server-ai";
+    private static final String SERVER_ALIAS = "openmuc";
     private static final char[] PASSWORD = "password".toCharArray();
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private X509Certificate[] serverCertificateChain;
     private X509Certificate serverCertificate;
@@ -57,19 +48,19 @@ class KeyStoreLoader {
     KeyStoreLoader load(File baseDir) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
-        File serverKeyStore = baseDir.toPath().resolve("example-server.pfx").toFile();
+        File serverKeyStore = baseDir.toPath().resolve("openmuc-server.pfx").toFile();
 
-        logger.debug("Loading KeyStore at {}", serverKeyStore);
+        logger.info("Loading KeyStore at {}", serverKeyStore);
 
         if (!serverKeyStore.exists()) {
             keyStore.load(null, PASSWORD);
 
             KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
-            String applicationUri = "urn:eclipse:milo:examples:server:" + UUID.randomUUID();
+            String applicationUri = "urn:eclipse:openmuc:server:" + UUID.randomUUID();
 
             SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
-                .setCommonName("Eclipse Milo Example Server")
+                .setCommonName("OpenMUC Server")
                 .setOrganization("digitalpetri")
                 .setOrganizationalUnit("dev")
                 .setLocalityName("Folsom")
@@ -78,9 +69,10 @@ class KeyStoreLoader {
                 .setApplicationUri(applicationUri);
 
             // Get as many hostnames and IP addresses as we can listed in the certificate.
-            Set<String> hostnames = new HashSet<String>();
-            hostnames.add(HostnameUtil.getHostname());
-            hostnames.addAll(HostnameUtil.getHostnames("0.0.0.0", false));
+            Set<String> hostnames = Sets.union(
+                Sets.newHashSet(HostnameUtil.getHostname()),
+                HostnameUtil.getHostnames("0.0.0.0", false)
+            );
 
             for (String hostname : hostnames) {
                 if (IP_ADDR_PATTERN.matcher(hostname).matches()) {
