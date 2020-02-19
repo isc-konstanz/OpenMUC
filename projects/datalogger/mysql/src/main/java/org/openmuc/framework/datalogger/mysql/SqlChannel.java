@@ -11,15 +11,15 @@ public class SqlChannel extends SqlConfigs {
     public static String TYPE_DEFAULT = "FLOAT";
     public static String TYPE_NOT_NULL = " NOT NULL";
     public static String[] TYPES = new String[] {
-            "FLOAT",
-            "REAL",
-            "BIGINT",
-            "INT",
-            "SMALLINT",
-            "TINYINT",
-            "BIT",
-            "VARBINARY",
-            "VARCHAR"
+        "FLOAT",
+        "REAL",
+        "BIGINT",
+        "INT",
+        "SMALLINT",
+        "TINYINT",
+        "BIT",
+        "VARBINARY",
+        "VARCHAR"
     };
 
     private static String QUERY_CREATE = "CREATE TABLE IF NOT EXISTS %s ("
@@ -27,9 +27,10 @@ public class SqlChannel extends SqlConfigs {
             + "data %s, "
             + "PRIMARY KEY (time)"
             + ") ENGINE=MYISAM";
+
     public static String QUERY_SELECT_SINGLEROW = "SELECT %s FROM halm.%s WHERE timestamp >= \"%s\" AND timestamp <= \"%s\"";
     public static String QUERY_SELECT_DATETIME = "SELECT %s FROM %s.%s WHERE testtime >= \"%s\" AND testtime <= \"%s and testdate >= \"%s\" AND testdate >= \"%s\" ";
-	public static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE SVNAME = '%s' AND  timestamp >= '%s' AND timestamp <= '%s'";
+    public static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE SVNAME = '%s' AND  timestamp >= '%s' AND timestamp <= '%s'";
     private static String QUERY_INSERT = "INSERT INTO %s (time,data) VALUES ('%s','%s') ON DUPLICATE KEY UPDATE data=VALUES(data)";
 
     @Setting(mandatory= false)
@@ -45,7 +46,7 @@ public class SqlChannel extends SqlConfigs {
     protected String key = null;
 
     public String getColumn() {
-    	return column;
+        return column;
     }
 
 //    public static SqlChannel create(SqlCallbacks callbacks, Transaction transaction, Integer id, 
@@ -101,7 +102,7 @@ public class SqlChannel extends SqlConfigs {
 //            throw new SqlException(e);
 //        }
 //        try {
-//        	cacheData(timevalue.getTime(), timevalue.getValue());
+//            cacheData(timevalue.getTime(), timevalue.getValue());
 //        }
 //        catch (RedisUnavailableException ignore) {}
 //    }

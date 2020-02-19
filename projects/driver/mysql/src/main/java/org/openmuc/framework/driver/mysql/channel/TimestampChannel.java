@@ -22,20 +22,19 @@ package org.openmuc.framework.driver.mysql.channel;
 
 import org.openmuc.framework.driver.mysql.SqlChannel;
 
-public class ChannelTimestampFormat extends SqlChannel {
+public class TimestampChannel extends SqlChannel {
 
-	private static String QUERY_SELECT_DATETIME = "SELECT %s FROM %s WHERE timestamp IN (SELECT MAX(timestamp) FROM %s)";
-	private static String QUERY_SELECT_SINGLEROW = "SELECT %s FROM %s ORDER BY timestamp DESC LIMIT 1";
-	private static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE SVNAME like '%s%%' ORDER BY timestamp DESC LIMIT 1;";
+    private static String QUERY_SELECT_SINGLEROW = "SELECT %s FROM %s ORDER BY timestamp DESC LIMIT 1";
+    private static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE SVNAME like '%s%%' ORDER BY timestamp DESC LIMIT 1;";
 
     @Override
-  	public String readQuery() {
-    	switch(getTable()) {
-    	case "ce":
-    		return String.format(QUERY_SELECT_SINGLEROW, getDataColumn(), getTable());
-    	default:
-    		return String.format(QUERY_SELECT_MULTIPLEROW, getDataColumn(), getTable(), getColumn() );
-    	}
+      public String getReadQuery() {
+        switch(getTable()) {
+        case "ce":
+            return String.format(QUERY_SELECT_SINGLEROW, getDataColumn(), getTable());
+        default:
+            return String.format(QUERY_SELECT_MULTIPLEROW, getDataColumn(), getTable(), getColumn() );
+        }
     }
 
 }

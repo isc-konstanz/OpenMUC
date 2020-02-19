@@ -20,13 +20,13 @@
  */
 package org.openmuc.framework.driver.mysql;
 
-import org.openmuc.framework.driver.spi.Driver;
-import org.openmuc.framework.driver.spi.DriverContext;
+import org.openmuc.framework.driver.Driver;
+import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
-@Component
-public class SqlDriver extends Driver<SqlClient> implements DriverService {
+@Component(service = DriverService.class)
+public class SqlDriver extends Driver<SqlClient> {
 
     private static final String ID = "mysql";
     private static final String NAME = "MySQL";

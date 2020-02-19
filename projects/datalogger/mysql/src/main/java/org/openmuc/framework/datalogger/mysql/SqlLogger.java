@@ -28,99 +28,99 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.datalogger.spi.DataLogger;
+import org.openmuc.framework.datalogger.DataLogger;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component
-public class SqlLogger extends DataLogger<SqlChannel> implements DataLoggerService {
-	private static final Logger logger = LoggerFactory.getLogger(SqlLogger.class);
+@Component(service = DataLoggerService.class)
+public class SqlLogger extends DataLogger<SqlChannel> {
+    private static final Logger logger = LoggerFactory.getLogger(SqlLogger.class);
 
-	private static final String PKG = SqlLogger.class.getPackage().getName().toLowerCase();
+    private static final String NAME = SqlLogger.class.getPackage().getName().toLowerCase();
 
-	static final String DB_TYPE = System.getProperty(PKG + ".type", "jdbc:mysql");
-	static final String DB_DRIVER = System.getProperty(PKG + ".driver", "com.mysql.cj.jdbc.Driver");
+    static final String DB_TYPE = System.getProperty(NAME + ".type", "jdbc:mysql");
+    static final String DB_DRIVER = System.getProperty(NAME + ".driver", "com.mysql.cj.jdbc.Driver");
 
-	static final String DB_HOST = System.getProperty(PKG + ".host", "127.0.0.1");
-	static final String DB_PORT = System.getProperty(PKG + ".port", "3306");
-	static final String DB_NAME = System.getProperty(PKG + ".database", "openmuc");
-	static final String DB_USER = System.getProperty(PKG + ".user", "root");
-	static final String DB_PASSWORD = System.getProperty(PKG + ".password", "");
+    static final String DB_HOST = System.getProperty(NAME + ".host", "127.0.0.1");
+    static final String DB_PORT = System.getProperty(NAME + ".port", "3306");
+    static final String DB_NAME = System.getProperty(NAME + ".database", "openmuc");
+    static final String DB_USER = System.getProperty(NAME + ".user", "root");
+    static final String DB_PASSWORD = System.getProperty(NAME + ".password", "");
 
-	static final String TABLE = System.getProperty(PKG + ".table", null);
+    static final String TABLE = System.getProperty(NAME + ".table", null);
 
-	static final String TIME_TYPE = System.getProperty(PKG + ".time.type", "TIMESTAMP_UNIX");
-	static final String TIME_SCALE = System.getProperty(PKG + ".time.scale", "1");
-	static final String TIME_FORMAT = System.getProperty(PKG + ".time.format", "");
+    static final String TIME_TYPE = System.getProperty(NAME + ".time.type", "TIMESTAMP_UNIX");
+    static final String TIME_SCALE = System.getProperty(NAME + ".time.scale", "1");
+    static final String TIME_FORMAT = System.getProperty(NAME + ".time.format", "");
 
-	private final Map<String, SqlClient> clients = new HashMap<String, SqlClient>();
+    private final Map<String, SqlClient> clients = new HashMap<String, SqlClient>();
 
-	@Override
-	public String getId() {
-		return "mysql";
-	}
+    @Override
+    public String getId() {
+        return "mysql";
+    }
 
-	@Override
-	public void onDeactivate() {
-		for (SqlClient client : clients.values()) {
-			client.close();
-		}
-	}
+    @Override
+    public void onDeactivate() {
+        for (SqlClient client : clients.values()) {
+            client.close();
+        }
+    }
 
-	@Override
-	protected void onConfigure(List<SqlChannel> channels) throws IOException {
-		List<String> databases = new ArrayList<String>();
-		for (SqlChannel channel : channels) {
-			String database = channel.getDatabase();
-			if (!databases.contains(database) && !clients.containsKey(database)) {
-				databases.add(database);
-				
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							clients.put(database, new SqlClient(channel));						
-						} catch (IOException e) {
-							logger.error("Error initializing SQL Data Logger: {}", e);
-						}
-					}
-				}).start();
-			}
-		}
-	}
+    @Override
+    protected void onConfigure(List<SqlChannel> channels) throws IOException {
+        List<String> databases = new ArrayList<String>();
+        for (SqlChannel channel : channels) {
+            String database = channel.getDatabase();
+            if (!databases.contains(database) && !clients.containsKey(database)) {
+                databases.add(database);
+                
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            clients.put(database, new SqlClient(channel));                        
+                        } catch (IOException e) {
+                            logger.error("Error initializing SQL Data Logger: {}", e);
+                        }
+                    }
+                }).start();
+            }
+        }
+    }
 
-	@Override
-	protected void onWrite(List<SqlChannel> channels, long timestamp) throws IOException {
-		List<SqlClientCollection> clients = new ArrayList<SqlClientCollection>();
-		for (SqlChannel channel : channels) {
-			// TODO: group channels by client and call write(timestamp)
+    @Override
+    protected void onWrite(List<SqlChannel> channels, long timestamp) throws IOException {
+        List<SqlClientCollection> clients = new ArrayList<SqlClientCollection>();
+        for (SqlChannel channel : channels) {
+            // TODO: group channels by client and call write(timestamp)
 
-		}
-		for (SqlClientCollection client : clients) {
-			client.write(timestamp);
-		}
-	}
+        }
+        for (SqlClientCollection client : clients) {
+            client.write(timestamp);
+        }
+    }
 
-	@Override
-	protected List<Record> onRead(SqlChannel channel, long startTime, long endTime) throws IOException {
-		return clients.get(channel.getDatabase()).read(channel, startTime, endTime);
-	}
+    @Override
+    protected List<Record> onRead(SqlChannel channel, long startTime, long endTime) throws IOException {
+        return clients.get(channel.getDatabase()).read(channel, startTime, endTime);
+    }
 
-	private class SqlClientCollection extends LinkedList<SqlChannel> {
-		private static final long serialVersionUID = 5722160812688011225L;
+    private class SqlClientCollection extends LinkedList<SqlChannel> {
+        private static final long serialVersionUID = 5722160812688011225L;
 
-		private final SqlClient client;
+        private final SqlClient client;
 
-		public SqlClientCollection(SqlClient client) {
-			this.client = client;
-		}
+        public SqlClientCollection(SqlClient client) {
+            this.client = client;
+        }
 
-		public void write(long timestamp) throws IOException {
-			client.write(this, timestamp);
-		}
+        public void write(long timestamp) throws IOException {
+            client.write(this, timestamp);
+        }
 
-	}
+    }
 
 }

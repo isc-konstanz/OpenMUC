@@ -45,10 +45,10 @@ public class Transaction implements AutoCloseable {
         }
     }
 
-	@Override
-	public void close() throws Exception {
+    @Override
+    public void close() throws Exception {
         connection.commit();
         connection.close();
-	}
+    }
 
 }

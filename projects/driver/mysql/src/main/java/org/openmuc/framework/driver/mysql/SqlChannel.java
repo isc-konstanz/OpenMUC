@@ -20,43 +20,43 @@
  */
 package org.openmuc.framework.driver.mysql;
 
-import org.openmuc.framework.driver.spi.Channel;
+import org.openmuc.framework.driver.Channel;
 import org.openmuc.framework.options.Address;
 
 public abstract class SqlChannel extends Channel {
 
-	@Address(id = "index", mandatory = false)
-	protected String index = "time";
+    @Address(id = "table", mandatory = false)
+    protected String table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
 
-	@Address(id = "data",
-			mandatory = false,
-			description = "Varies due to the table construction. - Either column name or cell content (if more rows have the same timestamp)")
-	protected String data;
+    @Address(id = "data",
+             mandatory = false,
+             description = "Varies due to the table construction. " +
+                           "Either column name or cell content, " +
+                           "if more rows have the same timestamp.")
+    protected String data = null;
 
-	@Address(id = "table", mandatory = false)
-	protected String table;
+    @Address(id = "column", mandatory = false)
+    protected String column = "data";
 
-	@Address(id = "column", mandatory = false)
-	protected String column;
+    @Address(id = "index", mandatory = false)
+    protected String index = "time";
 
-	public String getIndexColumn() {
-		return index;
-	}
+    public String getTable() {
+        return table;
+    }
 
-	public String getDataColumn() {
-		return data;
-	}
+    public String getIndexColumn() {
+        return index;
+    }
 
-	public String getTable() {
-//    	if (table == null) {
-//    		return getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
-//    	}
-		return table;
-	}
+    public String getDataColumn() {
+        return data;
+    }
 
-	public String getColumn() {
-		return column;
-	}
+    public String getColumn() {
+        return column;
+    }
 
-	public abstract String readQuery();
+    public abstract String getReadQuery() throws UnsupportedOperationException;
+
 }
