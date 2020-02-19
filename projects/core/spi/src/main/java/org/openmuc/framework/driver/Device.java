@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.driver;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +28,11 @@ import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.driver.spi.ChannelRecordContainer;
+import org.openmuc.framework.driver.spi.ChannelValueContainer;
+import org.openmuc.framework.driver.spi.Connection;
+import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,15 +54,15 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
         context.onDisconnect(this);
         
         for (C channel : channels.values()) {
-        	if (channel instanceof ChannelContext) {
+            if (channel instanceof ChannelContext) {
                 ((ChannelContext) channel).onDestroy();
-        	}
+            }
         }
         channels.clear();
         onDestroy();
     }
 
-    public void onDisconnect() {
+    protected void onDisconnect() {
         // Placeholder for the optional implementation
     }
 
@@ -66,6 +71,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
         ChannelScanner scanner = newScanner(settings);
         scanner.doCreate(this);
+        scanner.doConfigure(settings);
         
         return scanner.doScan();
     }
@@ -76,10 +82,10 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
         if (!context.hasChannelScanner()) {
             throw new UnsupportedOperationException();
         }
-        return context.newChannelScanner(this, settings);
+        return context.newChannelScanner();
     }
 
-	@Override
+    @Override
     public final void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
             throws UnsupportedOperationException, ConnectionException {
         
@@ -87,7 +93,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
             List<C> channels = new LinkedList<C>();
             for (ChannelRecordContainer container : containers) {
                 try {
-                    channels.add((C) newChannel(container));
+                    channels.add((C) onCreateChannel(container));
                     
                 } catch (ArgumentSyntaxException e) {
                     logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());

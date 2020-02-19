@@ -26,7 +26,7 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.driver.spi.DeviceScanner;
+import org.openmuc.framework.driver.DeviceScanner;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.options.Setting;
 import org.openmuc.framework.options.SettingsSyntax;
@@ -58,7 +58,7 @@ public class CsvScanner extends DeviceScanner {
     }
 
     public CsvScanner(String settings) throws ArgumentSyntaxException {
-    	super(settings);
+    	super.doConfigure(settings);
     }
 
 	@Override

@@ -18,37 +18,34 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.driver;
 
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
+import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.options.Configurable;
 
 public abstract class ChannelScanner extends Configurable {
 
-	protected ChannelScanner() {
-	}
+    protected ChannelScanner() {
+    }
 
-	protected ChannelScanner(String settings) throws ArgumentSyntaxException, ConnectionException {
-    	doConfigure(settings);
-	}
-
-	final void doConfigure(String settings) throws ArgumentSyntaxException, ConnectionException {
-    	configureSettings(settings);
-    	onConfigure();
-	}
+    protected final void doConfigure(String settings) throws ArgumentSyntaxException, ConnectionException {
+        configureSettings(settings);
+        onConfigure();
+    }
 
     protected void onConfigure() throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
     }
 
-	final void doCreate(DeviceContext context) throws ArgumentSyntaxException, ConnectionException {
-    	onCreate(context);
-    	onCreate();
-	}
+    final void doCreate(DeviceContext context) throws ArgumentSyntaxException, ConnectionException {
+        onCreate(context);
+        onCreate();
+    }
 
     protected void onCreate(DeviceContext context) throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
@@ -59,6 +56,6 @@ public abstract class ChannelScanner extends Configurable {
     }
 
     public abstract List<ChannelScanInfo> doScan() 
-    		throws ArgumentSyntaxException, ScanException, ConnectionException;
+            throws ArgumentSyntaxException, ScanException, ConnectionException;
 
 }

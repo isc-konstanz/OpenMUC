@@ -21,12 +21,12 @@
 package org.openmuc.framework.driver.rpi.gpio;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.driver.Driver;
+import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.rpi.gpio.configs.GpioConfigs;
 import org.openmuc.framework.driver.rpi.gpio.count.EdgeCounter;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.Device;
-import org.openmuc.framework.driver.spi.Driver;
-import org.openmuc.framework.driver.spi.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -85,7 +85,7 @@ public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
     }
 
     @Override
-	protected GpioPin newConnection(GpioConfigs configs) throws ArgumentSyntaxException, ConnectionException {
+	protected GpioPin onCreateConnection(GpioConfigs configs) throws ArgumentSyntaxException, ConnectionException {
         logger.trace("Connect Raspberry Pi {} pin {}", configs.getPinMode().getName(), configs.getPin());
         try {
             GpioPin connection;

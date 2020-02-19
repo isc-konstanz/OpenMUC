@@ -18,37 +18,22 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.driver;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.options.Configurable;
 
-public abstract class DeviceScanner extends Configurable {
+public abstract class DeviceContext extends Configurable {
 
-	protected DeviceScanner() {
-	}
+    DriverContext context;
 
-	protected DeviceScanner(String settings) throws ArgumentSyntaxException {
-    	doConfigure(settings);
-	}
-
-	final void doConfigure(String settings) throws ArgumentSyntaxException {
-    	configureSettings(settings);
-    	onConfigure();
-	}
-
-    protected void onConfigure() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    <C extends DriverContext> void doCreate(C context) throws ArgumentSyntaxException {
+        this.context = context;
+        this.onCreate(context);
+        this.onCreate();
     }
 
-	final void doCreate(DriverContext context) throws ArgumentSyntaxException {
-    	onCreate(context);
-    	onCreate();
-	}
-
-    protected void onCreate(DriverContext context) throws ArgumentSyntaxException {
+    protected <C extends DriverContext> void onCreate(C context) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 
@@ -56,9 +41,12 @@ public abstract class DeviceScanner extends Configurable {
         // Placeholder for the optional implementation
     }
 
-    public abstract void onScan(DriverDeviceScanListener listener) 
-    		throws ArgumentSyntaxException, ScanException, ScanInterruptedException;
+    protected void onDestroy() {
+        // Placeholder for the optional implementation
+    }
 
-    public abstract void onScanInterrupt();
+    public DriverContext getDriver() {
+        return context;
+    }
 
 }

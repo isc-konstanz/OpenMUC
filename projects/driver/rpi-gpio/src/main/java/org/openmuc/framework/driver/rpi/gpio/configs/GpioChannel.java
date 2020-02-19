@@ -20,7 +20,7 @@
  */
 package org.openmuc.framework.driver.rpi.gpio.configs;
 
-import org.openmuc.framework.driver.spi.Channel;
+import org.openmuc.framework.driver.Channel;
 import org.openmuc.framework.options.Setting;
 
 public class GpioChannel extends Channel {

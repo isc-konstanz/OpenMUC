@@ -18,35 +18,33 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.server;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.options.Configurable;
+import org.openmuc.framework.server.spi.ServerMappingContainer;
 
-public abstract class DeviceContext extends Configurable {
+public class Channel extends ChannelContext {
 
-	DriverContext context;
+    private String settings = "";
 
-    void doCreate(DriverContext context) throws ArgumentSyntaxException {
-    	this.context = context;
-        this.onCreate(context);
-        this.onCreate();
+    protected void doConfigure(ServerMappingContainer container) throws ArgumentSyntaxException {
+        doConfigure(container.getServerMapping().getServerAddress());
+        onConfigure();
     }
 
-    protected void onCreate(DriverContext context) throws ArgumentSyntaxException {
+    protected void doConfigure(String settings) throws ArgumentSyntaxException {
+        if (!this.settings.equals(settings)) {
+            configureSettings(settings);
+        }
+        this.settings = settings;
+    }
+
+    protected void onConfigure() throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 
-    protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onDestroy() {
-        // Placeholder for the optional implementation
-    }
-
-    public DriverContext getDriver() {
-        return context;
+    public final ChannelContext getContext() {
+        return this;
     }
 
 }

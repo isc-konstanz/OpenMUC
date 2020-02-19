@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.driver;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,6 +28,9 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.driver.spi.ChannelContainer;
+import org.openmuc.framework.driver.spi.ChannelRecordContainer;
+import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +48,7 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
 
     final void doConfigure(String address, String settings) throws ArgumentSyntaxException {
         configure(address, settings);
-    	onConfigure();
+        onConfigure();
     }
 
     protected void onConfigure() throws ArgumentSyntaxException {
@@ -57,7 +60,7 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
     }
 
     protected List<C> getChannels() {
-    	return (List<C>) channels.values();
+        return (List<C>) channels.values();
     }
 
     protected <T extends ChannelContainer> List<C> getChannels(List<T> containers) {
@@ -80,12 +83,11 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
         return channels;
     }
 
-	protected C getChannel(ChannelContainer container) throws ArgumentSyntaxException {
+    protected C getChannel(ChannelContainer container) throws ArgumentSyntaxException {
         String id = container.getChannel().getId();
         C channel = channels.get(id);
         if (channel == null) {
-            channel = newChannel(container);
-            channel.doCreate(this);
+            channel = doCreateChannel(container);
             channels.put(id, channel);
         }
         else {
@@ -94,9 +96,22 @@ public abstract class DeviceConfigs<C extends Channel> extends DeviceContext {
         return channel;
     }
 
-    protected C newChannel(ChannelContainer container) throws ArgumentSyntaxException {
+    final C doCreateChannel(ChannelContainer container) throws ArgumentSyntaxException {
+        C channel = onCreateChannel(container);
+        channel.doCreate(this, container.getChannel());
+        channel.doConfigure(container);
+        
+        return channel;
+    }
+
+    protected C onCreateChannel(ChannelContainer container) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
-		return context.newChannel(this, container);
-	}
+        return onCreateChannel();
+    }
+
+    protected C onCreateChannel() throws ArgumentSyntaxException {
+        // Placeholder for the optional implementation
+        return context.newChannel();
+    }
 
 }

@@ -19,23 +19,26 @@
  *
  */
 
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.driver;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.dataaccess.DataAccessService;
+import org.openmuc.framework.driver.spi.Connection;
+import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     private static final Logger logger = LoggerFactory.getLogger(DriverContext.class);
 
-	private DeviceScanner scanner = null;
+    private DeviceScanner scanner = null;
 
     @Override
     public final Driver<D> getDriver() {
-    	return this;
+        return this;
     }
 
     public final DriverContext getContext() {
@@ -43,17 +46,17 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     }
 
     public final void activate(DataAccessService dataAccess) {
-    	try {
-			onActivate(dataAccess);
-	    	onActivate();
-	    	
-		} catch (Exception e) {
-			logger.warn("Error activating driver {}: {}", getId(), e.getMessage());
-		}
+        try {
+            onActivate(dataAccess);
+            onActivate();
+            
+        } catch (Exception e) {
+            logger.warn("Error activating driver {}: {}", getId(), e.getMessage());
+        }
     }
 
     public final void deactivate() {
-    	onDeactivate();
+        onDeactivate();
     }
 
     protected void onActivate(DataAccessService dataAccess) throws Exception {
@@ -73,6 +76,8 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
         scanner = newScanner(settings);
         scanner.doCreate(this);
+        scanner.doConfigure(settings);
+        
         scanner.onScan(listener);
     }
 
@@ -82,7 +87,7 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
         if (!hasDeviceScanner()) {
             throw new UnsupportedOperationException();
         }
-        return newDeviceScanner(settings);
+        return newDeviceScanner();
     }
 
     @Override
@@ -98,32 +103,34 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
         return doConnect(address, settings);
     }
 
-    Device<?> doConnect(String address, String settings) 
-			throws ArgumentSyntaxException, ConnectionException {
-		Device<?> device = newConnection(address, settings);
-		if (device != null) {
-			device.doCreate(this);
-			device.doConnect();
-			
-			return device;
-		}
-		return null;
-	}
+    final Device<?> doConnect(String address, String settings) 
+            throws ArgumentSyntaxException, ConnectionException {
+        Device<?> device = onCreateConnection(address, settings);
+        if (device != null) {
+            device.doConnect();
+            
+            return device;
+        }
+        return null;
+    }
 
-	@SuppressWarnings("unchecked")
-	protected Device<?> newConnection(String address, String settings) 
-			throws ArgumentSyntaxException, ConnectionException {
+    protected Device<?> onCreateConnection(String address, String settings) 
+            throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-		return newConnection(super.newConnection(address, settings));
-	}
+        D device = super.newConnection();
+        device.doCreate(this);
+        device.doConfigure(address, settings);
+        
+        return onCreateConnection(device);
+    }
 
-	protected Device<?> newConnection(D device) 
-			throws ArgumentSyntaxException, ConnectionException {
+    protected Device<?> onCreateConnection(D device) 
+            throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-		if (device instanceof Device) {
-			return (Device<?>) device;
-		}
-		return null;
+        if (device instanceof Device) {
+            return (Device<?>) device;
+        }
+        return null;
     }
 
 }
