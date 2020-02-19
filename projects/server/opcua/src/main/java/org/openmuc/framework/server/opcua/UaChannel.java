@@ -42,113 +42,113 @@ import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.options.Setting;
-import org.openmuc.framework.server.spi.Channel;
+import org.openmuc.framework.server.Channel;
 
 public class UaChannel extends Channel implements AttributeDelegate {
 
-	@Setting(mandatory = false)
-	private String folder = "Channels";
+    @Setting(mandatory = false)
+    private String folder = "Channels";
 
-	@Setting(id="ns", mandatory = false)
-	private int namespace = 0;
+    @Setting(id="ns", mandatory = false)
+    private int namespace = 0;
 
     @Override
     public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
         Record record = getRecord();
         if (record.getFlag() != Flag.VALID) {
-        	return new DataValue(StatusCode.BAD);
-        }	
+            return new DataValue(StatusCode.BAD);
+        }    
         Value value = record.getValue();
         DateTime sourceTime = new DateTime(record.getTimestamp());
         DateTime serverTime = new DateTime(System.currentTimeMillis());
         
-    	switch (getValueType()) {
-    	case BOOLEAN:
-    		return new DataValue(new Variant(value.asBoolean()), StatusCode.GOOD, sourceTime, serverTime);
-    	case BYTE:
-    		return new DataValue(new Variant(value.asByte()), StatusCode.GOOD, sourceTime, serverTime);
-    	case BYTE_ARRAY:
-    		return new DataValue(new Variant(value.asByteArray()), StatusCode.GOOD, sourceTime, serverTime);
-    	case SHORT:
-    		return new DataValue(new Variant(value.asShort()), StatusCode.GOOD, sourceTime, serverTime);
-    	case INTEGER:
-    		return new DataValue(new Variant(value.asInt()), StatusCode.GOOD, sourceTime, serverTime);
-    	case LONG:
-    		return new DataValue(new Variant(value.asLong()), StatusCode.GOOD, sourceTime, serverTime);
-    	case FLOAT:
-    		return new DataValue(new Variant(value.asFloat()), StatusCode.GOOD, sourceTime, serverTime);
-    	case DOUBLE:
-    		return new DataValue(new Variant(value.asDouble()), StatusCode.GOOD, sourceTime, serverTime);
-    	default:
-    		return new DataValue(new Variant(value.asString()), StatusCode.GOOD, sourceTime, serverTime);
+        switch (getValueType()) {
+        case BOOLEAN:
+            return new DataValue(new Variant(value.asBoolean()), StatusCode.GOOD, sourceTime, serverTime);
+        case BYTE:
+            return new DataValue(new Variant(value.asByte()), StatusCode.GOOD, sourceTime, serverTime);
+        case BYTE_ARRAY:
+            return new DataValue(new Variant(value.asByteArray()), StatusCode.GOOD, sourceTime, serverTime);
+        case SHORT:
+            return new DataValue(new Variant(value.asShort()), StatusCode.GOOD, sourceTime, serverTime);
+        case INTEGER:
+            return new DataValue(new Variant(value.asInt()), StatusCode.GOOD, sourceTime, serverTime);
+        case LONG:
+            return new DataValue(new Variant(value.asLong()), StatusCode.GOOD, sourceTime, serverTime);
+        case FLOAT:
+            return new DataValue(new Variant(value.asFloat()), StatusCode.GOOD, sourceTime, serverTime);
+        case DOUBLE:
+            return new DataValue(new Variant(value.asDouble()), StatusCode.GOOD, sourceTime, serverTime);
+        default:
+            return new DataValue(new Variant(value.asString()), StatusCode.GOOD, sourceTime, serverTime);
         }
     }
 
     @Override
     public void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
-    	Variant variant = value.getValue();
-    	Record record = null;
-    	switch (getValueType()) {
-		case BOOLEAN:
-	    	record = new Record(new BooleanValue((Boolean) variant.getValue()), value.getServerTime().getUtcTime());
-			break;
-		case BYTE:
-	    	record = new Record(new ByteValue((Byte) variant.getValue()), value.getServerTime().getUtcTime());
-			break;
-//		case BYTE_ARRAY:
-//	    	record = new Record(new ByteArrayValue((ByteArray) variant.getValue()), value.getServerTime().getUtcTime());
-//			break;
-		case SHORT:
-	    	record = new Record(new ShortValue((Short) variant.getValue()), value.getServerTime().getUtcTime());
-			break;
-		case INTEGER:
-	    	record = new Record(new IntValue((Integer) variant.getValue()), value.getServerTime().getUtcTime());
-			break;
-		case LONG:
-	    	record = new Record(new LongValue((Long) variant.getValue()), value.getServerTime().getUtcTime());
-			break;
-		case FLOAT:
-	    	record = new Record(new FloatValue((Float) variant.getValue()), value.getServerTime().getUtcTime());
-			break;
-		case DOUBLE:
-	    	record = new Record(new DoubleValue((Double) variant.getValue()), value.getServerTime().getUtcTime());	
-			break;
-		default:
-	    	record = new Record(new StringValue((String) variant.getValue()), value.getServerTime().getUtcTime());
-			break;
-    	}
-    	setRecord(record);
+        Variant variant = value.getValue();
+        Record record = null;
+        switch (getValueType()) {
+        case BOOLEAN:
+            record = new Record(new BooleanValue((Boolean) variant.getValue()), value.getServerTime().getUtcTime());
+            break;
+        case BYTE:
+            record = new Record(new ByteValue((Byte) variant.getValue()), value.getServerTime().getUtcTime());
+            break;
+//        case BYTE_ARRAY:
+//            record = new Record(new ByteArrayValue((ByteArray) variant.getValue()), value.getServerTime().getUtcTime());
+//            break;
+        case SHORT:
+            record = new Record(new ShortValue((Short) variant.getValue()), value.getServerTime().getUtcTime());
+            break;
+        case INTEGER:
+            record = new Record(new IntValue((Integer) variant.getValue()), value.getServerTime().getUtcTime());
+            break;
+        case LONG:
+            record = new Record(new LongValue((Long) variant.getValue()), value.getServerTime().getUtcTime());
+            break;
+        case FLOAT:
+            record = new Record(new FloatValue((Float) variant.getValue()), value.getServerTime().getUtcTime());
+            break;
+        case DOUBLE:
+            record = new Record(new DoubleValue((Double) variant.getValue()), value.getServerTime().getUtcTime());    
+            break;
+        default:
+            record = new Record(new StringValue((String) variant.getValue()), value.getServerTime().getUtcTime());
+            break;
+        }
+        setRecord(record);
     }
-	
-	public String getFolder() {
-		return folder;
-	}
+    
+    public String getFolder() {
+        return folder;
+    }
 
     public int getNamespace() {
-    	return namespace;
+        return namespace;
     }
 
-	public NodeId getNodeType() {
-		switch (getValueType()) {
-		case BOOLEAN:
-			return Identifiers.Boolean;
-		case BYTE:
-			return Identifiers.Byte;
-		case BYTE_ARRAY:
-			return Identifiers.ByteString;
-		case SHORT:
-			return Identifiers.UInt16;
-		case INTEGER:
-			return Identifiers.Integer;
-		case LONG:
-			return Identifiers.UInt64;
-		case FLOAT:
-			return Identifiers.Float;
-		case DOUBLE:
-			return Identifiers.Double;
-		default:
-			return Identifiers.String;
-		}
-	}
+    public NodeId getNodeType() {
+        switch (getValueType()) {
+        case BOOLEAN:
+            return Identifiers.Boolean;
+        case BYTE:
+            return Identifiers.Byte;
+        case BYTE_ARRAY:
+            return Identifiers.ByteString;
+        case SHORT:
+            return Identifiers.UInt16;
+        case INTEGER:
+            return Identifiers.Integer;
+        case LONG:
+            return Identifiers.UInt64;
+        case FLOAT:
+            return Identifiers.Float;
+        case DOUBLE:
+            return Identifiers.Double;
+        default:
+            return Identifiers.String;
+        }
+    }
 
 }
