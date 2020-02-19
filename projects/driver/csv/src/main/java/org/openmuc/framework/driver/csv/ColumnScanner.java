@@ -28,7 +28,7 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.driver.spi.ChannelScanner;
+import org.openmuc.framework.driver.ChannelScanner;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

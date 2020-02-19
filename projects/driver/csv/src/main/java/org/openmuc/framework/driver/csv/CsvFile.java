@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.driver.Device;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.channel.CsvChannelHHMMSS;
 import org.openmuc.framework.driver.csv.channel.CsvChannelLine;
 import org.openmuc.framework.driver.csv.channel.CsvChannelUnixtimestamp;
 import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.Device;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.AddressSyntax;
 import org.openmuc.framework.options.Setting;
@@ -99,7 +99,7 @@ public class CsvFile extends Device<CsvChannel> {
 	}
 
 	@Override
-    protected CsvChannel newChannel(ChannelContainer container) throws ArgumentSyntaxException {
+    protected CsvChannel onCreateChannel(ChannelContainer container) throws ArgumentSyntaxException {
         switch (samplingMode) {
         case UNIXTIMESTAMP:
             return new CsvChannelUnixtimestamp(container, data, rewind);

@@ -56,6 +56,7 @@ import com.ghgande.j2mod.modbus.msg.WriteMultipleRegistersRequest;
 import com.ghgande.j2mod.modbus.msg.WriteSingleRegisterRequest;
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.procimg.Register;
+import com.ghgande.j2mod.modbus.procimg.SimpleInputRegister;
 import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 import com.ghgande.j2mod.modbus.util.BitVector;
 
@@ -205,7 +206,7 @@ public abstract class ModbusConnection implements Connection {
             writeMultipleCoils(channel, ModbusDriverUtil.getBitVectorFromByteArray(value));
             break;
         case FC_06_WRITE_SINGLE_REGISTER:
-            writeSingleRegister(channel, new SimpleRegister(value.asShort()));
+            writeSingleRegister(channel, new SimpleInputRegister(value.asShort()));
             break;
         case FC_16_WRITE_MULTIPLE_REGISTERS:
             writeMultipleRegisters(channel, ModbusDriverUtil.valueToRegisters(value, channel.getDatatype()));

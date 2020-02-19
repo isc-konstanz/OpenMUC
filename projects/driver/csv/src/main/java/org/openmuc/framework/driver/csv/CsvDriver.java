@@ -20,8 +20,8 @@
  */
 package org.openmuc.framework.driver.csv;
 
-import org.openmuc.framework.driver.spi.Driver;
-import org.openmuc.framework.driver.spi.DriverContext;
+import org.openmuc.framework.driver.Driver;
+import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 

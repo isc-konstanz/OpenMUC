@@ -18,31 +18,22 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.spi;
+package org.openmuc.framework.datalogger;
 
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ChannelHandler<C extends Channel> {
-    private final static Logger logger = LoggerFactory.getLogger(ChannelHandler.class);
+class ChannelHandlerDynamic<C extends Channel> extends ChannelHandler<C> {
+    private final static Logger logger = LoggerFactory.getLogger(ChannelHandlerDynamic.class);
 
-    final C channel;
-
-    ChannelHandler(C channel) {
-        this.channel = channel;
+    ChannelHandlerDynamic(C channel) {
+       super(channel);
     }
 
-    public String getChannelId() {
-    	return channel.getId();
-    }
-
-    public C getChannel() {
-    	return channel;
-    }
-
-    boolean isUpdate(Record update) {
+    @Override
+    public boolean isUpdate(Record update) {
         if (channel.record == null) {
             return true;
         }
@@ -57,15 +48,26 @@ class ChannelHandler<C extends Channel> {
             logger.trace("Skipped logging value with invalid timestamp: {}", update.getTimestamp());
             return false;
         }
+        else {
+            switch(channel.getValueType()) {
+            case INTEGER:
+            case SHORT:
+            case LONG:
+            case FLOAT:
+            case DOUBLE:
+                double delta = Math.abs(update.getValue().asDouble() - channel.record.getValue().asDouble());
+                if (channel.getLoggingTolerance() >= delta && 
+                        (update.getTimestamp() - channel.record.getTimestamp()) < channel.getLoggingIntervalMax()) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Skipped logging value inside tolerance: {} -> {} <= {}",
+                                channel.record.getValue().asDouble(), update.getValue(), channel.getLoggingTolerance());
+                    }
+                    return false;
+                }
+            default:
+                break;
+            }
+        }
         return true;
     }
-
-    boolean update(Record update) {
-        if (isUpdate(update)) {
-        	channel.record = update;
-            return true;
-        }
-        return false;
-    }
-
 }
