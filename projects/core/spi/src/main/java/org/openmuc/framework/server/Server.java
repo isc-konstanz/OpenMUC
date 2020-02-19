@@ -19,7 +19,7 @@
  *
  */
 
-package org.openmuc.framework.server.spi;
+package org.openmuc.framework.server;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.dataaccess.DataAccessService;
+import org.openmuc.framework.server.spi.ServerMappingContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,14 +106,15 @@ public abstract class Server<C extends Channel> extends ServerContext {
         return channels;
     }
 
+	protected C getChannel(String id) {
+		return channels.get(id);
+	}
+
 	protected C getChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
         String id = mapping.getChannel().getId();
         C channel = channels.get(id);
         if (channel == null) {
-            channel = newChannel(mapping);
-            channel.doCreate(this);
-			channel.doConfigure(mapping);
-			
+            channel = doCreateChannel(mapping);
             channels.put(id, channel);
         }
         else {
@@ -121,7 +123,15 @@ public abstract class Server<C extends Channel> extends ServerContext {
         return channel;
     }
 
-    protected C newChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
+    final C doCreateChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
+    	C channel = onCreateChannel(mapping);
+    	channel.doCreate(this, mapping.getChannel());
+    	channel.doConfigure(mapping);
+    	
+		return channel;
+	}
+
+    protected C onCreateChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
 		return super.newChannel();
 	}

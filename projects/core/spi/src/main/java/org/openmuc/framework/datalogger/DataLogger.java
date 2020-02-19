@@ -19,7 +19,7 @@
  *
  */
 
-package org.openmuc.framework.datalogger.spi;
+package org.openmuc.framework.datalogger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,6 +31,8 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.TypeConversionException;
 import org.openmuc.framework.dataaccess.DataAccessService;
+import org.openmuc.framework.datalogger.spi.LogChannel;
+import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +41,7 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
 
 	private final Map<String, ChannelHandler<C>> handlers = new HashMap<String, ChannelHandler<C>>();
 
-	protected DataAccessService dataAccess = null;
+	private DataAccessService dataAccess = null;
 
     @Override
     public final DataLogger<C> getDataLogger() {
@@ -78,7 +80,7 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
     }
 
 	@Override
-	public void setChannelsToLog(List<LogChannel> logChannels) {
+	public final void setChannelsToLog(List<LogChannel> logChannels) {
 		// Will be called if OpenMUC receives new logging configurations
 		handlers.clear();
 		try {
@@ -86,12 +88,12 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
 			for (LogChannel configs : logChannels) {
 				String id = configs.getId();
 				try {
-					C channel = newChannel(configs);
+					C channel = doCreateChannel(configs);
 					
 					ChannelHandler<C> handler;
 					if (channel.isAveraging()) {
 						handler = new ChannelHandlerAverage<C>(channel);
-						channel.getChannel().addListener((ChannelHandlerAverage<C>) handler);
+						channel.addListener((ChannelHandlerAverage<C>) handler);
 						((ChannelHandlerAverage<C>) handler).setListening(true);
 					}
 					else if (channel.getLoggingIntervalMax() > channel.getLoggingInterval()) {
@@ -122,7 +124,7 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
     }
 
 	@Override
-	public void log(List<LogRecordContainer> containers, long timestamp) {
+	public final void log(List<LogRecordContainer> containers, long timestamp) {
 		if (containers == null || containers.isEmpty()) {
 			logger.trace("Requested Emoncms logger to log an empty container list");
 			return;
@@ -177,17 +179,15 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
 		return channel.doRead(startTime, endTime);
     }
 
-    protected C newChannel(LogChannel configs) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    	org.openmuc.framework.dataaccess.Channel channel = dataAccess.getChannel(configs.getId());
-    	C newChannel = newChannel(channel);
-    	newChannel.doCreate(this);
-    	newChannel.doConfigure(channel);
+    final C doCreateChannel(LogChannel configs) throws ArgumentSyntaxException {
+    	C channel = onCreateChannel(configs);
+    	channel.doCreate(this, dataAccess.getChannel(configs.getId()));
+    	channel.doConfigure();
     	
-		return newChannel;
+		return channel;
 	}
 
-    protected C newChannel(org.openmuc.framework.dataaccess.Channel channel) throws ArgumentSyntaxException {
+    protected C onCreateChannel(LogChannel configs) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
 		return super.newChannel();
 	}

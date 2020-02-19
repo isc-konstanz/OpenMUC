@@ -22,9 +22,9 @@ package org.openmuc.framework.driver.rpi.w1;
 
 import java.util.List;
 
+import org.openmuc.framework.driver.Device;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Channel;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.Device;
 
 public abstract class W1Connection extends Device<W1Channel> {
 

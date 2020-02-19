@@ -20,7 +20,7 @@
  */
 package org.openmuc.framework.driver.rpi.gpio.configs;
 
-import org.openmuc.framework.driver.spi.DeviceConfigs;
+import org.openmuc.framework.driver.DeviceConfigs;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.Setting;
 

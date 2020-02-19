@@ -18,39 +18,43 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.server.spi;
+package org.openmuc.framework.driver;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DeviceState;
-import org.openmuc.framework.dataaccess.RecordListener;
+import org.openmuc.framework.options.Configurable;
 
-public class Channel extends ChannelContext {
+public abstract class ChannelContext extends Configurable {
 
-	private org.openmuc.framework.dataaccess.Channel channel;
+	Channel channel;
 
-	private String settings = null;
+    DeviceContext context;
 
-	protected Channel() {
+    <C extends DeviceContext> void doCreate(C context, Channel channel) throws ArgumentSyntaxException {
+    	this.channel = channel;
+    	this.context = context;
+        this.onCreate(context);
+        this.onCreate();
     }
 
-	protected void doConfigure(ServerMappingContainer container) throws ArgumentSyntaxException {
-        if (this.settings == null || !settings.equals(container.getServerMapping().getServerAddress())) {
-            configureSettings(container.getServerMapping().getServerAddress());
-        }
-        this.settings = container.getServerMapping().getServerAddress();
-        this.channel = container.getChannel();
-    	onConfigure();
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
+    protected <C extends DeviceContext> void onCreate(C context) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 
-    public final ChannelContext getContext() {
-        return this;
+    protected void onCreate() throws ArgumentSyntaxException {
+        // Placeholder for the optional implementation
+    }
+
+    protected void onDestroy() {
+        // Placeholder for the optional implementation
+    }
+
+    public final DeviceContext getDevice() {
+    	return context;
     }
 
     public final String getId() {
@@ -69,17 +73,9 @@ public class Channel extends ChannelContext {
         return channel.getValueType();
     }
 
-    public int getValueTypeLength() {
+    public final int getValueTypeLength() {
         return channel.getValueTypeLength();
     }
-
-	public final String getAddress() {
-		return channel.getChannelAddress();
-	}
-
-	public final String getSettings() {
-		return channel.getChannelSettings();
-	}
 
 	public final double getScalingFactor() {
 		return channel.getScalingFactor();
@@ -137,16 +133,11 @@ public class Channel extends ChannelContext {
 		return channel.isConnected();
 	}
 
-    public final void addListener(RecordListener listener) {
-    	channel.addListener(listener);
-    }
+	public abstract Record getRecord();
 
-    public final void removeListener(RecordListener listener) {
-    	channel.removeListener(listener);
-    }
-
-    public final Record getRecord() {
-    	return channel.getLatestRecord();
+    @Override
+    public String toString() {
+        return getId()+" ("+getValueType().toString()+"): "+getRecord().toString();
     }
 
 }

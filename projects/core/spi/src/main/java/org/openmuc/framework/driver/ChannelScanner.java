@@ -18,13 +18,14 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.driver;
 
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
+import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.options.Configurable;
 
 public abstract class ChannelScanner extends Configurable {

@@ -19,12 +19,15 @@
  *
  */
 
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.driver;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.dataaccess.DataAccessService;
+import org.openmuc.framework.driver.spi.Connection;
+import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,9 +103,9 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
         return doConnect(address, settings);
     }
 
-    Device<?> doConnect(String address, String settings) 
+    final Device<?> doConnect(String address, String settings) 
 			throws ArgumentSyntaxException, ConnectionException {
-		Device<?> device = newConnection(address, settings);
+		Device<?> device = onCreateConnection(address, settings);
 		if (device != null) {
 			device.doConnect();
 			
@@ -111,17 +114,17 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
 		return null;
 	}
 
-	protected Device<?> newConnection(String address, String settings) 
+	protected Device<?> onCreateConnection(String address, String settings) 
 			throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
 		D device = super.newConnection();
 		device.doCreate(this);
 		device.doConfigure(address, settings);
 		
-		return newConnection(device);
+		return onCreateConnection(device);
 	}
 
-	protected Device<?> newConnection(D device) 
+	protected Device<?> onCreateConnection(D device) 
 			throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
 		if (device instanceof Device) {

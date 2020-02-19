@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.spi;
+package org.openmuc.framework.datalogger;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,14 +27,9 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.dataaccess.ChannelState;
-import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.options.Setting;
 
 public class Channel extends ChannelContext {
-
-	private org.openmuc.framework.dataaccess.Channel channel;
 
     @Setting(id={"intervalMax", "loggingMaxInterval"}, mandatory = false)
     private int intervalMax = 0;
@@ -45,21 +40,17 @@ public class Channel extends ChannelContext {
     @Setting(mandatory = false)
     private boolean average = false;
 
-    private String settings = null;
+    private String settings = "";
 
     Record record = new Record(Flag.DATA_LOGGING_NOT_ACTIVE);
 
-	protected Channel() {
-    }
-
-	protected void doConfigure(org.openmuc.framework.dataaccess.Channel channel) throws ArgumentSyntaxException {
-        this.channel = channel;
+	protected void doConfigure() throws ArgumentSyntaxException {
         doConfigure(channel.getLoggingSettings());
     	onConfigure();
     }
 
     protected void doConfigure(String settings) throws ArgumentSyntaxException {
-        if (this.settings == null || !this.settings.equals(settings)) {
+        if (!this.settings.equals(settings)) {
             configureSettings(settings);
         }
         this.settings = settings;
@@ -79,57 +70,9 @@ public class Channel extends ChannelContext {
         return this;
     }
 
-    public final String getId() {
-        return channel.getId();
-    }
-
-    public final String getDescription() {
-        return channel.getDescription();
-    }
-
-    public final String getUnit() {
-        return channel.getUnit();
-    }
-
-    public final ValueType getValueType() {
-        return channel.getValueType();
-    }
-
-    public final int getValueTypeLength() {
-        return channel.getValueTypeLength();
-    }
-
-	public final String getAddress() {
-		return channel.getChannelAddress();
-	}
-
-	public final String getSettings() {
-		return channel.getChannelSettings();
-	}
-
-	public final double getScalingFactor() {
-		return channel.getScalingFactor();
-	}
-
-	public final int getSamplingInterval() {
-		return channel.getSamplingInterval();
-	}
-
-	public final int getSamplingTimeOffset() {
-		return channel.getSamplingTimeOffset();
-	}
-
-	public final int getLoggingInterval() {
-		return channel.getLoggingInterval();
-	}
-
     public final int getLoggingIntervalMax() {
     	return intervalMax;
     }
-
-	public final int getLoggingTimeOffset() {
-		return channel.getLoggingTimeOffset();
-	}
 
     public final double getLoggingTolerance() {
         return tolerance;
@@ -138,41 +81,6 @@ public class Channel extends ChannelContext {
     public final boolean isAveraging() {
     	return average;
     }
-	public final String getDriverId() {
-		return channel.getDriverId();
-	}
-
-	public final String getDeviceId() {
-		return channel.getDeviceId();
-	}
-
-	public final String getDeviceDescription() {
-		return channel.getDeviceDescription();
-	}
-
-	public final String getDeviceAddress() {
-		return channel.getDeviceAddress();
-	}
-
-	public final String getDeviceSettings() {
-		return channel.getDeviceSettings();
-	}
-
-	public final DeviceState getDeviceState() {
-		return channel.getDeviceState();
-	}
-
-	public final ChannelState getState() {
-		return channel.getChannelState();
-	}
-
-	public final boolean isConnected() {
-		return channel.isConnected();
-	}
-
-	org.openmuc.framework.dataaccess.Channel getChannel() {
-		return channel;
-	}
 
     public final Record getRecord() {
         return record;
@@ -222,11 +130,6 @@ public class Channel extends ChannelContext {
     protected void onWrite(Record record, long timestamp) throws IOException {
         // Placeholder for the optional implementation
     	throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String toString() {
-        return getId()+" ("+getValueType().toString()+"): "+record.toString();
     }
 
 }

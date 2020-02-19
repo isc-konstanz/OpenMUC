@@ -18,22 +18,22 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.spi;
+package org.openmuc.framework.driver;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.options.Configurable;
 
-public abstract class ChannelContext extends Configurable {
+public abstract class DeviceContext extends Configurable {
 
-    DataLoggerContext context;
+	DriverContext context;
 
-    void doCreate(DataLoggerContext context) throws ArgumentSyntaxException {
+	<C extends DriverContext> void doCreate(C context) throws ArgumentSyntaxException {
     	this.context = context;
         this.onCreate(context);
         this.onCreate();
     }
 
-    protected void onCreate(DataLoggerContext context) throws ArgumentSyntaxException {
+    protected <C extends DriverContext> void onCreate(C context) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 
@@ -45,8 +45,8 @@ public abstract class ChannelContext extends Configurable {
         // Placeholder for the optional implementation
     }
 
-    public DataLoggerContext getDevice() {
-    	return context;
+    public DriverContext getDriver() {
+        return context;
     }
 
 }

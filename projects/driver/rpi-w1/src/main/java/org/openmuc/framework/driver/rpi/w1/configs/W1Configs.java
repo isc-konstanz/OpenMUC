@@ -21,7 +21,7 @@
 package org.openmuc.framework.driver.rpi.w1.configs;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.spi.DeviceConfigs;
+import org.openmuc.framework.driver.DeviceConfigs;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.Setting;
 

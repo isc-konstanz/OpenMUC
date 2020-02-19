@@ -25,13 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.driver.Driver;
+import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Configs;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Type;
 import org.openmuc.framework.driver.rpi.w1.device.TemperatureDevice;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.Device;
-import org.openmuc.framework.driver.spi.Driver;
-import org.openmuc.framework.driver.spi.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -79,7 +79,7 @@ public class W1Driver extends Driver<W1Configs> implements DriverService {
     }
 
     @Override
-	protected W1Connection newConnection(W1Configs configs) 
+	protected W1Connection onCreateConnection(W1Configs configs) 
 			throws ArgumentSyntaxException, ConnectionException {
         
     	String id = configs.getId();

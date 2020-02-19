@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.server.spi;
+package org.openmuc.framework.datalogger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -26,18 +26,19 @@ import java.lang.reflect.Type;
 import java.text.MessageFormat;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ServerContext implements ServerService {
-    private static final Logger logger = LoggerFactory.getLogger(ServerContext.class);
+public abstract class DataLoggerContext implements DataLoggerService {
+    private static final Logger logger = LoggerFactory.getLogger(DataLoggerContext.class);
 
 	Class<? extends Channel> channel = null;
 
 	@SuppressWarnings("unchecked")
-	protected ServerContext() {
+	protected DataLoggerContext() {
         try {
-    		channel = ((Class<? extends Channel>) getType(this.getClass(), Server.class));
+    		channel = ((Class<? extends Channel>) getType(this.getClass(), DataLogger.class));
             onCreate();
             
         } catch(Exception e) {
@@ -62,7 +63,7 @@ public abstract class ServerContext implements ServerService {
         return superclass.getActualTypeArguments()[0];
 	}
 
-    public abstract Server<?> getServer();
+    public abstract DataLogger<?> getDataLogger();
 
 	@SuppressWarnings("unchecked")
 	<C extends Channel> C newChannel() throws ArgumentSyntaxException {

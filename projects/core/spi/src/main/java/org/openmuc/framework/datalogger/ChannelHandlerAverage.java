@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.spi;
+package org.openmuc.framework.datalogger;
 
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
