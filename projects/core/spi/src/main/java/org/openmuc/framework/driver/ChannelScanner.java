@@ -30,22 +30,22 @@ import org.openmuc.framework.options.Configurable;
 
 public abstract class ChannelScanner extends Configurable {
 
-	protected ChannelScanner() {
-	}
+    protected ChannelScanner() {
+    }
 
-	protected final void doConfigure(String settings) throws ArgumentSyntaxException, ConnectionException {
-    	configureSettings(settings);
-    	onConfigure();
-	}
+    protected final void doConfigure(String settings) throws ArgumentSyntaxException, ConnectionException {
+        configureSettings(settings);
+        onConfigure();
+    }
 
     protected void onConfigure() throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
     }
 
-	final void doCreate(DeviceContext context) throws ArgumentSyntaxException, ConnectionException {
-    	onCreate(context);
-    	onCreate();
-	}
+    final void doCreate(DeviceContext context) throws ArgumentSyntaxException, ConnectionException {
+        onCreate(context);
+        onCreate();
+    }
 
     protected void onCreate(DeviceContext context) throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
@@ -56,6 +56,6 @@ public abstract class ChannelScanner extends Configurable {
     }
 
     public abstract List<ChannelScanInfo> doScan() 
-    		throws ArgumentSyntaxException, ScanException, ConnectionException;
+            throws ArgumentSyntaxException, ScanException, ConnectionException;
 
 }

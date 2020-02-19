@@ -28,22 +28,22 @@ import org.openmuc.framework.options.Configurable;
 
 public abstract class DeviceScanner extends Configurable {
 
-	protected DeviceScanner() {
-	}
+    protected DeviceScanner() {
+    }
 
-	protected final void doConfigure(String settings) throws ArgumentSyntaxException {
-    	configureSettings(settings);
-    	onConfigure();
-	}
+    protected final void doConfigure(String settings) throws ArgumentSyntaxException {
+        configureSettings(settings);
+        onConfigure();
+    }
 
     protected void onConfigure() throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 
-	final void doCreate(DriverContext context) throws ArgumentSyntaxException {
-    	onCreate(context);
-    	onCreate();
-	}
+    final void doCreate(DriverContext context) throws ArgumentSyntaxException {
+        onCreate(context);
+        onCreate();
+    }
 
     protected void onCreate(DriverContext context) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
@@ -54,7 +54,7 @@ public abstract class DeviceScanner extends Configurable {
     }
 
     public abstract void onScan(DriverDeviceScanListener listener) 
-    		throws ArgumentSyntaxException, ScanException, ScanInterruptedException;
+            throws ArgumentSyntaxException, ScanException, ScanInterruptedException;
 
     public abstract void onScanInterrupt();
 

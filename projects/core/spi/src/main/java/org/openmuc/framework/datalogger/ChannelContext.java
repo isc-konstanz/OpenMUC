@@ -31,13 +31,13 @@ import org.openmuc.framework.options.Configurable;
 
 public abstract class ChannelContext extends Configurable {
 
-	Channel channel;
+    Channel channel;
 
     DataLoggerContext context;
 
     <C extends DataLoggerContext> void doCreate(C context, Channel channel) throws ArgumentSyntaxException {
-    	this.channel = channel;
-    	this.context = context;
+        this.channel = channel;
+        this.context = context;
         this.onCreate(context);
         this.onCreate();
     }
@@ -55,7 +55,7 @@ public abstract class ChannelContext extends Configurable {
     }
 
     public final DataLoggerContext getDataLogger() {
-    	return context;
+        return context;
     }
 
     public final String getId() {
@@ -78,72 +78,72 @@ public abstract class ChannelContext extends Configurable {
         return channel.getValueTypeLength();
     }
 
-	public final String getAddress() {
-		return channel.getChannelAddress();
-	}
+    public final String getAddress() {
+        return channel.getChannelAddress();
+    }
 
-	public final String getSettings() {
-		return channel.getChannelSettings();
-	}
+    public final String getSettings() {
+        return channel.getChannelSettings();
+    }
 
-	public final double getScalingFactor() {
-		return channel.getScalingFactor();
-	}
+    public final double getScalingFactor() {
+        return channel.getScalingFactor();
+    }
 
-	public final int getSamplingInterval() {
-		return channel.getSamplingInterval();
-	}
+    public final int getSamplingInterval() {
+        return channel.getSamplingInterval();
+    }
 
-	public final int getSamplingTimeOffset() {
-		return channel.getSamplingTimeOffset();
-	}
+    public final int getSamplingTimeOffset() {
+        return channel.getSamplingTimeOffset();
+    }
 
-	public final int getLoggingInterval() {
-		return channel.getLoggingInterval();
-	}
+    public final int getLoggingInterval() {
+        return channel.getLoggingInterval();
+    }
 
-	public final int getLoggingTimeOffset() {
-		return channel.getLoggingTimeOffset();
-	}
+    public final int getLoggingTimeOffset() {
+        return channel.getLoggingTimeOffset();
+    }
 
-	public final String getDriverId() {
-		return channel.getDriverId();
-	}
+    public final String getDriverId() {
+        return channel.getDriverId();
+    }
 
-	public final String getDeviceId() {
-		return channel.getDeviceId();
-	}
+    public final String getDeviceId() {
+        return channel.getDeviceId();
+    }
 
-	public final String getDeviceDescription() {
-		return channel.getDeviceDescription();
-	}
+    public final String getDeviceDescription() {
+        return channel.getDeviceDescription();
+    }
 
-	public final String getDeviceAddress() {
-		return channel.getDeviceAddress();
-	}
+    public final String getDeviceAddress() {
+        return channel.getDeviceAddress();
+    }
 
-	public final String getDeviceSettings() {
-		return channel.getDeviceSettings();
-	}
+    public final String getDeviceSettings() {
+        return channel.getDeviceSettings();
+    }
 
-	public final DeviceState getDeviceState() {
-		return channel.getDeviceState();
-	}
+    public final DeviceState getDeviceState() {
+        return channel.getDeviceState();
+    }
 
-	public final ChannelState getState() {
-		return channel.getChannelState();
-	}
+    public final ChannelState getState() {
+        return channel.getChannelState();
+    }
 
-	public final boolean isConnected() {
-		return channel.isConnected();
-	}
+    public final boolean isConnected() {
+        return channel.isConnected();
+    }
 
     public final void addListener(RecordListener listener) {
-    	channel.addListener(listener);
+        channel.addListener(listener);
     }
 
     public final void removeListener(RecordListener listener) {
-    	channel.removeListener(listener);
+        channel.removeListener(listener);
     }
 
     public abstract Record getRecord();

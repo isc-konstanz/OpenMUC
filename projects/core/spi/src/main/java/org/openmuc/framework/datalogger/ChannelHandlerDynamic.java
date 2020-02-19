@@ -26,48 +26,48 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class ChannelHandlerDynamic<C extends Channel> extends ChannelHandler<C> {
-	private final static Logger logger = LoggerFactory.getLogger(ChannelHandlerDynamic.class);
+    private final static Logger logger = LoggerFactory.getLogger(ChannelHandlerDynamic.class);
 
     ChannelHandlerDynamic(C channel) {
        super(channel);
     }
 
-	@Override
-	public boolean isUpdate(Record update) {
-		if (channel.record == null) {
-			return true;
-		}
-		if (channel.record.getFlag() != update.getFlag()) {
-			return true;
-		}
-		else if (Flag.VALID != update.getFlag()) {
-			logger.trace("Skipped logging value for unchanged flag: {}", update.getFlag());
-			return false;
-		}
-		if (channel.record.getTimestamp() >= update.getTimestamp()) {
-			logger.trace("Skipped logging value with invalid timestamp: {}", update.getTimestamp());
-			return false;
-		}
-		else {
-			switch(channel.getValueType()) {
-			case INTEGER:
-			case SHORT:
-			case LONG:
-			case FLOAT:
-			case DOUBLE:
-				double delta = Math.abs(update.getValue().asDouble() - channel.record.getValue().asDouble());
-				if (channel.getLoggingTolerance() >= delta && 
-						(update.getTimestamp() - channel.record.getTimestamp()) < channel.getLoggingIntervalMax()) {
-					if (logger.isTraceEnabled()) {
-						logger.trace("Skipped logging value inside tolerance: {} -> {} <= {}",
-								channel.record.getValue().asDouble(), update.getValue(), channel.getLoggingTolerance());
-					}
-					return false;
-				}
-			default:
-				break;
-			}
-		}
-		return true;
-	}
+    @Override
+    public boolean isUpdate(Record update) {
+        if (channel.record == null) {
+            return true;
+        }
+        if (channel.record.getFlag() != update.getFlag()) {
+            return true;
+        }
+        else if (Flag.VALID != update.getFlag()) {
+            logger.trace("Skipped logging value for unchanged flag: {}", update.getFlag());
+            return false;
+        }
+        if (channel.record.getTimestamp() >= update.getTimestamp()) {
+            logger.trace("Skipped logging value with invalid timestamp: {}", update.getTimestamp());
+            return false;
+        }
+        else {
+            switch(channel.getValueType()) {
+            case INTEGER:
+            case SHORT:
+            case LONG:
+            case FLOAT:
+            case DOUBLE:
+                double delta = Math.abs(update.getValue().asDouble() - channel.record.getValue().asDouble());
+                if (channel.getLoggingTolerance() >= delta && 
+                        (update.getTimestamp() - channel.record.getTimestamp()) < channel.getLoggingIntervalMax()) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Skipped logging value inside tolerance: {} -> {} <= {}",
+                                channel.record.getValue().asDouble(), update.getValue(), channel.getLoggingTolerance());
+                    }
+                    return false;
+                }
+            default:
+                break;
+            }
+        }
+        return true;
+    }
 }

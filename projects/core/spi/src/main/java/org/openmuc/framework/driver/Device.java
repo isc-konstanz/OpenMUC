@@ -54,9 +54,9 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
         context.onDisconnect(this);
         
         for (C channel : channels.values()) {
-        	if (channel instanceof ChannelContext) {
+            if (channel instanceof ChannelContext) {
                 ((ChannelContext) channel).onDestroy();
-        	}
+            }
         }
         channels.clear();
         onDestroy();
@@ -71,7 +71,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
         ChannelScanner scanner = newScanner(settings);
         scanner.doCreate(this);
-		scanner.doConfigure(settings);
+        scanner.doConfigure(settings);
         
         return scanner.doScan();
     }
@@ -85,7 +85,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
         return context.newChannelScanner();
     }
 
-	@Override
+    @Override
     public final void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
             throws UnsupportedOperationException, ConnectionException {
         

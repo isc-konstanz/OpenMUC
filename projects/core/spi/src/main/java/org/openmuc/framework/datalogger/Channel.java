@@ -44,9 +44,9 @@ public class Channel extends ChannelContext {
 
     Record record = new Record(Flag.DATA_LOGGING_NOT_ACTIVE);
 
-	protected void doConfigure() throws ArgumentSyntaxException {
+    protected void doConfigure() throws ArgumentSyntaxException {
         doConfigure(channel.getLoggingSettings());
-    	onConfigure();
+        onConfigure();
     }
 
     protected void doConfigure(String settings) throws ArgumentSyntaxException {
@@ -71,7 +71,7 @@ public class Channel extends ChannelContext {
     }
 
     public final int getLoggingIntervalMax() {
-    	return intervalMax;
+        return intervalMax;
     }
 
     public final double getLoggingTolerance() {
@@ -79,7 +79,7 @@ public class Channel extends ChannelContext {
     }
 
     public final boolean isAveraging() {
-    	return average;
+        return average;
     }
 
     public final Record getRecord() {
@@ -120,7 +120,7 @@ public class Channel extends ChannelContext {
 
     protected List<Record> onRead(long startTime, long endTime) throws IOException {
         // Placeholder for the optional implementation
-    	throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     final void doWrite(long timestamp) throws IOException {
@@ -129,7 +129,7 @@ public class Channel extends ChannelContext {
 
     protected void onWrite(Record record, long timestamp) throws IOException {
         // Placeholder for the optional implementation
-    	throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
 }

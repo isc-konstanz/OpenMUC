@@ -39,7 +39,7 @@ public abstract class Server<C extends Channel> extends ServerContext {
 
     @Override
     public final Server<C> getServer() {
-    	return this;
+        return this;
     }
 
     public final ServerContext getContext() {
@@ -47,17 +47,17 @@ public abstract class Server<C extends Channel> extends ServerContext {
     }
 
     public final void activate(DataAccessService dataAccess) {
-    	try {
-			onActivate(dataAccess);
-	    	onActivate();
-	    	
-		} catch (Exception e) {
-			logger.warn("Error activating server {}: {}", getId(), e.getMessage());
-		}
+        try {
+            onActivate(dataAccess);
+            onActivate();
+            
+        } catch (Exception e) {
+            logger.warn("Error activating server {}: {}", getId(), e.getMessage());
+        }
     }
 
     public final void deactivate() {
-    	onDeactivate();
+        onDeactivate();
     }
 
     protected void onActivate(DataAccessService dataAccess) throws Exception {
@@ -72,25 +72,25 @@ public abstract class Server<C extends Channel> extends ServerContext {
         // Placeholder for the optional implementation
     }
 
-	@Override
-	public final void serverMappings(List<ServerMappingContainer> mappings) {
-		onConfigure(getChannels(mappings));
-	}
+    @Override
+    public final void serverMappings(List<ServerMappingContainer> mappings) {
+        onConfigure(getChannels(mappings));
+    }
 
     protected abstract void onConfigure(List<C> channels);
 
-	@Override
-	public final void updatedConfiguration(List<ServerMappingContainer> mappings) {
-		onUpdate(getChannels(mappings));
-	}
+    @Override
+    public final void updatedConfiguration(List<ServerMappingContainer> mappings) {
+        onUpdate(getChannels(mappings));
+    }
 
-	protected void onUpdate(List<C> channels) {
+    protected void onUpdate(List<C> channels) {
         // Placeholder for the optional implementation
-    	onConfigure(channels);
+        onConfigure(channels);
     }
 
     protected List<C> getChannels() {
-    	return (List<C>) channels.values();
+        return (List<C>) channels.values();
     }
 
     protected List<C> getChannels(List<ServerMappingContainer> mappings) {
@@ -106,11 +106,11 @@ public abstract class Server<C extends Channel> extends ServerContext {
         return channels;
     }
 
-	protected C getChannel(String id) {
-		return channels.get(id);
-	}
+    protected C getChannel(String id) {
+        return channels.get(id);
+    }
 
-	protected C getChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
+    protected C getChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
         String id = mapping.getChannel().getId();
         C channel = channels.get(id);
         if (channel == null) {
@@ -124,16 +124,21 @@ public abstract class Server<C extends Channel> extends ServerContext {
     }
 
     final C doCreateChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
-    	C channel = onCreateChannel(mapping);
-    	channel.doCreate(this, mapping.getChannel());
-    	channel.doConfigure(mapping);
-    	
-		return channel;
-	}
+        C channel = onCreateChannel(mapping);
+        channel.doCreate(this, mapping.getChannel());
+        channel.doConfigure(mapping);
+        
+        return channel;
+    }
 
     protected C onCreateChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
-		return super.newChannel();
-	}
+        return onCreateChannel();
+    }
+
+    protected C onCreateChannel() throws ArgumentSyntaxException {
+        // Placeholder for the optional implementation
+        return super.newChannel();
+    }
 
 }

@@ -34,11 +34,11 @@ import org.slf4j.LoggerFactory;
 public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     private static final Logger logger = LoggerFactory.getLogger(DriverContext.class);
 
-	private DeviceScanner scanner = null;
+    private DeviceScanner scanner = null;
 
     @Override
     public final Driver<D> getDriver() {
-    	return this;
+        return this;
     }
 
     public final DriverContext getContext() {
@@ -46,17 +46,17 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     }
 
     public final void activate(DataAccessService dataAccess) {
-    	try {
-			onActivate(dataAccess);
-	    	onActivate();
-	    	
-		} catch (Exception e) {
-			logger.warn("Error activating driver {}: {}", getId(), e.getMessage());
-		}
+        try {
+            onActivate(dataAccess);
+            onActivate();
+            
+        } catch (Exception e) {
+            logger.warn("Error activating driver {}: {}", getId(), e.getMessage());
+        }
     }
 
     public final void deactivate() {
-    	onDeactivate();
+        onDeactivate();
     }
 
     protected void onActivate(DataAccessService dataAccess) throws Exception {
@@ -76,7 +76,7 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
         scanner = newScanner(settings);
         scanner.doCreate(this);
-		scanner.doConfigure(settings);
+        scanner.doConfigure(settings);
         
         scanner.onScan(listener);
     }
@@ -104,33 +104,33 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     }
 
     final Device<?> doConnect(String address, String settings) 
-			throws ArgumentSyntaxException, ConnectionException {
-		Device<?> device = onCreateConnection(address, settings);
-		if (device != null) {
-			device.doConnect();
-			
-			return device;
-		}
-		return null;
-	}
+            throws ArgumentSyntaxException, ConnectionException {
+        Device<?> device = onCreateConnection(address, settings);
+        if (device != null) {
+            device.doConnect();
+            
+            return device;
+        }
+        return null;
+    }
 
-	protected Device<?> onCreateConnection(String address, String settings) 
-			throws ArgumentSyntaxException, ConnectionException {
+    protected Device<?> onCreateConnection(String address, String settings) 
+            throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-		D device = super.newConnection();
-		device.doCreate(this);
-		device.doConfigure(address, settings);
-		
-		return onCreateConnection(device);
-	}
+        D device = super.newConnection();
+        device.doCreate(this);
+        device.doConfigure(address, settings);
+        
+        return onCreateConnection(device);
+    }
 
-	protected Device<?> onCreateConnection(D device) 
-			throws ArgumentSyntaxException, ConnectionException {
+    protected Device<?> onCreateConnection(D device) 
+            throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-		if (device instanceof Device) {
-			return (Device<?>) device;
-		}
-		return null;
+        if (device instanceof Device) {
+            return (Device<?>) device;
+        }
+        return null;
     }
 
 }

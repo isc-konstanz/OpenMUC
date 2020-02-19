@@ -33,12 +33,12 @@ import org.slf4j.LoggerFactory;
 public abstract class ServerContext implements ServerService {
     private static final Logger logger = LoggerFactory.getLogger(ServerContext.class);
 
-	Class<? extends Channel> channel = null;
+    Class<? extends Channel> channel = null;
 
-	@SuppressWarnings("unchecked")
-	protected ServerContext() {
+    @SuppressWarnings("unchecked")
+    protected ServerContext() {
         try {
-    		channel = ((Class<? extends Channel>) getType(this.getClass(), Server.class));
+            channel = ((Class<? extends Channel>) getType(this.getClass(), Server.class));
             onCreate();
             
         } catch(Exception e) {
@@ -50,33 +50,33 @@ public abstract class ServerContext implements ServerService {
         // Placeholder for the optional implementation
     }
 
-	private Type getType(Class<?> clazz, Class<?> type) {
-		while (clazz.getSuperclass() != null) {
-			if (clazz.getSuperclass().equals(type)) {
-				break;
-			}
+    private Type getType(Class<?> clazz, Class<?> type) {
+        while (clazz.getSuperclass() != null) {
+            if (clazz.getSuperclass().equals(type)) {
+                break;
+            }
             clazz = clazz.getSuperclass();
-		}
+        }
         // This operation is safe. Because clazz is a direct sub-class, getGenericSuperclass() will
         // always return the Type of this class. Because this class is parameterized, the cast is safe
         ParameterizedType superclass = (ParameterizedType) clazz.getGenericSuperclass();
         return superclass.getActualTypeArguments()[0];
-	}
+    }
 
     public abstract Server<?> getServer();
 
-	@SuppressWarnings("unchecked")
-	<C extends Channel> C newChannel() throws ArgumentSyntaxException {
-		C channel;
-		try {
-			channel = (C) this.channel.getDeclaredConstructor().newInstance();
-			
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
+    @SuppressWarnings("unchecked")
+    <C extends Channel> C newChannel() throws ArgumentSyntaxException {
+        C channel;
+        try {
+            channel = (C) this.channel.getDeclaredConstructor().newInstance();
+            
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
             throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-            		this.channel.getSimpleName(), e.getMessage()));
-		}
-		return channel;
-	}
+                    this.channel.getSimpleName(), e.getMessage()));
+        }
+        return channel;
+    }
 
 }

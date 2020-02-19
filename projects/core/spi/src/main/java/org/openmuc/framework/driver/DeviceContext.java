@@ -25,10 +25,10 @@ import org.openmuc.framework.options.Configurable;
 
 public abstract class DeviceContext extends Configurable {
 
-	DriverContext context;
+    DriverContext context;
 
-	<C extends DriverContext> void doCreate(C context) throws ArgumentSyntaxException {
-    	this.context = context;
+    <C extends DriverContext> void doCreate(C context) throws ArgumentSyntaxException {
+        this.context = context;
         this.onCreate(context);
         this.onCreate();
     }

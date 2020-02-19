@@ -25,11 +25,11 @@ import org.openmuc.framework.server.spi.ServerMappingContainer;
 
 public class Channel extends ChannelContext {
 
-	private String settings = "";
+    private String settings = "";
 
-	protected void doConfigure(ServerMappingContainer container) throws ArgumentSyntaxException {
+    protected void doConfigure(ServerMappingContainer container) throws ArgumentSyntaxException {
         doConfigure(container.getServerMapping().getServerAddress());
-    	onConfigure();
+        onConfigure();
     }
 
     protected void doConfigure(String settings) throws ArgumentSyntaxException {

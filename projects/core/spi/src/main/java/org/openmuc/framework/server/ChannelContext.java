@@ -38,13 +38,13 @@ import org.openmuc.framework.options.Configurable;
 
 public abstract class ChannelContext extends Configurable {
 
-	Channel channel;
+    Channel channel;
 
     ServerContext context;
 
     <C extends ServerContext> void doCreate(C context, Channel channel) throws ArgumentSyntaxException {
-    	this.channel = channel;
-    	this.context = context;
+        this.channel = channel;
+        this.context = context;
         this.onCreate(context);
         this.onCreate();
     }
@@ -62,7 +62,7 @@ public abstract class ChannelContext extends Configurable {
     }
 
     public final ServerContext getServer() {
-    	return context;
+        return context;
     }
 
     public final String getId() {
@@ -85,109 +85,109 @@ public abstract class ChannelContext extends Configurable {
         return channel.getValueTypeLength();
     }
 
-	public final String getAddress() {
-		return channel.getChannelAddress();
-	}
+    public final String getAddress() {
+        return channel.getChannelAddress();
+    }
 
-	public final String getSettings() {
-		return channel.getChannelSettings();
-	}
+    public final String getSettings() {
+        return channel.getChannelSettings();
+    }
 
-	public final double getScalingFactor() {
-		return channel.getScalingFactor();
-	}
+    public final double getScalingFactor() {
+        return channel.getScalingFactor();
+    }
 
-	public final int getSamplingInterval() {
-		return channel.getSamplingInterval();
-	}
+    public final int getSamplingInterval() {
+        return channel.getSamplingInterval();
+    }
 
-	public final int getSamplingTimeOffset() {
-		return channel.getSamplingTimeOffset();
-	}
+    public final int getSamplingTimeOffset() {
+        return channel.getSamplingTimeOffset();
+    }
 
-	public final int getLoggingInterval() {
-		return channel.getLoggingInterval();
-	}
+    public final int getLoggingInterval() {
+        return channel.getLoggingInterval();
+    }
 
-	public final int getLoggingTimeOffset() {
-		return channel.getLoggingTimeOffset();
-	}
+    public final int getLoggingTimeOffset() {
+        return channel.getLoggingTimeOffset();
+    }
 
-	public final String getLoggingSettings() {
-		return channel.getLoggingSettings();
-	}
+    public final String getLoggingSettings() {
+        return channel.getLoggingSettings();
+    }
 
-	public final String getDriverId() {
-		return channel.getDriverId();
-	}
+    public final String getDriverId() {
+        return channel.getDriverId();
+    }
 
-	public final String getDeviceId() {
-		return channel.getDeviceId();
-	}
+    public final String getDeviceId() {
+        return channel.getDeviceId();
+    }
 
-	public final String getDeviceDescription() {
-		return channel.getDeviceDescription();
-	}
+    public final String getDeviceDescription() {
+        return channel.getDeviceDescription();
+    }
 
-	public final String getDeviceAddress() {
-		return channel.getDeviceAddress();
-	}
+    public final String getDeviceAddress() {
+        return channel.getDeviceAddress();
+    }
 
-	public final String getDeviceSettings() {
-		return channel.getDeviceSettings();
-	}
+    public final String getDeviceSettings() {
+        return channel.getDeviceSettings();
+    }
 
-	public final DeviceState getDeviceState() {
-		return channel.getDeviceState();
-	}
+    public final DeviceState getDeviceState() {
+        return channel.getDeviceState();
+    }
 
-	public final ChannelState getState() {
-		return channel.getChannelState();
-	}
+    public final ChannelState getState() {
+        return channel.getChannelState();
+    }
 
-	public final boolean isConnected() {
-		return channel.isConnected();
-	}
+    public final boolean isConnected() {
+        return channel.isConnected();
+    }
 
     public final void addListener(RecordListener listener) {
-    	channel.addListener(listener);
+        channel.addListener(listener);
     }
 
     public final void removeListener(RecordListener listener) {
-    	channel.removeListener(listener);
+        channel.removeListener(listener);
     }
 
-	public Record read() {
-		return channel.read();
-	}
+    public Record read() {
+        return channel.read();
+    }
 
     public final Record getRecord() {
-    	return channel.getLatestRecord();
+        return channel.getLatestRecord();
     }
 
-	public Record getRecord(long time) throws DataLoggerNotAvailableException, IOException {
-		return channel.getLoggedRecord(time);
-	}
+    public Record getRecord(long time) throws DataLoggerNotAvailableException, IOException {
+        return channel.getLoggedRecord(time);
+    }
 
-	public List<Record> getRecords(long startTime) throws DataLoggerNotAvailableException, IOException {
-		return channel.getLoggedRecords(startTime);
-	}
+    public List<Record> getRecords(long startTime) throws DataLoggerNotAvailableException, IOException {
+        return channel.getLoggedRecords(startTime);
+    }
 
-	public List<Record> getRecords(long startTime, long endTime) throws DataLoggerNotAvailableException, IOException {
-		return channel.getLoggedRecords(startTime, endTime);
-	}
+    public List<Record> getRecords(long startTime, long endTime) throws DataLoggerNotAvailableException, IOException {
+        return channel.getLoggedRecords(startTime, endTime);
+    }
 
-	public void setRecord(Record record) {
-		channel.setLatestRecord(record);
-	}
+    public void setRecord(Record record) {
+        channel.setLatestRecord(record);
+    }
 
-	public Flag write(Value value) {
-		return channel.write(value);
-	}
+    public Flag write(Value value) {
+        return channel.write(value);
+    }
 
-	public void writeFuture(List<FutureValue> values) {
-		channel.writeFuture(values);
-	}
+    public void writeFuture(List<FutureValue> values) {
+        channel.writeFuture(values);
+    }
 
     @Override
     public String toString() {

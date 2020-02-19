@@ -39,16 +39,16 @@ import org.slf4j.LoggerFactory;
 public abstract class DriverContext implements DriverService {
     private static final Logger logger = LoggerFactory.getLogger(DriverContext.class);
 
-	final DriverOptions info;
+    final DriverOptions info;
 
-	Class<? extends DeviceConfigs<?>> device = null;
-	Class<? extends DeviceScanner> deviceScanner = null;
+    Class<? extends DeviceConfigs<?>> device = null;
+    Class<? extends DeviceScanner> deviceScanner = null;
 
-	Class<? extends Channel> channel = null;
-	Class<? extends ChannelScanner> channelScanner = null;
+    Class<? extends Channel> channel = null;
+    Class<? extends ChannelScanner> channelScanner = null;
 
-	@SuppressWarnings("unchecked")
-	protected DriverContext() {
+    @SuppressWarnings("unchecked")
+    protected DriverContext() {
         this.info = DriverInfoFactory.getInfo(getId());
         try {
             setDevice((Class<? extends DeviceConfigs<?>>) getType(this.getClass(), Driver.class, DriverContext.class));
@@ -70,18 +70,18 @@ public abstract class DriverContext implements DriverService {
         // Placeholder for the optional implementation
     }
 
-	private Type getType(Class<?> clazz, Class<?> type, Class<?> context) {
-		while (clazz.getSuperclass() != null) {
-			if (clazz.getSuperclass().equals(type) || clazz.getSuperclass().equals(context)) {
-				break;
-			}
+    private Type getType(Class<?> clazz, Class<?> type, Class<?> context) {
+        while (clazz.getSuperclass() != null) {
+            if (clazz.getSuperclass().equals(type) || clazz.getSuperclass().equals(context)) {
+                break;
+            }
             clazz = clazz.getSuperclass();
-		}
+        }
         // This operation is safe. Because clazz is a direct sub-class, getGenericSuperclass() will
         // always return the Type of this class. Because this class is parameterized, the cast is safe
         ParameterizedType superclass = (ParameterizedType) clazz.getGenericSuperclass();
         return superclass.getActualTypeArguments()[0];
-	}
+    }
 
     /**
      * Returns the ID of the driver. The ID may only contain ASCII letters, digits, hyphens and underscores. By
@@ -96,7 +96,7 @@ public abstract class DriverContext implements DriverService {
     }
 
     public final DriverContext setName(String name) {
-    	info.setName(name);
+        info.setName(name);
         return this;
     }
 
@@ -105,132 +105,132 @@ public abstract class DriverContext implements DriverService {
     }
 
     public final DriverContext setDescription(String description) {
-    	info.setDescription(description);
+        info.setDescription(description);
         return this;
     }
 
     @Override
     public DriverInfo getInfo() {
-    	return info;
+        return info;
     }
 
     public abstract Driver<?> getDriver();
 
-	protected void onConnect(Device<?> connection) {
+    protected void onConnect(Device<?> connection) {
         // Placeholder for the optional implementation
-	}
+    }
 
-	protected void onDisconnect(Device<?> connection) {
+    protected void onDisconnect(Device<?> connection) {
         // Placeholder for the optional implementation
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	<D extends DeviceConfigs<?>> D newConnection() throws ArgumentSyntaxException, ConnectionException {
-		D device;
-		try {
-			device = (D) this.device.getDeclaredConstructor().newInstance();
-			
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
+    @SuppressWarnings("unchecked")
+    <D extends DeviceConfigs<?>> D newConnection() throws ArgumentSyntaxException, ConnectionException {
+        D device;
+        try {
+            device = (D) this.device.getDeclaredConstructor().newInstance();
+            
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
             throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-            		this.device.getSimpleName(), e.getMessage()));
-		}
-		return device;
-	}
+                    this.device.getSimpleName(), e.getMessage()));
+        }
+        return device;
+    }
 
     public final DriverContext setDevice(Class<? extends DeviceConfigs<?>> device) {
-    	info.setDeviceAddress(Options.parseAddress(device));
-    	info.setDeviceSettings(Options.parseSettings(device));
+        info.setDeviceAddress(Options.parseAddress(device));
+        info.setDeviceSettings(Options.parseSettings(device));
         this.device = device;
         return this;
     }
 
     public final DriverContext setDeviceAddress(Class<? extends Configurable> configs) {
-    	info.setDeviceAddress(Options.parseAddress(configs));
+        info.setDeviceAddress(Options.parseAddress(configs));
         return this;
     }
 
     public final DriverContext setDeviceSettings(Class<? extends Configurable> configs) {
-    	info.setDeviceSettings(Options.parseSettings(configs));
+        info.setDeviceSettings(Options.parseSettings(configs));
         return this;
     }
 
     boolean hasDeviceScanner() {
-    	return deviceScanner != null;
+        return deviceScanner != null;
     }
 
-	@SuppressWarnings("unchecked")
-	<S extends DeviceScanner> S newDeviceScanner() throws ArgumentSyntaxException {
-		S scanner;
-    	try {
-			scanner = (S) deviceScanner.getDeclaredConstructor().newInstance();
-			
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
+    @SuppressWarnings("unchecked")
+    <S extends DeviceScanner> S newDeviceScanner() throws ArgumentSyntaxException {
+        S scanner;
+        try {
+            scanner = (S) deviceScanner.getDeclaredConstructor().newInstance();
+            
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
             throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-            		deviceScanner.getSimpleName(), e.getMessage()));
-		}
-    	return scanner;
-	}
+                    deviceScanner.getSimpleName(), e.getMessage()));
+        }
+        return scanner;
+    }
 
     public final <S extends DeviceScanner> DriverContext setDeviceScanner(Class<S> scanner) {
-    	info.setDeviceScanSettings(Options.parseSettings(scanner));
-    	this.deviceScanner = scanner;
+        info.setDeviceScanSettings(Options.parseSettings(scanner));
+        this.deviceScanner = scanner;
         return this;
     }
 
-	@SuppressWarnings("unchecked")
-	<C extends Channel> C newChannel() throws ArgumentSyntaxException {
-		C channel;
-		try {
-			channel = (C) this.channel.getDeclaredConstructor().newInstance();
-			
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
+    @SuppressWarnings("unchecked")
+    <C extends Channel> C newChannel() throws ArgumentSyntaxException {
+        C channel;
+        try {
+            channel = (C) this.channel.getDeclaredConstructor().newInstance();
+            
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
             throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-            		this.channel.getSimpleName(), e.getMessage()));
-		}
-		return channel;
-	}
+                    this.channel.getSimpleName(), e.getMessage()));
+        }
+        return channel;
+    }
 
     public final DriverContext setChannel(Class<? extends Channel> channel) {
-    	info.setChannelAddress(Options.parseAddress(channel));
-    	info.setChannelSettings(Options.parseSettings(channel));
-    	this.channel = channel;
+        info.setChannelAddress(Options.parseAddress(channel));
+        info.setChannelSettings(Options.parseSettings(channel));
+        this.channel = channel;
         return this;
     }
 
     public final DriverContext setChannelAddress(Class<? extends Configurable> configs) {
-    	info.setChannelAddress(Options.parseAddress(configs));
+        info.setChannelAddress(Options.parseAddress(configs));
         return this;
     }
 
     public final DriverContext setChannelSettings(Class<? extends Configurable> configs) {
-    	info.setChannelSettings(Options.parseSettings(configs));
+        info.setChannelSettings(Options.parseSettings(configs));
         return this;
     }
 
     boolean hasChannelScanner() {
-    	return channelScanner != null;
+        return channelScanner != null;
     }
 
-	@SuppressWarnings("unchecked")
-	<S extends ChannelScanner> S newChannelScanner() throws ArgumentSyntaxException, ConnectionException {
-		S scanner;
-		try {
-			scanner = (S) channelScanner.getDeclaredConstructor().newInstance();
-			
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
+    @SuppressWarnings("unchecked")
+    <S extends ChannelScanner> S newChannelScanner() throws ArgumentSyntaxException, ConnectionException {
+        S scanner;
+        try {
+            scanner = (S) channelScanner.getDeclaredConstructor().newInstance();
+            
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
             throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-            		channelScanner.getSimpleName(), e.getMessage()));
-		}
-		return scanner;
-	}
+                    channelScanner.getSimpleName(), e.getMessage()));
+        }
+        return scanner;
+    }
 
     public final <S extends ChannelScanner> DriverContext setChannelScanner(Class<S> scanner) {
-    	info.setChannelScanSettings(Options.parseSettings(scanner));
-    	this.channelScanner = scanner;
+        info.setChannelScanSettings(Options.parseSettings(scanner));
+        this.channelScanner = scanner;
         return this;
     }
 

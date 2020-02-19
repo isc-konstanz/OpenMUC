@@ -35,11 +35,11 @@ class ChannelHandler<C extends Channel> {
     }
 
     public String getChannelId() {
-    	return channel.getId();
+        return channel.getId();
     }
 
     public C getChannel() {
-    	return channel;
+        return channel;
     }
 
     boolean isUpdate(Record update) {
@@ -62,7 +62,7 @@ class ChannelHandler<C extends Channel> {
 
     boolean update(Record update) {
         if (isUpdate(update)) {
-        	channel.record = update;
+            channel.record = update;
             return true;
         }
         return false;

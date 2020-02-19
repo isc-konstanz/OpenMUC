@@ -32,19 +32,19 @@ import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 
 public class Channel extends ChannelContext implements ChannelRecordContainer, ChannelValueContainer {
 
-	private ChannelContainer container;
+    private ChannelContainer container;
 
-	protected Channel() {
+    protected Channel() {
     }
 
     protected void doConfigure(ChannelContainer container) throws ArgumentSyntaxException {
         if (this.container == null ||
-        		!this.container.getChannelSettings().equals(container.getChannelSettings()) ||
+                !this.container.getChannelSettings().equals(container.getChannelSettings()) ||
                 !this.container.getChannelAddress().equals(container.getChannelAddress())) {
             configure(container.getChannelAddress(), container.getChannelSettings());
         }
         this.container = container;
-    	onConfigure();
+        onConfigure();
     }
 
     protected void onConfigure() throws ArgumentSyntaxException {
@@ -91,80 +91,80 @@ public class Channel extends ChannelContext implements ChannelRecordContainer, C
         throw new UnsupportedOperationException();
     }
 
-	@Override
-	@Deprecated
-	public org.openmuc.framework.dataaccess.Channel getChannel() {
-		return channel;
-	}
+    @Override
+    @Deprecated
+    public org.openmuc.framework.dataaccess.Channel getChannel() {
+        return channel;
+    }
 
-	@Override
-	@Deprecated
-	public String getChannelAddress() {
-		return container.getChannelAddress();
-	}
+    @Override
+    @Deprecated
+    public String getChannelAddress() {
+        return container.getChannelAddress();
+    }
 
-	@Override
-	@Deprecated
-	public String getChannelSettings() {
-		return container.getChannelSettings();
-	}
+    @Override
+    @Deprecated
+    public String getChannelSettings() {
+        return container.getChannelSettings();
+    }
 
-	@Override
-	public Object getChannelHandle() {
+    @Override
+    public Object getChannelHandle() {
         return container.getChannelHandle();
-	}
+    }
 
-	@Override
-	public void setChannelHandle(Object handle) {
-		this.container.setChannelHandle(handle);
-	}
+    @Override
+    public void setChannelHandle(Object handle) {
+        this.container.setChannelHandle(handle);
+    }
 
-	@Override
+    @Override
     public final Value getValue() {
-		if (container instanceof ChannelRecordContainer) return ((ChannelRecordContainer) container).getRecord().getValue();
-		if (container instanceof ChannelValueContainer) return ((ChannelValueContainer) container).getValue();
-		return null;
+        if (container instanceof ChannelRecordContainer) return ((ChannelRecordContainer) container).getRecord().getValue();
+        if (container instanceof ChannelValueContainer) return ((ChannelValueContainer) container).getValue();
+        return null;
     }
 
-	@Override
+    @Override
     public final Flag getFlag() {
-		if (container instanceof ChannelRecordContainer) return ((ChannelRecordContainer) container).getRecord().getFlag();
-		if (container instanceof ChannelValueContainer) return ((ChannelValueContainer) container).getFlag();
-		return Flag.UNKNOWN_ERROR;
+        if (container instanceof ChannelRecordContainer) return ((ChannelRecordContainer) container).getRecord().getFlag();
+        if (container instanceof ChannelValueContainer) return ((ChannelValueContainer) container).getFlag();
+        return Flag.UNKNOWN_ERROR;
     }
 
-	@Override
+    @Override
     public final void setFlag(Flag flag) {
-		if (container instanceof ChannelRecordContainer) ((ChannelRecordContainer) container).setRecord(new Record(flag));
-		if (container instanceof ChannelValueContainer) ((ChannelValueContainer) container).setFlag(flag);
+        if (container instanceof ChannelRecordContainer) ((ChannelRecordContainer) container).setRecord(new Record(flag));
+        if (container instanceof ChannelValueContainer) ((ChannelValueContainer) container).setFlag(flag);
     }
 
-	@Override
-	public Record getRecord() {
-		if (container instanceof ChannelRecordContainer) return ((ChannelRecordContainer) container).getRecord();
-		if (container instanceof ChannelValueContainer) return new Record(getValue(), System.currentTimeMillis());
-		return null;
-	}
+    @Override
+    public Record getRecord() {
+        if (container instanceof ChannelRecordContainer) return ((ChannelRecordContainer) container).getRecord();
+        if (container instanceof ChannelValueContainer) return new Record(getValue(), System.currentTimeMillis());
+        return null;
+    }
 
-	@Override
+    @Override
     public final void setRecord(Record record) {
-		if (container instanceof ChannelRecordContainer) ((ChannelRecordContainer) container).setRecord(record);
-		if (container instanceof ChannelValueContainer) ((ChannelValueContainer) container).setFlag(record.getFlag());
+        if (container instanceof ChannelRecordContainer) ((ChannelRecordContainer) container).setRecord(record);
+        if (container instanceof ChannelValueContainer) ((ChannelValueContainer) container).setFlag(record.getFlag());
     }
 
-	@Override
-	public ChannelRecordContainer copy() {
-		try {
-			Channel channel = new Channel();
-			channel.doCreate(context, this.channel);
-			channel.doConfigure(container);
-			
-			return channel;
-			
-		} catch (ArgumentSyntaxException e) {
-			// Cannot happen, as only containers with valid syntax will be instanced
-			return null;
-		}
-	}
+    @Override
+    public ChannelRecordContainer copy() {
+        try {
+            Channel channel = new Channel();
+            channel.doCreate(context, this.channel);
+            channel.doConfigure(container);
+            
+            return channel;
+            
+        } catch (ArgumentSyntaxException e) {
+            // Cannot happen, as only containers with valid syntax will be instanced
+            return null;
+        }
+    }
 
 }
