@@ -22,39 +22,40 @@ package org.openmuc.framework.driver.mysql;
 
 import org.openmuc.framework.driver.Channel;
 import org.openmuc.framework.options.Address;
+import org.openmuc.framework.options.Setting;
 
 public abstract class SqlChannel extends Channel {
 
     @Address(id = "table", mandatory = false)
     protected String table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
 
-    @Address(id = "data",
+    @Setting(id = "key", mandatory = false)
+    protected String keyColumn = null;
+
+    @Setting(id = "data",
              mandatory = false,
              description = "Varies due to the table construction. " +
                            "Either column name or cell content, " +
                            "if more rows have the same timestamp.")
-    protected String data = null;
+    protected String dataColumn = "data";
 
-    @Address(id = "column", mandatory = false)
-    protected String column = "data";
-
-    @Address(id = "index", mandatory = false)
-    protected String index = "time";
+    @Setting(id = "index", mandatory = false)
+    protected String indexColumn = "time";
 
     public String getTable() {
         return table;
     }
 
     public String getIndexColumn() {
-        return index;
+        return indexColumn;
     }
 
     public String getDataColumn() {
-        return data;
+        return dataColumn;
     }
 
     public String getColumn() {
-        return column;
+        return keyColumn;
     }
 
     public abstract String getReadQuery() throws UnsupportedOperationException;

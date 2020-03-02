@@ -147,7 +147,7 @@ public class SqlClient extends Device<SqlChannel> {
                     try (ResultSet result = statement.executeQuery(query)) {
                         while (result.next()) {
                             long time = System.currentTimeMillis();
-                            String strValue = result.getString(channel.data);
+                            String strValue = result.getString(channel.dataColumn);
                             strValue = strValue.replaceAll("\"", "");
                             switch(channel.getValueType()){    
                             case FLOAT:

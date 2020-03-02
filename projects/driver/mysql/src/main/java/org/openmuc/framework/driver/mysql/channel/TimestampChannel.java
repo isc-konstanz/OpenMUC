@@ -25,15 +25,15 @@ import org.openmuc.framework.driver.mysql.SqlChannel;
 public class TimestampChannel extends SqlChannel {
 
     private static String QUERY_SELECT_SINGLEROW = "SELECT %s FROM %s ORDER BY timestamp DESC LIMIT 1";
-    private static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE SVNAME like '%s%%' ORDER BY timestamp DESC LIMIT 1;";
+    private static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE %s like '%s%%' ORDER BY timestamp DESC LIMIT 1;";
 
     @Override
       public String getReadQuery() {
-        switch(getTable()) {
-        case "ce":
+        if(getColumn()!="null") {
             return String.format(QUERY_SELECT_SINGLEROW, getDataColumn(), getTable());
-        default:
-            return String.format(QUERY_SELECT_MULTIPLEROW, getDataColumn(), getTable(), getColumn() );
+        } 
+        else {
+        	return String.format(QUERY_SELECT_MULTIPLEROW, getDataColumn(), getIndexColumn(), getTable(), getColumn() );
         }
     }
 

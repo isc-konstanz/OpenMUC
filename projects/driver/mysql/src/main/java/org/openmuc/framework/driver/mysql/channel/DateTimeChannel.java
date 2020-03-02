@@ -20,9 +20,7 @@
  */
 package org.openmuc.framework.driver.mysql.channel;
 
-import org.openmuc.framework.driver.mysql.SqlChannel;
-
-public class DateTimeChannel extends SqlChannel {
+public class DateTimeChannel extends TimestampChannel {
 
     private static String QUERY_SELECT_DATETIME = "SELECT %s FROM %s ORDER BY TestTime DESC LIMIT 1;";
 
