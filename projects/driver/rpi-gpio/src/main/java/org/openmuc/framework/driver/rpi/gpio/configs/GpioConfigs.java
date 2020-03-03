@@ -22,12 +22,16 @@ package org.openmuc.framework.driver.rpi.gpio.configs;
 
 import org.openmuc.framework.driver.DeviceConfigs;
 import org.openmuc.framework.options.Address;
+import org.openmuc.framework.options.AddressSyntax;
 import org.openmuc.framework.options.Setting;
 
 import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 
+@AddressSyntax(separator = ",",
+               assignmentOperator = ":",
+               keyValuePairs = true)
 public class GpioConfigs extends DeviceConfigs<GpioChannel> {
 
     public static final String PIN = "pin";

@@ -32,9 +32,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, })
 public @interface AddressSyntax {
 
-    public static final String SEPARATOR_DEFAULT = ",";
-    public static final String ASSIGNMENT_OPERATOR_DEFAULT = ":";
-    public static final boolean KEY_VAL_PAIRS_DEFAULT = true;
+    public static final String SEPARATOR_DEFAULT = ":";
+    public static final String ASSIGNMENT_OPERATOR_DEFAULT = "";
+    public static final boolean KEY_VAL_PAIRS_DEFAULT = false;
 
 	String separator() default SEPARATOR_DEFAULT;
 	String assignmentOperator() default ASSIGNMENT_OPERATOR_DEFAULT;
