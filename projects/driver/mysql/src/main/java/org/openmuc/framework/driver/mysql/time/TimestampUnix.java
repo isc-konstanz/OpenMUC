@@ -18,15 +18,32 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.mysql.channel;
+package org.openmuc.framework.driver.mysql.time;
 
-public class DateTimeChannel extends TimestampChannel {
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-    private static String QUERY_SELECT_DATETIME = "SELECT %s FROM %s ORDER BY TestTime DESC LIMIT 1;";
+import org.openmuc.framework.driver.mysql.Index;
 
-    @Override
-    public String getReadQuery() {
-        return String.format(QUERY_SELECT_DATETIME, getDataColumn(), getTable());
+
+public class TimestampUnix extends Index {
+
+    protected final int resolution;
+
+	public TimestampUnix(String column, int resolution) {
+		super(column);
+		this.resolution = resolution;
+	}
+
+	@Override
+	public long decode(ResultSet result) throws SQLException {
+		long timestamp = result.getLong(column);
+		return timestamp*resolution;
+	}
+
+	@Override
+	public String encode(long timestamp) {
+		return String.valueOf(Math.round((double) timestamp/resolution));
     }
 
 }

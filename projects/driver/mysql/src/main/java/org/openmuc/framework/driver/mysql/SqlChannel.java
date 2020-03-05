@@ -21,43 +21,69 @@
 package org.openmuc.framework.driver.mysql;
 
 import org.openmuc.framework.driver.Channel;
+import org.openmuc.framework.driver.DeviceContext;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.Setting;
+import org.openmuc.framework.options.SettingsSyntax;
 
-public abstract class SqlChannel extends Channel {
+@SettingsSyntax(separator = ";", assignmentOperator = "=")
+public class SqlChannel extends Channel {
 
-    @Address(id = "table", mandatory = false)
-    protected String table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
-
-    @Setting(id = "key", mandatory = false)
-    protected String keyColumn = null;
-
-    @Setting(id = "data",
-             mandatory = false,
-             description = "Varies due to the table construction. " +
-                           "Either column name or cell content, " +
-                           "if more rows have the same timestamp.")
+    @Address(id = "dataColumn",
+            name = "Data column",
+            description = "The column name of the table containing the value data.",
+            mandatory = false)
     protected String dataColumn = "data";
 
-    @Setting(id = "index", mandatory = false)
-    protected String indexColumn = "time";
+    @Setting(id = "keyColumn",
+            name = "Key column",
+            description = "The column name of the table containing the unique key identifying the series.<br>" +
+                          "<i>Only necessary for unnormalized tables</i>.",
+            mandatory = false)
+    protected String keyColumn = "key";
 
-    public String getTable() {
-        return table;
+    @Setting(id = "key",
+            name = "Key",
+            description = "The unique key identifying the series.<br>" +
+                    "<i>Only necessary for unnormalized tables.</i>",
+            mandatory = false)
+    protected String key = null;
+
+    @Setting(id = "table",
+            name = "Table name",
+            description = "Tablename to read columns from.<br>" +
+            		      "Will override the configured table name of the connection.",
+            mandatory = false)
+    protected String table = null;
+
+    @Override
+    protected void onCreate(DeviceContext context) {
+        if (table == null) {
+            table = ((SqlClient) context).getTable();
+        }
     }
 
-    public String getIndexColumn() {
-        return indexColumn;
+    @Override
+    protected void onConfigure() {
+        if (table == null) {
+            table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
+        }
     }
 
     public String getDataColumn() {
         return dataColumn;
     }
 
-    public String getColumn() {
+    public String getKeyColumn() {
         return keyColumn;
     }
 
-    public abstract String getReadQuery() throws UnsupportedOperationException;
+    public String getKey() {
+        return key;
+    }
+
+    public String getTable() {
+        return table;
+    }
 
 }

@@ -18,23 +18,30 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.mysql.channel;
+package org.openmuc.framework.driver.mysql;
 
-import org.openmuc.framework.driver.mysql.SqlChannel;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class TimestampChannel extends SqlChannel {
 
-    private static String QUERY_SELECT_SINGLEROW = "SELECT %s FROM %s ORDER BY timestamp DESC LIMIT 1";
-    private static String QUERY_SELECT_MULTIPLEROW = "SELECT %s FROM %s WHERE %s like '%s%%' ORDER BY timestamp DESC LIMIT 1;";
+public abstract class Index {
 
-    @Override
-      public String getReadQuery() {
-        if(getColumn()!="null") {
-            return String.format(QUERY_SELECT_SINGLEROW, getDataColumn(), getTable());
-        } 
-        else {
-        	return String.format(QUERY_SELECT_MULTIPLEROW, getDataColumn(), getIndexColumn(), getTable(), getColumn() );
-        }
-    }
+	protected final String column;
+
+	public Index(String column) {
+		this.column = column;
+	}
+
+	public String getColumn() {
+		return column;
+	}
+
+	public String queryLatest() {
+		return String.format("ORDER BY %s DESC LIMIT 1", column);
+	}
+
+    public abstract long decode(ResultSet result) throws SQLException;
+
+    public abstract String encode(long timestamp);
 
 }

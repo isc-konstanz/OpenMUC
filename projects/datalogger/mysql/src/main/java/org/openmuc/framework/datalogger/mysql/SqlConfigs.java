@@ -28,7 +28,7 @@ public class SqlConfigs extends Channel {
     protected String user = SqlLogger.DB_USER;
 
     @Setting(mandatory = false)
-    protected String password = SqlLogger.DB_PASSWORD;
+    protected String password = SqlLogger.DB_PWD;
 
     @Setting(mandatory = false)
     protected String table = SqlLogger.TABLE;

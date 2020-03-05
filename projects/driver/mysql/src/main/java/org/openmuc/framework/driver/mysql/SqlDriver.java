@@ -22,6 +22,7 @@ package org.openmuc.framework.driver.mysql;
 
 import org.openmuc.framework.driver.Driver;
 import org.openmuc.framework.driver.DriverContext;
+import org.openmuc.framework.driver.mysql.table.ColumnScanner;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
@@ -32,6 +33,14 @@ public class SqlDriver extends Driver<SqlClient> {
     private static final String NAME = "MySQL";
     private static final String DESCRIPTION = "Placeholder for a driver description.";
 
+    private static final String PKG = SqlDriver.class.getPackage().getName().toLowerCase().replace(".driver", "");
+
+    static final String DB_TYPE = System.getProperty(PKG + ".type", "jdbc:mysql");
+    static final String DB_DRIVER = System.getProperty(PKG + ".driver", "com.mysql.cj.jdbc.Driver");
+
+    static final String DB_USER = System.getProperty(PKG + ".user", "root");
+    static final String DB_PWD = System.getProperty(PKG + ".password", "");
+
     @Override
     public String getId() {
         return ID;
@@ -40,7 +49,8 @@ public class SqlDriver extends Driver<SqlClient> {
     @Override
     protected void onCreate(DriverContext context) {
         context.setName(NAME)
-               .setDescription(DESCRIPTION);
+               .setDescription(DESCRIPTION)
+               .setChannelScanner(ColumnScanner.class);
     }
 
 }

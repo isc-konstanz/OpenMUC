@@ -47,7 +47,7 @@ public class SqlLogger extends DataLogger<SqlChannel> {
     static final String DB_PORT = System.getProperty(NAME + ".port", "3306");
     static final String DB_NAME = System.getProperty(NAME + ".database", "openmuc");
     static final String DB_USER = System.getProperty(NAME + ".user", "root");
-    static final String DB_PASSWORD = System.getProperty(NAME + ".password", "");
+    static final String DB_PWD = System.getProperty(NAME + ".password", "");
 
     static final String TABLE = System.getProperty(NAME + ".table", null);
 
