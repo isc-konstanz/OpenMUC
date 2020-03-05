@@ -37,43 +37,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class JoinedTables extends SqlTable {
-    private static final Logger logger = LoggerFactory.getLogger(JoinedTables.class);
+public class UnionTable extends SqlTable {
+    private static final Logger logger = LoggerFactory.getLogger(UnionTable.class);
 
     private final List<String> tables;
 
-    public JoinedTables(List<String> tables, Index index) {
+    public UnionTable(List<String> tables, Index index) {
         super(index);
         this.tables = tables;
     }
 
     @Override
     public void read(Connection connection) throws SQLException {
-    	if (tables.size() < 1) {
-    		
-    	}
+        if (tables.size() < 1) {
+            
+        }
         StringBuilder columns = new StringBuilder();
         for (SqlChannel channel : channels) {
             if (channel.getKey() != null && !channel.getKey().isEmpty()) {
-                logger.warn("Unable to join unnormalized tables for channel: {}", channel.getId());
+                logger.warn("Unable to unite of unnormalized tables for channel: {}", channel.getId());
                 channel.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID));
                 continue;
             }
             if (columns.length() > 0 && channels.size() > 1) {
-            	columns.append(",");
+                columns.append(",");
             }
             columns.append(channel.getDataColumn());
         }
         if (columns.length() == 0) {
-        	return;
+            return;
         }
         StringBuilder query = new StringBuilder();
         for (String table : tables) {
-        	query.append(MessageFormat.format("SELECT {0},{1} FROM {2}", 
+            query.append(MessageFormat.format("SELECT {0},{1} FROM {2}", 
                 index.getColumn(), columns, table));
-        	
+            
             if (query.length() > 0 && tables.size() > 1) {
-            	query.append(" UNION ALL ");
+                query.append(" UNION ALL ");
             }
         }
         query.append(index.queryLatest());
@@ -91,15 +91,15 @@ public class JoinedTables extends SqlTable {
                 for (SqlChannel channel : channels) {
                     channel.setRecord(new Record(Flag.DRIVER_ERROR_READ_FAILURE));
                 }
-            	logger.warn("Error querying \"{}\": {}", query, e.getMessage());
+                logger.warn("Error querying \"{}\": {}", query, e.getMessage());
             }
         }
     }
 
     @Override
     public void write(Transaction transaction)
-    		throws UnsupportedOperationException, SQLException {
-    	throw new UnsupportedOperationException("Unable to write to joined tables");
+            throws UnsupportedOperationException, SQLException {
+        throw new UnsupportedOperationException("Unable to write to table union");
     }
 
 }
