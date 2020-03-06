@@ -93,8 +93,14 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
                     ChannelHandler<C> handler;
                     if (channel.isAveraging()) {
                         handler = new ChannelHandlerAverage<C>(channel);
-                        channel.addListener((ChannelHandlerAverage<C>) handler);
-                        ((ChannelHandlerAverage<C>) handler).setListening(true);
+                    	try {
+                            channel.addListener((ChannelHandlerAverage<C>) handler);
+                            ((ChannelHandlerAverage<C>) handler).setListening(true);
+                    		
+                		} catch (NullPointerException e) {
+                            logger.warn("Failed to start averaging listener channel: {}", id);
+                			// FIXME: Channel not instanced yet.
+                		}
                     }
                     else if (channel.getLoggingIntervalMax() > channel.getLoggingInterval()) {
                         handler = new ChannelHandlerDynamic<C>(channel);
@@ -182,7 +188,7 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
     final C doCreateChannel(LogChannel configs) throws ArgumentSyntaxException {
         C channel = onCreateChannel(configs);
         channel.doCreate(this, dataAccess.getChannel(configs.getId()));
-        channel.doConfigure();
+        channel.doConfigure(configs);
         
         return channel;
     }

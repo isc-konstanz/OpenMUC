@@ -29,8 +29,8 @@ project.ext {
     it.getPath() == ":openmuc-core-datamanager" ||
     it.getPath() == ":openmuc-core-spi" ||
     it.getPath() == ":openmuc-datalogger-ascii" ||
-    it.getPath() == ":openmuc-datalogger-mysql" ||
     it.getPath() == ":openmuc-datalogger-slotsdb" ||
+    it.getPath() == ":openmuc-datalogger-sql" ||
     it.getPath() == ":openmuc-driver-aggregator" ||
     it.getPath() == ":openmuc-driver-csv" ||
     it.getPath() == ":openmuc-driver-dlms" ||
@@ -41,11 +41,11 @@ project.ext {
     it.getPath() == ":openmuc-driver-knx" ||
     it.getPath() == ":openmuc-driver-mbus" ||
     it.getPath() == ":openmuc-driver-modbus" ||
-    it.getPath() == ":openmuc-driver-mysql" ||
     it.getPath() == ":openmuc-driver-rest" ||
     it.getPath() == ":openmuc-driver-rpi-gpio" ||
     it.getPath() == ":openmuc-driver-rpi-w1" ||
     it.getPath() == ":openmuc-driver-snmp" ||
+    it.getPath() == ":openmuc-driver-sql" ||
     it.getPath() == ":openmuc-driver-wmbus" ||
     it.getPath() == ":openmuc-server-modbus" ||
     it.getPath() == ":openmuc-server-opcua" ||
@@ -92,9 +92,9 @@ configure(javaProjects) {
   }
 }
 
-task updateBundles(type:Exec) {
-  dependsOn(distributionProjects.install)
-  commandLine "./framework/bin/openmuc", "update-bundles"
+task framework {
+  apply from: "./framework/conf/bundles.gradle"
+  dependsOn updateBundles
 }
 
 tasks.withType(Tar) {

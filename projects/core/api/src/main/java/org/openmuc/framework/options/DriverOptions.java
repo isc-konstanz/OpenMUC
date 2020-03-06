@@ -266,7 +266,7 @@ public class DriverOptions extends DriverInfo {
     private static Options readConfigs(String type) throws ParseException, IOException {
 
         //Get file from resources folder
-        InputStream is = DriverOptions.class.getResourceAsStream("options/"+type+".xml");
+        InputStream is = DriverOptions.class.getResourceAsStream(type+".xml");
         if (is == null) {
             throw new IOException("Driver info options resource not found");
         }

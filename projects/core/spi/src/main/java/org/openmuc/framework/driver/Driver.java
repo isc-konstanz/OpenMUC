@@ -74,14 +74,14 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     @Override
     public final void scanForDevices(String settings, DriverDeviceScanListener listener) 
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
-        scanner = newScanner(settings);
+        scanner = onCreateScanner(settings);
         scanner.doCreate(this);
         scanner.doConfigure(settings);
         
         scanner.onScan(listener);
     }
 
-    protected DeviceScanner newScanner(String settings) 
+    protected DeviceScanner onCreateScanner(String settings) 
             throws UnsupportedOperationException, ArgumentSyntaxException {
         // Placeholder for the optional implementation
         if (!hasDeviceScanner()) {
