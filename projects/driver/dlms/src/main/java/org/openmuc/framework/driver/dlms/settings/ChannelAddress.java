@@ -28,7 +28,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 
-@AddressSyntax(separator = ";", assignmentOperator = "=")
+@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 public class ChannelAddress extends Configurable {
 
     private static final String LOGICAL_NAME_FORMAT = "<Interface_Class_ID>/<Instance_ID>/<Object_Attribute_ID>";

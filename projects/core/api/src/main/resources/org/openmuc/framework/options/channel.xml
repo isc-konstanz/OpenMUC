@@ -77,7 +77,7 @@
       <item value="STRING">String</item>
     </selection>
   </option>
-  <option id="valueLength">
+  <option id="valueTypeLength">
     <name>Value length</name>
     <description><![CDATA[
         Only used if valueType == BYTE_ARRAY or STRING.<br>

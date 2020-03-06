@@ -58,23 +58,23 @@ public abstract class ChannelContext extends Configurable {
         return context;
     }
 
-    public final String getId() {
+    public String getId() {
         return channel.getId();
     }
 
-    public final String getDescription() {
+    public String getDescription() {
         return channel.getDescription();
     }
 
-    public final String getUnit() {
+    public String getUnit() {
         return channel.getUnit();
     }
 
-    public final ValueType getValueType() {
+    public ValueType getValueType() {
         return channel.getValueType();
     }
 
-    public final int getValueTypeLength() {
+    public int getValueTypeLength() {
         return channel.getValueTypeLength();
     }
 
@@ -98,11 +98,11 @@ public abstract class ChannelContext extends Configurable {
         return channel.getSamplingTimeOffset();
     }
 
-    public final int getLoggingInterval() {
+    public int getLoggingInterval() {
         return channel.getLoggingInterval();
     }
 
-    public final int getLoggingTimeOffset() {
+    public int getLoggingTimeOffset() {
         return channel.getLoggingTimeOffset();
     }
 

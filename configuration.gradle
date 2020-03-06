@@ -96,6 +96,11 @@ task updateBundles(type:Exec) {
   commandLine "./framework/bin/openmuc", "update-bundles"
 }
 
+task framework(type: GradleBuild) {
+  buildFile = './framework/conf/bundles.gradle'
+  tasks = ['updateBundles']
+}
+
 tasks.withType(Tar) {
 
   into(project.name) {

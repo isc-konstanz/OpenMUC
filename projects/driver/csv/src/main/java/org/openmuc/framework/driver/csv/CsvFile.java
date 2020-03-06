@@ -36,7 +36,7 @@ import org.openmuc.framework.options.AddressSyntax;
 import org.openmuc.framework.options.Setting;
 import org.openmuc.framework.options.SettingsSyntax;
 
-@AddressSyntax(separator = ";", keyValuePairs = false)
+@AddressSyntax(separator = ";")
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
 public class CsvFile extends Device<CsvChannel> {
 
@@ -94,7 +94,7 @@ public class CsvFile extends Device<CsvChannel> {
     }
 
 	@Override
-    protected ColumnScanner newScanner(String settings) {
+    protected ColumnScanner onCreateScanner(String settings) {
 		return new ColumnScanner(data);
 	}
 

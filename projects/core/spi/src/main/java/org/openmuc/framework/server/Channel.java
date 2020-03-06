@@ -33,7 +33,7 @@ public class Channel extends ChannelContext {
     }
 
     protected void doConfigure(String settings) throws ArgumentSyntaxException {
-        if (!this.settings.equals(settings)) {
+        if (!equals(settings)) {
             configureSettings(settings);
         }
         this.settings = settings;
@@ -45,6 +45,10 @@ public class Channel extends ChannelContext {
 
     public final ChannelContext getContext() {
         return this;
+    }
+
+    public boolean equals(String settings) {
+    	return this.settings.equals(settings);
     }
 
 }

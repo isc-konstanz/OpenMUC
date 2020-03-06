@@ -74,7 +74,7 @@ public class W1Driver extends Driver<W1Configs> implements DriverService {
 	}
 
 	@Override
-    protected W1Scanner newScanner(String settings) throws ArgumentSyntaxException {
+    protected W1Scanner onCreateScanner(String settings) throws ArgumentSyntaxException {
 		return new W1Scanner(master.getDevices(), connected, settings);
     }
 
