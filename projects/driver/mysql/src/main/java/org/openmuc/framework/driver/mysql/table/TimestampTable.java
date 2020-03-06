@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class TimestampTable extends SqlTable {
     private static final Logger logger = LoggerFactory.getLogger(TimestampTable.class);
 
-	protected String table;
+    protected String table;
 
     public TimestampTable(String table, Index index) {
         super(index);
@@ -55,12 +55,12 @@ public class TimestampTable extends SqlTable {
                 continue;
             }
             if (columns.length() > 0 && channels.size() > 1) {
-            	columns.append(",");
+                columns.append(",");
             }
             columns.append(channel.getDataColumn());
         }
         if (columns.length() == 0) {
-        	return;
+            return;
         }
         String query = MessageFormat.format("SELECT {0},{3} FROM {2} {1}", 
                 index.getColumn(), index.queryLatest(), table, columns);
@@ -70,7 +70,7 @@ public class TimestampTable extends SqlTable {
             try (ResultSet result = statement.executeQuery(query)) {
                 if (result.first()) {
                     for (SqlChannel channel : channels) {
-                        Record record = decodeRecord(result, channel.getDataColumn(), channel.getValueType());
+                        Record record = channel.decode(result, index);
                         channel.setRecord(record);
                     }
                 }
@@ -78,7 +78,7 @@ public class TimestampTable extends SqlTable {
                 for (SqlChannel channel : channels) {
                     channel.setRecord(new Record(Flag.DRIVER_ERROR_READ_FAILURE));
                 }
-            	logger.warn("Error querying \"{}\": {}", query, e.getMessage());
+                logger.warn("Error querying \"{}\": {}", query, e.getMessage());
             }
         }
     }
@@ -92,12 +92,12 @@ public class TimestampTable extends SqlTable {
         try (Statement statement = connection.createStatement()) {
             try (ResultSet result = statement.executeQuery(query)) {
                 if (result.first()) {
-                    Record record = decodeRecord(result, channel.getDataColumn(), channel.getValueType());
+                    Record record = channel.decode(result, index);
                     channel.setRecord(record);
                 }
             } catch (SQLException e) {
                 channel.setRecord(new Record(Flag.DRIVER_ERROR_READ_FAILURE));
-            	logger.warn("Error querying \"{}\": {}", query, e.getMessage());
+                logger.warn("Error querying \"{}\": {}", query, e.getMessage());
             }
         }
     }
@@ -110,11 +110,11 @@ public class TimestampTable extends SqlTable {
             String query;
             if (channel.getKey() != null && !channel.getKey().isEmpty()) {
                 query = MessageFormat.format("INSERT INTO {0} ({1},{2}) VALUES ('{3}','{4}') ON DUPLICATE KEY UPDATE {2} = VALUES({2})", 
-                        table, index.getColumn(), channel.getDataColumn(), index.encode(timestamp), encodeValue(channel.getValue()));
+                        table, index.getColumn(), channel.getDataColumn(), index.encode(timestamp), channel.encodeValue());
             }
             else {
                 query = MessageFormat.format("INSERT INTO {0} ({1},{2},{3}) VALUES ('{4}','{5}','{6}') ON DUPLICATE KEY UPDATE {3} = VALUES({3})", 
-                        table, index.getColumn(), channel.getDataColumn(), channel.getKeyColumn(), index.encode(timestamp), channel.getKey(), encodeValue(channel.getValue()));
+                        table, index.getColumn(), channel.getDataColumn(), channel.getKeyColumn(), index.encode(timestamp), channel.getKey(), channel.encodeValue());
             }
             logger.debug("Querying {}", query);
             

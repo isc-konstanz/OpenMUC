@@ -22,25 +22,26 @@ package org.openmuc.framework.driver.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 
 
 public abstract class Index {
 
-	protected final String column;
+    protected final String column;
 
-	public Index(String column) {
-		this.column = column;
-	}
+    public Index(String column) {
+        this.column = column;
+    }
 
-	public String getColumn() {
-		return column;
-	}
+    public String getColumn() {
+        return column;
+    }
 
-	public String queryLatest() {
-		return String.format("ORDER BY %s DESC LIMIT 1", column);
-	}
+    public String queryLatest() {
+        return String.format("ORDER BY %s DESC LIMIT 1", column);
+    }
 
-    public abstract long decode(ResultSet result) throws SQLException;
+    public abstract long decode(ResultSet result) throws SQLException, ParseException;
 
     public abstract String encode(long timestamp);
 

@@ -6,11 +6,15 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.datalogger.Channel;
+import org.openmuc.framework.datalogger.mysql.time.TimestampIndex;
+import org.openmuc.framework.datalogger.mysql.time.TimestampSplit;
+import org.openmuc.framework.datalogger.mysql.time.TimestampUnix;
+import org.openmuc.framework.options.AddressSyntax;
 import org.openmuc.framework.options.Setting;
 import org.openmuc.framework.options.SettingsSyntax;
-import org.osgi.service.component.annotations.Component;
 
-@Component
+@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
+@SettingsSyntax(separator = ";", assignmentOperator = "=")
 public class SqlConfigs extends Channel {
 
     protected String url;
@@ -25,22 +29,36 @@ public class SqlConfigs extends Channel {
     private String database = SqlLogger.DB_NAME;
 
     @Setting(mandatory = false)
+    protected String table = SqlLogger.TABLE;
+
+    @Setting(mandatory = false)
+    protected boolean union = false;
+
+    @Setting(mandatory = false)
+    protected String driver = SqlLogger.DB_DRIVER;
+
+    @Setting(mandatory = false)
+    protected String type = SqlLogger.DB_TYPE;
+
+    @Setting(mandatory = false)
     protected String user = SqlLogger.DB_USER;
 
     @Setting(mandatory = false)
     protected String password = SqlLogger.DB_PWD;
 
     @Setting(mandatory = false)
-    protected String table = SqlLogger.TABLE;
-
-    @Setting(mandatory = false)
-    protected TimeType timeType = TimeType.valueOf(SqlLogger.TIME_TYPE.toUpperCase());
-
-    @Setting(mandatory = false)
-    protected Double timeScale;
+    protected int timeResolution = Integer.valueOf(SqlLogger.TIME_RES);
 
     @Setting(mandatory = false)
     protected String timeFormat = SqlLogger.TIME_FORMAT;
+
+    @Setting(mandatory = false)
+    protected IndexType indexType = IndexType.valueOf(SqlLogger.INDEX_TYPE.toUpperCase());
+
+    @Setting(mandatory = false)
+    protected String indexColumn = SqlLogger.INDEX_COL;
+
+    protected Index index;
 
     public String getDatabase() {
         return url;
@@ -48,6 +66,14 @@ public class SqlConfigs extends Channel {
 
     public String getDatabaseName() {
         return database;
+    }
+
+    public String getDatabaseDriver() {
+        return driver;
+    }
+
+    public String getDatabaseType() {
+        return type;
     }
 
     public String getDatabaseUser() {
@@ -62,16 +88,28 @@ public class SqlConfigs extends Channel {
         return table;
     }
 
-    public TimeType getTimeType() {
-        return timeType;
+    public boolean isUnion() {
+        return union;
     }
 
-    public Double getTimeScale() {
-        return timeScale = Double.valueOf(SqlLogger.TIME_SCALE);
+    public int getTimeResolution() {
+        return timeResolution;
     }
 
     public String getTimeFormat() {
         return timeFormat;
+    }
+
+    public IndexType getIndexType() {
+        return indexType;
+    }
+
+    public String getIndexColumn() {
+        return indexColumn;
+    }
+
+    public Index getIndex() {
+        return index;
     }
 
     @Override
@@ -88,7 +126,7 @@ public class SqlConfigs extends Channel {
             list.removeAll(Arrays.asList("", null));
             
             // TODO: verify if a more generic way to use a separator is necessary
-            settings = String.join(SettingsSyntax.SEPARATOR_DEFAULT, list);
+            settings = String.join(";", list);
         }
         super.doConfigure(settings);
     }
@@ -107,12 +145,25 @@ public class SqlConfigs extends Channel {
         
         if (table == null || table.isEmpty()) {
             table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
-        } else {
+        }
+        else {
             String valid = table.replaceAll("[^a-zA-Z0-9]", "_");
             if (!table.equals(valid)) {
                 throw new ArgumentSyntaxException(
                         "Table name invalid. Only alphanumeric letters separated by underscore are allowed: " + valid);
             }
+        }
+        
+        switch(indexType) {
+        case TIMESTAMP:
+            index = new TimestampIndex(indexColumn, timeFormat);
+            break;
+        case TIMESTAMP_SPLIT:
+            index = new TimestampSplit(indexColumn, timeFormat);
+            break;
+        default:
+            index = new TimestampUnix(indexColumn, timeResolution);
+            break;
         }
     }
 

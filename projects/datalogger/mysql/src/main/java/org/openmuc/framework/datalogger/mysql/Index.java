@@ -18,33 +18,34 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.mysql.time;
+package org.openmuc.framework.datalogger.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.openmuc.framework.driver.mysql.Index;
+import java.text.MessageFormat;
+import java.text.ParseException;
 
 
-public class TimestampIndex extends Index {
+public abstract class Index {
 
-    protected final SimpleDateFormat format;
+    protected final String column;
 
-    public TimestampIndex(String column, String format) {
-        super(column);
-        this.format = new SimpleDateFormat(format);
+    public Index(String column) {
+        this.column = column;
     }
 
-    @Override
-    public long decode(ResultSet result) throws SQLException {
-        return result.getTimestamp(column).getTime();
+    public String getColumn() {
+        return column;
     }
 
-    @Override
-    public String encode(long timestamp) {
-        return format.format(new Date(timestamp));
+    public String queryWhere(long startTime, long endTime) {
+        return MessageFormat.format("WHERE {0} >= ''{1}'' AND {0} <= ''{2}'' ORDER BY {0} ASC", column,
+                encode(startTime),
+                encode(endTime));
     }
+
+    public abstract long decode(ResultSet result) throws SQLException, ParseException;
+
+    public abstract String encode(long timestamp);
 
 }

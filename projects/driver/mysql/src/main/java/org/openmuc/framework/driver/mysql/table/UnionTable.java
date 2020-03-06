@@ -50,7 +50,8 @@ public class UnionTable extends SqlTable {
     @Override
     public void read(Connection connection) throws SQLException {
         if (tables.size() < 1) {
-            
+            logger.warn("Unable to find any table to make a union");
+            return;
         }
         StringBuilder columns = new StringBuilder();
         for (SqlChannel channel : channels) {
@@ -69,12 +70,12 @@ public class UnionTable extends SqlTable {
         }
         StringBuilder query = new StringBuilder();
         for (String table : tables) {
-            query.append(MessageFormat.format("SELECT {0},{1} FROM {2}", 
-                index.getColumn(), columns, table));
-            
             if (query.length() > 0 && tables.size() > 1) {
-                query.append(" UNION ALL ");
+                query.append("UNION ALL ");
             }
+//            query.append(MessageFormat.format("SELECT * FROM {0} ", table));
+            query.append(MessageFormat.format("SELECT {0},{1} FROM {2} ", 
+                index.getColumn(), columns, table));
         }
         query.append(index.queryLatest());
         
@@ -83,7 +84,7 @@ public class UnionTable extends SqlTable {
             try (ResultSet result = statement.executeQuery(query.toString())) {
                 if (result.first()) {
                     for (SqlChannel channel : channels) {
-                        Record record = decodeRecord(result, channel.getDataColumn(), channel.getValueType());
+                        Record record = channel.decode(result, index);
                         channel.setRecord(record);
                     }
                 }

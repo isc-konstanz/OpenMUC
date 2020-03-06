@@ -18,14 +18,14 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.mysql.time;
+package org.openmuc.framework.datalogger.mysql.time;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.openmuc.framework.driver.mysql.Index;
+import org.openmuc.framework.datalogger.mysql.Index;
 
 
 public class TimestampIndex extends Index {

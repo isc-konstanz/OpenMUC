@@ -30,20 +30,20 @@ public class TimestampUnix extends Index {
 
     protected final int resolution;
 
-	public TimestampUnix(String column, int resolution) {
-		super(column);
-		this.resolution = resolution;
-	}
+    public TimestampUnix(String column, int resolution) {
+        super(column);
+        this.resolution = resolution;
+    }
 
-	@Override
-	public long decode(ResultSet result) throws SQLException {
-		long timestamp = result.getLong(column);
-		return timestamp*resolution;
-	}
+    @Override
+    public long decode(ResultSet result) throws SQLException {
+        long timestamp = result.getLong(column);
+        return timestamp*resolution;
+    }
 
-	@Override
-	public String encode(long timestamp) {
-		return String.valueOf(Math.round((double) timestamp/resolution));
+    @Override
+    public String encode(long timestamp) {
+        return String.valueOf(Math.round((double) timestamp/resolution));
     }
 
 }

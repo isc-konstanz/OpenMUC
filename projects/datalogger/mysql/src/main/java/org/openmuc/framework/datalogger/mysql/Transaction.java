@@ -20,7 +20,6 @@
 package org.openmuc.framework.datalogger.mysql;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -36,12 +35,6 @@ public class Transaction implements AutoCloseable {
     public boolean execute(String query) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             return statement.execute(query);
-        }
-    }
-
-    public ResultSet query(String query) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            return statement.executeQuery(query);
         }
     }
 

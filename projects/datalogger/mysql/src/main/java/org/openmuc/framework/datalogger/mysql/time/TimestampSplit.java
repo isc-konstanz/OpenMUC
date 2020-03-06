@@ -18,15 +18,16 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.mysql.time;
+package org.openmuc.framework.datalogger.mysql.time;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.openmuc.framework.driver.mysql.Index;
+import org.openmuc.framework.datalogger.mysql.Index;
 
 
 public class TimestampSplit extends Index {
@@ -42,6 +43,17 @@ public class TimestampSplit extends Index {
         this.formatDate = new SimpleDateFormat(formats[0]);
         this.formatTime = new SimpleDateFormat(formats[1]);
         this.format = new SimpleDateFormat(format);
+    }
+
+    public String queryWhere(long startTime, long endTime) {
+        String[] columns = column.split(",");
+        
+        Date startDate = new Date(startTime);
+        Date endDate = new Date(endTime);
+        
+        return MessageFormat.format("WHERE {0} >= ''{1}'' AND {0} <= ''{2}'' AND {3} >= ''{4}'' AND {3} <= ''{5}'' ORDER BY {0},{3} ASC", 
+                columns[0], formatDate.format(startDate), formatDate.format(endDate),
+                columns[1], formatTime.format(startDate), formatDate.format(formatTime));
     }
 
     @Override

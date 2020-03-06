@@ -129,7 +129,7 @@ public class SqlClient extends Device<SqlChannel> {
             description = "The format of the stored time index.",
             valueDefault = "yyyy-MM-dd HH:mm:ss",
             mandatory = false)
-    protected String timeFormat;
+    protected String timeFormat = "yyyy-MM-dd HH:mm:ss";
 
     @Setting(id = "indexType",
              name = "Index type",
@@ -138,14 +138,14 @@ public class SqlClient extends Device<SqlChannel> {
              valueDefault = "TIMESTAMP_UNIX",
              mandatory = false
     )
-    protected IndexType indexType;
+    protected IndexType indexType = IndexType.TIMESTAMP_UNIX;
 
     @Setting(id = "indexColumn",
             name = "Index column",
             description = "The column name of the table primary key.",
             valueDefault = "time",
             mandatory = false)
-    protected String indexColumn;
+    protected String indexColumn = "time";
 
     protected Index index;
 
@@ -159,13 +159,13 @@ public class SqlClient extends Device<SqlChannel> {
         return database;
     }
 
-	public String getDatabaseDriver() {
-		return driver;
-	}
+    public String getDatabaseDriver() {
+        return driver;
+    }
 
-	public String getDatabaseType() {
-		return type;
-	}
+    public String getDatabaseType() {
+        return type;
+    }
 
     public String getDatabaseUser() {
         return user;
@@ -179,9 +179,9 @@ public class SqlClient extends Device<SqlChannel> {
         return table;
     }
 
-	public boolean isUnion() {
-		return union;
-	}
+    public boolean isUnion() {
+        return union;
+    }
 
     public int getTimeResolution() {
         return timeResolution;
@@ -195,12 +195,12 @@ public class SqlClient extends Device<SqlChannel> {
         return indexType;
     }
 
-	public String getIndexColumn() {
-		return indexColumn;
-	}
+    public String getIndexColumn() {
+        return indexColumn;
+    }
 
     public Index getIndex() {
-    	return index;
+        return index;
     }
 
     @Override
@@ -238,8 +238,7 @@ public class SqlClient extends Device<SqlChannel> {
 
     @Override
     protected void onConnect() throws ArgumentSyntaxException, ConnectionException {
-        String url = type + "://" + host + ":" + port + "/" + database + "?autoReconnect=true&useSSL=false";
-        logger.info("Initializing MySQL connection \"{}\"", url);
+        logger.info("Initializing SQL connection \"{}\"", url);
         try {
             if (source != null) {
                 source.close();
@@ -292,6 +291,7 @@ public class SqlClient extends Device<SqlChannel> {
 
     private void readUnion(List<SqlChannel> channels, Connection connection) throws SQLException {
         UnionTable union = new UnionTable(this.tables, index);
+        union.channels.addAll(channels);
         union.read(connection);
     }
 
