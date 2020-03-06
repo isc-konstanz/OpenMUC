@@ -59,6 +59,35 @@ public class Options extends LinkedList<Option> {
 
     private int mandatoryCount = 0;
 
+    private Options() {
+    }
+
+    private Options(SettingsSyntax syntax) {
+    	if (syntax == null) {
+    		separator = SettingsSyntax.SEPARATOR_DEFAULT;
+    		assignment = SettingsSyntax.ASSIGNMENT_OPERATOR_DEFAULT;
+    		keyValue = SettingsSyntax.KEY_VAL_PAIRS_DEFAULT;
+    	}
+    	else {
+    		separator = syntax.separator();
+    		assignment = syntax.assignmentOperator();
+    		keyValue = syntax.keyValuePairs();
+    	}
+    }
+
+    private Options(AddressSyntax syntax) {
+    	if (syntax == null) {
+    		separator = AddressSyntax.SEPARATOR_DEFAULT;
+    		assignment = AddressSyntax.ASSIGNMENT_OPERATOR_DEFAULT;
+    		keyValue = AddressSyntax.KEY_VAL_PAIRS_DEFAULT;
+    	}
+    	else {
+    		separator = syntax.separator();
+    		assignment = syntax.assignmentOperator();
+    		keyValue = syntax.keyValuePairs();
+    	}
+    }
+
     @Override
     public boolean add(Option option) {
         if (option.isMandatory()) mandatoryCount++;
@@ -173,20 +202,15 @@ public class Options extends LinkedList<Option> {
 	public static <C extends Configurable> Options parseAddress(Class<C> configs) {
     	//Class<C> configs = (Class<C>) MethodHandles.lookup().lookupClass();
         try {
-        	Options options = new Options();
-        	AddressSyntax syntax = configs.getAnnotation(AddressSyntax.class);
-        	if (syntax != null) {
-        		options.setSeparator(syntax.separator())
-    					.setAssignmentOperator(syntax.assignmentOperator())
-    					.setKeyValuePairs(syntax.keyValuePairs());
-        	}
-        	
             List<Field> fields = new LinkedList<Field>();
             Class<?> clazz = configs;
             while(clazz.getSuperclass() != null) {
                 fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
                 clazz = clazz.getSuperclass();
             }
+        	AddressSyntax syntax = configs.getAnnotation(AddressSyntax.class);
+        	Options options = new Options(syntax);
+        	
             for (Field field : fields) {
                 Address annotation = field.getAnnotation(Address.class);
                 if (annotation == null) {
@@ -230,20 +254,15 @@ public class Options extends LinkedList<Option> {
 	public static <C extends Configurable> Options parseSettings(Class<C> configs) {
     	//Class<C> configs = (Class<C>) MethodHandles.lookup().lookupClass();
         try {
-        	Options options = new Options();
-        	SettingsSyntax syntax = configs.getAnnotation(SettingsSyntax.class);
-        	if (syntax != null) {
-        		options.setSeparator(syntax.separator())
-    					.setAssignmentOperator(syntax.assignmentOperator())
-    					.setKeyValuePairs(syntax.keyValuePairs());
-        	}
-        	
             List<Field> fields = new LinkedList<Field>();
             Class<?> clazz = configs;
             while(clazz.getSuperclass() != null) {
                 fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
                 clazz = clazz.getSuperclass();
             }
+        	SettingsSyntax syntax = configs.getAnnotation(SettingsSyntax.class);
+        	Options options = new Options(syntax);
+        	
             for (Field field : fields) {
                 Setting annotation = field.getAnnotation(Setting.class);
                 if (annotation == null) {

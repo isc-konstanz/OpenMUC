@@ -34,11 +34,9 @@ import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
 import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.AddressSyntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@AddressSyntax(separator = ";", keyValuePairs = false)
 public abstract class CsvChannel extends Channel {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvChannel.class);
