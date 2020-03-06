@@ -69,14 +69,14 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
     @Override
     public final List<ChannelScanInfo> scanForChannels(String settings)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
-        ChannelScanner scanner = newScanner(settings);
+        ChannelScanner scanner = onCreateScanner(settings);
         scanner.doCreate(this);
         scanner.doConfigure(settings);
         
         return scanner.doScan();
     }
 
-    protected ChannelScanner newScanner(String settings) 
+    protected ChannelScanner onCreateScanner(String settings) 
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
         
         if (!context.hasChannelScanner()) {
