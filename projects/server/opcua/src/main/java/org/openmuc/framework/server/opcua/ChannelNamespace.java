@@ -20,6 +20,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
+import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
@@ -27,6 +28,8 @@ import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public class ChannelNamespace extends ManagedNamespace {
 
@@ -61,14 +64,38 @@ public class ChannelNamespace extends ManagedNamespace {
     }
 
     public void addChannelNode(UaChannel channel) throws UaException {
-        AttributeContext context = new AttributeContext(getServer());
+    	folderNode = new UaFolderNode(
+                getNodeContext(),
+                newNodeId(channel.getFolder()),
+                newQualifiedName(channel.getFolder()),
+                LocalizedText.english(channel.getFolder()));
+    		
+    	getNodeManager().addNode(folderNode);
+    	   	
+    	UaFolderNode channelNode = new UaFolderNode(
+                getNodeContext(),
+                newNodeId(channel.getSubfolder()),
+                newQualifiedName(channel.getSubfolder()),
+                LocalizedText.english(channel.getSubfolder()));
+
+    	getNodeManager().addNode(channelNode);
+    	folderNode.addOrganizes(channelNode);
+    	AttributeContext context = new AttributeContext(getServer());
         
+    	 folderNode.addReference(new Reference(
+                 folderNode.getNodeId(),
+                 Identifiers.Organizes,
+                 Identifiers.ObjectsFolder.expanded(),
+                 false
+         ));
+    	
         String name = channel.getDescription();
         if (name.isEmpty()) {
             name = channel.getId();
         }
+        
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
-                .setNodeId(newNodeId(channel.getId()))
+                .setNodeId(newNodeId(/*channel.getSubfolder()+*/name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
@@ -80,7 +107,7 @@ public class ChannelNamespace extends ManagedNamespace {
         node.setAttributeDelegate(channel);
 
         getNodeManager().addNode(node);
-        folderNode.addOrganizes(node);
+        channelNode.addOrganizes(node);
     }
 
     @Override

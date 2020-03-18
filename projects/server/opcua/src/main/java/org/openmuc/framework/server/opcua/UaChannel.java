@@ -47,7 +47,10 @@ import org.openmuc.framework.server.Channel;
 public class UaChannel extends Channel implements AttributeDelegate {
 
     @Setting(mandatory = false)
-    private String folder = "Channels";
+    private String folder = "Devices";
+   
+    @Setting(mandatory = false)
+    private String subfolder = "Channels";
 
     @Setting(id="ns", mandatory = false)
     private int namespace = 0;
@@ -122,6 +125,10 @@ public class UaChannel extends Channel implements AttributeDelegate {
     
     public String getFolder() {
         return folder;
+    }
+   
+    public String getSubfolder() {
+        return subfolder;
     }
 
     public int getNamespace() {
