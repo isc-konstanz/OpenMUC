@@ -63,5 +63,11 @@ public class TimestampSplit extends Index {
         Date date = new Date(timestamp);
         return formatDate.format(date) + "','" + formatTime.format(date);
     }
+    
+    @Override
+    public String queryLatest() {
+        String[] columns = column.split(",");
+        return String.format("ORDER BY %s DESC, %s DESC LIMIT 1", columns[0], columns[1]);
+    }
 
 }

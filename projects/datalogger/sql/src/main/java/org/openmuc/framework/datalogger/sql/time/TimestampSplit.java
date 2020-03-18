@@ -51,7 +51,7 @@ public class TimestampSplit extends Index {
         Date startDate = new Date(startTime);
         Date endDate = new Date(endTime);
         
-        return MessageFormat.format("WHERE {0} >= ''{1}'' AND {0} <= ''{2}'' AND {3} >= ''{4}'' AND {3} <= ''{5}'' ORDER BY {0},{3} ASC", 
+        return MessageFormat.format("WHERE {0} >= ''{1}'' AND {0} <= ''{2}'' AND {3} >= ''{4}'' AND {3} <= ''{5}'' ORDER BY {0} ASC, {3} ASC", 
                 columns[0], formatDate.format(startDate), formatDate.format(endDate),
                 columns[1], formatTime.format(startDate), formatDate.format(formatTime));
     }
@@ -75,5 +75,7 @@ public class TimestampSplit extends Index {
         Date date = new Date(timestamp);
         return formatDate.format(date) + "','" + formatTime.format(date);
     }
+    
+    
 
 }
