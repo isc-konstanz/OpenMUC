@@ -38,9 +38,7 @@ public class Channel extends ChannelContext implements ChannelRecordContainer, C
     }
 
     protected void doConfigure(ChannelContainer container) throws ArgumentSyntaxException {
-        if (this.container == null ||
-                !this.container.getChannelSettings().equals(container.getChannelSettings()) ||
-                !this.container.getChannelAddress().equals(container.getChannelAddress())) {
+        if (!equals(container)) {
             configure(container.getChannelAddress(), container.getChannelSettings());
         }
         this.container = container;
@@ -165,6 +163,12 @@ public class Channel extends ChannelContext implements ChannelRecordContainer, C
             // Cannot happen, as only containers with valid syntax will be instanced
             return null;
         }
+    }
+
+    public boolean equals(ChannelContainer container) {
+    	return this.container != null && container != null && 
+                this.container.getChannelSettings().equals(container.getChannelSettings()) &&
+                this.container.getChannelAddress().equals(container.getChannelAddress());
     }
 
 }

@@ -21,11 +21,11 @@
 package org.openmuc.framework.driver.rpi.gpio;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.Device;
 import org.openmuc.framework.driver.Driver;
 import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.rpi.gpio.configs.GpioConfigs;
 import org.openmuc.framework.driver.rpi.gpio.count.EdgeCounter;
+import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
@@ -125,8 +125,8 @@ public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
     }
 
     @Override
-	protected void onDisconnect(Device<?> device) {
-    	gpio.unprovisionPin(((GpioPin) device).getPin());
+	protected void onDisconnect(Connection connection) {
+    	gpio.unprovisionPin(((GpioPin) connection).getPin());
 	}
 
 }

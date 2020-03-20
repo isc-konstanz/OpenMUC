@@ -27,7 +27,7 @@ import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.AddressSyntax;
 import org.openmuc.framework.options.Configurable;
 
-@AddressSyntax(separator = ";", assignmentOperator = "=")
+@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 public class DeviceAddress extends Configurable {
 
     @Address(id = "t",

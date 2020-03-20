@@ -157,7 +157,7 @@ public abstract class ChannelContext extends Configurable {
         channel.removeListener(listener);
     }
 
-    public Record read() {
+    public final Record read() {
         return channel.read();
     }
 
@@ -165,27 +165,27 @@ public abstract class ChannelContext extends Configurable {
         return channel.getLatestRecord();
     }
 
-    public Record getRecord(long time) throws DataLoggerNotAvailableException, IOException {
+    public final Record getRecord(long time) throws DataLoggerNotAvailableException, IOException {
         return channel.getLoggedRecord(time);
     }
 
-    public List<Record> getRecords(long startTime) throws DataLoggerNotAvailableException, IOException {
+    public final List<Record> getRecords(long startTime) throws DataLoggerNotAvailableException, IOException {
         return channel.getLoggedRecords(startTime);
     }
 
-    public List<Record> getRecords(long startTime, long endTime) throws DataLoggerNotAvailableException, IOException {
+    public final List<Record> getRecords(long startTime, long endTime) throws DataLoggerNotAvailableException, IOException {
         return channel.getLoggedRecords(startTime, endTime);
     }
 
-    public void setRecord(Record record) {
+    public final void setRecord(Record record) {
         channel.setLatestRecord(record);
     }
 
-    public Flag write(Value value) {
+    public final Flag write(Value value) {
         return channel.write(value);
     }
 
-    public void writeFuture(List<FutureValue> values) {
+    public final void writeFuture(List<FutureValue> values) {
         channel.writeFuture(values);
     }
 

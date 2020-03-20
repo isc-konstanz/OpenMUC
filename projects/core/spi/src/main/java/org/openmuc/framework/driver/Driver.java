@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
-    private static final Logger logger = LoggerFactory.getLogger(DriverContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(Driver.class);
 
     private DeviceScanner scanner = null;
 
@@ -74,14 +74,14 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     @Override
     public final void scanForDevices(String settings, DriverDeviceScanListener listener) 
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
-        scanner = newScanner(settings);
+        scanner = onCreateScanner(settings);
         scanner.doCreate(this);
         scanner.doConfigure(settings);
         
         scanner.onScan(listener);
     }
 
-    protected DeviceScanner newScanner(String settings) 
+    protected DeviceScanner onCreateScanner(String settings) 
             throws UnsupportedOperationException, ArgumentSyntaxException {
         // Placeholder for the optional implementation
         if (!hasDeviceScanner()) {
@@ -107,11 +107,14 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
             throws ArgumentSyntaxException, ConnectionException {
         Device<?> device = onCreateConnection(address, settings);
         if (device != null) {
+        	// If the DeviceConfig was another class than the Device, configure it again
+        	if (device.context == null) {
+                device.doCreate(this);
+                device.doConfigure(address, settings);
+        	}
             device.doConnect();
-            
-            return device;
         }
-        return null;
+        return device;
     }
 
     protected Device<?> onCreateConnection(String address, String settings) 
@@ -127,10 +130,10 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
     protected Device<?> onCreateConnection(D device) 
             throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
-        if (device instanceof Device) {
-            return (Device<?>) device;
+        if (device == null || !(device instanceof Device)) {
+            return null;
         }
-        return null;
+        return (Device<?>) device;
     }
 
 }

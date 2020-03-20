@@ -27,6 +27,8 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
+import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.options.Setting;
 
 public class Channel extends ChannelContext {
@@ -40,17 +42,19 @@ public class Channel extends ChannelContext {
     @Setting(mandatory = false)
     private boolean average = false;
 
+    private LogChannel configs;
     private String settings = "";
 
     Record record = new Record(Flag.DATA_LOGGING_NOT_ACTIVE);
 
-    protected void doConfigure() throws ArgumentSyntaxException {
-        doConfigure(channel.getLoggingSettings());
+    protected void doConfigure(LogChannel configs) throws ArgumentSyntaxException {
+    	this.configs = configs;
+        doConfigure(configs.getLoggingSettings());
         onConfigure();
     }
 
     protected void doConfigure(String settings) throws ArgumentSyntaxException {
-        if (!this.settings.equals(settings)) {
+        if (!equals(settings)) {
             configureSettings(settings);
         }
         this.settings = settings;
@@ -70,8 +74,43 @@ public class Channel extends ChannelContext {
         return this;
     }
 
+    @Override
+    public final String getId() {
+        return configs.getId();
+    }
+
+    @Override
+    public final String getDescription() {
+        return configs.getDescription();
+    }
+
+    @Override
+    public final String getUnit() {
+        return configs.getUnit();
+    }
+
+    @Override
+    public final ValueType getValueType() {
+        return configs.getValueType();
+    }
+
+    @Override
+    public final int getValueTypeLength() {
+        return configs.getValueTypeLength();
+    }
+
+    @Override
+    public int getLoggingInterval() {
+        return channel.getLoggingInterval();
+    }
+
     public final int getLoggingIntervalMax() {
         return intervalMax;
+    }
+
+    @Override
+    public int getLoggingTimeOffset() {
+        return channel.getLoggingTimeOffset();
     }
 
     public final double getLoggingTolerance() {
@@ -130,6 +169,10 @@ public class Channel extends ChannelContext {
     protected void onWrite(Record record, long timestamp) throws IOException {
         // Placeholder for the optional implementation
         throw new UnsupportedOperationException();
+    }
+
+    public boolean equals(String settings) {
+    	return this.settings.equals(settings);
     }
 
 }
