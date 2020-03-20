@@ -27,6 +27,7 @@ import java.text.MessageFormat;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.openmuc.framework.options.Configurable;
@@ -116,11 +117,11 @@ public abstract class DriverContext implements DriverService {
 
     public abstract Driver<?> getDriver();
 
-    protected void onConnect(Device<?> connection) {
+    protected void onConnect(Connection connection) {
         // Placeholder for the optional implementation
     }
 
-    protected void onDisconnect(Device<?> connection) {
+    protected void onDisconnect(Connection connection) {
         // Placeholder for the optional implementation
     }
 

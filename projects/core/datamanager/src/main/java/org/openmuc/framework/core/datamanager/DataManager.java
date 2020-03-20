@@ -557,17 +557,16 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 logger.info("Registered driver: " + driverId);
 
                 DriverConfigImpl driverConfig = rootConfig.driverConfigsById.get(driverId);
-
                 if (driverConfig == null) {
                     continue;
                 }
                 DriverService newDriver = newDriverEntry.getValue();
+                if (newDriver instanceof Driver) {
+                    ((Driver<?>) newDriver).activate(this);
+                }
                 driverConfig.activeDriver = newDriver;
                 for (DeviceConfigImpl deviceConfig : driverConfig.deviceConfigsById.values()) {
                     deviceConfig.device.driverRegisteredSignal();
-                }
-                if (newDriver instanceof Driver) {
-                    ((Driver<?>) newDriver).activate(this);
                 }
             }
             newDrivers.clear();

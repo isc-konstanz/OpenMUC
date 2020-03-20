@@ -25,12 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.Device;
 import org.openmuc.framework.driver.Driver;
 import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Configs;
 import org.openmuc.framework.driver.rpi.w1.configs.W1Type;
 import org.openmuc.framework.driver.rpi.w1.device.TemperatureDevice;
+import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
@@ -108,13 +108,13 @@ public class W1Driver extends Driver<W1Configs> implements DriverService {
     }
 
     @Override
-    public void onConnect(Device<?> device) {
-        connected.add(((W1Device) device).getId());
+    public void onConnect(Connection connection) {
+        connected.add(((W1Device) connection).getId());
     }
 
     @Override
-    public void onDisconnect(Device<?> device) {
-        connected.remove(((W1Device) device).getId());
+    public void onDisconnect(Connection connection) {
+        connected.remove(((W1Device) connection).getId());
     }
 
 }

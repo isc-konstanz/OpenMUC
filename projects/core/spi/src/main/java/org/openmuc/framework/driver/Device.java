@@ -121,7 +121,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
         }
     }
 
-    public Object onRead(List<C> channels, Object containerListHandle, String samplingGroup)
+    protected Object onRead(List<C> channels, Object containerListHandle, String samplingGroup)
             throws UnsupportedOperationException, ConnectionException {
         // Placeholder for the optional implementation
         long timestamp = System.currentTimeMillis();
@@ -140,7 +140,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
         }
     }
 
-    public Object onWrite(List<C> channels, Object containerListHandle)
+    protected Object onWrite(List<C> channels, Object containerListHandle)
             throws UnsupportedOperationException, ConnectionException {
         // Placeholder for the optional implementation
         for (C channel : channels) {

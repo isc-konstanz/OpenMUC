@@ -75,7 +75,5 @@ public class TimestampSplit extends Index {
         Date date = new Date(timestamp);
         return formatDate.format(date) + "','" + formatTime.format(date);
     }
-    
-    
 
 }
