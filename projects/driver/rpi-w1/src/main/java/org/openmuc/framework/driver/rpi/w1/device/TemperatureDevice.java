@@ -59,7 +59,7 @@ public class TemperatureDevice extends W1Connection {
                 }
                 else {
                     // Don't skip the reading, if the latest value read was longer than 15 minutes ago or above 80
-                    Record lastRecord = channel.getChannel().getLatestRecord();
+                    Record lastRecord = channel.getRecord();
                     if (lastRecord != null && lastRecord.getFlag() == Flag.VALID) {
                         if (samplingTime - lastRecord.getTimestamp() >= 900000 || 
                                 lastRecord.getValue().asDouble() >= 80) {

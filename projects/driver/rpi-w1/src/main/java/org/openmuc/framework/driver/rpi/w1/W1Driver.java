@@ -109,12 +109,12 @@ public class W1Driver extends Driver<W1Configs> implements DriverService {
 
     @Override
     public void onConnect(Connection connection) {
-        connected.add(((W1Device) connection).getId());
+        connected.add(((W1Connection) connection).getId());
     }
 
     @Override
     public void onDisconnect(Connection connection) {
-        connected.remove(((W1Device) connection).getId());
+        connected.remove(((W1Connection) connection).getId());
     }
 
 }
