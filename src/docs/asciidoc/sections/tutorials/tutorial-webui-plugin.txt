@@ -43,7 +43,15 @@ it.getPath() == ":openmuc-webui-simpledemovisualisation" ||
 ----
 +
 
-. Open openmuc/settings.gradle and add the following line under OpenMUC WebUI Bundles
+. Open openmuc/settings.gradle and add the following line under OpenMUC WebUI Bundles of the include section
+
++
+----
+'openmuc-webui-simpledemovisualisation',
+----
++
+
+. Furthermore, add the following line to the projects section of the settings.gradle
 
 +
 ----
@@ -51,7 +59,7 @@ project(":openmuc-webui-simpledemovisualisation").projectDir = file('projects/we
 ----
 +
 
-. Open openmuc/framework/config/bundles.conf.gradle and add the following line under dependencies
+. Open openmuc/framework/conf/bundles.conf.gradle and add the following line under dependencies
 
 +
 ----
@@ -321,7 +329,7 @@ if ($scope.channels != undefined){
 ----
 +
 
-First we check if our list is not undefined as it is possible that the during the first interval there wont be any data to work with. Now we iterate through our channels list to find the channels we need. Once we found the right channel, we search for the corresponding text field and save the reference to it in a variable. By setting the textContent of the text field we can change what is displayed, in this case the channel's value is displayed in the text field. Now we set the interval and close the function definition as shown above.
+First we check if our list is not undefined as it is possible that during the first interval there wont be any data to work with. Now we iterate through our channels list to find the channels we need. Once we found the right channel, we search for the corresponding text field and save the reference to it in a variable. By setting the textContent of the text field we can change what is displayed, in this case the channel's value is displayed in the text field. Now we set the interval and close the function definition as shown above.
 
 +
 [source, javascript]

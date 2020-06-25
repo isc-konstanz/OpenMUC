@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -33,6 +33,8 @@ public interface DataLoggerService {
     void setChannelsToLog(List<LogChannel> channels);
 
     void log(List<LogRecordContainer> containers, long timestamp);
+
+    void logEvent(List<LogRecordContainer> containers, long timestamp);
 
     /**
      * Returns a list of all logged data records with timestamps from <code>startTime</code> to <code>endTime</code> for

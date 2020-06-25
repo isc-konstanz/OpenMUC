@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -24,13 +24,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class RestUserConfig {
 
-    private final String id;
+    private String id;
     @SerializedName("password")
-    private final String pass;
+    private String pass;
     @SerializedName("oldPassword")
     private String oldPasswd;
-    private final String[] groups;
-    private final String description;
+    private String[] groups;
+    private String description;
+
+    protected RestUserConfig() {
+    }
 
     public RestUserConfig(String id) {
         this.id = id;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,40 +25,40 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 public class DeviceSettings extends GenericSetting {
 
     @Option(value = "ld", range = "int")
-    private int logicalDeviceAddress = 1;
+    private final int logicalDeviceAddress = 1;
 
     @Option("cid")
-    private int clientId = 16;
+    private final int clientId = 16;
 
     @Option("sn")
-    private boolean useSn = false;
+    private final boolean useSn = false;
 
     @Option("emech")
-    private int encryptionMechanism = -1;
+    private final int encryptionMechanism = -1;
 
     @Option("amech")
-    private int authenticationMechanism = 0;
+    private final int authenticationMechanism = 0;
 
     @Option("ekey")
-    private byte[] encryptionKey = {};
+    private final byte[] encryptionKey = {};
 
     @Option("akey")
-    private byte[] authenticationKey = {};
+    private final byte[] authenticationKey = {};
 
     @Option("pass")
-    private String paswd = "";
+    private final String paswd = "";
 
     @Option("cl")
-    private int challengeLength = 16;
+    private final int challengeLength = 16;
 
     @Option("rt")
-    private int responseTimeout = 20_000;
+    private final int responseTimeout = 20_000;
 
     @Option("mid")
-    private String manufacturerId = "MMM";
+    private final String manufacturerId = "MMM";
 
     @Option("did")
-    private long deviceId = 1;
+    private final long deviceId = 1;
 
     public DeviceSettings(String settings) throws ArgumentSyntaxException {
         super.parseFields(settings);

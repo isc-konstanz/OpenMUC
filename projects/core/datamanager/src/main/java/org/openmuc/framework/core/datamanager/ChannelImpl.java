@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -96,6 +96,10 @@ public final class ChannelImpl implements Channel {
 
         if (config.getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT) {
             dataManager.addToLoggingCollections(this, currentTime);
+            logChannels.add(config);
+        }
+        else if (config.getLoggingInterval() == ChannelConfig.LOGGING_INTERVAL_DEFAULT && config.isLoggingEvent()
+                && config.isListening()) {
             logChannels.add(config);
         }
     }
@@ -446,16 +450,6 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void write(List<Record> values) {
-        ArrayList<FutureValue> fValues = new ArrayList<>(values.size());
-        for (Record record : values) {
-            fValues.add(new FutureValue(record.getValue(), record.getTimestamp()));
-        }
-        writeFuture(fValues);
-    }
-
-    @Override
     public Record read() {
         CountDownLatch readTaskFinishedSignal = new CountDownLatch(1);
 
@@ -492,6 +486,10 @@ public final class ChannelImpl implements Channel {
     @Override
     public ReadRecordContainer getReadContainer() {
         return new ChannelRecordContainerImpl(this);
+    }
+
+    public boolean isLoggingEvent() {
+        return config.isLoggingEvent() && config.isListening() && config.getLoggingInterval() == -1;
     }
 
 }

@@ -16,6 +16,7 @@ Now logout from your system and login again to apply system changes.
 . Download OpenMUC and unpack it
 
 . Open openmuc/framework/conf/bundles.conf.gradle and comment the following lines by //
+
 +
 ----
 osgibundles group: "org.openmuc.framework", name: "openmuc-app-simpledemo", version: openmucVersion
@@ -23,19 +24,22 @@ osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv", version:
 ----
 
 . Add following lines to make the M-Bus driver and serial communication available
+
 +
 ----
-osgibundles group: "org.openmuc.framework" name: "openmuc-driver-mbus", version: openmucVersion
+osgibundles group: "org.openmuc.framework", name: "openmuc-driver-mbus", version: openmucVersion
 osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"
 ----
 
 . To apply changes navigate to openmuc/framework/bin and run
+
 +
 ----
 ./openmuc update-bundles
 ----
 
 . Start OpenMUC
+
 +
 ----
 ./openmuc start -fg
@@ -48,13 +52,11 @@ osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"
 . Enter _mbus_ as ID and click Submit
 
 . Now the M-Bus driver appears under _Channel Configurator_ > _Tab Drivers_. Click on the search icon
-
-
-:img-file: tutorial_mbus_logger_channel_configurator.png
++
+:img-file: tutorial_mbus_logger_channel_configurator.png 
 image::{img-file}[title="WebUI data plotter",width=400,link="{imagesdir}/{img-file}"]
 
-
-. Enter the serial port the meter is connected to and provide the baud rate if needed (e.g. /dev/ttyS0 or /dev/ttyS0:2400). See M-Bus driver section for more information.
+. Enter the serial port the meter is connected to and provide the baud rate if needed (e.g. /dev/ttyS0 or /dev/ttyS0:2400). See M-Bus driver section for more information. If you are using an USB device you can use the _dmesg_ tool on linux to figure out on what port it is connected (e.g. /dev/ttyUSB0).
 
 . Click on _Scan for devices_. Now OpenMUC scans all M-Bus addresses, which may take a while
 

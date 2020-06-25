@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -45,6 +45,7 @@ public class RestChannelConfigMapper {
         rcc.setValueOffset(cc.getValueOffset());
         rcc.setValueType(cc.getValueType());
         rcc.setValueTypeLength(cc.getValueTypeLength());
+        rcc.setLoggingEvent(cc.isLoggingEvent());
         return rcc;
     }
 
@@ -67,6 +68,7 @@ public class RestChannelConfigMapper {
         cc.setListening(rcc.isListening());
         cc.setLoggingInterval(rcc.getLoggingInterval());
         cc.setLoggingTimeOffset(rcc.getLoggingTimeOffset());
+        cc.setLoggingEvent(rcc.isLoggingEvent());
         cc.setSamplingGroup(rcc.getSamplingGroup());
         cc.setSamplingInterval(rcc.getSamplingInterval());
         cc.setSamplingTimeOffset(rcc.getSamplingTimeOffset());

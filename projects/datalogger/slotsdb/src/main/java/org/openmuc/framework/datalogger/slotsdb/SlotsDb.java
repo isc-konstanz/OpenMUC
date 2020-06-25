@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -31,7 +31,9 @@ import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,6 +111,7 @@ public final class SlotsDb implements DataLoggerService {
     private FileObjectProxy fileObjectProxy;
     private final HashMap<String, Integer> loggingIntervalsById = new HashMap<>();;
 
+    @Activate
     protected void activate(ComponentContext context) {
         String rootFolder = SlotsDb.DB_ROOT_FOLDER;
         if (rootFolder == null) {
@@ -118,6 +121,7 @@ public final class SlotsDb implements DataLoggerService {
         fileObjectProxy = new FileObjectProxy(rootFolder);
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         // TODO
     }
@@ -142,7 +146,6 @@ public final class SlotsDb implements DataLoggerService {
 
     @Override
     public void log(List<LogRecordContainer> containers, long timestamp) {
-
         for (LogRecordContainer container : containers) {
             Double value;
             if (container.getRecord().getValue() == null) {
@@ -168,6 +171,11 @@ public final class SlotsDb implements DataLoggerService {
                 logger.error("error logging records", e);
             }
         }
+    }
+
+    @Override
+    public void logEvent(List<LogRecordContainer> containers, long timestamp) {
+        logger.warn("Event logging is not implemented, yet.");
     }
 
 }

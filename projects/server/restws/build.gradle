@@ -4,12 +4,13 @@ def projectDescription = "REST server for the OpenMUC framework."
 
 configurations.create('embed')
 
-def gsonVersion = '2.8.5'
+def gsonVersion = '2.8.6'
 
 dependencies {
   implementation project(':openmuc-core-api')
   implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
   embed group: 'com.google.code.gson', name: 'gson', version: gsonVersion
+  implementation 'commons-codec:commons-codec:1.13'
 }
 
 jar {

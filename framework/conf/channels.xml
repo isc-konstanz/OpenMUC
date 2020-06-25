@@ -42,7 +42,9 @@
       </channel>
     </device>
   </driver>
+
   <driver id="virtual">
+
     <device id="virtual">
       <channel id="status_electric_vehicle">
         <description>(calculated by demo app)</description>

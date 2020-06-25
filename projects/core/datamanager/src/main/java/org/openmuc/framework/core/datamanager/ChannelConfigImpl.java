@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -57,6 +57,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     private Integer samplingInterval = null;
     private Integer samplingTimeOffset = null;
     private String samplingGroup = null;
+    private Boolean loggingEvent = null;
     private Integer loggingInterval = null;
     private Integer loggingTimeOffset = null;
     private Boolean disabled = null;
@@ -225,6 +226,16 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     }
 
     @Override
+    public void setLoggingEvent(Boolean loggingEvent) {
+        this.loggingEvent = loggingEvent;
+    }
+
+    @Override
+    public Boolean isLoggingEvent() {
+        return this.loggingEvent;
+    }
+
+    @Override
     public Integer getLoggingTimeOffset() {
         return loggingTimeOffset;
     }
@@ -345,16 +356,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                     config.setValueOffset(Double.parseDouble(childNode.getTextContent()));
                 }
                 else if (childName.equals("listening")) {
-                    String listeningString = childNode.getTextContent().toLowerCase();
-                    if (listeningString.equals("true")) {
-                        config.setListening(true);
-                    }
-                    else if (listeningString.equals("false")) {
-                        config.setListening(false);
-                    }
-                    else {
-                        throw new ParseException("\"listening\" tag contains neither \"true\" nor \"false\"");
-                    }
+                    config.setListening(Boolean.parseBoolean(childNode.getTextContent()));
                 }
                 else if (childName.equals("samplingInterval")) {
                     config.setSamplingInterval(timeStringToMillis(childNode.getTextContent()));
@@ -370,6 +372,9 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 }
                 else if (childName.equals("loggingTimeOffset")) {
                     config.setLoggingTimeOffset(timeStringToMillis(childNode.getTextContent()));
+                }
+                else if (childName.equals("loggingEvent")) {
+                    config.setLoggingEvent(Boolean.parseBoolean(childNode.getTextContent()));
                 }
                 else if (childName.equals("disabled")) {
                     config.setDisabled(Boolean.parseBoolean(childNode.getTextContent()));
@@ -478,6 +483,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
+        if (loggingEvent != null) {
+            childElement = document.createElement("loggingEvent");
+            childElement.setTextContent(loggingEvent.toString());
+            parentElement.appendChild(childElement);
+        }
+
         if (disabled != null) {
             childElement = document.createElement("disabled");
             childElement.setTextContent(disabled.toString());
@@ -505,6 +516,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         configClone.loggingInterval = loggingInterval;
         configClone.loggingTimeOffset = loggingTimeOffset;
         configClone.disabled = disabled;
+        configClone.loggingEvent = loggingEvent;
 
         return configClone;
     }
@@ -616,6 +628,13 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         }
         else {
             configClone.loggingInterval = loggingInterval;
+        }
+
+        if (loggingEvent == null) {
+            configClone.loggingEvent = ChannelConfig.LOGGING_EVENT_DEFAULT;
+        }
+        else {
+            configClone.loggingEvent = loggingEvent;
         }
 
         if (loggingTimeOffset == null) {

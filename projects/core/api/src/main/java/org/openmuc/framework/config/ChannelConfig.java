@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -40,6 +40,7 @@ public interface ChannelConfig {
     static final String SAMPLING_GROUP_DEFAULT = "";
     static final int LOGGING_INTERVAL_DEFAULT = -1;
     static final int LOGGING_TIME_OFFSET_DEFAULT = 0;
+    static final boolean LOGGING_EVENT_DEFAULT = false;
 
     String getId();
 
@@ -110,4 +111,8 @@ public interface ChannelConfig {
     void addServerMapping(ServerMapping serverMapping);
 
     void deleteServerMappings(String id);
+
+    void setLoggingEvent(Boolean loggingEvent);
+
+    Boolean isLoggingEvent();
 }

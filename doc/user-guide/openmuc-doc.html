@@ -508,8 +508,9 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_intro">1. Intro</a></li>
 <li><a href="#_quick_start">2. Quick Start</a>
 <ul class="sectlevel2">
-<li><a href="#_starting_the_demo">2.1. Starting the Demo</a></li>
-<li><a href="#_webui_walk_through">2.2. WebUI Walk Through</a></li>
+<li><a href="#_install_openmuc">2.1. Install OpenMUC</a></li>
+<li><a href="#_start_the_demo">2.2. Start the Demo</a></li>
+<li><a href="#_webui_walk_through">2.3. WebUI Walk Through</a></li>
 </ul>
 </li>
 <li><a href="#_tutorials">3. Tutorials</a>
@@ -533,11 +534,11 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_auto_start_at_boot_time">5.1. Auto-start at Boot Time</a></li>
 </ul>
 </li>
-<li><a href="#drivers">6. Drivers</a>
+<li><a href="#_driver">6. Driver</a>
 <ul class="sectlevel2">
 <li><a href="#_install_a_driver">6.1. Install a Driver</a></li>
 <li><a href="#_modbus">6.2. Modbus</a></li>
-<li><a href="#_m_bus_wired">6.3. M-Bus (wired)</a></li>
+<li><a href="#anchor-driver-mbus">6.3. M-Bus (wired)</a></li>
 <li><a href="#_m_bus_wireless">6.4. M-Bus (wireless)</a></li>
 <li><a href="#_iec_60870_5_104">6.5. IEC 60870-5-104</a></li>
 <li><a href="#_iec_61850">6.6. IEC 61850</a></li>
@@ -549,29 +550,46 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_csv">6.12. CSV</a></li>
 <li><a href="#_aggregator">6.13. Aggregator</a></li>
 <li><a href="#_restjson">6.14. REST/JSON</a></li>
+<li><a href="#_amqp">6.15. AMQP</a></li>
 </ul>
 </li>
-<li><a href="#anchor-web-ui">7. The WebUI</a>
+<li><a href="#anchor-dataloggers">7. Dataloggers</a>
 <ul class="sectlevel2">
-<li><a href="#_plugins">7.1. Plugins</a></li>
-<li><a href="#_context_root">7.2. Context Root</a></li>
-<li><a href="#_https">7.3. HTTPS</a></li>
-<li><a href="#_custom_plugins">7.4. Custom Plugins</a></li>
-<li><a href="#_visualisation">7.5. Visualisation</a></li>
+<li><a href="#_ascii_logger">7.1. ASCII Logger</a></li>
+<li><a href="#_amqp_logger">7.2. AMQP Logger</a></li>
+<li><a href="#_mqtt_logger">7.3. MQTT Logger</a></li>
+<li><a href="#_slotsdb_logger">7.4. SlotsDB Logger</a></li>
 </ul>
 </li>
-<li><a href="#id_restful_web_services">8. REST Server</a>
+<li><a href="#anchor-libraries">8. Libraries</a>
 <ul class="sectlevel2">
-<li><a href="#_requirements">8.1. Requirements</a></li>
-<li><a href="#_accessing_channels">8.2. Accessing channels</a></li>
+<li><a href="#_amqp_2">8.1. AMQP</a></li>
+<li><a href="#parser-lib">8.2. Parser-Service</a></li>
+<li><a href="#anchor-lib-ssl">8.3. SSL</a></li>
 </ul>
 </li>
-<li><a href="#id_modbus_service">9. Modbus Server</a>
+<li><a href="#anchor-web-ui">9. The WebUI</a>
 <ul class="sectlevel2">
-<li><a href="#_example">9.1. Example</a></li>
+<li><a href="#_plugins">9.1. Plugins</a></li>
+<li><a href="#_context_root">9.2. Context Root</a></li>
+<li><a href="#_https">9.3. HTTPS</a></li>
+<li><a href="#_custom_plugins">9.4. Custom Plugins</a></li>
+<li><a href="#_visualisation">9.5. Visualisation</a></li>
 </ul>
 </li>
-<li><a href="#_authors">10. Authors</a></li>
+<li><a href="#id_restful_web_services">10. REST Server</a>
+<ul class="sectlevel2">
+<li><a href="#_requirements">10.1. Requirements</a></li>
+<li><a href="#_accessing_channels">10.2. Accessing channels</a></li>
+<li><a href="#_cors">10.3. CORS</a></li>
+</ul>
+</li>
+<li><a href="#id_modbus_service">11. Modbus Server</a>
+<ul class="sectlevel2">
+<li><a href="#_example">11.1. Example</a></li>
+</ul>
+</li>
+<li><a href="#_authors">12. Authors</a></li>
 </ul>
 </div>
 </div>
@@ -608,16 +626,27 @@ distribution. OpenMUC requires Java 7 or higher, therefore make sure
 it is installed on your machine.</p>
 </div>
 <div class="sect2">
-<h3 id="_starting_the_demo">2.1. Starting the Demo</h3>
+<h3 id="_install_openmuc">2.1. Install OpenMUC</h3>
 <div class="paragraph">
-<p>The contains a simple demo app which demonstrates how you can access channels and
-their records from an application. The app reads data from channels of
+<p>To install OpenMUC just download the <a href="https://www.openmuc.org/openmuc/download/">latest version</a>
+and unpack it to your favourite destination.</p>
+</div>
+<div class="paragraph">
+<p>OpenMUC requires Java 7 or higher, therefore make sure it is installed on your machine.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_start_the_demo">2.2. Start the Demo</h3>
+<div class="paragraph">
+<p>The OpenMUC demo contains a simple application which demonstrates how you can
+access channels and their records from an application. The application reads
+data from channels of
 the CSV driver, calculates new values from them and writes them to
-other channels. The app can be used as starting point to create your
+other channels. The application can be used as starting point to create your
 own OpenMUC application.</p>
 </div>
 <div class="paragraph">
-<p>First open a terminal and go to the folder named "framework".</p>
+<p>Open a terminal and navigate to the framework folder <em>(&lt;your-path&gt;/openmuc/framework)</em></p>
 </div>
 <div class="paragraph">
 <p>To start OpenMUC on Linux run:</p>
@@ -636,16 +665,46 @@ own OpenMUC application.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>For more information about the start script see chapter <a href="#anchor-start-script">OpenMUC start script</a>.</p>
+<p>This will start the Apache Felix OSGi framework which in turn starts
+all the bundles located in the "bundle" folder. After initialization of the OSGi framework
+you should be able to see the output of the demo application.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>...
+2019-02-18 17:33:00.011 INFO SimpleDemoApp - home1: current grid power = -4.672 kW
+2019-02-18 17:33:05.006 INFO SimpleDemoApp - home1: current grid power = -4.666 kW
+2019-02-18 17:33:10.007 INFO SimpleDemoApp - home1: current grid power = -4.671 kW
+...</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>This will start the Apache Felix OSGi framework which in turn starts
-all the bundles located in the "bundle" folder. Among the bundles that
-are started is the Apache Gogo shell. This shell is entered once you
-run OpenMUC.</p>
+<p>Among the bundles that are started is the Apache Gogo shell.
+This shell is entered once you run OpenMUC.</p>
 </div>
 <div class="paragraph">
 <p>Now type "lb" to list all installed bundles.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>lb
+START LEVEL 1
+   ID|State      |Level|Name
+    0|Active     |    0|System Bundle (6.0.1)|6.0.1
+    ...
+    7|Active     |    1|Logback Core Module (1.2.3)|1.2.3
+    8|Active     |    1|OpenMUC App - Simple Demo (0.17.2)|0.17.2
+    9|Active     |    1|OpenMUC Core - API (0.17.2)|0.17.2
+   10|Active     |    1|OpenMUC Core - Data Manager (0.17.2)|0.17.2
+   11|Active     |    1|OpenMUC Core - SPI (0.17.2)|0.17.2
+   12|Active     |    1|OpenMUC Data Logger - ASCII (0.17.2)|0.17.2
+   13|Active     |    1|OpenMUC Data Logger - SlotsDB (0.17.2)|0.17.2
+   14|Active     |    1|OpenMUC Driver - CSV (0.17.2)|0.17.2
+   15|Active     |    1|OpenMUC Server - RESTful Web Service (0.17.2)|0.17.2
+   16|Active     |    1|OpenMUC WebUI - Base (0.17.2)|0.17.2
+   17|Active     |    1|OpenMUC WebUI - Channel Access Tool (0.17.2)|0.17.2
+   ...</pre>
+</div>
 </div>
 <div class="paragraph">
 <p>You will see that among the active bundles are the Simple Demo App,
@@ -657,9 +716,12 @@ as the CSV driver.</p>
 things. You can stop and exit the OSGi framework any time by typing "ctrl+d"
 or "stop 0".</p>
 </div>
+<div class="paragraph">
+<p>For more information about the start script see chapter <a href="#anchor-start-script">OpenMUC start script</a>.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_webui_walk_through">2.2. WebUI Walk Through</h3>
+<h3 id="_webui_walk_through">2.3. WebUI Walk Through</h3>
 <div class="paragraph">
 <p>This section leads you through the framework&#8217;s WebUI.</p>
 </div>
@@ -726,7 +788,11 @@ click <em>Plot Data</em>.</p>
 <div class="title">Figure 5. WebUI live plotter</div>
 </div>
 <div class="paragraph">
-<p>The last WebUI plugin we want to look at is a customised visualisation for our demo application. Click on <em>Applications</em> and select <em>Simple Demo Visualisation</em>. The purpose of this plugin is to show how OpenMUC channels can be accessed and used for individual visualisations. Detailed informations about the development of such a plugin can be found in the <a href="#anchor-tutorial-webui-plugin">Tutorial Develop a Customised WebUI Plugin</a>.</p>
+<p>The last WebUI plugin we want to look at is a customised visualisation for our demo application.
+Click on <em>Applications</em> and select <em>Simple Demo Visualisation</em>. The purpose of this plugin is
+to show how OpenMUC channels can be accessed and used for individual visualisations. Detailed
+informations about the development of such a plugin can be found in the
+<a href="#anchor-tutorial-webui-plugin">Tutorial Develop a Customised WebUI Plugin</a>.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -735,7 +801,7 @@ click <em>Plot Data</em>.</p>
 <div class="title">Figure 6. WebUI customised visualisation</div>
 </div>
 <div class="sect3">
-<h4 id="_add_a_new_channel">2.2.1. Add a New Channel</h4>
+<h4 id="_add_a_new_channel">2.3.1. Add a New Channel</h4>
 <div class="paragraph">
 <p>All channels currently defined get their data using the CSV driver
 from the file "csv-driver/home1.csv". That file contains additional
@@ -815,7 +881,7 @@ osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv", version:
 <p>Add following lines to make the M-Bus driver and serial communication available</p>
 <div class="listingblock">
 <div class="content">
-<pre>osgibundles group: "org.openmuc.framework" name: "openmuc-driver-mbus", version: openmucVersion
+<pre>osgibundles group: "org.openmuc.framework", name: "openmuc-driver-mbus", version: openmucVersion
 osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"</pre>
 </div>
 </div>
@@ -847,19 +913,15 @@ osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"</pre>
 </li>
 <li>
 <p>Now the M-Bus driver appears under <em>Channel Configurator</em> &gt; <em>Tab Drivers</em>. Click on the search icon</p>
-</li>
-</ol>
-</div>
 <div class="imageblock">
 <div class="content">
 <a class="image" href="images/tutorial_mbus_logger_channel_configurator.png"><img src="images/tutorial_mbus_logger_channel_configurator.png" alt="tutorial mbus logger channel configurator" width="400"></a>
 </div>
 <div class="title">Figure 7. WebUI data plotter</div>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
+</li>
 <li>
-<p>Enter the serial port the meter is connected to and provide the baud rate if needed (e.g. /dev/ttyS0 or /dev/ttyS0:2400). See M-Bus driver section for more information.</p>
+<p>Enter the serial port the meter is connected to and provide the baud rate if needed (e.g. /dev/ttyS0 or /dev/ttyS0:2400). See M-Bus driver section for more information. If you are using an USB device you can use the <em>dmesg</em> tool on linux to figure out on what port it is connected (e.g. /dev/ttyUSB0).</p>
 </li>
 <li>
 <p>Click on <em>Scan for devices</em>. Now OpenMUC scans all M-Bus addresses, which may take a while</p>
@@ -938,7 +1000,7 @@ osgibundles group: "org.openmuc", name: "jrxtx", version: "1.0.1"</pre>
 <div class="content">
 <pre>def projectName = "EMS"
 ...
-description "OpenMUC Energy Management System.."</pre>
+description "OpenMUC Energy Management System."</pre>
 </div>
 </div>
 </li>
@@ -949,7 +1011,7 @@ description "OpenMUC Energy Management System.."</pre>
 <p>Replace the SimpleDemoApp.java inside this ems folder with EmsApp.java.</p>
 <div class="listingblock">
 <div class="content">
-<pre>package org.openmuc.framework.app.simpledemo;
+<pre>package org.openmuc.framework.app.ems;
 
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;
@@ -1138,7 +1200,15 @@ def projectDescription = "Simple Demo Visualisation plug-in for the WebUI of the
 </div>
 </li>
 <li>
-<p>Open openmuc/settings.gradle and add the following line under OpenMUC WebUI Bundles</p>
+<p>Open openmuc/settings.gradle and add the following line under OpenMUC WebUI Bundles of the include section</p>
+<div class="listingblock">
+<div class="content">
+<pre>'openmuc-webui-simpledemovisualisation',</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Furthermore, add the following line to the projects section of the settings.gradle</p>
 <div class="listingblock">
 <div class="content">
 <pre>project(":openmuc-webui-simpledemovisualisation").projectDir = file('projects/webui/simpledemovisualisation')</pre>
@@ -1146,7 +1216,7 @@ def projectDescription = "Simple Demo Visualisation plug-in for the WebUI of the
 </div>
 </li>
 <li>
-<p>Open openmuc/framework/config/bundles.conf.gradle and add the following line under dependencies</p>
+<p>Open openmuc/framework/conf/bundles.conf.gradle and add the following line under dependencies</p>
 <div class="listingblock">
 <div class="content">
 <pre>osgibundles group: "org.openmuc.framework", name: "openmuc-webui-simpledemovisualisation", version: openmucVersion</pre>
@@ -1410,7 +1480,7 @@ def projectDescription = "Simple Demo Visualisation plug-in for the WebUI of the
 </div>
 </div>
 <div class="paragraph">
-<p>First we check if our list is not undefined as it is possible that the during the first interval there wont be any data to work with. Now we iterate through our channels list to find the channels we need. Once we found the right channel, we search for the corresponding text field and save the reference to it in a variable. By setting the textContent of the text field we can change what is displayed, in this case the channel&#8217;s value is displayed in the text field. Now we set the interval and close the function definition as shown above.</p>
+<p>First we check if our list is not undefined as it is possible that during the first interval there wont be any data to work with. Now we iterate through our channels list to find the channels we need. Once we found the right channel, we search for the corresponding text field and save the reference to it in a variable. By setting the textContent of the text field we can change what is displayed, in this case the channel&#8217;s value is displayed in the text field. Now we set the interval and close the function definition as shown above.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1552,10 +1622,10 @@ developed by third parties.</p>
 <p>A <strong>data logger</strong> saves sampled data persistently. The data manager
 forwards sampled data to all available data loggers if configured to
 do so. Data loggers are specifically designed to store time series
-data for short storage and retrieval times. Note that this usually
-means that they are not SQL-based. OpenMUC currently includes two data
+data for short storage and retrieval times. OpenMUC currently includes four data
 loggers. The ASCII data logger saves data in a human readable text
-format while SlotsDB saves data in a more efficient binary format.</p>
+format while SlotsDB saves data in a more efficient binary format. And
+two loggers for remote system logging with AMQP or MQTT.</p>
 </li>
 <li>
 <p>If all you want is sample and log data then you can use the OpenMUC
@@ -1911,6 +1981,13 @@ device and channel options are explained afterwards.</p>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">loggingEvent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>boolean</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If true, immediately logs latest record on value change. Only supported by some data loggers. See <a href="#anchor-dataloggers">data logger description</a> for more information.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">listening</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>boolean</em></p></td>
@@ -2015,9 +2092,9 @@ three settings.</p>
 <div class="title">Example 1: Just Sampling</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;channel&gt;</span>
-        <span class="tag">&lt;id&gt;</span>channel1<span class="tag">&lt;/id&gt;</span>
-        <span class="tag">&lt;channelAddress&gt;</span>dummy/channel/address/1<span class="tag">&lt;/channelAddress&gt;</span>
-        <span class="tag">&lt;samplingInterval&gt;</span>4s<span class="tag">&lt;/samplingInterval&gt;</span>
+    <span class="tag">&lt;id&gt;</span>channel1<span class="tag">&lt;/id&gt;</span>
+    <span class="tag">&lt;channelAddress&gt;</span>dummy/channel/address/1<span class="tag">&lt;/channelAddress&gt;</span>
+    <span class="tag">&lt;samplingInterval&gt;</span>4s<span class="tag">&lt;/samplingInterval&gt;</span>
 <span class="tag">&lt;/channel&gt;</span></code></pre>
 </div>
 </div>
@@ -2030,10 +2107,10 @@ driver.</p>
 <div class="title">Example 2: Sampling and Logging</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;channel&gt;</span>
-        <span class="tag">&lt;id&gt;</span>channel2<span class="tag">&lt;/id&gt;</span>
-        <span class="tag">&lt;channelAddress&gt;</span>dummy/channel/address/2<span class="tag">&lt;/channelAddress&gt;</span>
-        <span class="tag">&lt;samplingInterval&gt;</span>4s<span class="tag">&lt;/samplingInterval&gt;</span>
-        <span class="tag">&lt;loggingInterval&gt;</span>8s<span class="tag">&lt;/loggingInterval&gt;</span>
+    <span class="tag">&lt;id&gt;</span>channel2<span class="tag">&lt;/id&gt;</span>
+    <span class="tag">&lt;channelAddress&gt;</span>dummy/channel/address/2<span class="tag">&lt;/channelAddress&gt;</span>
+    <span class="tag">&lt;samplingInterval&gt;</span>4s<span class="tag">&lt;/samplingInterval&gt;</span>
+    <span class="tag">&lt;loggingInterval&gt;</span>8s<span class="tag">&lt;/loggingInterval&gt;</span>
 <span class="tag">&lt;/channel&gt;</span></code></pre>
 </div>
 </div>
@@ -2049,24 +2126,25 @@ need to be the same.</p>
 <div class="title">Example 3: Just Listening</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;channel&gt;</span>
-        <span class="tag">&lt;id&gt;</span>channel3<span class="tag">&lt;/id&gt;</span>
-        <span class="tag">&lt;channelAddress&gt;</span>dummy/channel/address/3<span class="tag">&lt;/channelAddress&gt;</span>
-        <span class="tag">&lt;listening&gt;</span>true<span class="tag">&lt;/listening&gt;</span>
+    <span class="tag">&lt;id&gt;</span>channel3<span class="tag">&lt;/id&gt;</span>
+    <span class="tag">&lt;channelAddress&gt;</span>dummy/channel/address/3<span class="tag">&lt;/channelAddress&gt;</span>
+    <span class="tag">&lt;listening&gt;</span>true<span class="tag">&lt;/listening&gt;</span>
 <span class="tag">&lt;/channel&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In example 3 listening instead of sampling is used. This means that the driver
-reports a new channel value to the data manager when the value has changed for example.</p>
+<p>In example 3 listening instead of sampling is used.
+This means that the driver reports a new channel value to the
+data manager when the value has changed for example.</p>
 </div>
 <div class="listingblock">
 <div class="title">Example 4: Listening and Logging</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"> <span class="tag">&lt;channel&gt;</span>
-        <span class="tag">&lt;id&gt;</span>channel4<span class="tag">&lt;/id&gt;</span>
-        <span class="tag">&lt;channelAddress&gt;</span>dummy/channel/address/4<span class="tag">&lt;/channelAddress&gt;</span>
-        <span class="tag">&lt;listening&gt;</span>true<span class="tag">&lt;/listening&gt;</span>
-        <span class="tag">&lt;loggingInterval&gt;</span>8s<span class="tag">&lt;/loggingInterval&gt;</span>
+    <span class="tag">&lt;id&gt;</span>channel4<span class="tag">&lt;/id&gt;</span>
+    <span class="tag">&lt;channelAddress&gt;</span>dummy/channel/address/4<span class="tag">&lt;/channelAddress&gt;</span>
+    <span class="tag">&lt;listening&gt;</span>true<span class="tag">&lt;/listening&gt;</span>
+    <span class="tag">&lt;loggingInterval&gt;</span>8s<span class="tag">&lt;/loggingInterval&gt;</span>
 <span class="tag">&lt;/channel&gt;</span></code></pre>
 </div>
 </div>
@@ -2080,10 +2158,26 @@ reports a new channel value to the data manager when the value has changed for e
 <div class="title">Important</div>
 </td>
 <td class="content">
-When listening is true and additional a sampling interval is defined then the sampling is ignored.
+When listening is true and additional a sampling interval is
+defined then the sampling is ignored.
 </td>
 </tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="title">Example 5: Listening and Event-Logging</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"> <span class="tag">&lt;channel&gt;</span>
+    <span class="tag">&lt;id&gt;</span>channel4<span class="tag">&lt;/id&gt;</span>
+    <span class="tag">&lt;channelAddress&gt;</span>dummy/channel/address/5<span class="tag">&lt;/channelAddress&gt;</span>
+    <span class="tag">&lt;listening&gt;</span>true<span class="tag">&lt;/listening&gt;</span>
+    <span class="tag">&lt;loggingEvent&gt;</span>true<span class="tag">&lt;/loggingEvent&gt;</span>
+<span class="tag">&lt;/channel&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example 5 extends example 3 by an additional event logging.
+It loggs only if only a new value was received. (the logger needs to support evvent logging)</p>
 </div>
 </div>
 </div>
@@ -2100,8 +2194,8 @@ When listening is true and additional a sampling interval is defined then the sa
 </div>
 </div>
 <div class="paragraph">
-<p>This runs OpenMUC as a background process. If you want to run OpenMUC
-in the foreground run:</p>
+<p>This runs OpenMUC as a background process.
+If you want to run OpenMUC in the foreground run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2223,7 +2317,7 @@ script to /etc/init.d/ and edit it to set the OPENMUC_HOME variable.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="drivers">6. Drivers</h2>
+<h2 id="_driver">6. Driver</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_install_a_driver">6.1. Install a Driver</h3>
@@ -2384,7 +2478,7 @@ The DeviceAddress is specified by a serial port like /dev/ttyS0.</p>
 </td>
 <td class="content">
 The driver uses the jamod library which itself uses the rxtx library for
-serial communication. Therefor the librxtx-java package needs to be installed on
+serial communication. Therefore the librxtx-java package needs to be installed on
 the system. Furthermore the user needs to be in the groups dialout and plugdev
 </td>
 </tr>
@@ -2850,7 +2944,7 @@ address would be:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_m_bus_wired">6.3. M-Bus (wired)</h3>
+<h3 id="anchor-driver-mbus">6.3. M-Bus (wired)</h3>
 <div class="paragraph">
 <p>M-Bus is communication protocol to read out meters.</p>
 </div>
@@ -2869,15 +2963,17 @@ address would be:</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Device Address</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;serial_port&gt;:&lt;mbus_address&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;serial_port&gt;:&lt;mbus_address&gt; or
+tcp:&lt;host_address&gt;:&lt;port&gt;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">[&lt;baudrate&gt;][:timeout]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[&lt;baudrate&gt;][:timeout][:lr][:ar][:d&lt;delay&gt;]
+[:tc&lt;tcp_connection_timeout&gt;]</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Channel Address</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;dib&gt;:&lt;vib&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[X]&lt;dib&gt;:&lt;vib&gt;</p></td>
 </tr>
 </tbody>
 </table>
@@ -2895,6 +2991,15 @@ address of the meter. The primary address is specified as integer
 that should be specified in hexadecimal form. (e.g. e30456a6b72e3e4e)</p>
 </div>
 <div class="paragraph">
+<p>tcp - with this option M-Bus over TCP is used.</p>
+</div>
+<div class="paragraph">
+<p>&lt;host_address&gt; - The host address for M-Bus over TCP e.g. 192.168.8.89.</p>
+</div>
+<div class="paragraph">
+<p>&lt;port&gt; - The TCP port for M-Bus over TCP e.g. 5369</p>
+</div>
+<div class="paragraph">
 <p><strong>Settings</strong></p>
 </div>
 <div class="paragraph">
@@ -2905,10 +3010,27 @@ that should be specified in hexadecimal form. (e.g. e30456a6b72e3e4e)</p>
 for timeout of 5 seconds</p>
 </div>
 <div class="paragraph">
+<p>&lt;lr&gt; - Link reset before readout.</p>
+</div>
+<div class="paragraph">
+<p>&lt;ar&gt; - Application reset before readout.</p>
+</div>
+<div class="paragraph">
+<p>d&lt;delay&gt; - Inserts a delay between every message, including link reset and application
+reset. Delay in ms.
+A delay with 100 ms and activated link reset and application reset results in a total
+delay of 300 ms.</p>
+</div>
+<div class="paragraph">
+<p>tc&lt;tcp_connection_timeout&gt; - The TCP connection timeout is need for a defined timeout
+when no TCP connection could established.</p>
+</div>
+<div class="paragraph">
 <p><strong>Channel Address</strong></p>
 </div>
 <div class="paragraph">
-<p>Shall be of the format &lt;dib&gt;:&lt;vib&gt; in a hexadecimal string format (e.g. 04:03 or 02:fd48)</p>
+<p>Shall be of the format &lt;dib&gt;:&lt;vib&gt; in a hexadecimal string format (e.g. 04:03 or 02:fd48)
+The X option is used for selecting a specific data record.</p>
 </div>
 </div>
 <div class="sect2">
@@ -3293,7 +3415,7 @@ Refer to the following table for the format of the interface address.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>false</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>serial</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">serial port e.g. sp=ttyS0 or sp=COM1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">serial port e.g. sp=/dev/ttyS0 or sp=COM1</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">bd</p></td>
@@ -3364,7 +3486,7 @@ Refer to the following table for the format of the interface address.</p>
 <div class="paragraph">
 <div class="title">Example</div>
 <p>Serial with HDLC on serial port ttyUSB0 an 9600 baud:<br>
-<em>t=serial;sp=ttyUSB0;bd=9600;hdlc=true</em></p>
+<em>t=serial;sp=/dev/ttyUSB0;bd=9600;hdlc=true</em></p>
 </div>
 <div class="paragraph">
 <p>TCP with HDLC to host 192.168.85.99 on port 5081:<br>
@@ -4041,13 +4163,710 @@ every 5s if the timestamp has changed.</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_amqp">6.15. AMQP</h3>
+<div class="paragraph">
+<p>Connects OpenMUC with an AMQP-Broker and writes the records from the queues to channels.
+Therefore this driver makes usage of our AMQP-Library, which is described in section <a href="#amqp-lib">[amqp-lib]</a>. For configuration
+of the AMQP-Connection, the values from the following table have to be set in the channels.xml.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 23. Configuration Synopsis</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 80%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ID</th>
+<th class="tableblock halign-left valign-top">amqp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Device Address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">URL of the amqp infrastructure</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Settings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port=&lt;port&gt;;vhost=&lt;vHost&gt;;user=&lt;user&gt;;password=&lt;pw&gt;;framework=&lt;frameworkID&gt;;
+parser=&lt;needed <a href="#parser-lib">Parser-Service</a>&gt;;buffersize=&lt;1-n&gt;;ssl=&lt;true/false&gt;;separator=&lt;e.g. "_"&gt;;exchange=&lt;amqp-exchange&gt;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Channel Address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;name of amqp-queue&gt;</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Parameter description:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>framework and separator:<br>
+To add the information about the source of an amqp queue, the concept of subsection
+<a href="#amqp-mapping">Mapping to AMQP-Queues</a> is used. Framework defines the prefix of the amqp queue and seperator the char between
+framework and channelID.</p>
+</li>
+<li>
+<p>buffersize:<br>
+This parameter makes it possible to optimize the performance at listening and logging huge amounts of records.
+The driver waits till it collected the configured number of records, before it returns the whole list to the
+data manager. This decreases the number of needed tasks e.g. for writing to a database.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Supported features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>read channel</p>
+</li>
+<li>
+<p>write channel</p>
+</li>
+<li>
+<p>listening</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Not supported features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>scan for devices</p>
+</li>
+<li>
+<p>scan for all channels</p>
+</li>
+<li>
+<p>reading whole devices instead of single channel</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>After starting this bundle, it connects to the configured amqp host.
+The example below is listening for the queue "SmartMeter_power_grid".</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;driver</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">amqp</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;device</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Smart Meter</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+       <span class="tag">&lt;deviceAddress&gt;</span>myAmqpBroker.de<span class="tag">&lt;/deviceAddress&gt;</span>
+        <span class="tag">&lt;settings&gt;</span>
+        port=5671;vhost=myVHost;user=openmuc;password=Password123;framework=SmartMeter;
+        parser=openmuc;buffersize=1;ssl=true;separator=_;exchange=field1
+        <span class="tag">&lt;/settings&gt;</span>
+            <span class="tag">&lt;channel</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">power_grid</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+                <span class="tag">&lt;channelAddress&gt;</span>power_grid<span class="tag">&lt;/channelAddress&gt;</span>
+                <span class="tag">&lt;listening&gt;</span>true<span class="tag">&lt;/listening&gt;</span>
+        <span class="tag">&lt;/channel&gt;</span>
+   <span class="tag">&lt;/device&gt;</span>
+<span class="tag">&lt;/driver&gt;</span></code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="anchor-web-ui">7. The WebUI</h2>
+<h2 id="anchor-dataloggers">7. Dataloggers</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_plugins">7.1. Plugins</h3>
+<h3 id="_ascii_logger">7.1. ASCII Logger</h3>
+<div class="sect3">
+<h4 id="_general_information">7.1.1. General Information</h4>
+<div class="paragraph">
+<p>The log files adhere to the following naming scheme: YYYYMMDD_loggingInterval.dat
+If you have channels with different logging intervals or change a channels logging interval a new file is created
+for that logging interval. If OpenMUC is stopped and restarted on the same day or there are problems like a power
+outage that create holes in the data, new files will be created for this date while the old ones will be renamed
+.old or .old2 .old3 etc. in case it happens multiple times on one day.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Event logging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">not supported</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_configuration">7.1.2. Configuration</h4>
+<div class="paragraph">
+<p>For the ASCII Logger there are two options you can change.</p>
+</div>
+<div class="paragraph">
+<p>You can choose wether you want enable file filling mode instead of renaming asciidata files to *.old after a
+OpenMUC restart. This will fill the time frame without data with data points that show err32 for every channels
+value. You do this by adding the following line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>org.openmuc.framework.datalogger.ascii.fillUpFiles = true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The other option concerns the file path of the logger. By default it is set to &lt;openmuc_folder&gt;/data/ascii or
+you can change it through adding this line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>org.openmuc.framework.datalogger.ascii.directory = &lt;path&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_structure">7.1.3. Structure</h4>
+<div class="paragraph">
+<p>The log files' header shows you the following information:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ies format version</p>
+</li>
+<li>
+<p>file name</p>
+</li>
+<li>
+<p>file info</p>
+</li>
+<li>
+<p>timezone relative to gmt (i.e. +1)</p>
+</li>
+<li>
+<p>timestep_sec (time between entries in seconds)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It also shows information about the columns, the first three columns show the time while the others are the logged channels.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>col_no</p>
+</li>
+<li>
+<p>col_name</p>
+</li>
+<li>
+<p>confidential</p>
+</li>
+<li>
+<p>measured</p>
+</li>
+<li>
+<p>unit</p>
+</li>
+<li>
+<p>category (data type and length)</p>
+</li>
+<li>
+<p>comment</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_amqp_logger">7.2. AMQP Logger</h3>
+<div class="sect3">
+<h4 id="_general_information_2">7.2.1. General Information</h4>
+<div class="paragraph">
+<p>The logged OpenMUC-Records are send as JSON to a given AMQP-Broker.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Event logging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">supported</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_configuration_2">7.2.2. Configuration</h4>
+<div class="paragraph">
+<p>You need the following AMQP specific properties for the configuration of the used Broker.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>org.openmuc.framework.datalogger.amqp.host = localhost
+org.openmuc.framework.datalogger.amqp.port = 5672
+org.openmuc.framework.datalogger.amqp.ssl = false
+org.openmuc.framework.datalogger.amqp.vhost = /
+org.openmuc.framework.datalogger.amqp.username = guest
+org.openmuc.framework.datalogger.amqp.password = guest</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="amqp-mapping">7.2.3. Mapping to AMQP-Queues</h4>
+<div class="paragraph">
+<p>Every OpenMUC-Channel will be mapped to an AMQP-Queue with the pattern &lt;framework&gt;&lt;separator&gt;&lt;channelId&gt; in your broker.
+They are created automatically after starting OpenMUC. While the &lt;channelId&gt; is set in the channels.xml,
+you have to define the name of your framework with the following property additionally.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code># Set the unique identifier of this framework (this is also the exchange name)
+org.openmuc.framework.datalogger.amqp.framework = openmuc</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_serialization">7.2.4. Serialization</h4>
+<div class="paragraph">
+<p>The serialization is done by another OpenMUC-Bundle. Therefore you have to define which parser should be used. The
+serialization of an OpenMUC-Record to it&#8217;s own JSON format is done with the usage of the default OpenMUC-Parser like in
+the example. A custom parser can be used to serialize the record in a custom JSON format, by implementing the parser
+interface from the OpenMUC-SPI project according to the Parser-OpenMUC project and use it&#8217;s parser id for this property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code># Set the parser with which to serialize records
+org.openmuc.framework.datalogger.amqp.parser = openmuc</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_mqtt_logger">7.3. MQTT Logger</h3>
+<div class="sect3">
+<h4 id="_general_information_3">7.3.1. General Information</h4>
+<div class="paragraph">
+<p>Logs OpenMUC records to a MQTT broker. Records are translated to byte messages with the configured ParserService.
+The logger implements automatic connection recovery and message buffering.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Event logging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">not supported</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_installation">7.3.2. Installation</h4>
+<div class="paragraph">
+<p>To be able to use the logger in the OpenMUC framework you need to add following dependencies to /conf/bundles.conf.gradle</p>
+</div>
+<div class="paragraph">
+<p><strong>bundles.conf.gradle</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>  osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger-mqtt",               version: openmucVersion
+
+  //add your project specific bundle here, which provides the ParserService implementation, example with OpenMUC parser:
+  osgibundles group: "org.openmuc.framework", name: "openmuc-lib-parser-openmuc",            version: openmucVersion
+
+  osgibundles group: "org.openmuc.framework", name: "openmuc-lib-ssl",                       version: openmucVersion
+  osgibundles group: 'com.hivemq',            name: 'hivemq-mqtt-client',                    version: '1.1.4'
+  osgibundles group: 'org.jctools',           name: 'jctools-core',                          version: '2.1.0'
+  osgibundles group: 'org.reactivestreams',   name: 'reactive-streams',                      version: '1.0.3'
+  osgibundles group: 'io.reactivex.rxjava2',  name: 'rxjava',                                version: '2.2.19'
+  osgibundles group: 'io.netty',              name: 'netty-handler',                         version: '4.1.32.Final'
+  osgibundles group: 'io.netty',              name: 'netty-buffer',                          version: '4.1.32.Final'
+  osgibundles group: 'io.netty',              name: 'netty-codec',                           version: '4.1.32.Final'
+  osgibundles group: 'io.netty',              name: 'netty-codec-http',                      version: '4.1.32.Final'
+  osgibundles group: 'io.netty',              name: 'netty-transport',                       version: '4.1.32.Final'
+  osgibundles group: 'io.netty',              name: 'netty-transport-native-epoll',          version: '4.1.32.Final'
+  osgibundles group: 'io.netty',              name: 'netty-common',                          version: '4.1.32.Final'
+  osgibundles group: 'io.netty',              name: 'netty-resolver',                        version: '4.1.32.Final'
+  osgibundles group: 'io.netty',              name: 'netty-transport-native-unix-common',    version: '4.1.32.Final'
+  osgibundles group: "com.google.code.gson",  name: "gson",                                  version: "2.8.5"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>config.properties</strong></p>
+</div>
+<div class="paragraph">
+<p>Add following line to config.properties to provide sun.misc package</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>org.osgi.framework.system.packages.extra=sun.misc</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_configuration_3">7.3.3. Configuration</h4>
+<div class="paragraph">
+<p><strong>system.properties</strong></p>
+</div>
+<div class="paragraph">
+<p>The logger is configured by the file /conf/system.properties.
+It relies on a configured Key and TrustStore when using SSL/TLS (see below).
+Brokers without authentication are supported, just omit username/password.</p>
+</div>
+<div class="paragraph">
+<p>When the parser supports serializing multiple records at once, <code>multiple</code> can be set true. Else every record is sent in a single MQTT message.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>org.openmuc.framework.datalogger.mqtt.host = localhost
+org.openmuc.framework.datalogger.mqtt.port = 1883
+org.openmuc.framework.datalogger.mqtt.ssl = false
+org.openmuc.framework.datalogger.mqtt.username = username
+org.openmuc.framework.datalogger.mqtt.password = password
+org.openmuc.framework.datalogger.mqtt.topic = my/mqtt/topic
+org.openmuc.framework.datalogger.mqtt.parser = myparser
+org.openmuc.framework.datalogger.mqtt.multiple = false</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Enable SSL communication</strong></p>
+</div>
+<div class="paragraph">
+<p>To be able to verify the authenticity of the broker a valid SSL certificate of the broker needs to be added to the TrustStore.
+When using 2-way SSL the broker verifies the authenticity of the logger and a valid SSL certificate needs to be added to the KeyStore.</p>
+</div>
+<div class="paragraph">
+<p>OpenMUC ships an Key and Trust Store by default so no creation is necessary. See <a href="#anchor-lib-ssl">SSL Library</a> for more information.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_slotsdb_logger">7.4. SlotsDB Logger</h3>
+<div class="sect3">
+<h4 id="_general_information_4">7.4.1. General Information</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Event logging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">not supported</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Unresolved directive in openmuc-doc.adoc - include::sections/datalogger/sql-logger.txt[]</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="anchor-libraries">8. Libraries</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_amqp_2">8.1. AMQP</h3>
+<div id="amqp-lib" class="paragraph">
+<p>The AMQP library uses the RabbitMQ Java Client to connect to the broker.</p>
+</div>
+<div class="paragraph">
+<p>The library consists of four classes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>AmqpSettings</p>
+</li>
+<li>
+<p>AmqpConnection</p>
+</li>
+<li>
+<p>AmqpReader</p>
+</li>
+<li>
+<p>AmqpWriter</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It implements automatic connection recovery with message buffering.
+If only publishing (or consuming) is needed only the AmqpConnection and the AmqpReader (or AmqpWriter) needs to be instantiated.</p>
+</div>
+<div class="sect3">
+<h4 id="_connecting_to_a_broker_amqpsettingsamqpconnection">8.1.1. Connecting to a broker (AmqpSettings/AmqpConnection)</h4>
+<div class="paragraph">
+<p>An instance of an AmqpConnection represents a connection to a broker. If multiple connections are needed one can simply create multiple instances.</p>
+</div>
+<div class="paragraph">
+<p>To create an AmqpConnection instance one first needs to create an instance of AmqpSettings and pass it to the constructor of the AmqpConnection. In that way, it is up to the developer to decide where to get the connection properties from.</p>
+</div>
+<div class="paragraph">
+<p>The connection to the broker is going to be created as soon as the constructor of AmqpConnection is executed.</p>
+</div>
+<div class="paragraph">
+<p>Declaring any queues is not needed as AmqpReader and AmqpWriter do this already.</p>
+</div>
+<div class="paragraph">
+<p>Before the application stops one should <code>disconnect()</code> first to clean up any resources.</p>
+</div>
+<div class="paragraph">
+<p>Example with local RabbitMQ Broker:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">String</span> host = <span class="string"><span class="delimiter">&quot;</span><span class="content">localhost</span><span class="delimiter">&quot;</span></span>;
+<span class="type">int</span> port = <span class="integer">5672</span>;
+<span class="predefined-type">String</span> virtualHost = <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>;
+<span class="predefined-type">String</span> username = <span class="string"><span class="delimiter">&quot;</span><span class="content">guest</span><span class="delimiter">&quot;</span></span>;
+<span class="predefined-type">String</span> password = <span class="string"><span class="delimiter">&quot;</span><span class="content">guest</span><span class="delimiter">&quot;</span></span>;
+<span class="type">boolean</span> ssl = <span class="predefined-constant">false</span>;
+<span class="predefined-type">String</span> exchange = <span class="string"><span class="delimiter">&quot;</span><span class="content">example</span><span class="delimiter">&quot;</span></span>;
+
+AmqpSettings settings = <span class="keyword">new</span> AmqpSettings(
+    host, port, virtualHost, username, password, ssl, exchange
+);
+
+AmqpConnection connection = <span class="keyword">new</span> AmqpConnection(settings);
+
+<span class="comment">// Before stopping the application:</span>
+connection.disconnect();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_consuming_messages_amqpreader">8.1.2. Consuming messages (AmqpReader)</h4>
+<div class="paragraph">
+<p>To consume messages from the broker one has two options:</p>
+</div>
+<div class="sect4">
+<h5 id="_manually_retrieving_messages">Manually retrieving messages</h5>
+<div class="paragraph">
+<p>This is the simplest way to get a message. The method <code>byte[] read(String queue)</code> returns a single message retrieved from the given queue or <code>null</code> if the queue was empty.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">AmqpReader reader = <span class="keyword">new</span> AmqpReader(connection);
+<span class="type">byte</span><span class="type">[]</span> receivedMessage = reader.read(<span class="string"><span class="delimiter">&quot;</span><span class="content">exampleQueue</span><span class="delimiter">&quot;</span></span>);
+
+<span class="keyword">if</span> (receivedMessage == <span class="predefined-constant">null</span>) {
+    <span class="comment">// No message received</span>
+} <span class="keyword">else</span> {
+    <span class="comment">// Handle received message</span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_listening_for_messages">Listening for messages</h5>
+<div class="paragraph">
+<p>This is the recommended way to receive messages, as the messages are received in the moment the broker receives them. One can listen to a collection of queues with a listener which gets notified when a message in any of those queues is received. When listening to a single queue just pass a collection singleton.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">AmqpReader reader = <span class="keyword">new</span> AmqpReader(connection);
+<span class="predefined-type">Collection</span>&lt;<span class="predefined-type">String</span>&gt; queues = <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;(<span class="integer">2</span>);
+queues.add(<span class="string"><span class="delimiter">&quot;</span><span class="content">exampleQueue1</span><span class="delimiter">&quot;</span></span>);
+queues.add(<span class="string"><span class="delimiter">&quot;</span><span class="content">exampleQueue2</span><span class="delimiter">&quot;</span></span>);
+
+reader.listen(queues, (<span class="predefined-type">String</span> queue, <span class="type">byte</span><span class="type">[]</span> message) -&gt; {
+    <span class="keyword">if</span> (queue == <span class="string"><span class="delimiter">&quot;</span><span class="content">exampleQueue1</span><span class="delimiter">&quot;</span></span>) {
+        <span class="comment">// handle message</span>
+    } <span class="keyword">else</span> {
+        <span class="comment">// handle message</span>
+    }
+});</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_publishing_messages_amqpwriter">8.1.3. Publishing messages (AmqpWriter)</h4>
+<div class="paragraph">
+<p>To publish a message call <code>void write(String routingKey, byte[] message)</code> with the routing key and the message. The message will be published to the exchange specified in the AmqpConnection.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">AmqpWriter writer = <span class="keyword">new</span> AmqpWriter(connection);
+
+<span class="predefined-type">String</span> routingKey = <span class="string"><span class="delimiter">&quot;</span><span class="content">test.logger</span><span class="delimiter">&quot;</span></span>;
+<span class="type">byte</span><span class="type">[]</span> message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World!</span><span class="delimiter">&quot;</span></span>.getBytes();
+writer.write(routingKey, message);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="parser-lib">8.2. Parser-Service</h3>
+<div class="paragraph">
+<p>The Parser-Service is part of the OpenMUC core SPI bundle and provides methods to serialize and deserialize
+OpenMUC records. It is used by the MQTT and AMQP logger but can be also used inside OpenMUC drivers and applications.</p>
+</div>
+<div class="sect3">
+<h4 id="_accessing_a_specific_parser_service">8.2.1. Accessing a specific Parser-Service</h4>
+<div class="paragraph">
+<p>Bundles implementing the ParserService interface (like the OpenMUC-Parser see below) registering their parserID at the
+OSGi service registry. The following code describes, how a Parser-Service and its ID can be accessed. The given
+parserID makes it possible to identify the concrete implementation, e.g. "openmuc". Therefore is the instance
+of the given BundleContext needed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml">String serviceInterfaceName = ParserService.class.getName();
+ServiceReference<span class="comment">&lt;?&gt; serviceReference = bundleContext.getServiceReference(serviceInterfaceName);
+
+if (serviceReference != null) {
+    String parserId = (String) serviceReference.getProperty(&quot;parserID&quot;);
+    ParserService parser = (ParserService) bundleContext.getService(serviceReference);
+}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively it&#8217;s possible to import and instantiate a Parser-Implementation over the java classpath.
+But this increases the dependencies of your bundle and prevents the advantages of OSGi.</p>
+</div>
+<div class="paragraph">
+<p>A more complex example with event based registration can be found in the implmentation of the MQTT logger.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_openmuc_parser">8.2.2. OpenMUC-Parser</h4>
+<div class="paragraph">
+<p>The default OpenMUC-Parser is provided in the openmuc-lib-parser-openmuc project. It implements the
+ParserService-Interface for serialization and deserialization of OpenMUC Records. This services is provided and
+can be accessed over the OSGi service registry as shown in the section before.
+It registers its service with the value "openmuc" for the property "parserID".
+The serialized message is represented in JSON with the following format.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml">{&quot;timestamp&quot;:1587974340000,&quot;flag&quot;:&quot;VALID&quot;,&quot;value&quot;:6.67}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_custom_parser">8.2.3. Custom Parser</h4>
+<div class="paragraph">
+<p>For adding a custom parser to OpenMUC, the ParserService-Interface from the SPI-Project has to be implemented. After
+this the implementation must be registered in the OSGi service registry. Therefore use the given instance of your
+BundleContext.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml">@Activate
+public void activate(BundleContext context) {
+    Dictionary<span class="tag">&lt;String</span><span class="error">,</span> <span class="attribute-name">Object</span><span class="tag">&gt;</span> properties = new Hashtable<span class="error">&lt;</span><span class="error">&gt;</span>();
+    properties.put(&quot;parserID&quot;, &quot;<span class="tag">&lt;myCustomParser&gt;</span>&quot;);
+
+    String serviceName = ParserService.class.getName();
+
+    registration = context.registerService(serviceName, new MyParserServiceImpl(), properties);
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anchor-lib-ssl">8.3. SSL</h3>
+<div class="paragraph">
+<p><strong>Key/Trust Store</strong></p>
+</div>
+<div class="paragraph">
+<p>To get the certificates of a server one can easily use a browser and click on the lock sign next to the URL to download it.
+Alternatively on *nix one can use the tool openssl:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>openssl s_client -connect host:port -showcerts [-proxy host:port]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Copy the needed certificates into a file i.e. <code>cert.crt</code> (beginning with <code>-----BEGIN CERTIFICATE-----</code> ending with <code>-----END CERTIFICATE-----</code>. Add them to the store:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>keytool -keystore conf/truststore.jks -importcert cert.crt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The default password is <code>changeme</code>. We want to change that:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>keytool -keystore conf/truststore.jks -storepasswd</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also import certificates from another store. Prefer importing over just using the other store directly as the store type needs to be <code>PKCS#12</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>keytool -importkeystore -srckeystore otherstore.jks -destkeystore conf/truststore.jks</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Editing <code>conf/keystore.jks</code> is done analogue to the Trust Store.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>/conf/system.properties</code> to reflect the changes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>org.openmuc.framework.truststore = conf/truststore.jks
+org.openmuc.framework.keystore = conf/keystore.jks
+org.openmuc.framework.truststorepassword = changeme
+org.openmuc.framework.keystorepassword = changeme</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="anchor-web-ui">9. The WebUI</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_plugins">9.1. Plugins</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Plotter</dt>
@@ -4056,7 +4875,8 @@ every 5s if the timestamp has changed.</p>
 </dd>
 <dt class="hdlist1">Channel Access Tool</dt>
 <dd>
-<p>Plugin to show current values of selected channels. Provides possibility to set values.</p>
+<p>Plugin to show current values of selected channels.
+Provides possibility to set values.</p>
 </dd>
 <dt class="hdlist1">Channel Configurator</dt>
 <dd>
@@ -4074,7 +4894,7 @@ every 5s if the timestamp has changed.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_context_root">7.2. Context Root</h3>
+<h3 id="_context_root">9.2. Context Root</h3>
 <div class="paragraph">
 <p>The servlet context root of the OpenMUC WebUI can be configured, by setting the <code>org.apache.felix.http.context_path</code>
 system property.</p>
@@ -4089,7 +4909,7 @@ system property.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_https">7.3. HTTPS</h3>
+<h3 id="_https">9.3. HTTPS</h3>
 <div class="paragraph">
 <p>You can access the WebUI over https as well:
 <a href="https://localhost:8889" class="bare">https://localhost:8889</a>. To make the framework more secure you could
@@ -4098,9 +4918,12 @@ conf/system.properties file to false.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_custom_plugins">7.4. Custom Plugins</h3>
+<h3 id="_custom_plugins">9.4. Custom Plugins</h3>
 <div class="paragraph">
-<p>You can include your own Plugins in the OpenMUC WebUI by creating a java class that extends the WebUiPluginService. This class also has to be annotated as a component. The two functions getAlias and getName have to be overridden. The alias is used to identify the plugin while the name will be displayed in the WebUI.</p>
+<p>You can include your own Plugins in the OpenMUC WebUI by creating a java class that extends the WebUiPluginService.
+This class also has to be annotated as a component.
+The two functions getAlias and getName have to be overridden.
+The alias is used to identify the plugin while the name will be displayed in the WebUI.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4125,9 +4948,11 @@ conf/system.properties file to false.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_visualisation">7.5. Visualisation</h3>
+<h3 id="_visualisation">9.5. Visualisation</h3>
 <div class="paragraph">
-<p>First you need a svg and assign all the svg Elements a unique id. You can include an external svg as an Object Element or you can create the svg directly in html. Either way the Element containing the svg needs an id which you can then use to access the svg in javascript.</p>
+<p>First you need a svg and assign all the svg Elements a unique id.
+You can include an external svg as an Object Element or you can create the svg directly in html.
+Either way the Element containing the svg needs an id which you can then use to access the svg in javascript.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4144,7 +4969,8 @@ sampleText.textContent = channel.record.value;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Aside from changing what is displayed you can also manipulate the css in this way. The following example would change the displayed texts color to blue.</p>
+<p>Aside from changing what is displayed you can also manipulate the css in this way.
+The following example would change the displayed texts color to blue.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4155,7 +4981,7 @@ sampleText.textContent = channel.record.value;</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="id_restful_web_services">8. REST Server</h2>
+<h2 id="id_restful_web_services">10. REST Server</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The openmuc-server-restws bundle manages a RESTful web service to access all
@@ -4175,24 +5001,25 @@ The address to access the web service using the provided demo/framework folder i
 </table>
 </div>
 <div class="sect2">
-<h3 id="_requirements">8.1. Requirements</h3>
+<h3 id="_requirements">10.1. Requirements</h3>
 <div class="paragraph">
 <p>In order to start the RESTful web service, the following bundle must be provided:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Bundle that provides an org.osgi.service.http.HttpService service. In the demo framework, that service is provided by the org.apache.felix.http.jetty bundle.</p>
+<p>Bundle that provides an org.osgi.service.http.HttpService service.
+In the demo framework, that service is provided by the org.apache.felix.http.jetty bundle.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>This bundles is already provided by the demo framework. The RESTful web service
-will start automatically with the framework without additional settings.</p>
+<p>This bundles is already provided by the demo framework.
+The RESTful web service will start automatically with the framework without additional settings.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_accessing_channels">8.2. Accessing channels</h3>
+<h3 id="_accessing_channels">10.2. Accessing channels</h3>
 <div class="paragraph">
 <p>The latest record of a single channel can be accessed, by sending a
 GET request at the address:
@@ -4226,15 +5053,15 @@ channel objects encoded in JSON using this structure:</p>
 <div class="title">ChannelCollection JSON</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="json">[
-        {
-                <span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span><span class="integer">1</span><span class="error">_</span><span class="error">i</span><span class="error">d</span>,  <span class="error">/</span><span class="error">*</span><span class="error">I</span><span class="error">D</span> <span class="error">o</span><span class="error">f</span> <span class="error">t</span><span class="error">h</span><span class="error">e</span> <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span> <span class="error">a</span><span class="error">s</span> <span class="error">s</span><span class="error">t</span><span class="error">r</span><span class="error">i</span><span class="error">n</span><span class="error">g</span><span class="error">*</span><span class="error">/</span>
-                <span class="key"><span class="delimiter">&quot;</span><span class="content">record</span><span class="delimiter">&quot;</span></span> : <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span><span class="integer">1</span><span class="error">_</span><span class="error">r</span><span class="error">e</span><span class="error">c</span><span class="error">o</span><span class="error">r</span><span class="error">d</span> <span class="error">/</span><span class="error">*</span><span class="error">c</span><span class="error">u</span><span class="error">r</span><span class="error">r</span><span class="error">e</span><span class="error">n</span><span class="error">t</span> <span class="error">r</span><span class="error">e</span><span class="error">c</span><span class="error">o</span><span class="error">r</span><span class="error">d</span><span class="error">.</span> <span class="error">s</span><span class="error">e</span><span class="error">e</span> <span class="error">R</span><span class="error">e</span><span class="error">c</span><span class="error">o</span><span class="error">r</span><span class="error">d</span> <span class="error">J</span><span class="error">S</span><span class="error">O</span><span class="error">N</span><span class="error">*</span><span class="error">/</span>
-        },
-        {
-                <span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span><span class="integer">2</span><span class="error">_</span><span class="error">i</span><span class="error">d</span>,
-                <span class="key"><span class="delimiter">&quot;</span><span class="content">record</span><span class="delimiter">&quot;</span></span> : <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span><span class="integer">2</span><span class="error">_</span><span class="error">r</span><span class="error">e</span><span class="error">c</span><span class="error">o</span><span class="error">r</span><span class="error">d</span>
-        }
-        <span class="error">.</span><span class="error">.</span><span class="error">.</span>
+    {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span><span class="integer">1</span><span class="error">_</span><span class="error">i</span><span class="error">d</span>,  <span class="error">/</span><span class="error">*</span><span class="error">I</span><span class="error">D</span> <span class="error">o</span><span class="error">f</span> <span class="error">t</span><span class="error">h</span><span class="error">e</span> <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span> <span class="error">a</span><span class="error">s</span> <span class="error">s</span><span class="error">t</span><span class="error">r</span><span class="error">i</span><span class="error">n</span><span class="error">g</span><span class="error">*</span><span class="error">/</span>
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">record</span><span class="delimiter">&quot;</span></span> : <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span><span class="integer">1</span><span class="error">_</span><span class="error">r</span><span class="error">e</span><span class="error">c</span><span class="error">o</span><span class="error">r</span><span class="error">d</span> <span class="error">/</span><span class="error">*</span><span class="error">c</span><span class="error">u</span><span class="error">r</span><span class="error">r</span><span class="error">e</span><span class="error">n</span><span class="error">t</span> <span class="error">r</span><span class="error">e</span><span class="error">c</span><span class="error">o</span><span class="error">r</span><span class="error">d</span><span class="error">.</span> <span class="error">s</span><span class="error">e</span><span class="error">e</span> <span class="error">R</span><span class="error">e</span><span class="error">c</span><span class="error">o</span><span class="error">r</span><span class="error">d</span> <span class="error">J</span><span class="error">S</span><span class="error">O</span><span class="error">N</span><span class="error">*</span><span class="error">/</span>
+    },
+    {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span><span class="integer">2</span><span class="error">_</span><span class="error">i</span><span class="error">d</span>,
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">record</span><span class="delimiter">&quot;</span></span> : <span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">n</span><span class="error">n</span><span class="error">e</span><span class="error">l</span><span class="integer">2</span><span class="error">_</span><span class="error">r</span><span class="error">e</span><span class="error">c</span><span class="error">o</span><span class="error">r</span><span class="error">d</span>
+    }
+    <span class="error">.</span><span class="error">.</span><span class="error">.</span>
 ]</code></pre>
 </div>
 </div>
@@ -4244,15 +5071,48 @@ address that represents a channel. The data in the put request is a
 record encoded as specified in Record JSON above.</p>
 </div>
 <div class="paragraph">
-<p>If HTTPS is used to access the REST server then HTTP basic
-authentication is required. The login credentials are the same as the
-one used to log into the web interface of the OpenMUC Framework.</p>
+<p>If HTTPS is used to access the REST server then HTTP basic authentication is required.
+The login credentials are the same as the one used to log into the web interface of the OpenMUC Framework.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_cors">10.3. CORS</h3>
+<div class="paragraph">
+<p>The rest Server has the ability to handle CORS(Cross-Origin Resource Sharing).
+CORS is explained in detail <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">here</a>.
+Typically this functionality is needed when your browser sends an OPTIONS request instead of the request (f.e. GET, POST etc.) that you inteded to send.
+Per default CORS is is deactivated for the rest Server.
+The fuctionality can be activatet via the system.properties file located in the openmuc/framework/conf/ directory.
+If the following lines are not there add them.</p>
+</div>
+<div class="listingblock">
+<div class="title">system.properties</div>
+<div class="content">
+<pre># Activate CORS functionality for the rest Server
+org.openmuc.framework.server.restws.enable_cors = true
+
+# Origins and methods for CORS , for each origin semicolon seperated
+org.openmuc.framework.server.restws.url_cors = http://localhost:4200; http://localhost:8456
+org.openmuc.framework.server.restws.methods_cors = GET, PUT; POST
+org.openmuc.framework.server.restws.headers_cors = Authorization, Content-Type; Authorization</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The variable enable_cors activates or deactivates the support for CORS.
+The variables for url_cors, methods_cors, header_cors defines the allowed origins and the methods these origins are allowed to send to the server.
+Multiple origins are semicolon seperated with the methods and headers seperated by the same order as the origins.
+The methods and headers for each origin are then separated by comma.
+This means that in the above example the origin:</p>
+</div>
+<div class="paragraph">
+<p><a href="http://localhost:4200" class="bare">http://localhost:4200</a> is a trusted origin which is allowed to send GET and PUT requests and uses the headers Autorization and Content-Type.<br>
+<a href="http://localhost:8456" class="bare">http://localhost:8456</a> is a trusted origin which is allowed to send POST requests and uses the header Autorization.</p>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="id_modbus_service">9. Modbus Server</h2>
+<h2 id="id_modbus_service">11. Modbus Server</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The modus service allows you to access to a OpenMUC channel by ModbusTCP protocol.
@@ -4263,7 +5123,7 @@ For accessing a channel through Modbus the channel has to be mapped with
 <p>ServerMapping ID: <em>modbus</em></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 23. serverMapping</caption>
+<caption class="title">Table 24. serverMapping</caption>
 <colgroup>
 <col style="width: 12.5%;">
 <col style="width: 12.5%;">
@@ -4327,7 +5187,7 @@ bind Port 502 with setcap.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_example">9.1. Example</h3>
+<h3 id="_example">11.1. Example</h3>
 <div class="listingblock">
 <div class="title">channels.xml</div>
 <div class="content">
@@ -4375,7 +5235,7 @@ org.openmuc.framework.server.modbus.master=false</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_authors">10. Authors</h2>
+<h2 id="_authors">12. Authors</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Developers:</p>
@@ -4389,7 +5249,7 @@ org.openmuc.framework.server.modbus.master=false</pre>
 <p>Marco Mittelsdorf</p>
 </li>
 <li>
-<p>Chris Dieter Medam</p>
+<p>Joern Schumann</p>
 </li>
 </ul>
 </div>
@@ -4419,6 +5279,9 @@ org.openmuc.framework.server.modbus.master=false</pre>
 <li>
 <p>Philipp Fels</p>
 </li>
+<li>
+<p>Chris Dieter Medam</p>
+</li>
 </ul>
 </div>
 </div>
@@ -4426,7 +5289,7 @@ org.openmuc.framework.server.modbus.master=false</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-12-20 16:36:57 +0100
+Last updated 2020-06-23 15:00:13 +0200
 </div>
 </div>
 </body>

@@ -162,6 +162,17 @@
     </div>
 
     <div class="form-group">
+      <label for="loggingEvent" class="col-md-2 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_EVENT_HINT' | translate}}"></span>
+        {{'CHANNEL_LOGGING_EVENT' | translate}}
+      </label>
+      <div class="col-md-6">
+        <input type="checkbox" id="loggingEvent" ng-class="{discrepancy: !compareChannels('loggingEvent')}" ng-model="channel.configs.loggingEvent">
+        <p class="help-block">{{'FALSE' | translate}} **</p>
+      </div>    
+    </div>
+
+    <div class="form-group">
       <label for="samplingInterval" class="col-md-2 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_SAMPLING_INTERVAL_HINT' | translate}}"></span>
         {{'CHANNEL_SAMPLING_INTERVAL' | translate}}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,16 +20,16 @@
  */
 package org.openmuc.framework.datalogger.ascii.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
@@ -78,9 +78,7 @@ public class LogFileWriterTest {
     private static String dummy = "dummy";
     // private static String[] channelIds = new String[] { ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09 };
     private static String time = " 23:55:00";
-    // private static String testStringValueIncorrectASCII =
-    // "qwertzuiopü+asdfghjklöä#<yxcvbnm,.-^1234567890ß °!§$%&/()=?QWERTZUIOPÜ*ASDFGHJKLÖÄ'>YXCVBNM;:_"; // 94
-    // Zeichen
+
     private static String testStringValueCorrect = "qwertzuiop+asdfghjkl#<yxcvbnm,.-^1234567890 !$%&/()=?QWERTZUIOP*ASDFGHJKL'>YXCVBNM;:_";
     private static String testStringValueIncorrect = "qwertzuiop+asdfghjkl#<yxcvbnm,.-^1234567890 " + Const.SEPARATOR
             + "!$%&/()=?QWERTZUIOP*SDFGHJKL'>YXCVBNM;:_";
@@ -92,15 +90,15 @@ public class LogFileWriterTest {
     private static HashMap<String, LogChannel> logChannelList = new HashMap<>();
     private static Calendar calendar = TestUtils.stringToDate(dateFormat, fileDate1 + time);
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
 
         System.out.println("### Setup() LogFileWriterTest");
 
         TestUtils.createTestFolder();
 
-        // 2 Kanäle im Stunden-Takt loggen von 12 Uhr bis 12 Uhr in den nächsten Tage hinein
-        // --> Ergebnis müssten zwei Dateien sein die vom LogFileWriter erstellt wurden
+        // 2 Kanaele im Stunden-Takt loggen von 12 Uhr bis 12 Uhr in den naechsten Tage hinein
+        // --> Ergebnis muessten zwei Dateien sein die vom LogFileWriter erstellt wurden
 
         String filename1 = TestUtils.TESTFOLDERPATH + fileDate1 + "_" + loggingInterval + ext;
         String filename2 = TestUtils.TESTFOLDERPATH + fileDate2 + "_" + loggingInterval + ext;
@@ -117,24 +115,24 @@ public class LogFileWriterTest {
             file2.delete();
         }
 
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "dummy description", dummy, ValueType.FLOAT,
-                loggingInterval, loggingTimeOffset);
-        LogChannelTestImpl ch2 = new LogChannelTestImpl(ch02, "dummy description", dummy, ValueType.DOUBLE,
-                loggingInterval, loggingTimeOffset);
-        LogChannelTestImpl ch3 = new LogChannelTestImpl(ch03, "dummy description", dummy, ValueType.BOOLEAN,
-                loggingInterval, loggingTimeOffset);
-        LogChannelTestImpl ch4 = new LogChannelTestImpl(ch04, "dummy description", dummy, ValueType.SHORT,
-                loggingInterval, loggingTimeOffset);
-        LogChannelTestImpl ch5 = new LogChannelTestImpl(ch05, "dummy description", dummy, ValueType.INTEGER,
-                loggingInterval, loggingTimeOffset);
-        LogChannelTestImpl ch6 = new LogChannelTestImpl(ch06, "dummy description", dummy, ValueType.LONG,
-                loggingInterval, loggingTimeOffset);
-        LogChannelTestImpl ch7 = new LogChannelTestImpl(ch07, "dummy description", dummy, ValueType.BYTE,
-                loggingInterval, loggingTimeOffset);
-        LogChannelTestImpl ch8 = new LogChannelTestImpl(ch08, "dummy description", dummy, ValueType.STRING,
-                loggingInterval, loggingTimeOffset, valueLength);
-        LogChannelTestImpl ch9 = new LogChannelTestImpl(ch09, "dummy description", dummy, ValueType.BYTE_ARRAY,
-                loggingInterval, loggingTimeOffset, valueLengthByteArray);
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.FLOAT, 0.0, 0.0,
+                false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
+        LogChannelTestImpl ch2 = new LogChannelTestImpl(ch02, "", "dummy description", dummy, ValueType.DOUBLE, 0.0,
+                0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
+        LogChannelTestImpl ch3 = new LogChannelTestImpl(ch03, "", "dummy description", dummy, ValueType.BOOLEAN, 0.0,
+                0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
+        LogChannelTestImpl ch4 = new LogChannelTestImpl(ch04, "", "dummy description", dummy, ValueType.SHORT, 0.0, 0.0,
+                false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
+        LogChannelTestImpl ch5 = new LogChannelTestImpl(ch05, "", "dummy description", dummy, ValueType.INTEGER, 0.0,
+                0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
+        LogChannelTestImpl ch6 = new LogChannelTestImpl(ch06, "", "dummy description", dummy, ValueType.LONG, 0.0, 0.0,
+                false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
+        LogChannelTestImpl ch7 = new LogChannelTestImpl(ch07, "", "dummy description", dummy, ValueType.BYTE, 0.0, 0.0,
+                false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
+        LogChannelTestImpl ch8 = new LogChannelTestImpl(ch08, "", "dummy description", dummy, ValueType.STRING, 0.0,
+                0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, valueLength, false);
+        LogChannelTestImpl ch9 = new LogChannelTestImpl(ch09, "", "dummy description", dummy, ValueType.BYTE_ARRAY, 0.0,
+                0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, valueLengthByteArray, false);
 
         logChannelList.put(ch01, ch1);
         logChannelList.put(ch02, ch2);
@@ -178,7 +176,7 @@ public class LogFileWriterTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
 
         System.out.println("tearing down");
@@ -224,8 +222,8 @@ public class LogFileWriterTest {
         lfw.log(group, loggingInterval, loggingTimeOffset, calendar, logChannelList);
         AsciiLogger.setLastLoggedLineTimeStamp(loggingInterval, loggingTimeOffset, calendar.getTimeInMillis());
 
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "dummy description", dummy, ValueType.FLOAT,
-                loggingInterval, loggingTimeOffset);
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.FLOAT, 0.0, 0.0,
+                false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
         LogFileReader lfr = new LogFileReader(TestUtils.TESTFOLDERPATH, ch1);
 
         List<Record> recordList = lfr
@@ -304,8 +302,8 @@ public class LogFileWriterTest {
     //
     // TestSuite.createTestFolder();
     //
-    // // 2 Kanäle im Stunden-Takt loggen von 12 Uhr bis 12 Uhr in den nächsten Tage hinein
-    // // --> Ergebnis müssten zwei Dateien sein die vom LogFileWriter erstellt wurden
+    // // 2 Kanaele im Stunden-Takt loggen von 12 Uhr bis 12 Uhr in den naechsten Tage hinein
+    // // --> Ergebnis muessten zwei Dateien sein die vom LogFileWriter erstellt wurden
     //
     // String filename1 = TestUtils.TESTFOLDERPATH + fileDate1 + "_" + loggingInterval + ext;
     // String filename2 = TestUtils.TESTFOLDERPATH + fileDate2 + "_" + loggingInterval + ext;
@@ -374,14 +372,6 @@ public class LogFileWriterTest {
         group.add(container7);
         group.add(container8);
         group.add(container9);
-
-        return group;
-    }
-
-    private static LogIntervalContainerGroup getSecondGroup(long timeStamp, int i) {
-
-        LogIntervalContainerGroup group = new LogIntervalContainerGroup();
-        group.add(new LogRecordContainerImpl(ch01, new Record(new FloatValue(i * -7 - 0.555F), timeStamp)));
 
         return group;
     }

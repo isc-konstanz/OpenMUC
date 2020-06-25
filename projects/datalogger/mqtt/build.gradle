@@ -1,0 +1,45 @@
+def projectName = "OpenMUC Data Logger - MQTT"
+
+configurations.create('embed')
+
+
+dependencies {
+    implementation project(':openmuc-core-spi')
+    implementation project(':openmuc-core-datamanager')
+    implementation project(':openmuc-lib-ssl')
+    implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: '1.1.4'
+
+    embed group: 'com.google.dagger', name: 'dagger', version: '2.20'
+    embed 'javax.inject:javax.inject:1'
+
+    testCompile 'org.junit.jupiter:junit-jupiter:5.5.2'
+}
+
+jar {
+    manifest {
+        name = projectName
+        instruction 'Export-Package', 'dagger.internal;version="2.20"','dagger;version="2.20"','javax.inject;version="1"'
+    }
+}
+
+jar{
+    into('libs') {
+        from configurations.embed
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name projectName
+                description "MQTT data logger for the OpenMUC framework."
+            }
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
+}

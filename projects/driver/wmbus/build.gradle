@@ -4,7 +4,7 @@ def projectDescription = "M-Bus wireless driver for the OpenMUC framework."
 
 configurations.create('embed')
 
-def jmbusversion = '3.2.0'
+def jmbusversion = '3.3.0'
 def jrxtxversion = '1.0.1'
 
 dependencies {
@@ -12,6 +12,8 @@ dependencies {
 
   implementation group: 'org.openmuc', name: 'jmbus', version: jmbusversion
   embed   group: 'org.openmuc', name: 'jmbus', version: jmbusversion
+
+  implementation 'commons-codec:commons-codec:1.13'
 }
 
 jar {

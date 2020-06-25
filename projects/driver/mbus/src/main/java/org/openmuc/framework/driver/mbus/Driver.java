@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -53,11 +53,11 @@ public class Driver implements DriverService {
 
     private static final String ID = "mbus";
     private static final String DESCRIPTION = "M-Bus (wired) is a protocol to read out meters.";
-    private static final String DEVICE_ADDRESS = "Synopsis: <serial_port>:<mbus_address> or tcp:<host_address>:>port>"
+    private static final String DEVICE_ADDRESS = "Synopsis: <serial_port>:<mbus_address> or tcp:<host_address>:<port>"
             + "Example for <serial_port>: /dev/ttyS0 (Unix), COM1 (Windows) The mbus_address can either be the primary"
             + " address or the secondary address";
-    private static final String SETTINGS = "Synopsis: [<baud_rate>][:t<timeout>][:lr][:ar]:[tc:<tcp_connection_timeout>]"
-            + "The default baud rate is 2400. Default read timeout is 2500 ms. "
+    private static final String SETTINGS = "Synopsis: [<baud_rate>][:t<timeout>][:lr][:ar][:d<delay>][:tc<tcp_connection_timeout>]"
+            + "The default baud rate is 2400. Default read timeout is 2500 ms. Delay is for slow devices who needs more time between every message, default is 0 ms."
             + "Example: 9600:t5000. 'ar' means application reset and 'lr' link reset before readout.";
     private static final String CHANNEL_ADDRESS = "Synopsis: [X]<dib>:<vib> The DIB and VIB fields in hexadecimal form separated by a colon. "
             + "If the channel address starts with an X then the specific data record will be selected for readout before reading it.";
@@ -115,11 +115,17 @@ public class Driver implements DriverService {
             mBusConnection = interfaces.get(settings.scanConnectionAddress).getMBusConnection();
         }
 
+        ConnectionInterface connectionInterface = interfaces.get(settings.scanConnectionAddress);
+        if (connectionInterface != null && connectionInterface.isOpen()) {
+            throw new ScanException("Device is already connected. Disable device which uses port "
+                    + settings.scanConnectionAddress + ", before scan.");
+        }
+
         try {
             if (settings.scanSecondary) {
                 SecondaryAddressListenerImplementation secondaryAddressListenerImplementation = new SecondaryAddressListenerImplementation(
                         listener, settings.scanConnectionAddress);
-                mBusConnection.scan("ffffffff", secondaryAddressListenerImplementation);
+                mBusConnection.scan("ffffffff", secondaryAddressListenerImplementation, settings.delay);
             }
             else {
                 scanPrimaryAddress(listener, settings, mBusConnection);
@@ -148,10 +154,13 @@ public class Driver implements DriverService {
             logger.debug("scanning for meter with primary address {}", i);
             try {
                 dataStructure = mBusConnection.read(i);
+                sleep(settings.delay);
             } catch (InterruptedIOException e) {
                 logger.debug("No meter found on address {}", i);
                 continue;
             } catch (IOException e) {
+                throw new ScanException(e);
+            } catch (ConnectionException e) {
                 throw new ScanException(e);
             }
 
@@ -255,10 +264,12 @@ public class Driver implements DriverService {
                     }
 
                     if (isTCP) {
-                        connectionInterface = new ConnectionInterface(connection, host, port, interfaces);
+                        connectionInterface = new ConnectionInterface(connection, host, port, settings.delay,
+                                interfaces);
                     }
                     else {
-                        connectionInterface = new ConnectionInterface(connection, serialPortName, interfaces);
+                        connectionInterface = new ConnectionInterface(connection, serialPortName, settings.delay,
+                                interfaces);
                     }
                 }
             }
@@ -267,11 +278,12 @@ public class Driver implements DriverService {
 
                 try {
                     MBusConnection mBusConnection = connectionInterface.getMBusConnection();
+                    int delay = 100 + settings.delay;
 
                     if (secondaryAddress != null || settings.resetLink) {
                         try {
                             mBusConnection.linkReset(mBusAddress);
-                            sleep(100); // for slow slaves
+                            sleep(delay); // for slow slaves
                         } catch (SerialPortTimeoutException e) {
                             if (secondaryAddress == null) {
                                 serialPortTimeoutExceptionHandler(connectionInterface, e);
@@ -281,17 +293,16 @@ public class Driver implements DriverService {
 
                     if (secondaryAddress != null && settings.resetApplication) {
                         mBusConnection.resetReadout(mBusAddress);
-                        sleep(100);
+                        sleep(delay);
                     }
 
                     if (secondaryAddress != null) {
                         mBusConnection.selectComponent(secondaryAddress);
-                        sleep(100);
+                        sleep(delay);
+                        mBusConnection.resetReadout(mBusAddress);
                     }
-                    mBusConnection.read(mBusAddress);
+                    mBusConnection.linkReset(mBusAddress);
 
-                } catch (SerialPortTimeoutException e) {
-                    serialPortTimeoutExceptionHandler(connectionInterface, e);
                 } catch (IOException e) {
                     connectionInterface.close();
                     throw new ConnectionException(e);
@@ -300,7 +311,8 @@ public class Driver implements DriverService {
                 connectionInterface.increaseConnectionCounter();
             }
         }
-        DriverConnection driverCon = new DriverConnection(connectionInterface, mBusAddress, secondaryAddress);
+        DriverConnection driverCon = new DriverConnection(connectionInterface, mBusAddress, secondaryAddress,
+                settings.delay);
         driverCon.setResetLink(settings.resetLink);
         driverCon.setResetApplication(settings.resetApplication);
 
@@ -316,10 +328,12 @@ public class Driver implements DriverService {
     }
 
     private void sleep(long millisec) throws ConnectionException {
-        try {
-            Thread.sleep(millisec);
-        } catch (InterruptedException e) {
-            throw new ConnectionException(e);
+        if (millisec > 0) {
+            try {
+                Thread.sleep(millisec);
+            } catch (InterruptedException e) {
+                throw new ConnectionException(e);
+            }
         }
     }
 
@@ -367,6 +381,7 @@ public class Driver implements DriverService {
         private String host = "";
         private int port;
         private int connectionTimeout = 10000;
+        private int delay = 0;
 
         private Settings(String settings, boolean scan) throws ArgumentSyntaxException {
             if (scan) {
@@ -378,10 +393,16 @@ public class Driver implements DriverService {
         }
 
         private void setScanOptions(String settings) throws ArgumentSyntaxException {
+            String message = "Less than one or more than five arguments in the settings are not allowed.";
+
+            if (settings == null || settings.isEmpty()) {
+                throw new ArgumentSyntaxException("Settings field is empty. " + message);
+            }
+
             String[] args = settings.split(":");
             if (settings.isEmpty() || args.length > 5) {
-                throw new ArgumentSyntaxException(
-                        "Less than one or more than five arguments in the settings are not allowed.");
+
+                throw new ArgumentSyntaxException(message);
             }
 
             int i;
@@ -407,6 +428,10 @@ public class Driver implements DriverService {
                     String setting = args[i].substring(1);
                     timeout = parseInt(setting, "Timeout is not a parsable number.");
                 }
+                else if (args[i].matches("^[d,D][0-9]*")) {
+                    String setting = args[i].substring(1);
+                    delay = parseInt(setting, "Settings: Delay is not a parsable number.");
+                }
                 else {
                     try {
                         baudRate = Integer.parseInt(args[i]);
@@ -429,6 +454,10 @@ public class Driver implements DriverService {
                     if (setting.matches("^[tc,TC][0-9]*")) {
                         setting = setting.substring(1);
                         connectionTimeout = parseInt(setting, "Settings: Connection timeout is not a parsable number.");
+                    }
+                    else if (setting.matches("^[d,D][0-9]*")) {
+                        setting = setting.substring(1);
+                        delay = parseInt(setting, "Settings: Delay is not a parsable number.");
                     }
                     else if (setting.equals(LINK_RESET)) {
                         resetLink = true;

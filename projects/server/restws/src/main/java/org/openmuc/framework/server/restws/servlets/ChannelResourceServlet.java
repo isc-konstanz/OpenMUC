@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -22,7 +22,9 @@ package org.openmuc.framework.server.restws.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -55,9 +57,7 @@ import com.google.gson.JsonSyntaxException;
 
 public class ChannelResourceServlet extends GenericServlet {
 
-    private static final String REST_PATH = " Rest Path = ";
     private static final String REQUESTED_REST_PATH_IS_NOT_AVAILABLE = "Requested rest path is not available";
-    private static final String APPLICATION_JSON = "application/json";
     private static final long serialVersionUID = -702876016040151438L;
     private static final Logger logger = LoggerFactory.getLogger(ChannelResourceServlet.class);
 
@@ -69,7 +69,6 @@ public class ChannelResourceServlet extends GenericServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -96,7 +95,7 @@ public class ChannelResourceServlet extends GenericServlet {
     private void readSpecificChannels(HttpServletRequest request, HttpServletResponse response, String[] pathInfoArray,
             ToJson json) throws IOException {
         String channelId = pathInfoArray[0].replace("/", "");
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
+
         if (pathInfoArray.length == 1) {
             doGetSpecificChannel(json, channelId, response);
         }
@@ -143,7 +142,6 @@ public class ChannelResourceServlet extends GenericServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -169,7 +167,6 @@ public class ChannelResourceServlet extends GenericServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -212,7 +209,6 @@ public class ChannelResourceServlet extends GenericServlet {
             throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -253,6 +249,34 @@ public class ChannelResourceServlet extends GenericServlet {
                     logger.warn("Failed to write config.", e);
                 }
             }
+        }
+    }
+
+    // Handels an CORS(Cross-Origin Resource Sharing) request
+    @Override
+    public void doOptions(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (!PropertyReader.getInstance().isCorsEnabled()) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_IMPLEMENTED, logger,
+                    "The CORS functionality is deactivated");
+            return;
+        }
+        Map<String, ArrayList<String>> propertyMap = PropertyReader.getInstance().getPropertyMap();
+        Iterator it = propertyMap.entrySet().iterator();
+        Boolean flagOriginKnown = false;
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            if (request.getHeader("Origin").equals(pair.getKey())) {
+                flagOriginKnown = true;
+                response.setHeader("Access-Control-Allow-Origin", (String) pair.getKey());
+                response.setHeader("Access-Control-Allow-Methods", ((ArrayList<String>) pair.getValue()).get(0));
+                response.setHeader("Access-Control-Allow-Headers", ((ArrayList<String>) pair.getValue()).get(1));
+                response.setStatus(HttpServletResponse.SC_OK);
+            }
+        }
+        if (!flagOriginKnown) {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_FORBIDDEN, logger,
+                    "Options request received, but origin is not known -> access denied");
         }
     }
 

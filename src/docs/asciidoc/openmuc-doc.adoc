@@ -30,15 +30,23 @@ how to run and adjust the demo framework which is part of the OpenMUC
 distribution. OpenMUC requires Java 7 or higher, therefore make sure
 it is installed on your machine.
 
-=== Starting the Demo
+=== Install OpenMUC
 
-The contains a simple demo app which demonstrates how you can access channels and
-their records from an application. The app reads data from channels of
+To install OpenMUC just download the link:https://www.openmuc.org/openmuc/download/[latest version]
+and unpack it to your favourite destination.
+
+OpenMUC requires Java 7 or higher, therefore make sure it is installed on your machine.
+
+=== Start the Demo
+
+The OpenMUC demo contains a simple application which demonstrates how you can
+access channels and their records from an application. The application reads
+data from channels of
 the CSV driver, calculates new values from them and writes them to
-other channels. The app can be used as starting point to create your
+other channels. The application can be used as starting point to create your
 own OpenMUC application.
 
-First open a terminal and go to the folder named "framework".
+Open a terminal and navigate to the framework folder _(<your-path>/openmuc/framework)_ 
 
 To start OpenMUC on Linux run:
 
@@ -52,14 +60,44 @@ To start OpenMUC on Windows run:
 bin\openmuc.bat
 ----
 
-For more information about the start script see chapter <<anchor-start-script,OpenMUC start script>>.
-
 This will start the Apache Felix OSGi framework which in turn starts
-all the bundles located in the "bundle" folder. Among the bundles that
-are started is the Apache Gogo shell. This shell is entered once you
-run OpenMUC.
+all the bundles located in the "bundle" folder. After initialization of the OSGi framework
+you should be able to see the output of the demo application.
+
+----
+...
+2019-02-18 17:33:00.011 INFO SimpleDemoApp - home1: current grid power = -4.672 kW
+2019-02-18 17:33:05.006 INFO SimpleDemoApp - home1: current grid power = -4.666 kW
+2019-02-18 17:33:10.007 INFO SimpleDemoApp - home1: current grid power = -4.671 kW
+...
+----
+
+Among the bundles that are started is the Apache Gogo shell.
+This shell is entered once you run OpenMUC.
 
 Now type "lb" to list all installed bundles.
+
+----
+lb
+START LEVEL 1
+   ID|State      |Level|Name
+    0|Active     |    0|System Bundle (6.0.1)|6.0.1
+    ...
+    7|Active     |    1|Logback Core Module (1.2.3)|1.2.3
+    8|Active     |    1|OpenMUC App - Simple Demo (0.17.2)|0.17.2
+    9|Active     |    1|OpenMUC Core - API (0.17.2)|0.17.2
+   10|Active     |    1|OpenMUC Core - Data Manager (0.17.2)|0.17.2
+   11|Active     |    1|OpenMUC Core - SPI (0.17.2)|0.17.2
+   12|Active     |    1|OpenMUC Data Logger - ASCII (0.17.2)|0.17.2
+   13|Active     |    1|OpenMUC Data Logger - SlotsDB (0.17.2)|0.17.2
+   14|Active     |    1|OpenMUC Driver - CSV (0.17.2)|0.17.2
+   15|Active     |    1|OpenMUC Server - RESTful Web Service (0.17.2)|0.17.2
+   16|Active     |    1|OpenMUC WebUI - Base (0.17.2)|0.17.2
+   17|Active     |    1|OpenMUC WebUI - Channel Access Tool (0.17.2)|0.17.2
+   ...
+
+
+----
 
 You will see that among the active bundles are the Simple Demo App,
 the OpenMUC core bundles, two data loggers (ASCII and SlotsDB) as well
@@ -68,6 +106,8 @@ as the CSV driver.
 The shell can be used to start, stop, and reload bundles among other
 things. You can stop and exit the OSGi framework any time by typing "ctrl+d"
 or "stop 0".
+
+For more information about the start script see chapter <<anchor-start-script,OpenMUC start script>>.
 
 === WebUI Walk Through
 
@@ -115,7 +155,11 @@ click _Plot Data_.
 :img-file: webui-dataplotter-live.png
 image::{img-file}[title="WebUI live plotter",width={width60},link="{imagesdir}/{img-file}"]
 
-The last WebUI plugin we want to look at is a customised visualisation for our demo application. Click on _Applications_ and select __Simple Demo Visualisation__. The purpose of this plugin is to show how OpenMUC channels can be accessed and used for individual visualisations. Detailed informations about the development of such a plugin can be found in the <<anchor-tutorial-webui-plugin,Tutorial Develop a Customised WebUI Plugin>>.
+The last WebUI plugin we want to look at is a customised visualisation for our demo application.
+Click on _Applications_ and select __Simple Demo Visualisation__. The purpose of this plugin is
+to show how OpenMUC channels can be accessed and used for individual visualisations. Detailed
+informations about the development of such a plugin can be found in the
+<<anchor-tutorial-webui-plugin,Tutorial Develop a Customised WebUI Plugin>>.
 
 :img-file: simpleDemoVisualisation.png
 image::{img-file}[title="WebUI customised visualisation",width={width60},link="{imagesdir}/{img-file}"]
@@ -231,10 +275,10 @@ developed by third parties.
 . A *data logger* saves sampled data persistently. The data manager
 forwards sampled data to all available data loggers if configured to
 do so. Data loggers are specifically designed to store time series
-data for short storage and retrieval times. Note that this usually
-means that they are not SQL-based. OpenMUC currently includes two data
+data for short storage and retrieval times. OpenMUC currently includes four data
 loggers. The ASCII data logger saves data in a human readable text
-format while SlotsDB saves data in a more efficient binary format.
+format while SlotsDB saves data in a more efficient binary format. And
+two loggers for remote system logging with AMQP or MQTT.
 
 . If all you want is sample and log data then you can use the OpenMUC
 framework as it is and simply configure it to your needs. But if you
@@ -423,6 +467,8 @@ device and channel options are explained afterwards.
 
 |loggingTimeOffset| no | time* | 0 |
 
+|loggingEvent| no | _boolean_ |false | If true, immediately logs latest record on value change. Only supported by some data loggers. See <<anchor-dataloggers, data logger description>> for more information.
+
 |listening| no | _boolean_ | false | Determines if this channel shall passively listen for incoming value changes from the driver.
 
 |samplingInterval| no | time* | - | Time interval between two attempts to read this channel. -1 or omitting samlingOffset disables sampling on this channel.
@@ -479,9 +525,9 @@ three settings.
 [source,xml]
 ----
 <channel>
-	<id>channel1</id>
-	<channelAddress>dummy/channel/address/1</channelAddress>
-	<samplingInterval>4s</samplingInterval>
+    <id>channel1</id>
+    <channelAddress>dummy/channel/address/1</channelAddress>
+    <samplingInterval>4s</samplingInterval>
 </channel>
 ----
 
@@ -493,10 +539,10 @@ driver.
 [source,xml]
 ----
 <channel>
-	<id>channel2</id>
-	<channelAddress>dummy/channel/address/2</channelAddress>
-	<samplingInterval>4s</samplingInterval>
-	<loggingInterval>8s</loggingInterval>
+    <id>channel2</id>
+    <channelAddress>dummy/channel/address/2</channelAddress>
+    <samplingInterval>4s</samplingInterval>
+    <loggingInterval>8s</loggingInterval>
 </channel>
 ----
 
@@ -511,28 +557,45 @@ need to be the same.
 [source,xml]
 ----
 <channel>
-	<id>channel3</id>
-	<channelAddress>dummy/channel/address/3</channelAddress>
-	<listening>true</listening>
+    <id>channel3</id>
+    <channelAddress>dummy/channel/address/3</channelAddress>
+    <listening>true</listening>
 </channel>
 ----
-In example 3 listening instead of sampling is used. This means that the driver
-reports a new channel value to the data manager when the value has changed for example.
+
+In example 3 listening instead of sampling is used.
+This means that the driver reports a new channel value to the
+data manager when the value has changed for example.
 
 .Example 4: Listening and Logging
 [source,xml]
 ----
  <channel>
-	<id>channel4</id>
-	<channelAddress>dummy/channel/address/4</channelAddress>
-	<listening>true</listening>
-	<loggingInterval>8s</loggingInterval>
+    <id>channel4</id>
+    <channelAddress>dummy/channel/address/4</channelAddress>
+    <listening>true</listening>
+    <loggingInterval>8s</loggingInterval>
 </channel>
 ----
+
 Example 4 extends example 3 by an additional logging.
 
-IMPORTANT: When listening is true and additional a sampling interval is defined then the sampling is ignored.
+IMPORTANT: When listening is true and additional a sampling interval is
+defined then the sampling is ignored.
 
+.Example 5: Listening and Event-Logging
+[source,xml]
+----
+ <channel>
+    <id>channel4</id>
+    <channelAddress>dummy/channel/address/5</channelAddress>
+    <listening>true</listening>
+    <loggingEvent>true</loggingEvent>
+</channel>
+----
+
+Example 5 extends example 3 by an additional event logging.
+It loggs only if only a new value was received. (the logger needs to support evvent logging)
 
 [[anchor-start-script]]
 == OpenMUC start script
@@ -543,8 +606,8 @@ To start OpenMUC on Linux run:
 ./bin/openmuc start
 ----
 
-This runs OpenMUC as a background process. If you want to run OpenMUC
-in the foreground run:
+This runs OpenMUC as a background process.
+If you want to run OpenMUC in the foreground run:
 
 ----
 ./bin/openmuc start -fg
@@ -616,6 +679,7 @@ Before using this the first time see the next point.
 ----
 
 For building and installing the sources of OpenMUC with updating the bundles:
+
 ----
 ./bin/openmuc update-bundles -i
 ----
@@ -638,6 +702,53 @@ script to /etc/init.d/ and edit it to set the OPENMUC_HOME variable.
 
 include::sections/drivers.txt[]
 
+include::sections/driver/modbus-driver.txt[]
+
+include::sections/driver/mbus-driver.txt[]
+
+include::sections/driver/60870-driver.txt[]
+
+include::sections/driver/61850-driver.txt[]
+
+include::sections/driver/62056-driver.txt[]
+
+include::sections/driver/dlms-driver.txt[]
+
+include::sections/driver/knx-driver.txt[]
+
+include::sections/driver/ehz-driver.txt[]
+
+include::sections/driver/snmp-driver.txt[]
+
+include::sections/driver/csv-driver.txt[]
+
+include::sections/driver/aggregator-driver.txt[]
+
+include::sections/driver/rest-driver.txt[]
+
+include::sections/driver/amqp-driver.txt[]
+
+[[anchor-dataloggers]]
+== Dataloggers
+
+include::sections/datalogger/ascii-logger.txt[]
+
+include::sections/datalogger/amqp-logger.txt[]
+
+include::sections/datalogger/mqtt-logger.txt[]
+
+include::sections/datalogger/slotsdb-logger.txt[]
+
+include::sections/datalogger/sql-logger.txt[]
+
+[[anchor-libraries]]
+== Libraries
+
+include::sections/libraries/amqp.txt[]
+
+include::sections/libraries/parser-service.txt[]
+
+include::sections/libraries/ssl.txt[]
 
 [[anchor-web-ui]]
 == The WebUI
@@ -650,7 +761,8 @@ Plugin which provides plotter for visualisation of current and historical data
 
 Channel Access Tool::
 
-Plugin to show current values of selected channels. Provides possibility to set values.
+Plugin to show current values of selected channels.
+Provides possibility to set values.
 
 Channel Configurator::
 
@@ -666,7 +778,7 @@ Plugin for user configuration
 
 === Context Root
 
-The servlet context root of the OpenMUC WebUI can be configured, by setting the `org.apache.felix.http.context_path` 
+The servlet context root of the OpenMUC WebUI can be configured, by setting the `org.apache.felix.http.context_path`
 system property.
 
 [source]
@@ -687,7 +799,10 @@ conf/system.properties file to false.
 
 === Custom Plugins
 
-You can include your own Plugins in the OpenMUC WebUI by creating a java class that extends the WebUiPluginService. This class also has to be annotated as a component. The two functions getAlias and getName have to be overridden. The alias is used to identify the plugin while the name will be displayed in the WebUI.
+You can include your own Plugins in the OpenMUC WebUI by creating a java class that extends the WebUiPluginService.
+This class also has to be annotated as a component.
+The two functions getAlias and getName have to be overridden.
+The alias is used to identify the plugin while the name will be displayed in the WebUI.
 
 [source, java]
 ----
@@ -712,7 +827,9 @@ In order to display an icon above the plugins name, the file needs to be called 
 
 === Visualisation
 
-First you need a svg and assign all the svg Elements a unique id. You can include an external svg as an Object Element or you can create the svg directly in html. Either way the Element containing the svg needs an id which you can then use to access the svg in javascript.
+First you need a svg and assign all the svg Elements a unique id.
+You can include an external svg as an Object Element or you can create the svg directly in html.
+Either way the Element containing the svg needs an id which you can then use to access the svg in javascript.
 
 [source, javascript]
 ----
@@ -727,7 +844,8 @@ sampleText = svg_document.getElementById("sampleTextField");
 sampleText.textContent = channel.record.value;
 ----
 
-Aside from changing what is displayed you can also manipulate the css in this way. The following example would change the displayed texts color to blue.
+Aside from changing what is displayed you can also manipulate the css in this way.
+The following example would change the displayed texts color to blue.
 
 [source, javascript]
 ----
@@ -748,10 +866,11 @@ TIP: The address to access the web service using the provided demo/framework fol
 
 In order to start the RESTful web service, the following bundle must be provided:
 
- - Bundle that provides an org.osgi.service.http.HttpService service. In the demo framework, that service is provided by the org.apache.felix.http.jetty bundle.
+- Bundle that provides an org.osgi.service.http.HttpService service.
+In the demo framework, that service is provided by the org.apache.felix.http.jetty bundle.
 
-This bundles is already provided by the demo framework. The RESTful web service
-will start automatically with the framework without additional settings.
+This bundles is already provided by the demo framework.
+The RESTful web service will start automatically with the framework without additional settings.
 
 === Accessing channels
 
@@ -786,15 +905,15 @@ channel objects encoded in JSON using this structure:
 [source,json]
 ----
 [
-	{
-		"id" : channel1_id,  /*ID of the channel as string*/
-		"record" : channel1_record /*current record. see Record JSON*/
-	},
-	{
-		"id" : channel2_id,
-		"record" : channel2_record
-	}
-	...
+    {
+        "id" : channel1_id,  /*ID of the channel as string*/
+        "record" : channel1_record /*current record. see Record JSON*/
+    },
+    {
+        "id" : channel2_id,
+        "record" : channel2_record
+    }
+    ...
 ]
 ----
 
@@ -802,12 +921,41 @@ New records can be written to channels by sending a PUT request at the
 address that represents a channel. The data in the put request is a
 record encoded as specified in Record JSON above.
 
-If HTTPS is used to access the REST server then HTTP basic
-authentication is required. The login credentials are the same as the
-one used to log into the web interface of the OpenMUC Framework.
+If HTTPS is used to access the REST server then HTTP basic authentication is required.
+The login credentials are the same as the one used to log into the web interface of the OpenMUC Framework.
+
+=== CORS
+
+The rest Server has the ability to handle CORS(Cross-Origin Resource Sharing).
+CORS is explained in detail link:https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS[here].
+Typically this functionality is needed when your browser sends an OPTIONS request instead of the request (f.e. GET, POST etc.) that you inteded to send.
+Per default CORS is is deactivated for the rest Server.
+The fuctionality can be activatet via the system.properties file located in the openmuc/framework/conf/ directory.
+If the following lines are not there add them.
+
+.system.properties
+----
+# Activate CORS functionality for the rest Server
+org.openmuc.framework.server.restws.enable_cors = true
+
+# Origins and methods for CORS , for each origin semicolon seperated
+org.openmuc.framework.server.restws.url_cors = http://localhost:4200; http://localhost:8456
+org.openmuc.framework.server.restws.methods_cors = GET, PUT; POST
+org.openmuc.framework.server.restws.headers_cors = Authorization, Content-Type; Authorization
+----
+
+The variable enable_cors activates or deactivates the support for CORS.
+The variables for url_cors, methods_cors, header_cors defines the allowed origins and the methods these origins are allowed to send to the server.
+Multiple origins are semicolon seperated with the methods and headers seperated by the same order as the origins.
+The methods and headers for each origin are then separated by comma.
+This means that in the above example the origin:
+
+http://localhost:4200 is a trusted origin which is allowed to send GET and PUT requests and uses the headers Autorization and Content-Type. +
+http://localhost:8456 is a trusted origin which is allowed to send POST requests and uses the header Autorization.
 
 [[id_modbus_service]]
 == Modbus Server
+
 The modus service allows you to access to a OpenMUC channel by ModbusTCP protocol.
 For accessing a channel through Modbus the channel has to be mapped with
 _serverMapping_ and the Modbus Server bundle has to copied in the bundle folder.
@@ -818,11 +966,12 @@ ServerMapping ID: _modbus_
 
 [width="100%",cols="1,^v,^v,^v,^v,^v,^v,^v",options="header"]
 |=========================================================
-| Primary Table | BOOLEAN |	SHORT	| INT |	FLOAT	| DOUBLE | LONG | BYTEARRAY[n]
+| Primary Table | BOOLEAN | SHORT   | INT | FLOAT   | DOUBLE | LONG | BYTEARRAY[n]
 
 | INPUT_REGISTER | x | x | x | x | x | x | -
 | HOLDING_REGISTERS | x | x | x | x | x | x | -
 |=========================================================
+
 DISCRETE_INPUTS and COIL are not supported yet.
 
 .Server Settings
@@ -837,6 +986,7 @@ setcap 'cap_net_bind_service=+ep' /path/to/program
 ----
 
 === Example ===
+
 .channels.xml
 [source,xml]
 ----
@@ -885,7 +1035,7 @@ Developers:
 
 * Dirk Zimmermann
 * Marco Mittelsdorf
-* Chris Dieter Medam
+* Joern Schumann
 
 Former developers:
 
@@ -896,3 +1046,4 @@ Former developers:
 * Simon Fey
 * Frederic Robra
 * Philipp Fels
+* Chris Dieter Medam

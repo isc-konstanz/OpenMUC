@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -44,6 +44,9 @@ public abstract class GenericServlet extends HttpServlet implements ConfigChange
     private static final long serialVersionUID = 4041357804530863512L;
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
+    protected static final String APPLICATION_JSON = "application/json";
+    protected static final String REST_PATH = " Rest Path = ";
+
     private static DataAccessService dataAccess;
     private static ConfigService configService;
     private static AuthenticationService authenticationService;
@@ -84,13 +87,15 @@ public abstract class GenericServlet extends HttpServlet implements ConfigChange
     }
 
     void sendJson(ToJson json, HttpServletResponse response) throws ServletException, IOException {
-        OutputStream outStream = response.getOutputStream();
-        if (json != null) {
-            String jsonString = json.toString();
-            outStream.write(jsonString.getBytes(CHARSET));
+        if (!response.isCommitted()) {
+            OutputStream outStream = response.getOutputStream();
+            if (json != null) {
+                String jsonString = json.toString();
+                outStream.write(jsonString.getBytes(CHARSET));
+            }
+            outStream.flush();
+            outStream.close();
         }
-        outStream.flush();
-        outStream.close();
     }
 
     String[] checkIfItIsACorrectRest(HttpServletRequest request, HttpServletResponse response, Logger logger) {

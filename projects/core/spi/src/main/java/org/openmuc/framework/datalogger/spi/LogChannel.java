@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -29,14 +29,32 @@ public interface LogChannel {
 
     public String getDescription();
 
+    public String getChannelAddress();
+
     public String getUnit();
 
     public ValueType getValueType();
 
     public Integer getValueTypeLength();
 
+    public Double getScalingFactor();
+
+    public Double getValueOffset();
+
+    public Boolean isListening();
+
+    public Integer getSamplingInterval();
+
+    public Integer getSamplingTimeOffset();
+
+    public String getSamplingGroup();
+
     public Integer getLoggingInterval();
 
     public Integer getLoggingTimeOffset();
+
+    public Boolean isDisabled();
+
+    public Boolean isLoggingEvent();
 
 }

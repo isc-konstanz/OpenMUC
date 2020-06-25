@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -41,7 +41,9 @@ import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,12 +60,14 @@ public class AsciiLogger implements DataLoggerService {
     private static final String DIRECTORY = System
             .getProperty(AsciiLogger.class.getPackage().getName().toLowerCase() + ".directory");
 
+    @Activate
     protected void activate(ComponentContext context) {
 
         logger.info("Activating Ascii Logger");
         setSystemProperties();
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
 
         logger.info("Deactivating Ascii Logger");
@@ -137,11 +141,7 @@ public class AsciiLogger implements DataLoggerService {
                     fillUpFileWithErrorCode(loggerDirectory, key, calendar);
                 }
                 else {
-                    // rename file in old file, because of configuration has changed
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Header not identical. Rename file " + LoggerUtils.buildFilename(key, calendar)
-                                + " to old.");
-                    }
+                    // rename file in old file (if file is existing), because of configuration has changed
                     LoggerUtils.renameFileToOld(loggerDirectory, key, calendar);
                 }
             }
@@ -154,7 +154,6 @@ public class AsciiLogger implements DataLoggerService {
 
     @Override
     public synchronized void log(List<LogRecordContainer> containers, long timestamp) {
-
         HashMap<List<Integer>, LogIntervalContainerGroup> logIntervalGroups = new HashMap<>();
 
         // add each container to a group with the same logging interval
@@ -215,9 +214,9 @@ public class AsciiLogger implements DataLoggerService {
         if (logChannel != null) {
             reader = new LogFileReader(loggerDirectory, logChannel);
             return reader.getValues(startTime, endTime).get(channelId);
-        } // TODO: hier einfügen das nach Loggdateien gesucht werden sollen die vorhanden sind aber nicht geloggt
+        } // TODO: hier einfuegen das nach Loggdateien gesucht werden sollen die vorhanden sind aber nicht geloggt
           // werden,
-          // z.B für server only ohne Logging. Das suchen sollte nur beim ersten mal passieren (start).
+          // z.B fuer server only ohne Logging. Das suchen sollte nur beim ersten mal passieren (start).
         else {
             throw new IOException("ChannelID (" + channelId + ") not available. It's not a logging Channel.");
         }
@@ -225,11 +224,18 @@ public class AsciiLogger implements DataLoggerService {
 
     private void setSystemProperties() {
 
-        String fillUpProperty = System
-                .getProperty(AsciiLogger.class.getPackage().getName().toLowerCase() + ".fillUpFiles");
+        // FIXME: better to use a constant here instead of dynamic name in case the package name changes in future than
+        // the system.properties entry will be out dated.
+        String fillUpPropertyStr = AsciiLogger.class.getPackage().getName().toLowerCase() + ".fillUpFiles";
+        String fillUpProperty = System.getProperty(fillUpPropertyStr);
 
         if (fillUpProperty != null) {
             isFillUpFiles = Boolean.parseBoolean(fillUpProperty);
+            logger.debug("Property: {} is set to {}", fillUpPropertyStr, isFillUpFiles);
+        }
+        else {
+            logger.debug("Property: {} not found in system.properties. Using default value: true", fillUpPropertyStr);
+            isFillUpFiles = true;
         }
     }
 
@@ -355,5 +361,10 @@ public class AsciiLogger implements DataLoggerService {
             }
         }
         return lastLogLineTimeStamp;
+    }
+
+    @Override
+    public void logEvent(List<LogRecordContainer> containers, long timestamp) {
+        logger.warn("Event logging is not implemented, yet.");
     }
 }

@@ -1,3 +1,46 @@
+v0.18.0 22-Jun-2020
+-------------------
+- core
+   * added parser service and lib bundle
+   * added getValueType() and string parser to OpenMUC Values
+- datamanager:
+   * extended SPI
+   * added new event logging (support depends on datalogger)
+- datalogger AMQP
+   * added new amqp logger
+- datalogger MQTT
+   * added new mqtt logger
+- lib bundles
+   * added new lib bundles for parsing ,amqp and ssl
+- WebUI
+   * Base
+      + added user role admin and non admin
+      + added option to set CORS functionality
+   * Live Plotter: 
+      + added configure x and y range
+- driver AMQP
+   * added new amqp driver
+- driver IEC 61850:
+   * code refactoring
+   * some bug fixes
+   * added tests
+   * changes from OpenMUC OpenIEC61850 to beanit.com OpenIEC61850 v1.8.0
+- driver IEC 60870
+   * updated j60870 to v1.4.0
+   * fixed C_SE_NC_1 bug
+- driver M-Bus: 
+   * added option for delay between every message (for slow devices)
+   * added multi telegram message in channel scan and read function
+   * updated jmbus to 3.3.0
+- driver wireless M-Bus
+   * updated jmbus to 3.3.0
+- driver DLMS
+   * updated jDLMS to 1.7.0
+   * updated jASN1 to 1.10.0 
+- several bug fixes
+- extended documentation
+- osgi bundle updates
+
 v0.17.2 20-Dec-2018
 -------------------
 - WebUI:

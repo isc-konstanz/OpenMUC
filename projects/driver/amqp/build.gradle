@@ -1,0 +1,28 @@
+def projectName = "OpenMUC Driver - AMQP"
+
+dependencies {
+    implementation project(':openmuc-core-spi')
+    implementation project(':openmuc-core-api')
+    implementation project(':openmuc-core-datamanager')
+    implementation project(':openmuc-lib-amqp')
+
+    testImplementation group: 'com.rabbitmq', name: 'amqp-client', version: '5.9.0'
+}
+
+jar {
+    manifest {
+        name = projectName
+        instruction 'Export-Package', ''
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name projectName
+                description "AMQP driver for the OpenMUC framework."
+            }
+        }
+    }
+}

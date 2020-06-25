@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -205,6 +205,11 @@ public final class Device {
         else if (!oldChannelConfig.isDisabled() && oldChannelConfig.getLoggingInterval() > 0) {
             dataManager.removeFromLoggingCollections(newChannelConfig.channel);
         }
+        else if (!oldChannelConfig.isDisabled()
+                && oldChannelConfig.getLoggingInterval() == ChannelConfig.LOGGING_INTERVAL_DEFAULT
+                && oldChannelConfig.isLoggingEvent() && oldChannelConfig.isListening()) {
+            logChannels.add(newChannelConfig);
+        }
         if (newChannelConfig.isSampling()) {
             dataManager.addToSamplingCollections(newChannelConfig.channel, currentTime);
         }
@@ -256,23 +261,30 @@ public final class Device {
         eventList.add(event);
     }
 
-    private void setStatesForNewDevice(DeviceConfigImpl oldDeviceConfig, DeviceState DeviceState,
+    private void setStatesForNewDevice(DeviceConfigImpl oldDeviceConfig, DeviceState deviceState,
             ChannelState channelState, Flag flag, long currentTime, List<LogChannel> logChannels) {
-        state = DeviceState;
+        state = deviceState;
         for (Entry<String, ChannelConfigImpl> newChannelConfigEntry : deviceConfig.channelConfigsById.entrySet()) {
             ChannelConfigImpl oldChannelConfig = oldDeviceConfig.channelConfigsById.get(newChannelConfigEntry.getKey());
+            ChannelConfigImpl channelConfigImpl = newChannelConfigEntry.getValue();
+
             if (oldChannelConfig == null) {
-                newChannelConfigEntry.getValue().channel = new ChannelImpl(dataManager,
-                        newChannelConfigEntry.getValue(), channelState, flag, currentTime, logChannels);
+                channelConfigImpl.channel = new ChannelImpl(dataManager, channelConfigImpl, channelState, flag,
+                        currentTime, logChannels);
             }
             else {
-                newChannelConfigEntry.getValue().channel = oldChannelConfig.channel;
-                newChannelConfigEntry.getValue().channel.config = newChannelConfigEntry.getValue();
-                newChannelConfigEntry.getValue().channel.setNewDeviceState(channelState, flag);
-                if (!newChannelConfigEntry.getValue().isDisabled()
-                        && (newChannelConfigEntry.getValue().getLoggingInterval() > 0)) {
-                    dataManager.addToLoggingCollections(newChannelConfigEntry.getValue().channel, currentTime);
-                    logChannels.add(newChannelConfigEntry.getValue());
+                channelConfigImpl.channel = oldChannelConfig.channel;
+                channelConfigImpl.channel.config = channelConfigImpl;
+                channelConfigImpl.channel.setNewDeviceState(channelState, flag);
+                if (!channelConfigImpl.isDisabled()) {
+                    if (channelConfigImpl.getLoggingInterval() > 0 && !channelConfigImpl.isLoggingEvent()) {
+                        dataManager.addToLoggingCollections(channelConfigImpl.channel, currentTime);
+                        logChannels.add(channelConfigImpl);
+                    }
+                    else if (channelConfigImpl.getLoggingInterval() == ChannelConfig.LOGGING_INTERVAL_DEFAULT
+                            && channelConfigImpl.isLoggingEvent() && channelConfigImpl.isListening()) {
+                        logChannels.add(channelConfigImpl);
+                    }
                 }
             }
         }
@@ -314,10 +326,18 @@ public final class Device {
                 newChannelConfig.channel = oldChannelConfig.channel;
                 newChannelConfig.channel.config = newChannelConfig;
                 newChannelConfig.channel.setNewDeviceState(channelState, flag);
-                if (!newChannelConfigEntry.getValue().isDisabled()
-                        && (newChannelConfigEntry.getValue().getLoggingInterval() > 0)) {
-                    dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
-                    logChannels.add(newChannelConfigEntry.getValue());
+                if (!newChannelConfigEntry.getValue().isDisabled()) {
+                    if ((newChannelConfigEntry.getValue().getLoggingInterval() > 0
+                            && !newChannelConfigEntry.getValue().isLoggingEvent())) {
+                        dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
+                        logChannels.add(newChannelConfigEntry.getValue());
+                    }
+                    else if (newChannelConfigEntry.getValue()
+                            .getLoggingInterval() == ChannelConfig.LOGGING_INTERVAL_DEFAULT
+                            && newChannelConfigEntry.getValue().isLoggingEvent()
+                            && newChannelConfigEntry.getValue().isListening()) {
+                        logChannels.add(newChannelConfigEntry.getValue());
+                    }
                 }
             }
         }
