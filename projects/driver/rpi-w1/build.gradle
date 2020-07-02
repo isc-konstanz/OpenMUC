@@ -3,6 +3,7 @@ def projectName = "OpenMUC Driver - Raspberry Pi 1-Wire"
 def projectDescription = "Raspberry Pi 1-Wire driver for the OpenMUC framework."
 
 configurations.create('embed')
+configurations.embed.transitive = false;
 
 def pi4jVersion = '1.2'
 
@@ -10,20 +11,26 @@ dependencies {
   implementation project(':openmuc-core-spi')
 
   implementation group: 'com.pi4j', name: 'pi4j-core', version: pi4jVersion
-  implementation group: 'com.pi4j', name: 'pi4j-device', version: pi4jVersion
-  implementation group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jVersion
-}
 
-jar {
-  manifest {
-    name = projectName
-    instruction 'Export-Package', ''
-  }
+  implementation group: 'com.pi4j', name: 'pi4j-device', version: pi4jVersion
+  embed          group: 'com.pi4j', name: 'pi4j-device', version: pi4jVersion
+
+  implementation group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jVersion
+  embed          group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jVersion
 }
 
 jar {
   into('lib') {
     from configurations.embed
+  }
+  manifest {
+    name = projectName
+    instruction 'Bundle-ClassPath', '.,' + configurations.embed.collect { 'lib/'+it.getName() }.join(',')
+    instruction 'Import-Package', '!com.pi4j.device.*,' +
+                                  '!com.pi4j.component.*,' +
+                                  '!com.pi4j.gpio.extension.*,' +
+                                  '*' + jarDefaultImportPackageVersion
+    instruction 'Export-Package', ''
   }
 }
 

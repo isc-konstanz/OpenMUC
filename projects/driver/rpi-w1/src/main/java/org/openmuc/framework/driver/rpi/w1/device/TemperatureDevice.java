@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.pi4j.component.temperature.TemperatureSensor;
 
+
 public class TemperatureDevice extends W1Connection {
     private static final Logger logger = LoggerFactory.getLogger(TemperatureDevice.class);
 

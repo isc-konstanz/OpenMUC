@@ -67,7 +67,6 @@ public class W1Scanner extends DeviceScanner {
         int size = devices.size();
         if (size > 0) {
             logger.debug("Scan discovered {} 1-Wire devices: {}", size, devices.toString());
-            this.devices.clear();
             
             int counter = 1;
             for (W1Device device : devices) {
@@ -80,11 +79,10 @@ public class W1Scanner extends DeviceScanner {
                     String name = device.getClass().getSimpleName();
                     W1Type type = W1Type.valueOf(device);
                     
-                    String scanAddress = W1Configs.ID + ":" + id;
-                    String scanSettings = W1Configs.TYPE + ":" + type.getName();
+                    String scanSettings = W1Configs.TYPE + ":" + type.name();
                     
                     listener.deviceFound(new DeviceScanInfo(name.toLowerCase()+"_"+id, 
-                            scanAddress, scanSettings, "1-Wire "+ type.getName() +": "+ name));
+                    		id, scanSettings, "1-Wire "+ type.getName() +": "+ name));
                 }
                 
                 listener.scanProgressUpdate((int) Math.round(counter/(double) size*100));

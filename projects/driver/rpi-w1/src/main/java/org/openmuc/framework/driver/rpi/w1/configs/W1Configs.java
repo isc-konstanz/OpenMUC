@@ -26,10 +26,9 @@ import org.openmuc.framework.options.Setting;
 
 public class W1Configs extends DeviceConfigs<W1Channel> {
 
-	public static final String ID = "id";
     public static final String TYPE = "type";
 
-    @Address(id = ID,
+    @Address(id = "id",
              name = "Identifier",
              description = "The device ID, retrievable through scanning."
     )

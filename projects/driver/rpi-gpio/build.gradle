@@ -2,8 +2,6 @@
 def projectName = "OpenMUC Driver - Raspberry Pi GPIO"
 def projectDescription = "Raspberry Pi GPIO driver for the OpenMUC framework."
 
-configurations.create('embed')
-
 def pi4jVersion = '1.2'
 
 dependencies {
@@ -18,12 +16,6 @@ jar {
   manifest {
     name = projectName
     instruction 'Export-Package', ''
-  }
-}
-
-jar {
-  into('lib') {
-    from configurations.embed
   }
 }
 

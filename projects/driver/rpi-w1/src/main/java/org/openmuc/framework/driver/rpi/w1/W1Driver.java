@@ -22,6 +22,7 @@ package org.openmuc.framework.driver.rpi.w1;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
@@ -50,7 +51,7 @@ public class W1Driver extends Driver<W1Configs> implements DriverService {
     private static final String DESCRIPTION = 
     		"The 1-Wire Driver enables the access to 1-Wire devices, connected to the Raspberry Pi platform.";
 
-    private final List<String> connected = new ArrayList<String>();
+    private final List<String> connected = Collections.synchronizedList(new ArrayList<String>());
 
     private W1Master master;
 
@@ -109,12 +110,14 @@ public class W1Driver extends Driver<W1Configs> implements DriverService {
 
     @Override
     public void onConnect(Connection connection) {
-        connected.add(((W1Connection) connection).getId());
+    	String id = ((W1Connection) connection).getId();
+        connected.add(id);
     }
 
     @Override
     public void onDisconnect(Connection connection) {
-        connected.remove(((W1Connection) connection).getId());
+    	String id = ((W1Connection) connection).getId();
+        connected.remove(id);
     }
 
 }
