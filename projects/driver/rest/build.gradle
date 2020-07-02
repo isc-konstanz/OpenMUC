@@ -18,7 +18,7 @@ dependencies {
 jar {
   manifest {
     name = projectName
-    instruction 'Bundle-Classpath', '.,lib/gson-' + gsonversion + '.jar,lib/commons-codec-' + commonscodecversion + '.jar'
+    instruction 'Bundle-Classpath', '.,lib/commons-codec-' + commonscodecversion + '.jar'
     instruction 'Import-Package', '!org.apache.commons.codec*,*' + jarDefaultImportPackageVersion
     instruction 'Export-Package', ''
   }
