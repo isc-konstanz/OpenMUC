@@ -97,7 +97,7 @@ public class W1Driver extends Driver<W1Configs> implements DriverService {
                     }
                     switch (type) {
 					case SENSOR_TEMPERATURE:
-	                    return new TemperatureDevice(id, (TemperatureSensor) device);
+	                    return new TemperatureDevice(id, (TemperatureSensor) device, configs.getMaximum());
                     }
                 }
             }

@@ -41,12 +41,24 @@ public class W1Configs extends DeviceConfigs<W1Channel> {
     )
     private W1Type type;
 
+    @Setting(id = "maximum",
+             name = "Maximum sensor value",
+             description = "The maximum value the sensor can read.<br>" +
+                           "Used e.g. in error detection of temperature sensors.",
+             mandatory = false
+    )
+    private Double maximum = Double.NaN;
+
     public String getId() {
         return id.trim().replace("\n", "").replace("\r", "");
     }
 
     public W1Type getType() {
         return type;
+    }
+
+    public Double getMaximum() {
+        return maximum;
     }
 
 }

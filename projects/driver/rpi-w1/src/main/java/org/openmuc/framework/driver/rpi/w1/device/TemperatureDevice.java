@@ -40,9 +40,12 @@ public class TemperatureDevice extends W1Connection {
 
     private final TemperatureSensor sensor;
 
-    public TemperatureDevice(String id, TemperatureSensor sensor) {
+    private final double maximum;
+
+    public TemperatureDevice(String id, TemperatureSensor sensor, Double maximum) {
     	super(id);
         this.sensor = sensor;
+        this.maximum = maximum.isNaN() ? 127 : maximum;
     }
 
     @Override
@@ -55,15 +58,16 @@ public class TemperatureDevice extends W1Connection {
             
             if (temperature != null) {
                 // Skip temperature readings of exactly 85, as they are commonly missreadings
-                if (temperature < 85) {
+                if (temperature < maximum) {
                     value = new DoubleValue(temperature);
                 }
                 else {
-                    // Don't skip the reading, if the latest value read was longer than 15 minutes ago or above 80
+                    // Don't skip the reading, if the latest value read was longer than 15 minutes ago 
+                	// or above 90% of the maximum configured value of the sensor
                     Record lastRecord = channel.getRecord();
                     if (lastRecord != null && lastRecord.getFlag() == Flag.VALID) {
                         if (samplingTime - lastRecord.getTimestamp() >= 900000 || 
-                                lastRecord.getValue().asDouble() >= 80) {
+                                lastRecord.getValue().asDouble() >= maximum*0.9) {
                             
                             value = new DoubleValue(temperature);
                         }
