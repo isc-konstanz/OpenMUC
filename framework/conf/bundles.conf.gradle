@@ -1,5 +1,5 @@
 project.ext {
-  openmucVersion = "0.18.1"
+  openmucVersion = "0.18.2"
 }
 
 if (project.hasProperty('cfgVersion')) {
