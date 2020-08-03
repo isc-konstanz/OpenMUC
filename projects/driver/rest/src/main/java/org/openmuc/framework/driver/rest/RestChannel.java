@@ -31,6 +31,7 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.lib.json.Const;
 import org.openmuc.framework.lib.json.FromJson;
 import org.openmuc.framework.lib.json.ToJson;
+import org.openmuc.framework.lib.json.rest.objects.RestRecord;
 import org.openmuc.framework.options.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +96,12 @@ public class RestChannel extends Channel {
         }
     }
 
+    public void setRecord(RestRecord record) {
+        if (record != null) {
+            setRecord(FromJson.convertRecord(record, getValueType()));
+        }
+    }
+
     public void write(RestConnection connection, long timestamp) throws ConnectionException {
         Record record = new Record(getValue(), timestamp, Flag.VALID);
         ToJson json = new ToJson();
@@ -102,6 +109,10 @@ public class RestChannel extends Channel {
         
         Flag flag = connection.put(id, json.toString());
         setFlag(flag);
+    }
+
+    public boolean equals(org.openmuc.framework.lib.json.rest.objects.RestChannel channel) {
+    	return id.equals(channel.getId());
     }
 
 }
