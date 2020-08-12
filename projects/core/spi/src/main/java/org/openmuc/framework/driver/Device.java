@@ -20,24 +20,18 @@
  */
 package org.openmuc.framework.driver;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.data.Flag;
-import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class Device<C extends Channel> extends DeviceConfigs<C> implements Connection {
-    private static final Logger logger = LoggerFactory.getLogger(Device.class);
 
     void doConnect() throws ArgumentSyntaxException, ConnectionException {
         this.onConnect();
@@ -90,17 +84,7 @@ public abstract class Device<C extends Channel> extends DeviceConfigs<C> impleme
             throws UnsupportedOperationException, ConnectionException {
         
         synchronized(channels) {
-            List<C> channels = new LinkedList<C>();
-            for (ChannelRecordContainer container : containers) {
-                try {
-                    channels.add((C) onCreateChannel(container));
-                    
-                } catch (ArgumentSyntaxException e) {
-                    logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
-                    container.setRecord(new Record(null, System.currentTimeMillis(), Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
-                }
-            }
-            onStartListening(channels, listener);
+            onStartListening(getChannels(containers), listener);
         }
     }
 

@@ -37,17 +37,66 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 public class RestConnection implements AutoCloseable {
 
     private final String address;
-    private final String authentication;
+    private final String authorization;
 
     private final int timeout;
 
     private URLConnection connection;
 
-    public RestConnection(RestConfigs configs) throws IOException {
+    public RestConnection(RestConfigs configs) {
         timeout = configs.getTimeout();
         address = configs.getAddress();
-        authentication = configs.getAuthentication();
-        connection = connect();
+        authorization = configs.getAuthorization();
+    }
+
+    private URLConnection open(String suffix) throws IOException {
+        URL url = new URL(address + suffix);
+        URLConnection connection = url.openConnection();
+        connection.setConnectTimeout(timeout);
+        connection.setReadTimeout(timeout);
+        connection.setRequestProperty("Connection", "Keep-Alive");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Authorization", "Basic " + authorization);
+        
+        return connection;
+    }
+
+    public RestConnection connect() throws ConnectionException {
+        try {
+			connection = open("rest/connect/");
+	        connection.connect();
+	        
+	        verifyResponseCode(connection);
+	        
+		} catch (IOException e) {
+            throw new ConnectionException(e.getMessage());
+		}
+        return this;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (connection != null ) {
+            if (connection instanceof HttpsURLConnection) {
+                ((HttpsURLConnection) connection).disconnect();
+            }
+            else {
+                ((HttpURLConnection) connection).disconnect();
+            }
+        }
+    }
+
+    public String get() throws ConnectionException {
+        try {
+            connection = open("rest/channels");
+            
+            verifyResponseCode(connection);
+            return readResponse(connection);
+            
+        } catch (IOException e) {
+            throw new ConnectionException(e.getMessage());
+        }
     }
 
     public String get(String suffix) throws ConnectionException {
@@ -120,37 +169,6 @@ public class RestConnection implements AutoCloseable {
             }
         }
         return Flag.VALID;
-    }
-
-    private URLConnection open(String suffix) throws IOException {
-        URL url = new URL(address + suffix);
-        URLConnection connection = url.openConnection();
-        connection.setConnectTimeout(timeout);
-        connection.setReadTimeout(timeout);
-        connection.setRequestProperty("Connection", "Keep-Alive");
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Authorization", "Basic " + authentication);
-        
-        return connection;
-    }
-
-    private URLConnection connect() throws IOException {
-        URLConnection connection = open("rest/connect/");
-        connection.connect();
-        return connection;
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (connection != null ) {
-            if (connection instanceof HttpsURLConnection) {
-                ((HttpsURLConnection) connection).disconnect();
-            }
-            else {
-                ((HttpURLConnection) connection).disconnect();
-            }
-        }
     }
 
 }

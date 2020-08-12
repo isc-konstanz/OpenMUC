@@ -39,10 +39,14 @@ public class Channel extends ChannelContext implements ChannelRecordContainer, C
 
     protected void doConfigure(ChannelContainer container) throws ArgumentSyntaxException {
         if (!equals(container)) {
-            configure(container.getChannelAddress(), container.getChannelSettings());
+        	doConfigure(container.getChannelAddress(), container.getChannelSettings());
+            onConfigure();
         }
         this.container = container;
-        onConfigure();
+    }
+
+    protected void doConfigure(String address, String settings) throws ArgumentSyntaxException {
+        configure(address, settings);
     }
 
     protected void onConfigure() throws ArgumentSyntaxException {

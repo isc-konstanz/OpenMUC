@@ -92,7 +92,7 @@ public class FromJson {
             return null;
         }
 
-        return convertRestRecordToRecord(gson.fromJson(jse, RestRecord.class), valueType);
+        return convertRecord(gson.fromJson(jse, RestRecord.class), valueType);
     }
 
     public ArrayList<Record> getRecordArrayList(ValueType valueType) throws ClassCastException {
@@ -323,13 +323,13 @@ public class FromJson {
         }
     }
 
-    private Record convertRestRecordToRecord(RestRecord rrc, ValueType type) throws ClassCastException {
+    public static Record convertRecord(RestRecord rrc, ValueType type) throws ClassCastException {
         Object value = rrc.getValue();
         Flag flag = rrc.getFlag();
         Value retValue = null;
 
         if (value != null) {
-            retValue = convertValueToMucValue(type, value);
+            retValue = convertValue(type, value);
         }
         if (flag == null) {
             return new Record(retValue, rrc.getTimestamp());
@@ -339,7 +339,7 @@ public class FromJson {
         }
     }
 
-    private Value convertValueToMucValue(ValueType type, Object value) throws ClassCastException {
+    private static Value convertValue(ValueType type, Object value) throws ClassCastException {
         // TODO: check all value types, if it is really a float, double, ...
 
         if (value.getClass().isInstance(new RestValue())) {

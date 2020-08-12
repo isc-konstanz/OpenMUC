@@ -63,6 +63,13 @@ public abstract class RestConfigs extends Device<RestChannel> {
             mandatory = false)
     protected boolean checkTimestamp = false;
 
+    @Setting(id = "bulk",
+            name = "Bulk reading",
+            description = "Flags the driver that it should read all available channels at once, instead of requesting them one by one",
+            valueDefault = "false",
+            mandatory = false)
+    protected boolean bulkReading = false;
+
     @Setting(id = "timeout",
             name = "Timeout",
             description = "The timeout, after which the HTTP(S) call will be canceled.",
@@ -71,7 +78,7 @@ public abstract class RestConfigs extends Device<RestChannel> {
     protected int timeout = 10000;
 
     protected String address;
-    protected String auth;
+    protected String authorization;
 
     @Override
     protected void onConfigure() {
@@ -83,8 +90,8 @@ public abstract class RestConfigs extends Device<RestChannel> {
     	}
     	address = prefix + "://" + host + ":" + port + "/";
     	
-    	String credentials = username + ":" + password;
-    	auth = new String(Base64.encodeBase64(credentials.getBytes()));
+    	String authorization = username + ":" + password;
+    	this.authorization = new String(Base64.encodeBase64(authorization.getBytes()));
     }
 
 	public String getPrefix() {
@@ -111,6 +118,10 @@ public abstract class RestConfigs extends Device<RestChannel> {
 		return checkTimestamp;
 	}
 
+	public boolean isBulkReading() {
+		return bulkReading;
+	}
+
 	public int getTimeout() {
 		return timeout;
 	}
@@ -119,8 +130,8 @@ public abstract class RestConfigs extends Device<RestChannel> {
 		return address;
 	}
 
-	public String getAuthentication() {
-		return auth;
+	public String getAuthorization() {
+		return authorization;
 	}
 
 }

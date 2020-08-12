@@ -557,14 +557,12 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 logger.info("Registered driver: " + driverId);
 
                 DriverConfigImpl driverConfig = rootConfig.driverConfigsById.get(driverId);
+
                 if (driverConfig == null) {
                     continue;
                 }
-                DriverService newDriver = newDriverEntry.getValue();
-                if (newDriver instanceof Driver) {
-                    ((Driver<?>) newDriver).activate(this);
-                }
-                driverConfig.activeDriver = newDriver;
+
+                driverConfig.activeDriver = newDriverEntry.getValue();
                 for (DeviceConfigImpl deviceConfig : driverConfig.deviceConfigsById.values()) {
                     deviceConfig.device.driverRegisteredSignal();
                 }
@@ -576,12 +574,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             if (!newServers.isEmpty()) {
                 activeServers.addAll(newServers);
                 for (ServerService server : newServers) {
-                    String serverId = server.getId();
-                    logger.info("Registered server: {}", serverId);
-                    
-                    if (server instanceof Server) {
-                        ((Server<?>) server).activate(this);
-                    }
+                    logger.info("Registered server: {}", server.getId());
                     notifyServer(server);
                 }
                 newServers.clear();
@@ -592,12 +585,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             if (!newDataLoggers.isEmpty()) {
                 activeDataLoggers.addAll(newDataLoggers);
                 for (DataLoggerService dataLogger : newDataLoggers) {
-                    String dataLoggerId = dataLogger.getId();
-                    logger.info("Registered data logger: {}", dataLoggerId);
-                    
-                    if (dataLogger instanceof DataLogger) {
-                        ((DataLogger<?>) dataLogger).activate(this);
-                    }
+                    logger.info("Registered data logger: {}", dataLogger.getId());
                     dataLogger.setChannelsToLog(rootConfig.logChannels);
                 }
                 newDataLoggers.clear();
@@ -638,20 +626,12 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                     driverRemovedSignal.countDown();
                 }
             }
-            if (removedDriver instanceof Driver) {
-                ((Driver<?>) removedDriver).deactivate();
-                logger.debug("Deactivated driver: {}", driverToBeRemovedId);
-            }
             driverToBeRemovedId = null;
         }
 
         if (serverToBeRemoved != null) {
             if (!activeServers.remove(serverToBeRemoved)) {
                 newServers.remove(serverToBeRemoved);
-            }
-            else if (serverToBeRemoved instanceof Server) {
-                ((Server<?>) serverToBeRemoved).deactivate();
-                logger.debug("Deactivated server: {}", serverToBeRemoved.getId());
             }
             serverToBeRemoved = null;
             serverRemovedSignal.countDown();
@@ -660,10 +640,6 @@ public final class DataManager extends Thread implements DataAccessService, Conf
         if (dataLoggerToBeRemoved != null) {
             if (!activeDataLoggers.remove(dataLoggerToBeRemoved)) {
                 newDataLoggers.remove(dataLoggerToBeRemoved);
-            }
-            else if (dataLoggerToBeRemoved instanceof DataLogger) {
-                ((DataLogger<?>) dataLoggerToBeRemoved).deactivate();
-                logger.debug("Deactivated data logger: {}", dataLoggerToBeRemoved.getId());
             }
             dataLoggerToBeRemoved = null;
             dataLoggerRemovedSignal.countDown();
@@ -910,6 +886,9 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 logger.error("Unable to register driver: a driver with the ID {} is already registered.", driverId);
                 return;
             }
+            if (driver instanceof Driver) {
+                ((Driver<?>) driver).activate(this);
+            }
             newDrivers.put(driverId, driver);
             interrupt();
         }
@@ -936,21 +915,27 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 newDrivers.remove(driverId);
             }
         }
+        if (driver instanceof Driver) {
+            ((Driver<?>) driver).deactivate();
+        }
         logger.info("Unregistered driver: {}", driverId);
     }
 
     /**
      * Registeres a new ServerService.
      * 
-     * @param serverService
+     * @param server
      *            ServerService object to register
      */
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    private void bindServerService(ServerService serverService) {
-        logger.debug("Registering server: {}", serverService.getId());
-        
+    private void bindServerService(ServerService server) {
+        logger.debug("Registering server: {}", server.getId());
+
+        if (server instanceof Server) {
+            ((Server<?>) server).activate(this);
+        }
         synchronized (newServers) {
-            newServers.add(serverService);
+            newServers.add(server);
             interrupt();
         }
     }
@@ -958,17 +943,17 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     /**
      * Removes a registered ServerService.
      * 
-     * @param serverService
+     * @param server
      *            ServerService object to unset
      */
     @SuppressWarnings("unused")
-    private void unbindServerService(ServerService serverService) {
-        String serverId = serverService.getId();
+    private void unbindServerService(ServerService server) {
+        String serverId = server.getId();
         logger.debug("Unregistering server: {}", serverId);
         
         if (dataManagerActivated) {
             serverRemovedSignal = new CountDownLatch(1);
-            serverToBeRemoved = serverService;
+            serverToBeRemoved = server;
             interrupt();
             try {
                 serverRemovedSignal.await();
@@ -976,9 +961,12 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             }
         }
         else {
-            if (activeServers.remove(serverService) == false) {
-                newServers.remove(serverService);
+            if (activeServers.remove(server) == false) {
+                newServers.remove(server);
             }
+        }
+        if (server instanceof Server) {
+            ((Server<?>) server).deactivate();
         }
         logger.info("Unregistered server: {}", serverId);
     }
@@ -1017,6 +1005,9 @@ public final class DataManager extends Thread implements DataAccessService, Conf
         logger.debug("Registering data logger: {}", dataLogger.getId());
         
         synchronized (newDataLoggers) {
+            if (dataLogger instanceof DataLogger) {
+                ((DataLogger<?>) dataLogger).activate(this);
+            }
             newDataLoggers.add(dataLogger);
             interrupt();
         }
@@ -1040,6 +1031,9 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             if (activeDataLoggers.remove(dataLogger) == false) {
                 newDataLoggers.remove(dataLogger);
             }
+        }
+        if (dataLogger instanceof DataLogger) {
+            ((DataLogger<?>) dataLogger).deactivate();
         }
         logger.info("Unregistered data logger: {}", dataLoggerId);
     }

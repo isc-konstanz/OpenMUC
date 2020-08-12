@@ -99,7 +99,7 @@ public class EdgeListener implements GpioPinListenerDigital {
                                 value = new DoubleValue(counter/channel.getImpulses());
                             }
                             if (value != null) {
-                            	logger.debug("Registered {}. edge for channel {}: {}", counter, channel.getId(), value);
+                            	logger.debug("Registered {}. edge for {}: {}", counter, event.getPin().getName(), value);
                             	channel.setRecord(new Record(value, samplingTime, Flag.VALID));
                             }
                             else {

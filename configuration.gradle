@@ -1,7 +1,7 @@
 
 project.ext {
 
-  cfgVersion = "0.17.2"
+  cfgVersion = "0.18.2"
   
   cfgGroup = "org.openmuc.framework"
 
@@ -93,7 +93,7 @@ configure(javaProjects) {
 }
 
 task framework {
-  apply from: "./framework/conf/bundles.gradle"
+  apply from: "./framework/conf/bundles.conf.gradle"
   dependsOn updateBundles
 }
 

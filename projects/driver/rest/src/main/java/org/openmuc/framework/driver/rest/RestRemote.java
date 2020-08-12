@@ -32,14 +32,18 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.lib.json.FromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RestRemote extends RestConfigs {
     private static final Logger logger = LoggerFactory.getLogger(RestRemote.class);
+    
+    private RestConnection connection;
 
-    @Override
+	@Override
     protected void onConnect() throws ConnectionException {
         if (address.startsWith("https://")) {
             TrustManager[] trustManager = getTrustManager();
@@ -60,14 +64,22 @@ public class RestRemote extends RestConfigs {
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
         }
         logger.info("Connecting to remote OpenMUC: {}", address);
-        
-        try (RestConnection connection = new RestConnection(this)) {
-            // This is only used to verify the existence of the remote OpenMUC
-            
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
-        }
+
+        // This is only used to verify the existence of the remote OpenMUC
+    	connection = new RestConnection(this);
+    	connection.connect();
     }
+
+	@Override
+	protected void onDisconnect() {
+		try {
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (IOException e) {
+			logger.warn("Unexpected error closing REST connection: {}", e.getMessage());
+		}
+	}
 
     private HostnameVerifier getHostnameVerifier() {
         return new HostnameVerifier() {
@@ -100,15 +112,13 @@ public class RestRemote extends RestConfigs {
             throws UnsupportedOperationException, ConnectionException {
 
         long timestamp = System.currentTimeMillis();
-        try (RestConnection connection = new RestConnection(this)) {
+        try {
+        	if (bulkReading) {
+        		return readChannels(channels);
+        	}
             for (RestChannel channel : channels) {
-                if (!checkTimestamp || channel.checkTimestamp(connection)) {
-                    channel.read(connection);
-                }
+            	readChannel(channel);
             }
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
-            
         } finally {
             logger.trace("Read {} channels in {}ms",
                     channels.size(), System.currentTimeMillis() - timestamp);
@@ -116,18 +126,44 @@ public class RestRemote extends RestConfigs {
         return null;
     }
 
+    private Object readChannels(List<RestChannel> channels) throws ConnectionException {
+    	String jsonStr = connection.get();
+        FromJson json = new FromJson(jsonStr);
+    	logger.debug("Received json string: {}", jsonStr);
+        
+    	List<org.openmuc.framework.lib.json.rest.objects.RestChannel> records = json.getRestChannelList();
+        for (RestChannel channel : channels) {
+        	readChannel(channel, records);
+        }
+    	return null;
+    }
+
+    private void readChannel(RestChannel channel,
+    		List<org.openmuc.framework.lib.json.rest.objects.RestChannel> records) throws ConnectionException {
+    	for (org.openmuc.framework.lib.json.rest.objects.RestChannel record : records) {
+            if (channel.equals(record)) {
+            	channel.setRecord(record.getRecord());
+            	return;
+            }
+    	}
+    	channel.setFlag(Flag.DRIVER_ERROR_READ_FAILURE);
+    }
+
+    private void readChannel(RestChannel channel) throws ConnectionException {
+        if (!checkTimestamp || channel.checkTimestamp(connection)) {
+            channel.read(connection);
+        }
+    }
+
     @Override
     public Object onWrite(List<RestChannel> channels, Object containerListHandle)
             throws UnsupportedOperationException, ConnectionException {
 
         long timestamp = System.currentTimeMillis();
-        try (RestConnection connection = new RestConnection(this)) {
+        try {
             for (RestChannel channel : channels) {
                 channel.write(connection, timestamp);
             }
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
-            
         } finally {
             logger.trace("Wrote {} channels in {}ms",
                     channels.size(), System.currentTimeMillis() - timestamp);

@@ -20,17 +20,15 @@
  */
 package org.openmuc.framework.driver.rpi.w1.configs;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.DeviceConfigs;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.Setting;
 
 public class W1Configs extends DeviceConfigs<W1Channel> {
 
-	public static final String ID = "id";
     public static final String TYPE = "type";
 
-    @Address(id = ID,
+    @Address(id = "id",
              name = "Identifier",
              description = "The device ID, retrievable through scanning."
     )
@@ -43,9 +41,13 @@ public class W1Configs extends DeviceConfigs<W1Channel> {
     )
     private W1Type type;
 
-    W1Configs(String address, String settings) throws ArgumentSyntaxException {
-		super(address, settings);
-	}
+    @Setting(id = "maximum",
+             name = "Maximum sensor value",
+             description = "The maximum value the sensor can read.<br>" +
+                           "Used e.g. in error detection of temperature sensors.",
+             mandatory = false
+    )
+    private Double maximum = Double.NaN;
 
     public String getId() {
         return id.trim().replace("\n", "").replace("\r", "");
@@ -53,6 +55,10 @@ public class W1Configs extends DeviceConfigs<W1Channel> {
 
     public W1Type getType() {
         return type;
+    }
+
+    public Double getMaximum() {
+        return maximum;
     }
 
 }
