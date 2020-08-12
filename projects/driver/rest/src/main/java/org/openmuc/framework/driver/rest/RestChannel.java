@@ -45,11 +45,12 @@ public class RestChannel extends Channel {
             name = "Channel ID",
             description = "The ID of the remote OpenMUC channel")
     private String id;
+    private String uri;
 
     @Override
     protected void onConfigure() throws ArgumentSyntaxException {
         try {
-			id = URLEncoder.encode(id, RestDriver.CHARSET.toString());
+			uri = URLEncoder.encode(id, RestDriver.CHARSET.toString());
 			
 		} catch (UnsupportedEncodingException e) {
 			throw new ArgumentSyntaxException(e.getMessage());
@@ -71,7 +72,7 @@ public class RestChannel extends Channel {
     }
 
     public long readTimestamp(RestConnection connection) throws ConnectionException {
-    	String jsonStr = connection.get(id + '/' + Const.TIMESTAMP);
+    	String jsonStr = connection.get(uri + '/' + Const.TIMESTAMP);
         FromJson json = new FromJson(jsonStr);
     	logger.debug("Received json string: {}", jsonStr);
     	
@@ -83,7 +84,7 @@ public class RestChannel extends Channel {
     }
 
     public void read(RestConnection connection) throws ConnectionException {
-    	String jsonStr = connection.get(id);
+    	String jsonStr = connection.get(uri);
         FromJson json = new FromJson(jsonStr);
     	logger.debug("Received json string: {}", jsonStr);
         
@@ -107,7 +108,7 @@ public class RestChannel extends Channel {
         ToJson json = new ToJson();
         json.addRecord(record, getValueType());
         
-        Flag flag = connection.put(id, json.toString());
+        Flag flag = connection.put(uri, json.toString());
         setFlag(flag);
     }
 
