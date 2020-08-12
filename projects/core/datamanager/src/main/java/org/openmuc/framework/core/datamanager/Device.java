@@ -32,12 +32,8 @@ import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.driver.spi.Connection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class Device {
-
-    private static final Logger logger = LoggerFactory.getLogger(Device.class);
 
     DeviceConfigImpl deviceConfig;
     DataManager dataManager;
@@ -68,7 +64,6 @@ public final class Device {
         }
         else if (deviceConfig.driverParent.activeDriver == null) {
             state = DeviceState.DRIVER_UNAVAILABLE;
-            logger.warn("No driver bundle available for configured driver: '{}'.", deviceConfig.getDriver().getId());
             for (ChannelConfigImpl channelConfig : deviceConfig.channelConfigsById.values()) {
                 channelConfig.channel = new ChannelImpl(dataManager, channelConfig, ChannelState.DRIVER_UNAVAILABLE,
                         Flag.DRIVER_UNAVAILABLE, currentTime, logChannels);
@@ -198,8 +193,12 @@ public final class Device {
         newChannelConfig.channel.config = newChannelConfig;
         newChannelConfig.channel.setNewDeviceState(oldChannelConfig.state,
                 newChannelConfig.channel.getLatestRecord().getFlag());
-        if (!newChannelConfig.isDisabled() && (newChannelConfig.getLoggingInterval() > 0)) {
-            dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
+        if (!newChannelConfig.isDisabled() && 
+                (!newChannelConfig.getLoggingSettings().equals(ChannelConfig.LOGGING_SETTINGS_DEFAULT) ||
+                newChannelConfig.getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT)) {
+            if (newChannelConfig.getLoggingInterval() > 0) {
+                dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
+            }
             logChannels.add(newChannelConfig);
         }
         else if (!oldChannelConfig.isDisabled() && oldChannelConfig.getLoggingInterval() > 0) {
@@ -269,9 +268,12 @@ public final class Device {
                 newChannelConfigEntry.getValue().channel = oldChannelConfig.channel;
                 newChannelConfigEntry.getValue().channel.config = newChannelConfigEntry.getValue();
                 newChannelConfigEntry.getValue().channel.setNewDeviceState(channelState, flag);
-                if (!newChannelConfigEntry.getValue().isDisabled()
-                        && (newChannelConfigEntry.getValue().getLoggingInterval() > 0)) {
-                    dataManager.addToLoggingCollections(newChannelConfigEntry.getValue().channel, currentTime);
+                if (!newChannelConfigEntry.getValue().isDisabled() && 
+                        (!newChannelConfigEntry.getValue().getLoggingSettings().equals(ChannelConfig.LOGGING_SETTINGS_DEFAULT) ||
+                        newChannelConfigEntry.getValue().getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT)) {
+                    if (newChannelConfigEntry.getValue().getLoggingInterval() > 0) {
+                        dataManager.addToLoggingCollections(newChannelConfigEntry.getValue().channel, currentTime);
+                    }
                     logChannels.add(newChannelConfigEntry.getValue());
                 }
             }
@@ -314,9 +316,12 @@ public final class Device {
                 newChannelConfig.channel = oldChannelConfig.channel;
                 newChannelConfig.channel.config = newChannelConfig;
                 newChannelConfig.channel.setNewDeviceState(channelState, flag);
-                if (!newChannelConfigEntry.getValue().isDisabled()
-                        && (newChannelConfigEntry.getValue().getLoggingInterval() > 0)) {
-                    dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
+                if (!newChannelConfigEntry.getValue().isDisabled() && 
+                        (!newChannelConfigEntry.getValue().getLoggingSettings().equals(ChannelConfig.LOGGING_SETTINGS_DEFAULT) ||
+                        newChannelConfigEntry.getValue().getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT)) {
+                    if (newChannelConfigEntry.getValue().getLoggingInterval() > 0) {
+                        dataManager.addToLoggingCollections(newChannelConfig.channel, currentTime);
+                    }
                     logChannels.add(newChannelConfigEntry.getValue());
                 }
             }

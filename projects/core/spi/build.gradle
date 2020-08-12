@@ -2,13 +2,15 @@
 def projectName = "OpenMUC Core - SPI"
 
 dependencies {
-  api project(':openmuc-core-api') 
+  api project(':openmuc-core-api')
 }
 
 jar {
   manifest {
     name = projectName
-    instruction 'Export-Package', '*'
+    instruction 'Export-Package', 'org.openmuc.framework.datalogger.*,' +
+                                  'org.openmuc.framework.driver.*,' +
+                                  'org.openmuc.framework.server.*'
   }
 }
 

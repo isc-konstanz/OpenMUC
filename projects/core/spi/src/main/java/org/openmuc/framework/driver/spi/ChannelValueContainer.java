@@ -24,15 +24,7 @@ package org.openmuc.framework.driver.spi;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Value;
 
-public interface ChannelValueContainer {
-
-    String getChannelAddress();
-
-    String getChannelSettings();
-
-    Object getChannelHandle();
-
-    void setChannelHandle(Object handle);
+public interface ChannelValueContainer extends ChannelContainer {
 
     Value getValue();
 

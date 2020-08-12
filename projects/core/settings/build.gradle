@@ -1,0 +1,24 @@
+
+def projectName = "OpenMUC Core - Settings"
+
+dependencies {
+  api project(':openmuc-core-spi') 
+}
+
+jar {
+  manifest {
+    name = projectName
+    instruction 'Export-Package', 'org.openmuc.framework.settings.*'
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name projectName
+        description "The core settings of the OpenMUC framework."
+      }
+    }
+  }
+}

@@ -25,13 +25,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.openmuc.framework.config.options.Option;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.options.Option;
+import org.openmuc.framework.options.Options;
 
 public class RestOption {
 
-    private String key;
+    private String id;
     private String name = null;
     private String description = null;
     private ValueType type = null;
@@ -40,12 +41,12 @@ public class RestOption {
     private String valueDefault = null;
     private Map<String, String> valueSelection = null;
 
-    public String getKey() {
-        return key;
+    public String getId() {
+        return id;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setId(String key) {
+        this.id = key;
     }
 
     public String getName() {
@@ -96,12 +97,12 @@ public class RestOption {
         this.valueSelection = valueSelection;
     }
 
-    public static List<RestOption> getOptions(List<Option> options) {
+    public static List<RestOption> getOptions(Options options) {
 
         List<RestOption> restOptions = new LinkedList<RestOption>();
         for (Option option : options) {
             RestOption restOption = new RestOption();
-            restOption.setKey(option.getKey());
+            restOption.setId(option.getId());
             restOption.setName(option.getName());
             restOption.setDescription(option.getDescription());
             restOption.setType(option.getType());
@@ -120,7 +121,6 @@ public class RestOption {
             
             restOptions.add(restOption);
         }
-        
         return restOptions;
     }
 

@@ -31,12 +31,12 @@ public class DriverInfoTest {
         CsvDriver driver = new CsvDriver();
         DriverInfo info = driver.getInfo();
 
-        System.out.println("Description: " + info.getDescription());
-        System.out.println("DeviceScanSettingsSyntax: " + info.getDeviceScanSettings().getSyntax());
-        System.out.println("DeviceAddressSyntax: " + info.getDeviceAddress().getSyntax());
-        System.out.println("ChannelAddressSyntax: " + info.getChannelAddress().getSyntax());
-        System.out.println("SettingsSyntax: " + info.getDeviceSettings().getSyntax());
         System.out.println("Id: " + info.getId());
+        System.out.println("Description: " + info.getDescription());
+        System.out.println("DeviceAddressSyntax: " + info.getDeviceAddressSyntax());
+        System.out.println("DeviceSettingsSyntax: " + info.getDeviceSettingsSyntax());
+        System.out.println("DeviceScanSettingsSyntax: " + info.getDeviceScanSettingsSyntax());
+        System.out.println("ChannelAddressSyntax: " + info.getChannelAddressSyntax());
     }
 
 }

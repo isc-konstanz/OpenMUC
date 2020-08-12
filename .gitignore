@@ -44,4 +44,7 @@ build/
 /build/
 
 #Framework
-!framework/bin
+framework/data
+framework/felix-cache
+framework/conf/shadow
+framework/bundle

@@ -50,19 +50,17 @@ public interface Connection {
      * @param settings
      *            scanning settings. The syntax is driver specific.
      * @return A list of channels that were found.
-     * @throws ArgumentSyntaxException
-     *             if the syntax of the deviceAddress or settings string is incorrect.
      * @throws UnsupportedOperationException
      *             if the method is not implemented by the driver.
+     * @throws ArgumentSyntaxException
+     *             if the syntax of the settings string is incorrect.
      * @throws ScanException
      *             if an error occurs while scanning but the connection is still alive.
      * @throws ConnectionException
      *             if an error occurs while scanning and the connection was closed
      */
-    default List<ChannelScanInfo> scanForChannels(String settings)
-            throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
-    	throw new UnsupportedOperationException();
-    }
+    List<ChannelScanInfo> scanForChannels(String settings)
+            throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException;
 
     /**
      * Reads the data channels that correspond to the given record containers. The read result is returned by setting
@@ -91,10 +89,8 @@ public interface Connection {
      * @throws ConnectionException
      *             if the connection to the device was interrupted.
      */
-    default Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
-            throws UnsupportedOperationException, ConnectionException {
-    	throw new UnsupportedOperationException();
-    }
+    Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
+            throws UnsupportedOperationException, ConnectionException;
 
     /**
      * Starts listening on the given connection for data from the channels that correspond to the given record
@@ -111,10 +107,8 @@ public interface Connection {
      * @throws ConnectionException
      *             if the connection to the device was interrupted.
      */
-    default void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
-            throws UnsupportedOperationException, ConnectionException {
-    	throw new UnsupportedOperationException();
-    }
+    void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
+            throws UnsupportedOperationException, ConnectionException;
 
     /**
      * Writes the data channels that correspond to the given value containers. The write result is returned by setting
@@ -137,10 +131,8 @@ public interface Connection {
      * @throws ConnectionException
      *             if the connection to the device was interrupted.
      */
-    default Object write(List<ChannelValueContainer> containers, Object containerListHandle)
-            throws UnsupportedOperationException, ConnectionException{
-    	throw new UnsupportedOperationException();
-    }
+    Object write(List<ChannelValueContainer> containers, Object containerListHandle)
+            throws UnsupportedOperationException, ConnectionException;
 
     /**
      * Disconnects or closes the connection. Cleans up any resources associated with the connection.

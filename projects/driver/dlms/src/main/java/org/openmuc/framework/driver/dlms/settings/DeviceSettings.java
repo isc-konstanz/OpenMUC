@@ -20,45 +20,99 @@
  */
 package org.openmuc.framework.driver.dlms.settings;
 
-import org.openmuc.framework.config.Preferences;
+import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.options.Configurable;
+import org.openmuc.framework.options.Setting;
+import org.openmuc.framework.options.SettingsSyntax;
 
-public class DeviceSettings extends Preferences {
+@SettingsSyntax(separator = ";", assignmentOperator = "=")
+public class DeviceSettings extends Configurable {
 
-    @Option("ld")
+    @Setting(id = "ld",
+             name = "Logical Device Address",
+             valueDefault = "1",
+             mandatory = false
+    )
     private int logicalDeviceAddress = 1;
 
-    @Option("cid")
+    @Setting(id = "cid",
+            name = "Client ID",
+            valueDefault = "16",
+            mandatory = false
+    )
     private int clientId = 16;
 
-    @Option("sn")
+    @Setting(id = "sn",
+            name = "SN referencing",
+            valueDefault = "false",
+            mandatory = false
+    )
     private boolean useSn = false;
 
-    @Option("emech")
+    @Setting(id = "emech",
+            name = "Encryption Mechanism",
+            valueDefault = "-1",
+            mandatory = false
+    )
     private int encryptionMechanism = -1;
 
-    @Option("amech")
+    @Setting(id = "amech",
+            name = "Authentication Mechanism",
+            valueDefault = "0",
+            mandatory = false
+    )
     private int authenticationMechanism = 0;
 
-    @Option("ekey")
+    @Setting(id = "ekey",
+            name = "Encryption Key",
+            mandatory = false
+    )
     private byte[] encryptionKey = {};
 
-    @Option("akey")
+    @Setting(id = "akey",
+            name = "Authentication Key",
+            mandatory = false
+    )
     private byte[] authenticationKey = {};
 
-    @Option("pass")
+    @Setting(id = "pass",
+            name = "Password",
+            description = "Authorization password to access the smart meter device",
+            mandatory = false
+    )
     private String paswd = "";
 
-    @Option("cl")
+    @Setting(id = "cl",
+            name = "Challenge Length",
+            valueDefault = "16",
+            mandatory = false
+    )
     private int challengeLength = 16;
 
-    @Option("rt")
-    private int responseTimeout = 20_000;
+    @Setting(id = "rt",
+            name = "Response Timeout",
+            valueDefault = "20000",
+            mandatory = false
+    )
+    private int responseTimeout = 20000;
 
-    @Option("mid")
+    @Setting(id = "mid",
+            name = "Manufacturer Id",
+            valueDefault = "MMM",
+            mandatory = false
+    )
     private String manufacturerId = "MMM";
 
-    @Option("did")
+    @Setting(id = "did",
+            name = "Device Id",
+            valueDefault = "1",
+            mandatory = false
+    )
     private long deviceId = 1;
+
+    public DeviceSettings(String settings) throws ArgumentSyntaxException {
+        configureSettings(settings);
+    }
 
     public int getLogicalDeviceAddress() {
         return logicalDeviceAddress;

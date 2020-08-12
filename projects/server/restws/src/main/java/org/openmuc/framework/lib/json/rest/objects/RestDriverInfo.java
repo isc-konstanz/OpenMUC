@@ -28,7 +28,7 @@ public class RestDriverInfo {
 
     private RestDeviceInfo device = null;
     private RestChannelInfo channel = null;
-    private RestOptionCollection configs = null;
+    private RestOptions configs = null;
 
     public String getId() {
         return id;
@@ -70,11 +70,11 @@ public class RestDriverInfo {
         this.channel = channel;
     }
 
-    public RestOptionCollection getConfigs() {
+    public RestOptions getConfigs() {
         return configs;
     }
 
-    public void setConfigs(RestOptionCollection configs) {
+    public void setConfigs(RestOptions configs) {
         this.configs = configs;
     }
 

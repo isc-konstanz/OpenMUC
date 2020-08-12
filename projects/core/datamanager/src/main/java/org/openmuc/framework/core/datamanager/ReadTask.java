@@ -36,7 +36,8 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
 
     private final CountDownLatch readTaskFinishedSignal;
     List<ChannelRecordContainerImpl> channelRecordContainers;
-    protected boolean methodNotExceptedExceptionThrown = false;
+
+    protected boolean unsupportedOperationExceptionThrown = false;
     protected boolean unknownDriverExceptionThrown = false;
     protected volatile boolean disabled = false;
 
@@ -46,7 +47,7 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
             CountDownLatch readTaskFinishedSignal) {
         this.dataManager = dataManager;
         this.device = device;
-        channelRecordContainers = selectedChannels;
+        this.channelRecordContainers = selectedChannels;
         this.readTaskFinishedSignal = readTaskFinishedSignal;
     }
 
@@ -56,7 +57,8 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
         try {
             executeRead();
         } catch (UnsupportedOperationException e) {
-            methodNotExceptedExceptionThrown = true;
+            unsupportedOperationExceptionThrown = true;
+            
         } catch (ConnectionException e) {
             // Connection to device lost. Signal to device instance and end task without notifying DataManager
             logger.warn("Connection to device {} lost because {}. Trying to reconnect...", device.deviceConfig.getId(),
@@ -71,11 +73,11 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
             }
             dataManager.interrupt();
             return;
+            
         } catch (Exception e) {
             logger.warn("unexpected exception thrown by read funtion of driver ", e);
             unknownDriverExceptionThrown = true;
         }
-
         taskFinished();
     }
 
@@ -100,7 +102,7 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
     protected void taskFinished() {
         disabled = true;
         long now = System.currentTimeMillis();
-        if (methodNotExceptedExceptionThrown) {
+        if (unsupportedOperationExceptionThrown) {
             for (ChannelRecordContainerImpl driverChannel : channelRecordContainers) {
                 driverChannel.setRecord(new Record(null, now, Flag.ACCESS_METHOD_NOT_SUPPORTED));
             }
@@ -110,7 +112,6 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
                 driverChannel.setRecord(new Record(null, now, Flag.DRIVER_THREW_UNKNOWN_EXCEPTION));
             }
         }
-
         readTaskFinishedSignal.countDown();
 
         synchronized (dataManager.tasksFinished) {

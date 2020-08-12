@@ -39,9 +39,9 @@ public class DriverTest {
         sb.append("\n");
         sb.append("Driver Id = " + info.getId() + "\n");
         sb.append("Description = " + info.getDescription() + "\n");
-        sb.append("DeviceAddressSyntax = " + info.getDeviceAddress().getSyntax() + "\n");
-        sb.append("SettingsSyntax = " + info.getDeviceSettings().getSyntax() + "\n");
-        sb.append("ChannelAddressSyntax = " + info.getChannelAddress().getSyntax() + "\n");
+        sb.append("DeviceAddressSyntax = " + info.getDeviceAddressSyntax() + "\n");
+        sb.append("DeviceSettingsSyntax = " + info.getDeviceSettingsSyntax() + "\n");
+        sb.append("ChannelAddressSyntax = " + info.getChannelAddressSyntax() + "\n");
         logger.info(sb.toString());
 
     }

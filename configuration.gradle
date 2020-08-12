@@ -1,7 +1,7 @@
 
 project.ext {
 
-  cfgVersion = "0.17.2"
+  cfgVersion = "0.18.2"
   
   cfgGroup = "org.openmuc.framework"
 
@@ -20,7 +20,7 @@ project.ext {
   cfgRepositoryPass = project.properties.sonatypePass
 
   javaProjects = subprojects
-  
+
   jarDefaultImportPackageVersion = ";version=0"
 
   distributionProjects = javaProjects.findAll {
@@ -31,6 +31,7 @@ project.ext {
     it.getPath() == ":openmuc-core-spi" ||
     it.getPath() == ":openmuc-datalogger-ascii" ||
     it.getPath() == ":openmuc-datalogger-slotsdb" ||
+    it.getPath() == ":openmuc-datalogger-sql" ||
     it.getPath() == ":openmuc-driver-aggregator" ||
     it.getPath() == ":openmuc-driver-csv" ||
     it.getPath() == ":openmuc-driver-dlms" ||
@@ -45,9 +46,11 @@ project.ext {
     it.getPath() == ":openmuc-driver-rpi-gpio" ||
     it.getPath() == ":openmuc-driver-rpi-w1" ||
     it.getPath() == ":openmuc-driver-snmp" ||
+    it.getPath() == ":openmuc-driver-sql" ||
     it.getPath() == ":openmuc-driver-wmbus" ||
-    it.getPath() == ":openmuc-server-restws" ||
     it.getPath() == ":openmuc-server-modbus" ||
+    it.getPath() == ":openmuc-server-opcua" ||
+    it.getPath() == ":openmuc-server-restws" ||
     it.getPath() == ":openmuc-webui-base" ||
     it.getPath() == ":openmuc-webui-channelaccesstool" ||
     it.getPath() == ":openmuc-webui-channelconfigurator" ||
@@ -73,7 +76,6 @@ configure(javaProjects) {
   apply plugin: "java"
   apply plugin: "maven"
 
-
   uploadArchives {
     repositories {
       mavenDeployer {
@@ -89,12 +91,11 @@ configure(javaProjects) {
       }
     }
   }
-
 }
 
-task updateBundles(type:Exec) {
-  dependsOn(distributionProjects.install)
-  commandLine "./framework/bin/openmuc", "update-bundles"
+task framework {
+  apply from: "./framework/conf/bundles.conf.gradle"
+  dependsOn updateBundles
 }
 
 tasks.withType(Tar) {

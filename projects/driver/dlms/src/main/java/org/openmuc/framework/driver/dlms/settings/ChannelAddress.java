@@ -20,30 +20,59 @@
  */
 package org.openmuc.framework.driver.dlms.settings;
 
-import java.util.Map;
-
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Preferences;
-import org.openmuc.framework.data.Value;
+import org.openmuc.framework.options.Address;
+import org.openmuc.framework.options.AddressSyntax;
+import org.openmuc.framework.options.Configurable;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 
-public class ChannelAddress extends Preferences {
+@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
+public class ChannelAddress extends Configurable {
 
     private static final String LOGICAL_NAME_FORMAT = "<Interface_Class_ID>/<Instance_ID>/<Object_Attribute_ID>";
 
-    @Option("a")
+    @Address(id = "a",
+             name = "Address",
+             description = "The Address in logical name format "+LOGICAL_NAME_FORMAT
+    )
     private String address;
-    
-    @Option("t")
+
+    @Address(id = "t",
+             name = "Data Object Type",
+    		 valueSelection = "NULL_DATA:Null," +
+		    		          "ARRAY:Array," +
+		    		          "STRUCTURE:Structure," +
+		    		          "BOOLEAN:Bool," +
+		    		          "BIT_STRING:Bit String," +
+		    		          "DOUBLE_LONG:Integer 32," +
+		    		          "DOUBLE_LONG_UNSIGNED:Unsigned integer 32," +
+		    		          "OCTET_STRING:Octet String," +
+		    		          "UTF8_STRING:UTF-8 String," +
+		    		          "VISIBLE_STRING:Visible String," +
+		    		          "BCD:BCD," +
+		    		          "INTEGER:Integer 8," +
+		    		          "LONG_INTEGER:Integer 16," +
+		    		          "UNSIGNED:Unsigned integer 8," +
+		    		          "LONG_UNSIGNED:Unsigned integer 16," +
+		    		          "COMPACT_ARRAY:Compact array," +
+		    		          "LONG64:Integer 64," +
+		    		          "LONG64_UNSIGNED:Unsigned integer 64," +
+		    		          "ENUMERATE:Enum," +
+		    		          "FLOAT32:Float 32," +
+		    		          "FLOAT64:Float 64," +
+		    		          "DATE_TIME:Date Time," +
+		    		          "DATE:Date," +
+		    		          "TIME:Time," +
+		    		          "DONT_CARE:None"
+    )
     private Type type;
 
     private AttributeAddress attributeAddress;
 
-    @Override
-    public int parseFields(Map<String, Value> settings) throws ArgumentSyntaxException {
-        int setFieldCounter = super.parseFields(settings);
+    public ChannelAddress(String parameters) throws ArgumentSyntaxException {
+        configureAddress(parameters);
 
         String[] arguments = address.split("/");
         if (arguments.length != 3) {
@@ -55,8 +84,6 @@ public class ChannelAddress extends Preferences {
         int attributeId = Integer.parseInt(arguments[2]);
 
         attributeAddress = new AttributeAddress(classId, instanceId, attributeId);
-
-        return setFieldCounter;
     }
 
     public String getAddress() {

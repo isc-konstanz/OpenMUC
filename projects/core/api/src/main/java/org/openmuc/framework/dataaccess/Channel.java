@@ -99,6 +99,16 @@ public interface Channel {
     ValueType getValueType();
 
     /**
+     * Returns the length of the value type of this channel.
+     * <p>
+     * The attribute length is only used if valueType is BYTE_ARRAY or STRING. Determines the maximum length of the 
+     * byte array or string.
+     * 
+     * @return the value type length of this channel.
+     */
+    int getValueTypeLength();
+
+    /**
      * Returns the scaling factor. Returns 1.0 if the scaling factor is not configured.
      * <p>
      * The scaling factor is applied in the following cases:
@@ -150,11 +160,26 @@ public interface Channel {
     String getLoggingSettings();
 
     /**
-     * Returns the unique name of the communication driver that is used by this channel to read/write data.
+     * Returns the unique ID of the communication driver that is used by this channel to read/write data.
      * 
-     * @return the unique name of the communication driver that is used by this channel to read/write data.
+     * @return the unique ID of the communication driver that is used by this channel to read/write data.
      */
-    String getDriverName();
+    String getDriverId();
+
+    /**
+     * Returns the unique ID of the communication device that this channel belongs to.
+     * 
+     * @return the unique ID of the communication device that this channel belongs to.
+     */
+    String getDeviceId();
+
+    /**
+     * Returns the description of the communication device that this channel belongs to. The empty string if not
+     * configured.
+     * 
+     * @return the description of the communication device that this channel belongs to.
+     */
+    String getDeviceDescription();
 
     /**
      * Returns the channel's device address.
@@ -164,19 +189,11 @@ public interface Channel {
     String getDeviceAddress();
 
     /**
-     * Returns the name of the communication device that this channel belongs to. The empty string if not configured.
+     * Returns the channel's device settings.
      * 
-     * @return the name of the communication device that this channel belongs to.
+     * @return the channel's device settings.
      */
-    String getDeviceName();
-
-    /**
-     * Returns the description of the communication device that this channel belongs to. The empty string if not
-     * configured.
-     * 
-     * @return the description of the communication device that this channel belongs to.
-     */
-    String getDeviceDescription();
+    String getDeviceSettings();
 
     /**
      * Returns the current channel state.

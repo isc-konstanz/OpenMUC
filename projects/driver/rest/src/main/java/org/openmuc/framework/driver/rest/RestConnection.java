@@ -20,357 +20,155 @@
  */
 package org.openmuc.framework.driver.rest;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.codec.binary.Base64;
-import org.openmuc.framework.config.ChannelScanInfo;
-import org.openmuc.framework.data.BooleanValue;
-import org.openmuc.framework.data.ByteArrayValue;
-import org.openmuc.framework.data.ByteValue;
-import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
-import org.openmuc.framework.data.FloatValue;
-import org.openmuc.framework.data.IntValue;
-import org.openmuc.framework.data.LongValue;
-import org.openmuc.framework.data.Record;
-import org.openmuc.framework.data.ShortValue;
-import org.openmuc.framework.data.StringValue;
-import org.openmuc.framework.data.Value;
-import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.dataaccess.DataAccessService;
-import org.openmuc.framework.driver.rest.helper.JsonWrapper;
-import org.openmuc.framework.driver.spi.ChannelRecordContainer;
-import org.openmuc.framework.driver.spi.ChannelValueContainer;
-import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.RecordsReceivedListener;
-import org.openmuc.framework.lib.json.Const;
 
-public class RestConnection implements Connection {
+public class RestConnection implements AutoCloseable {
 
-    private final JsonWrapper wrapper;
-    private URL url;
-    private URLConnection con;
-    private String baseAddress;
+    private final String address;
+    private final String authorization;
+
     private final int timeout;
-    private boolean isHTTPS;
-    private final String authString;
 
-    private final DataAccessService dataAccessService;
-    private String connectionAddress;
+    private URLConnection connection;
 
-    private boolean checkTimestamp = false;
+    public RestConnection(RestConfigs configs) {
+        timeout = configs.getTimeout();
+        address = configs.getAddress();
+        authorization = configs.getAuthorization();
+    }
 
-    RestConnection(String deviceAddress, String credentials, int timeout, boolean checkTimestamp,
-            DataAccessService dataAccessService) throws ConnectionException {
+    private URLConnection open(String suffix) throws IOException {
+        URL url = new URL(address + suffix);
+        URLConnection connection = url.openConnection();
+        connection.setConnectTimeout(timeout);
+        connection.setReadTimeout(timeout);
+        connection.setRequestProperty("Connection", "Keep-Alive");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Authorization", "Basic " + authorization);
+        
+        return connection;
+    }
 
-        this.checkTimestamp = checkTimestamp;
-        this.dataAccessService = dataAccessService;
-        this.timeout = timeout;
-        wrapper = new JsonWrapper();
-        authString = new String(Base64.encodeBase64(credentials.getBytes()));
+    public RestConnection connect() throws ConnectionException {
+        try {
+			connection = open("rest/connect/");
+	        connection.connect();
+	        
+	        verifyResponseCode(connection);
+	        
+		} catch (IOException e) {
+            throw new ConnectionException(e.getMessage());
+		}
+        return this;
+    }
 
-        if (!deviceAddress.endsWith("/")) {
-            this.baseAddress = deviceAddress + "/rest/channels/";
-            this.connectionAddress = deviceAddress + "/rest/connect/";
+    @Override
+    public void close() throws IOException {
+        if (connection != null ) {
+            if (connection instanceof HttpsURLConnection) {
+                ((HttpsURLConnection) connection).disconnect();
+            }
+            else {
+                ((HttpURLConnection) connection).disconnect();
+            }
         }
-        else {
-            this.baseAddress = deviceAddress + "rest/channels/";
-            this.connectionAddress = deviceAddress + "rest/connect/";
-        }
+    }
 
-        if (deviceAddress.startsWith("https://")) {
-            isHTTPS = true;
+    public String get() throws ConnectionException {
+        try {
+            connection = open("rest/channels");
+            
+            verifyResponseCode(connection);
+            return readResponse(connection);
+            
+        } catch (IOException e) {
+            throw new ConnectionException(e.getMessage());
         }
-        else {
-            isHTTPS = false;
+    }
+
+    public String get(String suffix) throws ConnectionException {
+        try {
+            connection = open("rest/channels/" + suffix);
+            
+            verifyResponseCode(connection);
+            return readResponse(connection);
+            
+        } catch (IOException e) {
+            throw new ConnectionException(e.getMessage());
         }
+    }
 
-        if (isHTTPS) {
-            TrustManager[] trustManager = getTrustManager();
-
+    public Flag put(String suffix, String output) throws ConnectionException {
+        try {
+            connection = open("rest/channels/" + suffix);
+            connection.setDoOutput(true);
+            
+            if (connection instanceof HttpsURLConnection) {
+                ((HttpsURLConnection) connection).setRequestMethod("PUT");
+            }
+            else {
+                ((HttpURLConnection) connection).setRequestMethod("PUT");
+            }
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
             try {
-                SSLContext sc = SSLContext.getInstance("SSL");
-                sc.init(null, trustManager, new java.security.SecureRandom());
-                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            } catch (KeyManagementException e1) {
-                throw new ConnectionException(e1.getMessage());
-            } catch (NoSuchAlgorithmException e) {
-                throw new ConnectionException(e.getMessage());
+                out.write(output);
+                
+            } finally {
+                out.close();
             }
-
-            // Create all-trusting host name verifier
-            HostnameVerifier allHostsValid = getHostnameVerifier();
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-        }
-    }
-
-    private HostnameVerifier getHostnameVerifier() {
-        return new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        };
-    }
-
-    private TrustManager[] getTrustManager() {
-        return new TrustManager[] { new X509TrustManager() {
-            @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-        } };
-    }
-
-    private Record readChannel(String channelAddress, ValueType valueType) throws ConnectionException {
-        Record newRecord = null;
-        try {
-            newRecord = wrapper.toRecord(get(channelAddress), valueType);
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
-        }
-        return newRecord;
-    }
-
-    private long readChannelTimestamp(String channelAddress) throws ConnectionException {
-        long timestamp = -1;
-        try {
-            if (channelAddress.endsWith("/")) {
-                channelAddress += Const.TIMESTAMP;
-            }
-            else {
-                channelAddress += '/' + Const.TIMESTAMP;
-            }
-            timestamp = wrapper.toTimestamp(get(channelAddress));
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
-        }
-        return timestamp;
-    }
-
-    private List<ChannelScanInfo> readDeviceChannelList() throws ConnectionException {
-        try {
-            return wrapper.tochannelScanInfos(get(""));
+            return verifyResponseCode(connection);
+            
         } catch (IOException e) {
             throw new ConnectionException(e.getMessage());
         }
     }
 
-    private Flag writeChannel(String channelAddress, Value value, ValueType valueType) throws ConnectionException {
-        Record remoteRecord = new Record(value, System.currentTimeMillis(), Flag.VALID);
-        return put(channelAddress, wrapper.fromRecord(remoteRecord, valueType));
-    }
-
-    void connect() throws ConnectionException {
+    private String readResponse(URLConnection connection) throws IOException {
+        StringBuilder responseBuilder = new StringBuilder();
+        InputStream responseStream = connection.getInputStream();
         try {
-            url = new URL(connectionAddress);
-            con = url.openConnection();
-            setConnectionProberties();
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("malformed URL: " + connectionAddress);
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
-        }
-
-        try {
-            con.connect();
-            checkResponseCode(con);
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
-        }
-    }
-
-    private InputStream get(String suffix) throws ConnectionException {
-        InputStream stream = null;
-        try {
-            url = new URL(baseAddress + suffix);
-            con = url.openConnection();
-            setConnectionProberties();
-            stream = con.getInputStream();
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("malformed URL: " + baseAddress);
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
-        }
-
-        checkResponseCode(con);
-        return stream;
-    }
-
-    private Flag put(String suffix, String output) throws ConnectionException {
-        try {
-            url = new URL(baseAddress + suffix);
-            con = url.openConnection();
-            con.setDoOutput(true);
-            setConnectionProberties();
-            if (isHTTPS) {
-                ((HttpsURLConnection) con).setRequestMethod("PUT");
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(responseStream, RestDriver.CHARSET));
+            String responseLine;
+            while ((responseLine = streamReader.readLine()) != null) {
+                responseBuilder.append(responseLine);
             }
-            else {
-                ((HttpURLConnection) con).setRequestMethod("PUT");
-            }
-            OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
-            out.write(output);
-            out.close();
-        } catch (MalformedURLException e) {
-            throw new ConnectionException("malformed URL: " + baseAddress);
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
         }
-
-        return checkResponseCode(con);
-    }
-
-    private void setConnectionProberties() {
-        con.setConnectTimeout(timeout);
-        con.setReadTimeout(timeout);
-        con.setRequestProperty("Connection", "Keep-Alive");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Accept", "application/json");
-        con.setRequestProperty("Authorization", "Basic " + authString);
-    }
-
-    private Flag checkResponseCode(URLConnection con) throws ConnectionException {
-        int respCode;
-        try {
-            if (isHTTPS) {
-                respCode = ((HttpsURLConnection) con).getResponseCode();
-                if (!(respCode >= 200 && respCode < 300)) {
-                    throw new ConnectionException(
-                            "HTTPS " + respCode + ":" + ((HttpsURLConnection) con).getResponseMessage());
-                }
-            }
-            else {
-                respCode = ((HttpURLConnection) con).getResponseCode();
-                if (!(respCode >= 200 && respCode < 300)) {
-                    throw new ConnectionException(
-                            "HTTP " + respCode + ":" + ((HttpURLConnection) con).getResponseMessage());
-                }
-            }
-            return Flag.VALID;
-        } catch (IOException e) {
-            throw new ConnectionException(e.getMessage());
+        finally {
+            responseStream.close();
         }
+        return responseBuilder.toString();
     }
 
-    @Override
-    public void disconnect() {
-
-        if (isHTTPS) {
-            ((HttpsURLConnection) con).disconnect();
+    private Flag verifyResponseCode(URLConnection connection) throws ConnectionException, IOException {
+        int code;
+        if (connection instanceof HttpsURLConnection) {
+            code = ((HttpsURLConnection) connection).getResponseCode();
+            if (!(code >= 200 && code < 300)) {
+                throw new ConnectionException(
+                        "HTTPS " + code + ":" + ((HttpsURLConnection) connection).getResponseMessage());
+            }
         }
         else {
-            ((HttpURLConnection) con).disconnect();
-        }
-    }
-
-    @Override
-    public Object read(List<ChannelRecordContainer> containerList, Object obj, String arg3) throws ConnectionException {
-        // TODO: add grouping (reading device/driver in once)
-        for (ChannelRecordContainer container : containerList) {
-            Record record;
-            if (checkTimestamp) {
-                String channelId = container.getChannel().getId();
-                Channel channel = dataAccessService.getChannel(channelId);
-                record = channel.getLatestRecord();
-
-                if (record.getTimestamp() == null || record.getFlag() != Flag.VALID
-                        || record.getTimestamp() < readChannelTimestamp(container.getChannelAddress())) {
-                    record = readChannel(container.getChannelAddress(), container.getChannel().getValueType());
-                }
-            }
-            else {
-                record = readChannel(container.getChannelAddress(), container.getChannel().getValueType());
-            }
-            if (record != null) {
-                container.setRecord(record);
-            }
-            else {
-                container.setRecord(new Record(Flag.DRIVER_ERROR_READ_FAILURE));
+            code = ((HttpURLConnection) connection).getResponseCode();
+            if (!(code >= 200 && code < 300)) {
+                throw new ConnectionException(
+                        "HTTP " + code + ":" + ((HttpURLConnection) connection).getResponseMessage());
             }
         }
-        return null;
-    }
-
-    @Override
-    public List<ChannelScanInfo> scanForChannels(String settings) throws ConnectionException {
-        return readDeviceChannelList();
-    }
-
-    @Override
-    public void startListening(List<ChannelRecordContainer> arg1, RecordsReceivedListener arg2)
-            throws ConnectionException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Object write(List<ChannelValueContainer> container, Object containerListHandle) throws ConnectionException {
-        for (ChannelValueContainer cont : container) {
-            Value value = cont.getValue();
-            ValueType valueType = getValueType(value);
-            Flag flag = writeChannel(cont.getChannelAddress(), value, valueType);
-            cont.setFlag(flag);
-        }
-        return null;
-    }
-
-    private ValueType getValueType(Value value) {
-        ValueType valueType = ValueType.DOUBLE;
-
-        if (value instanceof DoubleValue) {
-            valueType = ValueType.DOUBLE;
-        }
-        else if (value instanceof StringValue) {
-            valueType = ValueType.STRING;
-        }
-        else if (value instanceof ByteArrayValue) {
-            valueType = ValueType.BYTE_ARRAY;
-        }
-        else if (value instanceof LongValue) {
-            valueType = ValueType.LONG;
-        }
-        else if (value instanceof BooleanValue) {
-            valueType = ValueType.BOOLEAN;
-        }
-        else if (value instanceof FloatValue) {
-            valueType = ValueType.FLOAT;
-        }
-        else if (value instanceof IntValue) {
-            valueType = ValueType.INTEGER;
-        }
-        else if (value instanceof ShortValue) {
-            valueType = ValueType.SHORT;
-        }
-        else if (value instanceof ByteValue) {
-            valueType = ValueType.BYTE;
-        }
-        return valueType;
+        return Flag.VALID;
     }
 
 }

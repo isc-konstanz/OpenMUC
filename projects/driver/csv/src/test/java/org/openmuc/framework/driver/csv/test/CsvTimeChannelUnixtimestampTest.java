@@ -30,6 +30,7 @@ import org.openmuc.framework.driver.csv.channel.CsvChannelUnixtimestamp;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
+import org.openmuc.framework.driver.csv.test.utils.CsvTestFactory;
 
 public class CsvTimeChannelUnixtimestampTest {
 
@@ -58,7 +59,7 @@ public class CsvTimeChannelUnixtimestampTest {
     @Test
     public void testRead() throws CsvException {
 
-        CsvChannelUnixtimestamp channel = new CsvChannelUnixtimestamp(data, false, timestamps);
+        CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET);
         Assert.assertTrue(String.valueOf(value).equals("0.0"));
@@ -75,7 +76,7 @@ public class CsvTimeChannelUnixtimestampTest {
     @Test
     public void testReadNextValueInbetween() throws CsvException {
 
-        CsvChannelUnixtimestamp channel = new CsvChannelUnixtimestamp(data, false, timestamps);
+        CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET + 6000l);
         Assert.assertTrue(String.valueOf(value).equals("5.0"));
@@ -87,7 +88,7 @@ public class CsvTimeChannelUnixtimestampTest {
     @Test
     public void testReadNextValueStart() throws CsvException {
 
-        CsvChannelUnixtimestamp channel = new CsvChannelUnixtimestamp(data, false, timestamps);
+        CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET);
         Assert.assertTrue(String.valueOf(value).equals("0.0"));
@@ -99,7 +100,7 @@ public class CsvTimeChannelUnixtimestampTest {
     @Test
     public void testReadNextValueEndNoRewind() throws CsvException {
 
-        CsvChannelUnixtimestamp channel = new CsvChannelUnixtimestamp(data, false, timestamps);
+        CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET + 20000);
         Assert.assertTrue(String.valueOf(value).equals("20.0"));
@@ -119,7 +120,7 @@ public class CsvTimeChannelUnixtimestampTest {
     @Test
     public void testReadNextValueEndWithRewind() throws CsvException {
 
-        CsvChannelUnixtimestamp channel = new CsvChannelUnixtimestamp(data, true, timestamps);
+        CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, true);
 
         value = channel.readValue(OFFSET + 20000);
         Assert.assertTrue(String.valueOf(value).equals("20.0"));
@@ -134,7 +135,7 @@ public class CsvTimeChannelUnixtimestampTest {
     @Test
     public void testReadT1BeforeT2Valid() throws CsvException {
 
-        CsvChannelUnixtimestamp channel = new CsvChannelUnixtimestamp(data, false, timestamps);
+        CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         try {
             value = channel.readValue(OFFSET - 5000l);
@@ -151,7 +152,7 @@ public class CsvTimeChannelUnixtimestampTest {
     @Test
     public void testReadT1ValidT2BeforeDisabledRewind() throws CsvException {
 
-        CsvChannelUnixtimestamp channel = new CsvChannelUnixtimestamp(data, false, timestamps);
+        CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET);
         Assert.assertTrue(String.valueOf(value).equals("0.0"));
@@ -168,7 +169,7 @@ public class CsvTimeChannelUnixtimestampTest {
     @Test
     public void testReadT1ValidT2BeforeEnabledRewind() throws CsvException {
 
-        CsvChannelUnixtimestamp channel = new CsvChannelUnixtimestamp(data, true, timestamps);
+        CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, true);
 
         value = channel.readValue(OFFSET);
         Assert.assertTrue(String.valueOf(value).equals("0.0"));

@@ -102,22 +102,12 @@ public class RestDriverSyntax {
         RestDriverSyntax restDriverSyntax = new RestDriverSyntax();
         restDriverSyntax.setId(driverInfo.getId());
         restDriverSyntax.setDescription(driverInfo.getDescription());
-        if (driverInfo.getDeviceAddress() != null) {
-            restDriverSyntax.setDeviceAddressSyntax(driverInfo.getDeviceAddress().getSyntax());
-        }
-        if (driverInfo.getDeviceSettings() != null) {
-            restDriverSyntax.setDeviceSettingsSyntax(driverInfo.getDeviceSettings().getSyntax());
-        }
-        if (driverInfo.getDeviceScanSettings() != null) {
-            restDriverSyntax.setDeviceScanSettingsSyntax(driverInfo.getDeviceScanSettings().getSyntax());
-        }
-        if (driverInfo.getChannelAddress() != null) {
-            restDriverSyntax.setChannelAddressSyntax(driverInfo.getChannelAddress().getSyntax());
-        }
-        if (driverInfo.getChannelScanSettings() != null) {
-            restDriverSyntax.setChannelScanSettingsSyntax(driverInfo.getChannelScanSettings().getSyntax());
-        }
-    
+        restDriverSyntax.setDeviceAddressSyntax(driverInfo.getDeviceAddressSyntax());
+        restDriverSyntax.setDeviceSettingsSyntax(driverInfo.getDeviceSettingsSyntax());
+        restDriverSyntax.setDeviceScanSettingsSyntax(driverInfo.getDeviceScanSettingsSyntax());
+        restDriverSyntax.setChannelAddressSyntax(driverInfo.getChannelAddressSyntax());
+        restDriverSyntax.setChannelScanSettingsSyntax(driverInfo.getChannelScanSettingsSyntax());
+        
         return restDriverSyntax;
     }
 

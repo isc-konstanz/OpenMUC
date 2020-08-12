@@ -22,11 +22,9 @@ package org.openmuc.framework.driver.rpi.gpio;
 
 import java.util.List;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.gpio.settings.ChannelSettings;
-import org.openmuc.framework.driver.spi.ChannelValueContainer;
+import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,41 +36,32 @@ import com.pi4j.io.gpio.PinState;
 public class OutputPin extends InputPin {
 	private final static Logger logger = LoggerFactory.getLogger(OutputPin.class);
 
-    public OutputPin(GpioConnectionCallbacks callbacks, GpioPinDigital pin) {
-		super(callbacks, pin);
+    public OutputPin(GpioPinDigital pin) {
+		super(pin);
 	}
 
     @Override
-    public Object write(List<ChannelValueContainer> containers, Object containerListHandle)
-            throws UnsupportedOperationException, ConnectionException {
-        
-        for (ChannelValueContainer container : containers) {
-            Value value = container.getValue();
-            try {
-                ChannelSettings settings = prefs.get(container.getChannelSettings(), ChannelSettings.class);
+    public Object onWrite(List<GpioChannel> channels, Object containerListHandle) throws ConnectionException {
+        for (GpioChannel channel : channels) {
+            Value value = channel.getValue();
+            if (value != null) {
+                logger.debug("Write value to output pin {}: {}", pin.getName(), value);
                 
-                if (value != null) {
-                    logger.debug("Write value to output pin {}: {}", pin.getName(), value);
-
-                    PinState state;
-                    if (!settings.isInverted()) {
-                        state = PinState.getState(value.asBoolean());
-                    }
-                    else {
-                        state = PinState.getState(!value.asBoolean());
-                    }
-                    ((GpioPinDigitalOutput) pin).setState(state);
-                    
-                    container.setFlag(Flag.VALID);
+                PinState state;
+                if (!channel.isInverted()) {
+                    state = PinState.getState(value.asBoolean());
                 }
                 else {
-                    logger.warn("No value received to write to GPIO pin {}", pin.getName());
+                    state = PinState.getState(!value.asBoolean());
                 }
-            } catch (ArgumentSyntaxException e) {
-                logger.warn("Unable to configure channel address \"{}\": {}", container.getChannelAddress(), e.getMessage());
+                ((GpioPinDigitalOutput) pin).setState(state);
+                
+                channel.setFlag(Flag.VALID);
+            }
+            else {
+                logger.warn("No value received to write to GPIO pin {}", pin.getName());
             }
         }
-        
         return null;
     }
 

@@ -22,7 +22,7 @@ package org.openmuc.framework.driver.csv.test;
 
 import org.junit.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.csv.CsvDeviceConnection;
+import org.openmuc.framework.driver.csv.test.utils.CsvTestFactory;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
 public class DeviceSettingsTest {
@@ -33,7 +33,7 @@ public class DeviceSettingsTest {
     public void testWrongSamplingMode() throws ConnectionException, ArgumentSyntaxException {
 
         String deviceSettings = "samplingmode=hhmmss2";
-        new CsvDeviceConnection(DEVICE_ADDRESS, deviceSettings);
+        CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings);
 
     }
 }

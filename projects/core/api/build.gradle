@@ -15,7 +15,7 @@ dependencies {
 jar {
   manifest {
     name = projectName
-    instruction 'Export-Package', '*'
+    instruction 'Export-Package', 'org.openmuc.framework.*'
   }
 }
 

@@ -24,16 +24,16 @@ import java.io.IOException;
 
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ParseException;
-import org.openmuc.framework.config.options.OptionCollection;
+import org.openmuc.framework.options.DriverOptions;
 
 public class RestDeviceInfo {
 
     private String description = null;
 
-    private RestOptionCollection address = null;
-    private RestOptionCollection settings = null;
-    private RestOptionCollection scanSettings = null;
-    private RestOptionCollection configs = null;
+    private RestOptions address = null;
+    private RestOptions settings = null;
+    private RestOptions scanSettings = null;
+    private RestOptions configs = null;
 
     public String getDescription() {
         return description;
@@ -43,60 +43,66 @@ public class RestDeviceInfo {
         this.description = description;
     }
     
-    public RestOptionCollection getAddress() {
+    public RestOptions getAddress() {
         return address;
     }
 
-    public void setAddress(RestOptionCollection address) {
+    public void setAddress(RestOptions address) {
         this.address = address;
     }
 
-    public RestOptionCollection getSettings() {
+    public RestOptions getSettings() {
         return settings;
     }
 
-    public void setSettings(RestOptionCollection settings) {
+    public void setSettings(RestOptions settings) {
         this.settings = settings;
     }
 
-    public RestOptionCollection getScanSettings() {
+    public RestOptions getScanSettings() {
         return scanSettings;
     }
 
-    public void setScanSettings(RestOptionCollection scanSettings) {
+    public void setScanSettings(RestOptions scanSettings) {
         this.scanSettings = scanSettings;
     }
 
-    public RestOptionCollection getConfigs() {
+    public RestOptions getConfigs() {
         return configs;
     }
 
-    public void setConfigs(RestOptionCollection configs) {
+    public void setConfigs(RestOptions configs) {
         this.configs = configs;
     }
 
-    public static RestDeviceInfo getRestDeviceInfo(DriverInfo driverInfo) throws ParseException, IOException {
-
+    public static RestDeviceInfo getRestDeviceInfo(DriverInfo driverInfo) 
+            throws ParseException, IOException {
+    	
+    	if (driverInfo instanceof DriverOptions) {
+    		return getRestDeviceDetail((DriverOptions) driverInfo);
+    	}
+    	
         RestDeviceInfo restDeviceInfo = new RestDeviceInfo();
-        if (driverInfo.getDeviceAddress() instanceof OptionCollection) {
-            restDeviceInfo.setAddress(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceAddress()));
-        }
-        else if (driverInfo.getDeviceAddress() != null) {
-            restDeviceInfo.setAddress(RestOptionCollection.parseOptionCollection(RestOptionCollection.ADDRESS, driverInfo.getDeviceAddress().getSyntax()));
-        }
-        if (driverInfo.getDeviceSettings() instanceof OptionCollection) {
-            restDeviceInfo.setSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceSettings()));
-        }
-        else if (driverInfo.getDeviceSettings() != null) {
-            restDeviceInfo.setSettings(RestOptionCollection.parseOptionCollection(RestOptionCollection.SETTINGS, driverInfo.getDeviceSettings().getSyntax()));
-        }
-        if (driverInfo.getDeviceScanSettings() instanceof OptionCollection) {
-            restDeviceInfo.setScanSettings(RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceScanSettings()));
-        }
-        else if (driverInfo.getDeviceScanSettings() != null) {
-            restDeviceInfo.setScanSettings(RestOptionCollection.parseOptionCollection(RestOptionCollection.SCAN_SETTINGS, driverInfo.getDeviceScanSettings().getSyntax()));
-        }
-        RestOptionCollection configs = RestOptionCollection.parseOptionCollection((OptionCollection) driverInfo.getDeviceConfig());
+        restDeviceInfo.setAddress(RestOptions.parseOptions(RestOptions.ADDRESS, driverInfo.getDeviceAddressSyntax()));
+        restDeviceInfo.setSettings(RestOptions.parseOptions(RestOptions.SETTINGS, driverInfo.getDeviceSettingsSyntax()));
+        restDeviceInfo.setScanSettings(RestOptions.parseOptions(RestOptions.SCAN_SETTINGS, driverInfo.getDeviceScanSettingsSyntax()));
+        
+        RestOptions configs = RestOptions.parseOptions(DriverOptions.readDeviceConfigs());
+        configs.setSyntax(null);
+        restDeviceInfo.setConfigs(configs);
+        
+        return restDeviceInfo;
+    }
+
+    private static RestDeviceInfo getRestDeviceDetail(DriverOptions driverDetail) 
+            throws ParseException, IOException {
+        
+        RestDeviceInfo restDeviceInfo = new RestDeviceInfo();
+        restDeviceInfo.setAddress(RestOptions.parseOptions(driverDetail.getDeviceAddress()));
+        restDeviceInfo.setSettings(RestOptions.parseOptions(driverDetail.getDeviceSettings()));
+        restDeviceInfo.setScanSettings(RestOptions.parseOptions(driverDetail.getDeviceScanSettings()));
+        
+        RestOptions configs = RestOptions.parseOptions(DriverOptions.readDeviceConfigs());
         configs.setSyntax(null);
         restDeviceInfo.setConfigs(configs);
         

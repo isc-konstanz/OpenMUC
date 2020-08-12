@@ -94,8 +94,11 @@ public final class ChannelImpl implements Channel {
             latestRecord = new Record(null, null, initFlag);
         }
 
-        if (config.getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT) {
-            dataManager.addToLoggingCollections(this, currentTime);
+        if (!config.getLoggingSettings().equals(ChannelConfig.LOGGING_SETTINGS_DEFAULT) || 
+        		config.getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT) {
+        	if (config.getLoggingInterval() > 0) {
+                dataManager.addToLoggingCollections(this, currentTime);
+        	}
             logChannels.add(config);
         }
     }
@@ -128,6 +131,11 @@ public final class ChannelImpl implements Channel {
     @Override
     public ValueType getValueType() {
         return config.getValueType();
+    }
+
+    @Override
+    public int getValueTypeLength() {
+        return config.getValueTypeLength();
     }
 
     @Override
@@ -164,7 +172,7 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
-    public String getDriverName() {
+    public String getDriverId() {
         return config.deviceParent.driverParent.getId();
     }
 
@@ -174,7 +182,12 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
-    public String getDeviceName() {
+    public String getDeviceSettings() {
+        return config.deviceParent.getSettings();
+    }
+
+    @Override
+    public String getDeviceId() {
         return config.deviceParent.getId();
     }
 
@@ -490,7 +503,6 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void write(List<Record> values) {
         ArrayList<FutureValue> fValues = new ArrayList<>(values.size());
         for (Record record : values) {
