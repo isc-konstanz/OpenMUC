@@ -26,6 +26,7 @@ project.ext {
   distributionProjects = javaProjects.findAll {
     it.getPath() == ":openmuc-app-household" ||
     it.getPath() == ":openmuc-app-simpledemo" ||
+    it.getPath() == ":openmuc-app-node" ||
     it.getPath() == ":openmuc-core-api" ||
     it.getPath() == ":openmuc-core-datamanager" ||
     it.getPath() == ":openmuc-core-spi" ||

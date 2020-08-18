@@ -4,7 +4,7 @@ dependencies {
 
 jar {
   manifest {
-    name = 'OpenMUC App - Grid Service'
+    name = 'OpenMUC App - Node'
     instruction 'Export-Package', ''
   }
 }

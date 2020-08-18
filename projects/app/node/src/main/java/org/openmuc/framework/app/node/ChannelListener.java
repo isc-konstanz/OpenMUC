@@ -18,44 +18,62 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.app.gridservice.power;
+package org.openmuc.framework.app.node;
 
-import org.openmuc.framework.app.gridservice.GridServiceApp;
+import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.RecordListener;
 
-public class PowerListener implements RecordListener {
+public class ChannelListener implements RecordListener {
+
+    private static final int INTERVAL = 900000;
 
     /**
-     * Interface used to notify the {@link GridServiceApp} 
-     * implementation about changed power values
+     * Interface used to notify the {@link NodeApp} 
+     * implementation about changed values
      */
-    public interface PowerCallbacks {
-        public void onPowerReceived(String id, Record value);
+    public interface NodeCallbacks {
+        public void onNodeUpdate();
     }
 
     /**
-     * The Listeners' current callback object, which is notified of changed power values
+     * The Listeners' current callback object, which is notified of changed values
      */
-    private final PowerCallbacks callbacks;
+    private final NodeCallbacks callbacks;
 
     private final Channel channel;
+    private final double scale;
 
-    public PowerListener(PowerCallbacks callbacks, Channel channel) {
+    private Record record;
+
+    public ChannelListener(NodeCallbacks callbacks, Channel channel, double scale) {
         this.callbacks = callbacks;
         this.channel = channel;
+        this.scale = scale;
+        this.record = new Record(new DoubleValue(0), System.currentTimeMillis());
     }
 
     public String getId() {
         return channel.getId();
     }
 
+    public double getValue() {
+    	if (System.currentTimeMillis() - record.getTimestamp() > INTERVAL) {
+    		return 0;
+    	}
+    	return record.getValue().asDouble()*scale;
+    }
+
     @Override
     public void newRecord(Record record) {
-        if (record.getFlag() == Flag.VALID && record.getValue() != null) {
-            callbacks.onPowerReceived(channel.getId(), record);
+        if (record.getFlag() != Flag.VALID || record.getValue() == null) {
+        	return;
         }
+    	this.record = record;
+    	
+        callbacks.onNodeUpdate();
     }
+
 }
