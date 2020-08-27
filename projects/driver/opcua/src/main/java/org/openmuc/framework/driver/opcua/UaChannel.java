@@ -25,7 +25,7 @@ import org.openmuc.framework.driver.Channel;
 import org.openmuc.framework.options.Address;
 import org.openmuc.framework.options.Setting;
 
-public class OpcChannel extends Channel {
+public class UaChannel extends Channel {
 
     @Address(id = "nodeId",
              name = "Node ID",
@@ -42,7 +42,7 @@ public class OpcChannel extends Channel {
     
     private NodeId nodeId;
     
-    public OpcChannel(int namespace) {
+    public UaChannel(int namespace) {
     	this.namespace = namespace;
     }
 

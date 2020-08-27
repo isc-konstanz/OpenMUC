@@ -166,7 +166,7 @@ public class UaServer extends Server<UaChannel> {
         
         for (UaChannel channel : channels) {
             try {
-                  namespace.addChannelNode(channel);
+                 namespace.addChannelNode(channel);
                 
             } catch (UaException e) {
                 logger.info("Failed to register UA Node for channel {}: {}", channel.getId(), 

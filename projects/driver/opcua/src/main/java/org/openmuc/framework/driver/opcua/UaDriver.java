@@ -28,8 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
-public class OpcDriver extends Driver<OpcConnection> implements DriverService {
-    private static final Logger logger = LoggerFactory.getLogger(OpcDriver.class);
+public class UaDriver extends Driver<UaConnection> implements DriverService {
+    private static final Logger logger = LoggerFactory.getLogger(UaDriver.class);
 
     private static final String ID = "opcua";
     private static final String NAME = "OPC UA";

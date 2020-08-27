@@ -51,9 +51,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @AddressSyntax(separator = ";")
-public class OpcConnection extends Device<OpcChannel>{
+public class UaConnection extends Device<UaChannel>{
 	
-	private static final Logger logger = LoggerFactory.getLogger(OpcConnection.class);
+	private static final Logger logger = LoggerFactory.getLogger(UaConnection.class);
 
 	private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
 	private OpcUaClient client;
@@ -129,16 +129,16 @@ public class OpcConnection extends Device<OpcChannel>{
 	}
 
 	@Override
-    protected OpcChannel onCreateChannel() throws ArgumentSyntaxException {
-		return new OpcChannel(namespace);
+    protected UaChannel onCreateChannel() throws ArgumentSyntaxException {
+		return new UaChannel(namespace);
     }
 
 	@Override
-	public Object onRead(List<OpcChannel> channels, Object containerListHandle, String samplingGroup)
+	public Object onRead(List<UaChannel> channels, Object containerListHandle, String samplingGroup)
 			throws ConnectionException {
 		long samplingTime = System.currentTimeMillis();
 
-		for (OpcChannel channel : channels) {
+		for (UaChannel channel : channels) {
 			try {
 				NodeId nodeId = channel.getNodeId();
 		        
