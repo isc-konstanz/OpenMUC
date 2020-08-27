@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configuration>
+  <driver id="opcua">
+    <device id="device_opcua">
+      <deviceAddress>localhost:4840/opc</deviceAddress>
+      <channel id="channel_id_opcua">
+        <description>OPC UA test channel</description>
+        <channelAddress>power_photovoltaics</channelAddress>
+        <samplingInterval>5s</samplingInterval>
+      </channel>
+    </device>
+  </driver>
   <driver id="csv">
     <samplingTimeout>10s</samplingTimeout>
     <connectRetryInterval>1m</connectRetryInterval>
@@ -9,11 +19,13 @@
       <channel id="hhmmss">
         <description>hhmmss</description>
         <channelAddress>hhmmss</channelAddress>
+        <serverMapping id="opcua">ns:0</serverMapping>
         <samplingInterval>5s</samplingInterval>
       </channel>
       <channel id="power_photovoltaics">
-        <description>pv_power_production</description>
+        <description>PV power production</description>
         <channelAddress>pv_power_production</channelAddress>
+        <serverMapping id="opcua">folder:PV</serverMapping>
         <unit>W</unit>
         <samplingInterval>5s</samplingInterval>
         <loggingInterval>5s</loggingInterval>
