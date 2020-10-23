@@ -22,9 +22,7 @@ package org.openmuc.framework.server.restws.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -249,34 +247,6 @@ public class ChannelResourceServlet extends GenericServlet {
                     logger.warn("Failed to write config.", e);
                 }
             }
-        }
-    }
-
-    // Handels an CORS(Cross-Origin Resource Sharing) request
-    @Override
-    public void doOptions(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        if (!PropertyReader.getInstance().isCorsEnabled()) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_IMPLEMENTED, logger,
-                    "The CORS functionality is deactivated");
-            return;
-        }
-        Map<String, ArrayList<String>> propertyMap = PropertyReader.getInstance().getPropertyMap();
-        Iterator it = propertyMap.entrySet().iterator();
-        Boolean flagOriginKnown = false;
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            if (request.getHeader("Origin").equals(pair.getKey())) {
-                flagOriginKnown = true;
-                response.setHeader("Access-Control-Allow-Origin", (String) pair.getKey());
-                response.setHeader("Access-Control-Allow-Methods", ((ArrayList<String>) pair.getValue()).get(0));
-                response.setHeader("Access-Control-Allow-Headers", ((ArrayList<String>) pair.getValue()).get(1));
-                response.setStatus(HttpServletResponse.SC_OK);
-            }
-        }
-        if (!flagOriginKnown) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_FORBIDDEN, logger,
-                    "Options request received, but origin is not known -> access denied");
         }
     }
 

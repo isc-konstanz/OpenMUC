@@ -31,6 +31,17 @@
     </div>
 
     <div class="form-group">
+      <label for="settings" class="col-md-2 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_SETTINGS_HINT' | translate}}"></span>
+        {{'CHANNEL_SETTINGS' | translate}}
+      </label>
+      <div class="col-md-6">
+        <input type="text" class="form-control" ng-disabled="selectedChannels.length > 1" id="settings" name="settings" ng-model="channel.configs.settings" >
+        <p class="help-block">N.A. **</p>
+      </div>
+    </div>
+
+    <div class="form-group">
       <label for="address" class="col-md-2 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="dummy/channel/address/[a-z A-Z]"></span>
         {{'CHANNEL_ADDRESS' | translate}}
@@ -47,7 +58,7 @@
         {{'CHANNEL_VALUE_TYPE' | translate}}
       </label>
       <div class="col-md-6">
-        <select class="form-control" id="value_type" name="valueType" ng-class="{discrepancy: !compareChannels('valueType')}" ng-model="channel.configs.valueType" >
+        <select class="form-control" id="valueType" name="valueType" ng-class="{discrepancy: !compareChannels('valueType')}" ng-model="channel.configs.valueType" >
           <option></option>
           <option value="DOUBLE">DOUBLE</option>
           <option value="FLOAT">FLOAT</option>

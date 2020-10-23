@@ -100,7 +100,7 @@ class OpenmucParserServiceImplTest {
         String inputString = "{\"timestamp\":1582722316,\"flag\":\"VALID\",\"value\":\"dGVzdA==\"}";
 
         Record recordDes = parserService.deserialize(inputString.getBytes(), ValueType.BYTE_ARRAY);
-        assertEquals("test".getBytes(), recordDes.getValue().asByteArray());
+        assertEquals("test", new String(recordDes.getValue().asByteArray()));
     }
 
     @Test

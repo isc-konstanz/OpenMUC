@@ -72,6 +72,12 @@ org.openmuc.framework.datalogger.mqtt.password = password
 org.openmuc.framework.datalogger.mqtt.topic = my/mqtt/topic
 org.openmuc.framework.datalogger.mqtt.parser = myparser
 org.openmuc.framework.datalogger.mqtt.multiple = false
+# file buffering: number of files to be created
+org.openmuc.framework.datalogger.mqtt.maxFileCount = 2
+# file buffering: file size in kB
+org.openmuc.framework.datalogger.mqtt.maxFileSize = 5000
+# file buffering: buffer size in kB
+org.openmuc.framework.datalogger.mqtt.maxBufferSize = 1000
 ----
 
 

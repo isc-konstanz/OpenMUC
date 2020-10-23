@@ -13,7 +13,7 @@ configurations.osgibundles.transitive = false;
 configurations.osgimain.transitive = false;
 
 dependencies {
-  def openmucVersion = "0.18.0"
+  def openmucVersion = "0.18.1"
 
   osgimain group:    "org.apache.felix",      name: "org.apache.felix.main",                 version: "6.0.3"
 
@@ -30,7 +30,6 @@ dependencies {
   osgibundles group: "org.openmuc.framework", name: "openmuc-core-datamanager",              version: openmucVersion
 
   osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger-ascii",              version: openmucVersion
-
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-spi",                     version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-base",                    version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-channelconfigurator",     version: openmucVersion

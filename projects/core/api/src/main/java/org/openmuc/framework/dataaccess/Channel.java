@@ -49,29 +49,36 @@ public interface Channel {
     /**
      * Returns the ID of this channel. The ID is usually a meaningful string. It is used to get Channel objects using
      * the <code>DataAccessService</code>.
-     * 
+     *
      * @return the ID of this channel.
      */
     String getId();
 
     /**
      * Returns the address of this channel. Returns the empty string if not configured.
-     * 
+     *
      * @return the address of this channel.
      */
     String getChannelAddress();
 
     /**
      * Returns the description of this channel. Returns the empty string if not configured.
-     * 
+     *
      * @return the description of this channel.
      */
     String getDescription();
 
     /**
+     * Returns the settings of this channel. Returns the empty string if not configured.
+     *
+     * @return the settings of this channel.
+     */
+    String getSettings();
+
+    /**
      * Returns the unit of this channel. Returns the empty string if not configured. The unit is used for informational
      * purposes only. Neither the framework nor any driver does value conversions based on the configured unit.
-     * 
+     *
      * @return the unit of this channel.
      */
     String getUnit();
@@ -86,7 +93,7 @@ public interface Channel {
      * conversions will be done transparently.
      * <p>
      * If no value type was configured, the default {@link ValueType#DOUBLE} is used.
-     * 
+     *
      * @return the value type of this channel.
      */
     ValueType getValueType();
@@ -101,14 +108,14 @@ public interface Channel {
      * <li>Values written (e.g. using {@link #write(Value)}) are divided by the scaling factor before they are handed to
      * the driver for transmission.</li>
      * </ul>
-     * 
+     *
      * @return the scaling factor
      */
     double getScalingFactor();
 
     /**
      * Returns the channel's configured sampling interval in milliseconds. Returns -1 if not configured.
-     * 
+     *
      * @return the channel's configured sampling interval in milliseconds.
      */
     int getSamplingInterval();
@@ -116,42 +123,42 @@ public interface Channel {
     /**
      * Returns the channel's configured sampling time offset in milliseconds. Returns the default of 0 if not
      * configured.
-     * 
+     *
      * @return the channel's configured sampling time offset in milliseconds.
      */
     int getSamplingTimeOffset();
 
     /**
      * Returns the channel's configured logging interval in milliseconds. Returns -1 if not configured.
-     * 
+     *
      * @return the channel's configured logging interval in milliseconds.
      */
     int getLoggingInterval();
 
     /**
      * Returns the channel's configured logging time offset in milliseconds. Returns the default of 0 if not configured.
-     * 
+     *
      * @return the channel's configured logging time offset in milliseconds.
      */
     int getLoggingTimeOffset();
 
     /**
      * Returns the unique name of the communication driver that is used by this channel to read/write data.
-     * 
+     *
      * @return the unique name of the communication driver that is used by this channel to read/write data.
      */
     String getDriverName();
 
     /**
      * Returns the channel's device address.
-     * 
+     *
      * @return the channel's device address.
      */
     String getDeviceAddress();
 
     /**
      * Returns the name of the communication device that this channel belongs to. The empty string if not configured.
-     * 
+     *
      * @return the name of the communication device that this channel belongs to.
      */
     String getDeviceName();
@@ -159,28 +166,28 @@ public interface Channel {
     /**
      * Returns the description of the communication device that this channel belongs to. The empty string if not
      * configured.
-     * 
+     *
      * @return the description of the communication device that this channel belongs to.
      */
     String getDeviceDescription();
 
     /**
      * Returns the current channel state.
-     * 
+     *
      * @return the current channel state.
      */
     ChannelState getChannelState();
 
     /**
      * Returns the current state of the communication device that this channel belongs to.
-     * 
+     *
      * @return the current state of the communication device that this channel belongs to.
      */
     DeviceState getDeviceState();
 
     /**
      * Adds a listener that is notified of new records received by sampling or listening.
-     * 
+     *
      * @param listener
      *            the record listener that is notified of new records.
      */
@@ -188,7 +195,7 @@ public interface Channel {
 
     /**
      * Removes a record listener.
-     * 
+     *
      * @param listener
      *            the listener shall be removed.
      */
@@ -196,7 +203,7 @@ public interface Channel {
 
     /**
      * Returns <code>true</code> if a connection to the channel's communication device exist.
-     * 
+     *
      * @return <code>true</code> if a connection to the channel's communication device exist.
      */
     boolean isConnected();
@@ -210,10 +217,10 @@ public interface Channel {
      * <li>An application may also set the latest record using <code>setLatestRecord</code>.</li>
      * <li>Finally values written using <code>write</code> are also stored as the latest record</li>
      * </ul>
-     * 
+     * <p>
      * Note that the latest record is never <code>NULL</code>. When a channel is first created its latest record is
      * automatically initialized with a flag that indicates that its value is not valid.
-     * 
+     *
      * @return the latest record.
      */
     Record getLatestRecord();
@@ -232,7 +239,7 @@ public interface Channel {
      * <li>If a scaling factor has been configured for this channel then the value passed to this function is scaled.
      * </li>
      * </ul>
-     * 
+     *
      * @param record
      *            the record to be set.
      */
@@ -241,7 +248,7 @@ public interface Channel {
     /**
      * Writes the given value to the channel's corresponding data field in the connected communication device. If an
      * error occurs, the returned <code>Flag</code> will indicate this.
-     * 
+     *
      * @param value
      *            the value that is to be written
      * @return the flag indicating whether the value was successfully written ( <code>Flag.VALID</code>) or not (any
@@ -253,7 +260,7 @@ public interface Channel {
      * Schedules a List&lt;records&gt; with future timestamps as write tasks <br>
      * This function will schedule single write tasks to the provided timestamps.<br>
      * Once this function is called, previously scheduled write tasks will be erased.<br>
-     * 
+     *
      * @param values
      *            a list of future write values.
      */
@@ -262,7 +269,7 @@ public interface Channel {
     /**
      * Returns a <code>WriteValueContainer</code> that corresponds to this channel. This container can be passed to the
      * write function of <code>DataAccessService</code> to write several values in one transaction.
-     * 
+     *
      * @return a <code>WriteValueContainer</code> that corresponds to this channel.
      */
     WriteValueContainer getWriteContainer();
@@ -270,7 +277,7 @@ public interface Channel {
     /**
      * Actively reads a value from the channel's corresponding data field in the connected communication device. If an
      * error occurs it will be indicated in the returned record's flag.
-     * 
+     *
      * @return the record containing the value read, the time the value was received and a flag indicating success (
      *         <code>Flag.VALID</code>) or a an error (any other flag).
      */
@@ -279,7 +286,7 @@ public interface Channel {
     /**
      * Returns a <code>ReadRecordContainer</code> that corresponds to this channel. This container can be passed to the
      * <code>read</code> function of <code>DataAccessService</code> to read several values in one transaction.
-     * 
+     *
      * @return a <code>ReadRecordContainer</code> that corresponds to this channel.
      */
     ReadRecordContainer getReadContainer();
@@ -290,7 +297,7 @@ public interface Channel {
      * timestamp at which the value is to be logged. If the former is the case then this function is not useful because
      * it is impossible for an application to know the exact time at which a value was received. In this case use
      * <code>getLoggedRecords</code> instead.
-     * 
+     *
      * @param time
      *            the time in milliseconds since midnight, January 1, 1970 UTC.
      * @return the record that has been stored by the framework's data logger at the given <code>timestamp</code>.
@@ -304,7 +311,7 @@ public interface Channel {
 
     /**
      * Returns a list of all logged data records with timestamps from <code>startTime</code> up until now.
-     * 
+     *
      * @param startTime
      *            the starting time in milliseconds since midnight, January 1, 1970 UTC. inclusive
      * @return a list of all logged data records with timestamps from <code>startTime</code> up until now.
@@ -318,7 +325,7 @@ public interface Channel {
     /**
      * Returns a list of all logged data records with timestamps from <code>startTime</code> to <code>endTime</code>
      * inclusive.
-     * 
+     *
      * @param startTime
      *            the starting time in milliseconds since midnight, January 1, 1970 UTC. inclusive
      * @param endTime

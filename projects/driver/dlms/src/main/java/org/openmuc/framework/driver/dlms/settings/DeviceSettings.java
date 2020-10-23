@@ -25,40 +25,40 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 public class DeviceSettings extends GenericSetting {
 
     @Option(value = "ld", range = "int")
-    private final int logicalDeviceAddress = 1;
+    private int logicalDeviceAddress = 1;
 
     @Option("cid")
-    private final int clientId = 16;
+    private int clientId = 16;
 
     @Option("sn")
-    private final boolean useSn = false;
+    private boolean useSn = false;
 
     @Option("emech")
-    private final int encryptionMechanism = -1;
+    private int encryptionMechanism = -1;
 
     @Option("amech")
-    private final int authenticationMechanism = 0;
+    private int authenticationMechanism = 0;
 
     @Option("ekey")
-    private final byte[] encryptionKey = {};
+    private byte[] encryptionKey = {};
 
     @Option("akey")
-    private final byte[] authenticationKey = {};
+    private byte[] authenticationKey = {};
 
     @Option("pass")
-    private final String paswd = "";
+    private String paswd = "";
 
     @Option("cl")
-    private final int challengeLength = 16;
+    private int challengeLength = 16;
 
     @Option("rt")
-    private final int responseTimeout = 20_000;
+    private int responseTimeout = 20_000;
 
     @Option("mid")
-    private final String manufacturerId = "MMM";
+    private String manufacturerId = "MMM";
 
     @Option("did")
-    private final long deviceId = 1;
+    private long deviceId = 1;
 
     public DeviceSettings(String settings) throws ArgumentSyntaxException {
         super.parseFields(settings);

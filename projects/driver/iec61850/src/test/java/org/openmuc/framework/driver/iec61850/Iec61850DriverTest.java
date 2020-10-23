@@ -22,6 +22,8 @@
 package org.openmuc.framework.driver.iec61850;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,14 +38,14 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
-import com.beanit.openiec61850.BasicDataAttribute;
-import com.beanit.openiec61850.ClientSap;
-import com.beanit.openiec61850.SclParseException;
-import com.beanit.openiec61850.SclParser;
-import com.beanit.openiec61850.ServerEventListener;
-import com.beanit.openiec61850.ServerModel;
-import com.beanit.openiec61850.ServerSap;
-import com.beanit.openiec61850.ServiceError;
+import com.beanit.iec61850bean.BasicDataAttribute;
+import com.beanit.iec61850bean.ClientSap;
+import com.beanit.iec61850bean.SclParseException;
+import com.beanit.iec61850bean.SclParser;
+import com.beanit.iec61850bean.ServerEventListener;
+import com.beanit.iec61850bean.ServerModel;
+import com.beanit.iec61850bean.ServerSap;
+import com.beanit.iec61850bean.ServiceError;
 
 public class Iec61850DriverTest extends Thread implements ServerEventListener {
 
@@ -107,11 +109,9 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
         // Test 1
         String testDeviceAdress = "127.0.0.1:54321";
         String testSettings = "-a -lt 1 -rt 1";
-        Iec61850Driver testIec61850Driver = new Iec61850Driver();
-        thrown.expect(ArgumentSyntaxException.class);
-        thrown.expectMessage("No authentication parameter was specified after the -a parameter");
-        Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
-        testIec61850Connection.disconnect();
+        String exceptionMsg = "No authentication parameter was specified after the -a parameter";
+        expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
+
     }
 
     @Test
@@ -119,11 +119,8 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
         // Test 1
         String testDeviceAdress = "127.0.0.1:54321";
         String testSettings = "-a 12";
-        Iec61850Driver testIec61850Driver = new Iec61850Driver();
-        thrown.expect(ArgumentSyntaxException.class);
-        thrown.expectMessage("Less than 4 or more than 6 arguments in the settings are not allowed.");
-        Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
-        testIec61850Connection.disconnect();
+        String exceptionMsg = "Less than 4 or more than 6 arguments in the settings are not allowed.";
+        expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
     }
 
     @Test
@@ -131,11 +128,8 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
         // Test 1
         String testDeviceAdress = "127.0.0.1:54321";
         String testSettings = "-b 12 -lt 1 -rt 1";
-        Iec61850Driver testIec61850Driver = new Iec61850Driver();
-        thrown.expect(ArgumentSyntaxException.class);
-        thrown.expectMessage("Unexpected argument: -b");
-        Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
-        testIec61850Connection.disconnect();
+        String exceptionMsg = "Unexpected argument: -b";
+        expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
     }
 
     @Test
@@ -143,11 +137,8 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
         // Test 1
         String testDeviceAdress = "127.0.0.1:54321:foo";
         String testSettings = "-a 12 -lt 1 -rt 1";
-        Iec61850Driver testIec61850Driver = new Iec61850Driver();
-        thrown.expect(ArgumentSyntaxException.class);
-        thrown.expectMessage("Invalid device address syntax.");
-        Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
-        testIec61850Connection.disconnect();
+        String exceptionMsg = "Invalid device address syntax.";
+        expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
     }
 
     @Test
@@ -155,11 +146,8 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
         // Test 1
         String testDeviceAdress = "a127.0.0.1:54321";
         String testSettings = "-a 12 -lt 1 -rt 1";
-        Iec61850Driver testIec61850Driver = new Iec61850Driver();
-        thrown.expect(ConnectionException.class);
-        thrown.expectMessage("Unknown host: a127.0.0.1");
-        Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
-        testIec61850Connection.disconnect();
+        String exceptionMsg = "Unknown host: a127.0.0.1";
+        expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ConnectionException());
     }
 
     @Test
@@ -167,11 +155,8 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
         // Test 1
         String testDeviceAdress = "127.0.0.1:foo";
         String testSettings = "-a 12 -lt 1 -rt 1";
-        Iec61850Driver testIec61850Driver = new Iec61850Driver();
-        thrown.expect(ArgumentSyntaxException.class);
-        thrown.expectMessage("The specified port is not an integer");
-        Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
-        testIec61850Connection.disconnect();
+        String exceptionMsg = "The specified port is not an integer";
+        expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
     }
 
     @AfterEach
@@ -201,5 +186,14 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     public void serverStoppedListening(ServerSap serverSAP) {
         // TODO Auto-generated method stub
 
+    }
+
+    private void expectExeption(String testDeviceAdress, String testSettings, String exeptionMsg, Exception exception) {
+        Iec61850Driver testIec61850Driver = new Iec61850Driver();
+        Exception e = assertThrows(exception.getClass(), () -> {
+            Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
+            testIec61850Connection.disconnect();
+        });
+        assertEquals(exeptionMsg, e.getMessage());
     }
 }

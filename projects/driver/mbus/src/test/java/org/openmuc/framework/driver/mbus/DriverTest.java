@@ -174,7 +174,7 @@ public class DriverTest {
         PowerMockito.whenNew(MBusConnection.class).withAnyArguments().thenReturn(mockedMBusSap);
         PowerMockito.doThrow(new IOException()).when(mockedMBusSap).linkReset(ArgumentMatchers.anyInt());
         PowerMockito.when(mockedMBusSap.read(ArgumentMatchers.anyInt())).thenReturn(null);
-        mdriver.connect("/dev/ttyS100:5", "2400:lr");
+        mdriver.connect("/dev/ttyS100:5", "2400:lr:sc");
     }
 
     @Test(expected = ConnectionException.class)
@@ -183,7 +183,7 @@ public class DriverTest {
         MBusConnection mockedMBusSap = PowerMockito.mock(MBusConnection.class);
         PowerMockito.whenNew(MBusConnection.class).withAnyArguments().thenReturn(mockedMBusSap);
         PowerMockito.doThrow(new SerialPortTimeoutException()).when(mockedMBusSap).linkReset(ArgumentMatchers.anyInt());
-        mdriver.connect("/dev/ttyS100:5", "2400");
+        mdriver.connect("/dev/ttyS100:5", "2400:sc");
     }
 
     @Test(expected = ConnectionException.class)
@@ -196,7 +196,7 @@ public class DriverTest {
         Driver mdriver = new Driver();
         assertNotNull(mdriver.connect("/dev/ttyS100:5", "2400"));
         doThrow(new IOException()).when(con).linkReset(anyInt());
-        mdriver.connect("/dev/ttyS100:5", "2400");
+        mdriver.connect("/dev/ttyS100:5", "2400:sc");
     }
 
     // ******************* SCAN TESTS ********************//

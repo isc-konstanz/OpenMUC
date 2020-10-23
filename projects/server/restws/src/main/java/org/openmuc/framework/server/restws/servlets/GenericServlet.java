@@ -24,6 +24,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,6 +42,7 @@ import org.openmuc.framework.dataaccess.DataAccessService;
 import org.openmuc.framework.lib.json.ToJson;
 import org.openmuc.framework.server.restws.RestServer;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class GenericServlet extends HttpServlet implements ConfigChangeListener {
 
@@ -52,12 +57,25 @@ public abstract class GenericServlet extends HttpServlet implements ConfigChange
     private static AuthenticationService authenticationService;
     private static RootConfig rootConfig;
 
+    private static Logger logger = LoggerFactory.getLogger(GenericServlet.class);
+
+    private static Map<String, ArrayList<String>> propertyMap;
+    private static boolean corsEnabled;
+
     @Override
     public void init() throws ServletException {
         handleDataAccessService(RestServer.getDataAccessService());
         handleConfigService(RestServer.getConfigService());
         handleRootConfig(configService.getConfig(this));
         handleAuthenticationService(RestServer.getAuthenticationService());
+
+        getCorsProperty();
+    }
+
+    private static void getCorsProperty() {
+        PropertyReader propertyReader = PropertyReader.getInstance();
+        corsEnabled = propertyReader.isCorsEnabled();
+        propertyMap = propertyReader.getPropertyMap();
     }
 
     @Override
@@ -75,6 +93,38 @@ public abstract class GenericServlet extends HttpServlet implements ConfigChange
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+    }
+
+    // Handels an CORS(Cross-Origin Resource Sharing) request
+    @Override
+    public void doOptions(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        if (corsEnabled) {
+            Iterator<Entry<String, ArrayList<String>>> iterator = propertyMap.entrySet().iterator();
+            boolean flagOriginUnknown = true;
+            while (iterator.hasNext()) {
+                Entry<String, ArrayList<String>> pair = iterator.next();
+                String header = request.getHeader("Origin");
+
+                if (pair.getKey().equals("*") || header.equalsIgnoreCase(pair.getKey())) {
+                    flagOriginUnknown = false;
+
+                    response.setHeader("Access-Control-Allow-Origin", pair.getKey());
+                    response.setHeader("Access-Control-Allow-Methods", pair.getValue().get(0));
+                    response.setHeader("Access-Control-Allow-Headers", pair.getValue().get(1));
+                    response.setStatus(HttpServletResponse.SC_OK);
+                }
+                if (flagOriginUnknown) {
+                    ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_FORBIDDEN, logger,
+                            "Options request received, but origin is not known -> access denied");
+                }
+            }
+        }
+        else {
+            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_IMPLEMENTED, logger,
+                    "The CORS functionality is deactivated");
+        }
     }
 
     @Override

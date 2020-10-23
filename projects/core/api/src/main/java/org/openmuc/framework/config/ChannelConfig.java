@@ -38,6 +38,7 @@ public interface ChannelConfig {
     static final int SAMPLING_INTERVAL_DEFAULT = -1;
     static final int SAMPLING_TIME_OFFSET_DEFAULT = 0;
     static final String SAMPLING_GROUP_DEFAULT = "";
+    static final String SETTINGS_DEFAULT = "";
     static final int LOGGING_INTERVAL_DEFAULT = -1;
     static final int LOGGING_TIME_OFFSET_DEFAULT = 0;
     static final boolean LOGGING_EVENT_DEFAULT = false;
@@ -89,6 +90,10 @@ public interface ChannelConfig {
     String getSamplingGroup();
 
     void setSamplingGroup(String group);
+
+    String getSettings();
+
+    void setSettings(String settings);
 
     Integer getLoggingInterval();
 

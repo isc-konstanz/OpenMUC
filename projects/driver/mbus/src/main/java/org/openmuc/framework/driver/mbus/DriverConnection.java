@@ -240,12 +240,13 @@ public class DriverConnection implements Connection {
 
     @Override
     public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
-            throws UnsupportedOperationException, ConnectionException {
+            throws ConnectionException {
         synchronized (connectionInterface) {
             List<DataRecord> dataRecords = new ArrayList<>();
 
             if (!connectionInterface.isOpen()) {
-                throw new ConnectionException();
+                throw new ConnectionException(
+                        "Connection " + connectionInterface.getInterfaceAddress() + " is closed.");
             }
 
             MBusConnection mBusConnection = connectionInterface.getMBusConnection();
@@ -259,8 +260,11 @@ public class DriverConnection implements Connection {
                     }
                     return null;
                 } catch (IOException e) {
-                    connectionInterface.close();
-                    throw new ConnectionException(e);
+                    for (ChannelRecordContainer container : containers) {
+                        container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
+                    }
+                    logger.error(e.getMessage());
+                    return null;
                 }
             }
 
@@ -283,8 +287,11 @@ public class DriverConnection implements Connection {
                 } while (variableDataStructure.moreRecordsFollow());
 
             } catch (IOException e) {
-                connectionInterface.close();
-                throw new ConnectionException(e);
+                for (ChannelRecordContainer container : containers) {
+                    container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
+                }
+                logger.error(e.getMessage());
+                return null;
             }
 
             long timestamp = System.currentTimeMillis();
@@ -304,16 +311,17 @@ public class DriverConnection implements Connection {
                     try {
                         mBusConnection.linkReset(mBusAddress);
                         sleep(delay);
-                    } catch (SerialPortTimeoutException e1) {
-                        connectionInterface.close();
-                        throw new ConnectionException(e1);
                     } catch (IOException e1) {
-                        connectionInterface.close();
-                        throw new ConnectionException(e);
+                        for (ChannelRecordContainer container : containers) {
+                            container.setRecord(new Record(Flag.CONNECTION_EXCEPTION));
+                        }
+                        logger.error(e.getMessage());
                     }
                 } catch (IOException e) {
-                    connectionInterface.close();
-                    throw new ConnectionException(e);
+                    for (ChannelRecordContainer container : containers) {
+                        container.setRecord(new Record(Flag.CONNECTION_EXCEPTION));
+                    }
+                    logger.error(e.getMessage());
                 }
             }
             return null;
@@ -344,10 +352,6 @@ public class DriverConnection implements Connection {
                     container.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID));
                 }
                 List<DataRecord> dataRecordsToSelectForReadout = new ArrayList<>(1);
-                // TODO
-                // dataRecordsToSelectForReadout
-                // .add(new DataRecord(HexConverter.fromShortHexString(dibAndVib[0].substring(1)),
-                // HexConverter.fromShortHexString(dibAndVib[1]), new byte[] {}, 0));
 
                 selectForReadoutSet = true;
 

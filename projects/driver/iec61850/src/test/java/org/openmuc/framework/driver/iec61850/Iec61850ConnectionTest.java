@@ -44,20 +44,20 @@ import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
-import com.beanit.openiec61850.BasicDataAttribute;
-import com.beanit.openiec61850.ClientAssociation;
-import com.beanit.openiec61850.ClientEventListener;
-import com.beanit.openiec61850.ClientSap;
-import com.beanit.openiec61850.Fc;
-import com.beanit.openiec61850.FcModelNode;
-import com.beanit.openiec61850.ModelNode;
-import com.beanit.openiec61850.Report;
-import com.beanit.openiec61850.SclParseException;
-import com.beanit.openiec61850.SclParser;
-import com.beanit.openiec61850.ServerEventListener;
-import com.beanit.openiec61850.ServerModel;
-import com.beanit.openiec61850.ServerSap;
-import com.beanit.openiec61850.ServiceError;
+import com.beanit.iec61850bean.BasicDataAttribute;
+import com.beanit.iec61850bean.ClientAssociation;
+import com.beanit.iec61850bean.ClientEventListener;
+import com.beanit.iec61850bean.ClientSap;
+import com.beanit.iec61850bean.Fc;
+import com.beanit.iec61850bean.FcModelNode;
+import com.beanit.iec61850bean.ModelNode;
+import com.beanit.iec61850bean.Report;
+import com.beanit.iec61850bean.SclParseException;
+import com.beanit.iec61850bean.SclParser;
+import com.beanit.iec61850bean.ServerEventListener;
+import com.beanit.iec61850bean.ServerModel;
+import com.beanit.iec61850bean.ServerSap;
+import com.beanit.iec61850bean.ServiceError;
 
 public class Iec61850ConnectionTest extends Thread implements ClientEventListener, ServerEventListener {
 

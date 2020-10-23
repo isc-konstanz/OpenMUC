@@ -27,15 +27,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
-import org.openmuc.framework.lib.ssl.SslManager;
+import org.openmuc.framework.lib.mqtt.MqttConnection;
+import org.openmuc.framework.lib.mqtt.MqttSettings;
+import org.openmuc.framework.lib.mqtt.MqttWriter;
 import org.openmuc.framework.parser.spi.ParserService;
 import org.openmuc.framework.parser.spi.SerializationException;
 import org.osgi.framework.BundleContext;
@@ -50,27 +49,19 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hivemq.client.mqtt.MqttClientSslConfig;
-import com.hivemq.client.mqtt.MqttClientState;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
-
 @Component
 public class MqttLogger implements DataLoggerService {
     private static final Logger logger = LoggerFactory.getLogger(MqttLogger.class);
     private static final List<String> LOGGED_CHANNELS = new LinkedList<>();
     private static final HashMap<String, ParserService> PARSERS = new HashMap<>();
-    private static final Queue<byte[]> MESSAGE_BUFFER = new LinkedList<>();
-    private String topic;
     private String parser;
     private boolean logMultiple;
-    private Mqtt3AsyncClient client;
-    private boolean connected = false;
+    private MqttWriter writer;
 
     @Activate
     public void activate(ComponentContext context) {
         logger.info("Activating MQTT logger");
+        getSettings();
         connect();
         listenForParser(context.getBundleContext());
     }
@@ -78,7 +69,7 @@ public class MqttLogger implements DataLoggerService {
     @Deactivate
     public void deactivate(ComponentContext context) {
         logger.info("Deactivating MQTT logger");
-        client.disconnect();
+        writer.getConnection().disconnect();
     }
 
     @Override
@@ -113,9 +104,14 @@ public class MqttLogger implements DataLoggerService {
         }
     }
 
+    @Override
+    public void logEvent(List<LogRecordContainer> containers, long timestamp) {
+        log(containers, timestamp);
+    }
+
     /**
      * Parses a message with {@link ParserService} and publishes it
-     * 
+     *
      * @param containers
      *            List of {@link LogRecordContainer}
      */
@@ -123,23 +119,28 @@ public class MqttLogger implements DataLoggerService {
         byte[] message;
         if (PARSERS.containsKey(parser)) {
             try {
-                message = PARSERS.get(parser).serialize(containers);
-                publish(message);
+                if (logMultiple) {
+                    message = PARSERS.get(parser).serialize(containers);
+                }
+                else {
+                    message = PARSERS.get(parser).serialize(containers.get(0));
+                }
+                writer.write(message);
                 if (logger.isTraceEnabled()) {
                     logger.trace(new String(message));
                 }
             } catch (SerializationException e) {
                 logger.error(e.getMessage());
             }
+            // joern: is a retrying a useful solution here?
+            // catch (IOException e) {
+            // logger.error("Couldn't write message to file buffer, retrying");
+            // parse(containers);
+            // }
         }
         else {
             logger.error("No parser available!");
         }
-    }
-
-    @Override
-    public void logEvent(List<LogRecordContainer> containers, long timestamp) {
-        log(containers, timestamp);
     }
 
     @Override
@@ -148,80 +149,33 @@ public class MqttLogger implements DataLoggerService {
     }
 
     /**
-     * Reads settings from system.properties and connects to MQTT Broker
+     * Reads settings from system.properties
      */
-    void connect() {
+    void getSettings() {
         String packageName = MqttLogger.class.getPackage().getName().toLowerCase();
         String host = System.getProperty(packageName + ".host");
         int port = Integer.parseInt(System.getProperty(packageName + ".port"));
         boolean ssl = Boolean.parseBoolean(System.getProperty(packageName + ".ssl"));
         String username = System.getProperty(packageName + ".username");
         String password = System.getProperty(packageName + ".password");
-        topic = System.getProperty(packageName + ".topic");
+        String topic = System.getProperty(packageName + ".topic");
         parser = System.getProperty(packageName + ".parser");
         logMultiple = Boolean.parseBoolean(System.getProperty(packageName + ".multiple"));
+        int maxFileCount = Integer.parseInt(System.getProperty(packageName + ".maxFileCount"));
+        long maxFileSize = Long.parseLong(System.getProperty(packageName + ".maxFileSize")) * 1024;
+        long maxBufferSize = Long.parseLong(System.getProperty(packageName + ".maxBufferSize")) * 1024;
 
-        Mqtt3ClientBuilder clientBuilder = Mqtt3Client.builder()
-                .identifier(UUID.randomUUID().toString())
-                .automaticReconnectWithDefaultConfig()
-                .addConnectedListener(context -> {
-                    while (!MESSAGE_BUFFER.isEmpty()) {
-                        publish(MESSAGE_BUFFER.remove());
-                    }
-                })
-                .addDisconnectedListener(context -> {
-                    if (context.getClientConfig().getState() == MqttClientState.CONNECTING) {
-                        context.getReconnector().reconnect(false);
-                    }
-                })
-                .serverHost(host)
-                .serverPort(port);
+        MqttSettings settings = new MqttSettings(host, port, username, password, ssl, maxBufferSize, maxFileSize,
+                maxFileCount, topic);
+        MqttConnection connection = new MqttConnection(settings);
+        writer = new MqttWriter(connection);
+    }
 
-        if (ssl) {
-            try {
-                MqttClientSslConfig sslConfig = MqttClientSslConfig.builder()
-                        .keyManagerFactory(SslManager.getInstance().getKeyManagerFactory())
-                        .trustManagerFactory(SslManager.getInstance().getTrustManagerFactory())
-                        .handshakeTimeout(10, TimeUnit.SECONDS)
-                        .build();
-
-                client = clientBuilder.sslConfig(sslConfig).buildAsync();
-            } catch (Exception e) {
-                logger.error("Couldn't connect with SSL enabled: {}", e.getMessage());
-            }
-        }
-        else {
-            client = clientBuilder.buildAsync();
-        }
-
-        if (username == null || password == null) {
-            client.connect().whenComplete((ack, e) -> {
-                if (e != null) {
-                    logger.error("Something went wrong while connecting: {}", e.getMessage());
-                }
-                else {
-                    logger.info("Connected to MQTT broker {}", host);
-                    connected = true;
-                }
-            });
-        }
-        else {
-            client.connectWith()
-                    .simpleAuth()
-                    .username(username)
-                    .password(password.getBytes())
-                    .applySimpleAuth()
-                    .send()
-                    .whenComplete((ack, e) -> {
-                        if (e != null) {
-                            logger.error("Something went wrong while connecting: {}", e.getMessage());
-                        }
-                        else {
-                            logger.debug("Connected to MQTT broker {}", host);
-                            connected = true;
-                        }
-                    });
-        }
+    /**
+     * Connects to MQTT broker
+     */
+    void connect() {
+        writer.getConnection().connect();
     }
 
     private void listenForParser(BundleContext context) {
@@ -243,28 +197,6 @@ public class MqttLogger implements DataLoggerService {
             }, filter);
         } catch (InvalidSyntaxException e) {
             logger.error("Service listener can't be added to framework", e);
-        }
-    }
-
-    /**
-     * publishes a message to the MQTT broker
-     * 
-     * @param message
-     *            the message to be published
-     */
-    void publish(byte[] message) {
-        logger.info(new String(message));
-        if (connected) {
-            client.publishWith().topic(topic).payload(message).send().whenComplete((publish, e) -> {
-                if (e != null) {
-                    logger.debug("A message could not be sent. Adding message to buffer");
-                    MESSAGE_BUFFER.add(message);
-                }
-            });
-        }
-        else {
-            logger.debug("Not connected to broker yet. Adding message to buffer");
-            MESSAGE_BUFFER.add(message);
         }
     }
 }

@@ -69,6 +69,7 @@ public class OpenmucParserServiceImpl implements ParserService {
         gsonBuilder.registerTypeAdapter(Record.class, new RecordInstanceCreator());
         gsonBuilder.registerTypeAdapter(Value.class, new ValueDeserializer());
         gsonBuilder.registerTypeAdapter(Record.class, new RecordAdapter());
+        gsonBuilder.disableHtmlEscaping();
         gson = gsonBuilder.create();
     }
 
@@ -111,34 +112,40 @@ public class OpenmucParserServiceImpl implements ParserService {
             obj.addProperty("flag", record.getFlag().toString());
             Value value = record.getValue();
 
-            if (value instanceof DoubleValue) {
-                obj.addProperty("value", record.getValue().asDouble());
+            String valueString = "value";
+            if (value != null || record.getFlag() == Flag.VALID) {
+                switch (value.getValueType()) {
+                case BOOLEAN:
+                    obj.addProperty(valueString, record.getValue().asBoolean());
+                    break;
+                case BYTE:
+                    obj.addProperty(valueString, record.getValue().asByte());
+                    break;
+                case BYTE_ARRAY:
+                    obj.addProperty(valueString, Base64.getEncoder().encodeToString(record.getValue().asByteArray()));
+                    break;
+                case DOUBLE:
+                    obj.addProperty(valueString, record.getValue().asDouble());
+                    break;
+                case FLOAT:
+                    obj.addProperty(valueString, record.getValue().asFloat());
+                    break;
+                case INTEGER:
+                    obj.addProperty(valueString, record.getValue().asInt());
+                    break;
+                case LONG:
+                    obj.addProperty(valueString, record.getValue().asLong());
+                    break;
+                case SHORT:
+                    obj.addProperty(valueString, record.getValue().asShort());
+                    break;
+                case STRING:
+                    obj.addProperty(valueString, record.getValue().asString());
+                    break;
+                default:
+                    break;
+                }
             }
-            else if (value instanceof StringValue) {
-                obj.addProperty("value", record.getValue().asString());
-            }
-            else if (value instanceof ShortValue) {
-                obj.addProperty("value", record.getValue().asShort());
-            }
-            else if (value instanceof LongValue) {
-                obj.addProperty("value", record.getValue().asLong());
-            }
-            else if (value instanceof IntValue) {
-                obj.addProperty("value", record.getValue().asInt());
-            }
-            else if (value instanceof FloatValue) {
-                obj.addProperty("value", record.getValue().asFloat());
-            }
-            else if (value instanceof ByteValue) {
-                obj.addProperty("value", record.getValue().asByte());
-            }
-            else if (value instanceof ByteArrayValue) {
-                obj.addProperty("value", Base64.getEncoder().encodeToString(record.getValue().asByteArray()));
-            }
-            else if (value instanceof BooleanValue) {
-                obj.addProperty("value", record.getValue().asBoolean());
-            }
-
             return obj;
         }
     }

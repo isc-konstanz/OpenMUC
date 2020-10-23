@@ -119,6 +119,7 @@
             CHANNEL_SAMPLING_INTERVAL: 'Sampling Inverval',
             CHANNEL_SAMPLING_TIME_OFFSET: 'Sampling Time Offset',
             CHANNEL_SAMPLING_GROUP: 'Sampling Group',
+            CHANNEL_SETTINGS: 'Channel Settings',
             CHANNEL_DISABLED: 'Disabled',
             CHANNEL_ID_HINT: 'The ID of the channel.',
             CHANNEL_DESCRIPTION_HINT: 'The description of the channel. Exists for informational purposes only.',
@@ -135,6 +136,7 @@
             CHANNEL_SAMPLING_INTERVAL_HINT: 'Time interval between two attempts to read this channel. -1 or omitting samlingOffset disables sampling on this channel.',
             CHANNEL_SAMPLING_TIME_OFFSET_HINT: 'Offset of the sampling time.',
             CHANNEL_SAMPLING_GROUP_HINT: 'For grouping channels. All channels with the same samplingGroup and same samplingInterval are in one group. The purpous of samplingGroups is to improve the drivers performance - if possible.',
+            CHANNEL_SETTINGS_HINT: 'Settings for this channel. Some Parsers need this.',
             CHANNEL_DISABLED_HINT: 'Disables all communication activity (e.g. sampling, writing, connecting) for this channel.',
             CHANNEL_NOT_HISTORIC: 'Channel does not have a history.',
             DELETE_CONFIRM_MESSAGE: 'Are you sure to delete',
@@ -292,7 +294,9 @@
             HOURS: 'Stunden',
             SAVE: 'Speichern',
             CHANNEL_NOT_HISTORIC: 'Kanal hat keine historischen Werte.',
-            MINUTE_STEPS: 'Minutenschritte'
+            MINUTE_STEPS: 'Minutenschritte',
+            CHANNEL_SETTINGS: 'Kanal Einstellungen',
+            CHANNEL_SETTINGS_HINT: 'Einstellungen für diesen Kanal. Wird von manchen Parsern benötigt.'
         });
 
         $translateProvider.useCookieStorage();

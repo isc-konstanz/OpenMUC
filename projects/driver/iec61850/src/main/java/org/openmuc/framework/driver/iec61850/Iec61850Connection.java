@@ -21,9 +21,9 @@
 package org.openmuc.framework.driver.iec61850;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.openmuc.framework.config.ChannelScanInfo;
@@ -45,37 +45,37 @@ import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beanit.openiec61850.BasicDataAttribute;
-import com.beanit.openiec61850.BdaBitString;
-import com.beanit.openiec61850.BdaBoolean;
-import com.beanit.openiec61850.BdaCheck;
-import com.beanit.openiec61850.BdaDoubleBitPos;
-import com.beanit.openiec61850.BdaEntryTime;
-import com.beanit.openiec61850.BdaFloat32;
-import com.beanit.openiec61850.BdaFloat64;
-import com.beanit.openiec61850.BdaInt128;
-import com.beanit.openiec61850.BdaInt16;
-import com.beanit.openiec61850.BdaInt16U;
-import com.beanit.openiec61850.BdaInt32;
-import com.beanit.openiec61850.BdaInt32U;
-import com.beanit.openiec61850.BdaInt64;
-import com.beanit.openiec61850.BdaInt8;
-import com.beanit.openiec61850.BdaInt8U;
-import com.beanit.openiec61850.BdaOctetString;
-import com.beanit.openiec61850.BdaOptFlds;
-import com.beanit.openiec61850.BdaQuality;
-import com.beanit.openiec61850.BdaReasonForInclusion;
-import com.beanit.openiec61850.BdaTapCommand;
-import com.beanit.openiec61850.BdaTimestamp;
-import com.beanit.openiec61850.BdaTriggerConditions;
-import com.beanit.openiec61850.BdaUnicodeString;
-import com.beanit.openiec61850.BdaVisibleString;
-import com.beanit.openiec61850.ClientAssociation;
-import com.beanit.openiec61850.Fc;
-import com.beanit.openiec61850.FcModelNode;
-import com.beanit.openiec61850.ModelNode;
-import com.beanit.openiec61850.ServerModel;
-import com.beanit.openiec61850.ServiceError;
+import com.beanit.iec61850bean.BasicDataAttribute;
+import com.beanit.iec61850bean.BdaBitString;
+import com.beanit.iec61850bean.BdaBoolean;
+import com.beanit.iec61850bean.BdaCheck;
+import com.beanit.iec61850bean.BdaDoubleBitPos;
+import com.beanit.iec61850bean.BdaEntryTime;
+import com.beanit.iec61850bean.BdaFloat32;
+import com.beanit.iec61850bean.BdaFloat64;
+import com.beanit.iec61850bean.BdaInt128;
+import com.beanit.iec61850bean.BdaInt16;
+import com.beanit.iec61850bean.BdaInt16U;
+import com.beanit.iec61850bean.BdaInt32;
+import com.beanit.iec61850bean.BdaInt32U;
+import com.beanit.iec61850bean.BdaInt64;
+import com.beanit.iec61850bean.BdaInt8;
+import com.beanit.iec61850bean.BdaInt8U;
+import com.beanit.iec61850bean.BdaOctetString;
+import com.beanit.iec61850bean.BdaOptFlds;
+import com.beanit.iec61850bean.BdaQuality;
+import com.beanit.iec61850bean.BdaReasonForInclusion;
+import com.beanit.iec61850bean.BdaTapCommand;
+import com.beanit.iec61850bean.BdaTimestamp;
+import com.beanit.iec61850bean.BdaTriggerConditions;
+import com.beanit.iec61850bean.BdaUnicodeString;
+import com.beanit.iec61850bean.BdaVisibleString;
+import com.beanit.iec61850bean.ClientAssociation;
+import com.beanit.iec61850bean.Fc;
+import com.beanit.iec61850bean.FcModelNode;
+import com.beanit.iec61850bean.ModelNode;
+import com.beanit.iec61850bean.ServerModel;
+import com.beanit.iec61850bean.ServiceError;
 
 public final class Iec61850Connection implements Connection {
 
@@ -813,35 +813,35 @@ public final class Iec61850Connection implements Connection {
         TIMESTAMP {
             @Override
             public ChannelScanInfo getScanInfo(String channelAddress, BasicDataAttribute bda) {
-                // TODO Auto- method stub
                 return new ChannelScanInfo(channelAddress, "", ValueType.LONG, null);
             }
 
             @Override
             public String bda2String(BasicDataAttribute bda) {
-                Date date = ((BdaTimestamp) bda).getDate();
-                return date == null ? "<invalid date>" : ("" + date.getTime());
+                Instant date = ((BdaTimestamp) bda).getInstant();
+                return date == null ? "<invalid date>" : ("" + date.toEpochMilli());
             }
 
             @Override
             public Record setRecord(BasicDataAttribute bda, long receiveTime) {
-                Date date = ((BdaTimestamp) bda).getDate();
+                Instant date = ((BdaTimestamp) bda).getInstant();
+
                 if (date == null) {
                     return new Record(new LongValue(-1l), receiveTime);
                 }
                 else {
-                    return new Record(new LongValue(date.getTime()), receiveTime);
+                    return new Record(new LongValue(date.toEpochMilli()), receiveTime);
                 }
             }
 
             @Override
             public void setBda(String bdaValueString, BasicDataAttribute bda) {
-                ((BdaTimestamp) bda).setDate(new Date(Long.parseLong(bdaValueString)));
+                ((BdaTimestamp) bda).setInstant(Instant.ofEpochMilli(Long.parseLong(bdaValueString)));
             }
 
             @Override
             public void setBda(ChannelValueContainer container, BasicDataAttribute bda) {
-                ((BdaTimestamp) bda).setDate(new Date(container.getValue().asLong()));
+                ((BdaTimestamp) bda).setInstant(Instant.ofEpochMilli(container.getValue().asLong()));
             }
         },
         ENTRY_TIME {

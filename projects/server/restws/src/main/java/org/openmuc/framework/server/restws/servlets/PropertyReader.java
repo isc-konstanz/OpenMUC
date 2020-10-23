@@ -30,11 +30,13 @@ import org.slf4j.LoggerFactory;
 
 public class PropertyReader {
 
+    private static final Logger logger = LoggerFactory.getLogger(PropertyReader.class);
+    private static final String SEPERATOR = ";";
+
     private static PropertyReader instance;
     // Map<ORIGIN, [METHODS, HEADERS]>
     private Map<String, ArrayList<String>> propertyMap;
-    private Boolean enableCors;
-    private static final Logger logger = LoggerFactory.getLogger(PropertyReader.class);
+    private boolean enableCors;
 
     public static PropertyReader getInstance() {
         if (instance == null) {
@@ -44,33 +46,48 @@ public class PropertyReader {
     }
 
     private PropertyReader() {
-        reloadAllProperties();
+        loadAllProperties();
     }
 
-    public void reloadAllProperties() {
-        try {
-            propertyMap = new HashMap<>();
-            String[] urls = System.getProperty("org.openmuc.framework.server.restws.url_cors").split(";");
-            String[] methods = System.getProperty("org.openmuc.framework.server.restws.methods_cors").split(";");
-            String[] headers = System.getProperty("org.openmuc.framework.server.restws.headers_cors").split(";");
+    private void loadAllProperties() {
+        propertyMap = new HashMap<>();
+        enableCors = Boolean.parseBoolean(getProperty("enable_cors"));
+
+        if (enableCors) {
+            String[] urls = getPropertyList("url_cors");
+            String[] methods = getPropertyList("methods_cors");
+            String[] headers = getPropertyList("headers_cors");
             for (int i = 0; i < urls.length; i++) {
                 ArrayList<String> methodHeader = new ArrayList<>();
                 methodHeader.add(methods[i]);
                 methodHeader.add(headers[i]);
                 propertyMap.put(urls[i], methodHeader);
             }
-            enableCors = Boolean.valueOf(System.getProperty("org.openmuc.framework.server.restws.enable_cors"));
-        } catch (NullPointerException e) {
-            logger.error("Necessary system properties for Cors handling are missing");
-            enableCors = false;
         }
+    }
+
+    private String[] getPropertyList(String key) {
+        return getProperty(key).split(SEPERATOR);
+    }
+
+    private String getProperty(String key) {
+        String baseKey = "org.openmuc.framework.server.restws.";
+        String property;
+        try {
+            property = System.getProperty(baseKey + key);
+        } catch (Exception e) {
+            logger.error("Necessary system properties for CORS handling are missing. {}{}", baseKey, key);
+            enableCors = false;
+            property = "";
+        }
+        return property;
     }
 
     public Map<String, ArrayList<String>> getPropertyMap() {
         return propertyMap;
     }
 
-    public Boolean isCorsEnabled() {
+    public boolean isCorsEnabled() {
         return enableCors;
     }
 }

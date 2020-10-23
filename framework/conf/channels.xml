@@ -13,28 +13,29 @@
         <samplingInterval>5s</samplingInterval>
       </channel>
       <channel id="power_photovoltaics">
-        <description>pv_power_production</description>
+        <description>PV Power Production</description>
         <channelAddress>pv_power_production</channelAddress>
+        <settings>tilt=30:azimuth=0</settings>
         <unit>W</unit>
         <samplingInterval>5s</samplingInterval>
         <loggingInterval>5s</loggingInterval>
       </channel>
       <channel id="power_grid">
-        <description>grid_power</description>
+        <description>Grid Power</description>
         <channelAddress>grid_power</channelAddress>
         <unit>W</unit>
         <samplingInterval>5s</samplingInterval>
         <loggingInterval>5s</loggingInterval>
       </channel>
       <channel id="power_heatpump">
-        <description>hp_power_consumption</description>
+        <description>Heat Pump Power Consumption</description>
         <channelAddress>hp_power_consumption</channelAddress>
         <unit>W</unit>
         <samplingInterval>5s</samplingInterval>
         <loggingInterval>5s</loggingInterval>
       </channel>
       <channel id="power_electric_vehicle">
-        <description>ev_power_consumption</description>
+        <description>EV Power Consumption</description>
         <channelAddress>ev_power_consumption</channelAddress>
         <unit>W</unit>
         <samplingInterval>5s</samplingInterval>
@@ -42,9 +43,7 @@
       </channel>
     </device>
   </driver>
-
   <driver id="virtual">
-
     <device id="virtual">
       <channel id="status_electric_vehicle">
         <description>(calculated by demo app)</description>

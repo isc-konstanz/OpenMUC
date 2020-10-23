@@ -35,10 +35,10 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beanit.openiec61850.ClientAssociation;
-import com.beanit.openiec61850.ClientSap;
-import com.beanit.openiec61850.ServerModel;
-import com.beanit.openiec61850.ServiceError;
+import com.beanit.iec61850bean.ClientAssociation;
+import com.beanit.iec61850bean.ClientSap;
+import com.beanit.iec61850bean.ServerModel;
+import com.beanit.iec61850bean.ServiceError;
 
 @Component
 public final class Iec61850Driver implements DriverService {

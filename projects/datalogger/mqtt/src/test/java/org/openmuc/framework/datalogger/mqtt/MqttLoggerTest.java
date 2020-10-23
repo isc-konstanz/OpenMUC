@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 @Disabled
 public class MqttLoggerTest {
 
-    private static final MqttLogger logger = new MqttLogger();
+    private static final MqttLogger mqttLogger = new MqttLogger();
 
     @BeforeAll
     static void connect() {
@@ -39,21 +39,38 @@ public class MqttLoggerTest {
         System.setProperty(packageName + ".password", "guest");
         System.setProperty(packageName + ".topic", "device/data");
 
-        logger.connect();
+        System.setProperty(packageName + ".maxFileCount", "2");
+        System.setProperty(packageName + ".maxFileSize", "1");
+        System.setProperty(packageName + ".maxBufferSize", "1");
+
+        mqttLogger.connect();
     }
 
+    /**
+     * Complete test of file buffering from logger's point of view.
+     * <p>
+     * Scenario: Logger connects to a broker, after some while connection to broker is interrupted. Now, logger should
+     * log into a file. After some time the connection to the broker is reestablished. Now logger should transfer all
+     * buffered messages to the broker and clear the file (buffer) afterwards. At the same time new live logs should be
+     * send to the broker as well (in parallel)
+     */
     @Test
-    void publish() {
-        logger.publish("hello there".getBytes());
-    }
+    void testFileBuffering() {
 
-    @Test
-    void buffering() throws InterruptedException {
-        logger.publish("1st message".getBytes());
-        logger.publish("2nd message".getBytes());
-        logger.publish("3rd message".getBytes());
-        logger.publish("4th message".getBytes());
-        logger.publish("5th message".getBytes());
-        logger.publish("6th message".getBytes());
+        // Involves: mqtt logger, lib-mqtt, lib-FilePersistence
+        // Note: lib-FilePersistence has it own tests for correct parameter handling
+
+        // 1. start logger and connect to a BrokerMock (just print messages to terminal)
+        // (executor which calls log every second)
+
+        // 2. log a few messages to terminal
+
+        // 3. interrupt/close connection of BrokerMock
+
+        // 4. logger should log into file. check if it does.
+
+        // 5. reconnect to the BrokerMock
+
+        // 6. empty file buffer and send (historical) messages to broker AND send live log messages to broker as well
     }
 }

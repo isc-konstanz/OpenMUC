@@ -46,6 +46,7 @@ public class SnmpChannel implements Channel {
     private int samplingInterval;
     private int samplingTimeOffset;
     private String deviceAddress;
+    private String settings;
 
     SnmpChannel() {
     }
@@ -68,6 +69,11 @@ public class SnmpChannel implements Channel {
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String getSettings() {
+        return settings;
     }
 
     @Override

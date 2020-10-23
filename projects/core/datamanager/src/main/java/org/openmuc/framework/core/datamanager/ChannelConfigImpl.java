@@ -57,6 +57,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     private Integer samplingInterval = null;
     private Integer samplingTimeOffset = null;
     private String samplingGroup = null;
+    private String settings;
     private Boolean loggingEvent = null;
     private Integer loggingInterval = null;
     private Integer loggingTimeOffset = null;
@@ -216,6 +217,16 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     }
 
     @Override
+    public String getSettings() {
+        return settings;
+    }
+
+    @Override
+    public void setSettings(String settings) {
+        this.settings = settings;
+    }
+
+    @Override
     public Integer getLoggingInterval() {
         return loggingInterval;
     }
@@ -367,6 +378,9 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 else if (childName.equals("samplingGroup")) {
                     config.setSamplingGroup(childNode.getTextContent());
                 }
+                else if (childName.equals("settings")) {
+                    config.setSettings(childNode.getTextContent());
+                }
                 else if (childName.equals("loggingInterval")) {
                     config.setLoggingInterval(timeStringToMillis(childNode.getTextContent()));
                 }
@@ -471,6 +485,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
+        if (settings != null) {
+            childElement = document.createElement("settings");
+            childElement.setTextContent(settings);
+            parentElement.appendChild(childElement);
+        }
+
         if (loggingInterval != null) {
             childElement = document.createElement("loggingInterval");
             childElement.setTextContent(millisToTimeString(loggingInterval));
@@ -513,6 +533,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         configClone.samplingInterval = samplingInterval;
         configClone.samplingTimeOffset = samplingTimeOffset;
         configClone.samplingGroup = samplingGroup;
+        configClone.settings = settings;
         configClone.loggingInterval = loggingInterval;
         configClone.loggingTimeOffset = loggingTimeOffset;
         configClone.disabled = disabled;
@@ -621,6 +642,13 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         }
         else {
             configClone.samplingGroup = samplingGroup;
+        }
+
+        if (settings == null) {
+            configClone.settings = ChannelConfig.SETTINGS_DEFAULT;
+        }
+        else {
+            configClone.settings = settings;
         }
 
         if (loggingInterval == null) {

@@ -39,6 +39,7 @@ public class RestChannelConfig {
     private Integer samplingInterval = null;
     private Integer samplingTimeOffset = null;
     private String samplingGroup = null;
+    private String settings = null;
     private Integer loggingInterval = null;
     private Integer loggingTimeOffset = null;
     private Boolean loggingEvent = null;
@@ -139,6 +140,14 @@ public class RestChannelConfig {
 
     public void setSamplingGroup(String samplingGroup) {
         this.samplingGroup = samplingGroup;
+    }
+
+    public String getSettings() {
+        return settings;
+    }
+
+    public void setSettings(String settings) {
+        this.settings = settings;
     }
 
     public Integer getLoggingInterval() {

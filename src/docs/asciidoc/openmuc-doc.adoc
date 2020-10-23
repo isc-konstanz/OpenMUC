@@ -454,6 +454,8 @@ device and channel options are explained afterwards.
 
 |channelAddress| yes | _string_ | - | The channelAddress is driver specific and contains the necessary parameters for the driver to access.
 
+|settings| no | _string_ | - | Additional settings for the driver. Syntax is up to the driver implementation.
+
 |valueType| no | DOUBLE  FLOAT  LONG  INTEGER  SHORT  BYTE  BOOLEAN  BYTE_ARRAY STRING| DOUBLE | Data type of the channel. Used on data logger. Driver implementation do NOT receive this settings!
 |valueType Attribute: _length_| no | _integer_ | 10 | The attribute _length_ is only used if valueType is BYTE_ARRAY or STRING. Determines the maximum length of the byte array or string.
 
@@ -738,8 +740,6 @@ include::sections/datalogger/amqp-logger.txt[]
 include::sections/datalogger/mqtt-logger.txt[]
 
 include::sections/datalogger/slotsdb-logger.txt[]
-
-include::sections/datalogger/sql-logger.txt[]
 
 [[anchor-libraries]]
 == Libraries

@@ -41,6 +41,7 @@ public class RestChannelConfigMapper {
         rcc.setSamplingTimeOffset(cc.getSamplingTimeOffset());
         rcc.setScalingFactor(cc.getScalingFactor());
         // rcc.setServerMappings(cc.getServerMappings());
+        rcc.setSettings(cc.getSettings());
         rcc.setUnit(cc.getUnit());
         rcc.setValueOffset(cc.getValueOffset());
         rcc.setValueType(cc.getValueType());
@@ -74,6 +75,7 @@ public class RestChannelConfigMapper {
         cc.setSamplingTimeOffset(rcc.getSamplingTimeOffset());
         cc.setScalingFactor(rcc.getScalingFactor());
         // cc.setServerMappings(rcc.getServerMappings());
+        cc.setSettings(rcc.getSettings());
         cc.setUnit(rcc.getUnit());
         cc.setValueOffset(rcc.getValueOffset());
         cc.setValueType(rcc.getValueType());

@@ -33,34 +33,34 @@ public class DeviceAddress extends GenericSetting {
     private static final Logger logger = LoggerFactory.getLogger(DeviceAddress.class);
 
     @Option(value = "t", mandatory = true, range = "serial|tcp")
-    private final String connectionType = null;
+    private String connectionType = null;
 
     @Option(value = "h", range = "inet_address")
     private InetAddress hostAddress = null;
 
     @Option(value = "p", range = "int")
-    private final int port = 4059;
+    private int port = 4059;
 
     @Option(value = "hdlc", range = "boolean")
-    private final boolean useHdlc = false;
+    private boolean useHdlc = false;
 
     @Option(value = "sp")
-    private final String serialPort = "";
+    private String serialPort = "";
 
     @Option(value = "bd", range = "int")
-    private final int baudrate = 9600;
+    private int baudrate = 9600;
 
     @Option("d")
-    private final long baudRateChangeDelay = 0;
+    private long baudRateChangeDelay = 0;
 
     @Option("eh")
-    private final boolean enableBaudRateHandshake = false;
+    private boolean enableBaudRateHandshake = false;
 
     @Option("iec")
-    private final String iec21Address = "";
+    private String iec21Address = "";
 
     @Option("pd")
-    private final int physicalDeviceAddress = 0;
+    private int physicalDeviceAddress = 0;
 
     public DeviceAddress(String deviceAddress) throws ArgumentSyntaxException {
         int addressLength = parseFields(deviceAddress);

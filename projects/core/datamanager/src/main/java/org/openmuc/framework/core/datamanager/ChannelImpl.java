@@ -64,14 +64,13 @@ import org.slf4j.LoggerFactory;
 public final class ChannelImpl implements Channel {
 
     private static final Logger logger = LoggerFactory.getLogger(ChannelImpl.class);
-
-    private volatile Record latestRecord;
+    private final Set<RecordListener> listeners = new LinkedHashSet<>();
+    private final DataManager dataManager;
     volatile ChannelConfigImpl config;
     ChannelCollection samplingCollection;
     ChannelCollection loggingCollection;
-    private final Set<RecordListener> listeners = new LinkedHashSet<>();
-    private final DataManager dataManager;
     volatile Object handle;
+    private volatile Record latestRecord;
     private Timer timer = null;
     private List<FutureValue> futureValues;
 
@@ -117,6 +116,11 @@ public final class ChannelImpl implements Channel {
     @Override
     public String getDescription() {
         return config.getDescription();
+    }
+
+    @Override
+    public String getSettings() {
+        return config.getSettings();
     }
 
     @Override

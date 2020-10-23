@@ -168,7 +168,7 @@ public class DriverConnectionTest {
 
         ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", delay, interfaces);
         serialIntervace.increaseConnectionCounter();
-        String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
+        String[] deviceAddressTokens = { "/dev/ttyS100", "5" };
         DriverConnection mBusConnection = new DriverConnection(serialIntervace,
                 Integer.parseInt(deviceAddressTokens[1]), null, delay);
 
@@ -216,7 +216,7 @@ public class DriverConnectionTest {
 
         ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", delay, interfaces);
         serialIntervace.increaseConnectionCounter();
-        String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
+        String[] deviceAddressTokens = { "/dev/ttyS100", "5" };
         DriverConnection mBusConnection = new DriverConnection(serialIntervace,
                 Integer.parseInt(deviceAddressTokens[1]), null, delay);
 
@@ -274,7 +274,7 @@ public class DriverConnectionTest {
 
     }
 
-    @Test(expected = ConnectionException.class)
+    @Test
     public void testReadThrowsIOException() throws Exception {
         MBusConnection con = mock(MBusConnection.class);
         VariableDataStructure vds = new VariableDataStructure(NZR_ANSWER, 6, NZR_ANSWER.length - 6, null, null);
@@ -284,7 +284,7 @@ public class DriverConnectionTest {
         ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", delay, interfaces);
         serialIntervace.increaseConnectionCounter();
 
-        String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
+        String[] deviceAddressTokens = { "/dev/ttyS100", "5" };
         int address = Integer.parseInt(deviceAddressTokens[1]);
         DriverConnection driverCon = new DriverConnection(serialIntervace, address, null, delay);
 
@@ -295,7 +295,7 @@ public class DriverConnectionTest {
         assertEquals(Flag.DRIVER_ERROR_TIMEOUT, actualFlag);
     }
 
-    @Test(expected = ConnectionException.class)
+    @Test
     public void testReadThrowsTimeoutException() throws Exception {
 
         MBusConnection con = mock(MBusConnection.class);
@@ -305,7 +305,7 @@ public class DriverConnectionTest {
 
         ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", delay, interfaces);
         serialIntervace.increaseConnectionCounter();
-        String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
+        String[] deviceAddressTokens = { "/dev/ttyS100", "5" };
 
         int address = Integer.parseInt(deviceAddressTokens[1]);
         DriverConnection driverCon = new DriverConnection(serialIntervace, address, null, delay);
@@ -326,7 +326,7 @@ public class DriverConnectionTest {
 
         ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", delay, interfaces);
         serialIntervace.increaseConnectionCounter();
-        String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
+        String[] deviceAddressTokens = { "/dev/ttyS100", "5" };
         DriverConnection driverCon = new DriverConnection(serialIntervace, Integer.parseInt(deviceAddressTokens[1]),
                 null, delay);
 
@@ -343,7 +343,7 @@ public class DriverConnectionTest {
 
         ConnectionInterface serialIntervace = new ConnectionInterface(con, "/dev/ttyS100:5", delay, interfaces);
         serialIntervace.increaseConnectionCounter();
-        String[] deviceAddressTokens = "/dev/ttyS100:5".trim().split(":");
+        String[] deviceAddressTokens = { "/dev/ttyS100", "5" };
         DriverConnection mBusConnection = new DriverConnection(serialIntervace,
                 Integer.parseInt(deviceAddressTokens[1]), null, delay);
 

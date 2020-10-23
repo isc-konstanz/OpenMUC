@@ -32,7 +32,6 @@ import java.util.concurrent.TimeoutException;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
@@ -161,6 +160,26 @@ public class AmqpDriverConnection implements Connection {
         copiedContainer.setRecord(record);
 
         recordContainerList.add(copiedContainer);
+    }
+
+    private class LogRecordContainerImpl implements LogRecordContainer {
+        private final String channelId;
+        private final Record record;
+
+        public LogRecordContainerImpl(String channelId, Record record) {
+            this.channelId = channelId;
+            this.record = record;
+        }
+
+        @Override
+        public String getChannelId() {
+            return channelId;
+        }
+
+        @Override
+        public Record getRecord() {
+            return record;
+        }
     }
 
     @Override
