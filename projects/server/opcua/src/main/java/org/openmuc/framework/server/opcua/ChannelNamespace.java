@@ -34,35 +34,46 @@ public class ChannelNamespace extends ManagedNamespace {
 
     private final SubscriptionModel subscriptionModel;
 
-    private UaFolderNode folderNode = new UaFolderNode(
-            getNodeContext(),
-            newNodeId("Machine"),
-            newQualifiedName("Machine"),
-            LocalizedText.english("Machine"));
-
     ChannelNamespace(OpcUaServer server) {
         super(server, NAMESPACE_URI);
         subscriptionModel = new SubscriptionModel(server, this);
     }
 
-    @Override
-    protected void onStartup() {
-        super.onStartup();
+    public void addChannelNode(UaChannel channel) throws UaException {
+        String folderName = channel.getFolder();
 
+        UaFolderNode folderNode;
+         if (folderName != null) {
+            folderNode = new UaFolderNode(
+                    getNodeContext(),
+                    newNodeId(folderName),
+                    newQualifiedName(folderName),
+                    LocalizedText.english(folderName));
+            
+            folderNode.addReference(new Reference(
+                    folderNode.getNodeId(),
+                    Identifiers.Organizes,
+                    Identifiers.ObjectsFolder.expanded(),
+                    false));
+         }
+         else {
+            folderNode = new UaFolderNode(
+                    getNodeContext(),
+                    Identifiers.ObjectsFolder,
+                    newQualifiedName("ObjectsFolder"),
+                    LocalizedText.english("ObjectsFolder"));
+            
+            folderNode.addReference(new Reference(
+                    folderNode.getNodeId(),
+                    Identifiers.Organizes,
+                    Identifiers.RootFolder.expanded(),
+                    false));
+        }
         getNodeManager().addNode(folderNode);
 
-        // Make sure our new folder shows up under the server's Objects folder.
-        folderNode.addReference(new Reference(
-                folderNode.getNodeId(),
-                Identifiers.Organizes,
-                Identifiers.ObjectsFolder.expanded(),
-                false
-        ));
-    }
-
-    public void addChannelNode(UaChannel channel) throws UaException {
+        //Adding variable to address space
         AttributeContext context = new AttributeContext(getServer());
-        
+
         String name = channel.getDescription();
         if (name.isEmpty()) {
             name = channel.getId();
@@ -70,7 +81,7 @@ public class ChannelNamespace extends ManagedNamespace {
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId(channel.getId()))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setBrowseName(newQualifiedName(name))
+                .setBrowseName(newQualifiedName(channel.getId()))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(channel.getNodeType())
                 .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -81,6 +92,11 @@ public class ChannelNamespace extends ManagedNamespace {
 
         getNodeManager().addNode(node);
         folderNode.addOrganizes(node);
+    }
+
+    @Override
+    protected void onStartup() {
+        super.onStartup();
     }
 
     @Override

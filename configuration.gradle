@@ -41,6 +41,7 @@ project.ext {
     it.getPath() == ":openmuc-driver-knx" ||
     it.getPath() == ":openmuc-driver-mbus" ||
     it.getPath() == ":openmuc-driver-modbus" ||
+    it.getPath() == ":openmuc-driver-opcua" ||
     it.getPath() == ":openmuc-driver-rest" ||
     it.getPath() == ":openmuc-driver-rpi-gpio" ||
     it.getPath() == ":openmuc-driver-rpi-w1" ||

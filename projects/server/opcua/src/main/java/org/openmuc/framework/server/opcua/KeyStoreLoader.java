@@ -24,22 +24,22 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateBuilder;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
+
 class KeyStoreLoader {
+    private static final Logger logger = LoggerFactory.getLogger(KeyStoreLoader.class);
 
     private static final Pattern IP_ADDR_PATTERN = Pattern.compile(
         "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
     private static final String SERVER_ALIAS = "openmuc";
     private static final char[] PASSWORD = "password".toCharArray();
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private X509Certificate[] serverCertificateChain;
     private X509Certificate serverCertificate;
@@ -50,22 +50,22 @@ class KeyStoreLoader {
 
         File serverKeyStore = baseDir.toPath().resolve("openmuc-server.pfx").toFile();
 
-        logger.info("Loading KeyStore at {}", serverKeyStore);
+        logger.debug("Loading KeyStore at {}", serverKeyStore);
 
         if (!serverKeyStore.exists()) {
             keyStore.load(null, PASSWORD);
 
             KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
-            String applicationUri = "urn:eclipse:openmuc:server:" + UUID.randomUUID();
+            String applicationUri = "urn:openmuc:server:" + UUID.randomUUID();
 
             SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
                 .setCommonName("OpenMUC Server")
-                .setOrganization("digitalpetri")
+                .setOrganization("OpenMUC")
                 .setOrganizationalUnit("dev")
-                .setLocalityName("Folsom")
-                .setStateName("CA")
-                .setCountryCode("US")
+                .setLocalityName("Freiburg")
+                .setStateName("BW")
+                .setCountryCode("DE")
                 .setApplicationUri(applicationUri);
 
             // Get as many hostnames and IP addresses as we can listed in the certificate.
@@ -86,7 +86,8 @@ class KeyStoreLoader {
 
             keyStore.setKeyEntry(SERVER_ALIAS, keyPair.getPrivate(), PASSWORD, new X509Certificate[]{certificate});
             keyStore.store(new FileOutputStream(serverKeyStore), PASSWORD);
-        } else {
+        }
+        else {
             keyStore.load(new FileInputStream(serverKeyStore), PASSWORD);
         }
 

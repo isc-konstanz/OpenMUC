@@ -1,4 +1,4 @@
-include "openmuc-app-simpledemo", "openmuc-core-api", "openmuc-core-datamanager", "openmuc-core-spi", "openmuc-datalogger-ascii", "openmuc-datalogger-slotsdb", "openmuc-datalogger-sql", "openmuc-driver-aggregator", "openmuc-driver-csv", "openmuc-driver-dlms", "openmuc-driver-ehz", "openmuc-driver-iec60870", "openmuc-driver-iec61850", "openmuc-driver-iec62056p21", "openmuc-driver-knx", "openmuc-driver-mbus", "openmuc-driver-modbus", "openmuc-driver-rest", "openmuc-driver-snmp", "openmuc-driver-sql", "openmuc-driver-rpi-gpio", "openmuc-driver-rpi-w1", "openmuc-driver-wmbus", "openmuc-server-modbus", "openmuc-server-restws", "openmuc-server-opcua", "openmuc-webui-base", "openmuc-webui-channelaccesstool", "openmuc-webui-channelconfigurator", "openmuc-webui-dataexporter", "openmuc-webui-dataplotter", "openmuc-webui-mediaviewer", "openmuc-webui-simpledemovisualisation", "openmuc-webui-spi", "openmuc-webui-userconfigurator"
+include "openmuc-app-simpledemo", "openmuc-core-api", "openmuc-core-datamanager", "openmuc-core-spi", "openmuc-datalogger-ascii", "openmuc-datalogger-slotsdb", "openmuc-datalogger-sql", "openmuc-driver-aggregator", "openmuc-driver-csv", "openmuc-driver-dlms", "openmuc-driver-ehz", "openmuc-driver-iec60870", "openmuc-driver-iec61850", "openmuc-driver-iec62056p21", "openmuc-driver-knx", "openmuc-driver-mbus", "openmuc-driver-modbus", "openmuc-driver-opcua", "openmuc-driver-rest", "openmuc-driver-snmp", "openmuc-driver-sql", "openmuc-driver-rpi-gpio", "openmuc-driver-rpi-w1", "openmuc-driver-wmbus", "openmuc-server-modbus", "openmuc-server-restws", "openmuc-server-opcua", "openmuc-webui-base", "openmuc-webui-channelaccesstool", "openmuc-webui-channelconfigurator", "openmuc-webui-dataexporter", "openmuc-webui-dataplotter", "openmuc-webui-mediaviewer", "openmuc-webui-simpledemovisualisation", "openmuc-webui-spi", "openmuc-webui-userconfigurator"
 
 project(":openmuc-app-simpledemo").projectDir = file("projects/app/simpledemo")
 project(":openmuc-core-api").projectDir = file("projects/core/api")
@@ -17,6 +17,7 @@ project(":openmuc-driver-iec62056p21").projectDir = file("projects/driver/iec620
 project(":openmuc-driver-knx").projectDir = file("projects/driver/knx")
 project(":openmuc-driver-mbus").projectDir = file("projects/driver/mbus")
 project(":openmuc-driver-modbus").projectDir = file("projects/driver/modbus")
+project(":openmuc-driver-opcua").projectDir = file("projects/driver/opcua")
 project(":openmuc-driver-rest").projectDir = file("projects/driver/rest")
 project(":openmuc-driver-rpi-gpio").projectDir = file("projects/driver/rpi-gpio")
 project(":openmuc-driver-rpi-w1").projectDir = file("projects/driver/rpi-w1")

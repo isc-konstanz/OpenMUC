@@ -41,23 +41,59 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
+import org.openmuc.framework.options.AddressSyntax;
 import org.openmuc.framework.options.Setting;
+import org.openmuc.framework.options.SettingsSyntax;
 import org.openmuc.framework.server.Channel;
 
+@AddressSyntax(separator = ";")
+@SettingsSyntax(separator = ";", assignmentOperator = "=")
 public class UaChannel extends Channel implements AttributeDelegate {
 
     @Setting(mandatory = false)
-    private String folder = "Channels";
+    private String folder = null;
 
-    @Setting(id="ns", mandatory = false)
-    private int namespace = 0;
+    @Setting(id="ns",
+    		 mandatory = false)
+    private int namespaceIndex = 0;
+
+    public String getFolder() {
+        return folder;
+    }
+
+    public int getNamespaceIndex() {
+        return namespaceIndex;
+    }
+
+    public NodeId getNodeType() {
+        switch (getValueType()) {
+        case BOOLEAN:
+            return Identifiers.Boolean;
+        case BYTE:
+            return Identifiers.Byte;
+        case BYTE_ARRAY:
+            return Identifiers.ByteString;
+        case SHORT:
+            return Identifiers.UInt16;
+        case INTEGER:
+            return Identifiers.Integer;
+        case LONG:
+            return Identifiers.UInt64;
+        case FLOAT:
+            return Identifiers.Float;
+        case DOUBLE:
+            return Identifiers.Double;
+        default:
+            return Identifiers.String;
+        }
+    }
 
     @Override
     public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
         Record record = getRecord();
         if (record.getFlag() != Flag.VALID) {
             return new DataValue(StatusCode.BAD);
-        }    
+        }
         Value value = record.getValue();
         DateTime sourceTime = new DateTime(record.getTimestamp());
         DateTime serverTime = new DateTime(System.currentTimeMillis());
@@ -67,8 +103,6 @@ public class UaChannel extends Channel implements AttributeDelegate {
             return new DataValue(new Variant(value.asBoolean()), StatusCode.GOOD, sourceTime, serverTime);
         case BYTE:
             return new DataValue(new Variant(value.asByte()), StatusCode.GOOD, sourceTime, serverTime);
-        case BYTE_ARRAY:
-            return new DataValue(new Variant(value.asByteArray()), StatusCode.GOOD, sourceTime, serverTime);
         case SHORT:
             return new DataValue(new Variant(value.asShort()), StatusCode.GOOD, sourceTime, serverTime);
         case INTEGER:
@@ -95,9 +129,6 @@ public class UaChannel extends Channel implements AttributeDelegate {
         case BYTE:
             record = new Record(new ByteValue((Byte) variant.getValue()), value.getServerTime().getUtcTime());
             break;
-//        case BYTE_ARRAY:
-//            record = new Record(new ByteArrayValue((ByteArray) variant.getValue()), value.getServerTime().getUtcTime());
-//            break;
         case SHORT:
             record = new Record(new ShortValue((Short) variant.getValue()), value.getServerTime().getUtcTime());
             break;
@@ -118,37 +149,6 @@ public class UaChannel extends Channel implements AttributeDelegate {
             break;
         }
         setRecord(record);
-    }
-    
-    public String getFolder() {
-        return folder;
-    }
-
-    public int getNamespace() {
-        return namespace;
-    }
-
-    public NodeId getNodeType() {
-        switch (getValueType()) {
-        case BOOLEAN:
-            return Identifiers.Boolean;
-        case BYTE:
-            return Identifiers.Byte;
-        case BYTE_ARRAY:
-            return Identifiers.ByteString;
-        case SHORT:
-            return Identifiers.UInt16;
-        case INTEGER:
-            return Identifiers.Integer;
-        case LONG:
-            return Identifiers.UInt64;
-        case FLOAT:
-            return Identifiers.Float;
-        case DOUBLE:
-            return Identifiers.Double;
-        default:
-            return Identifiers.String;
-        }
     }
 
 }

@@ -26,7 +26,7 @@ configurations.osgibundles.transitive = false;
 configurations.osgimain.transitive = false;
 
 dependencies {
-  def openmucVersion = "0.18.1"
+  def openmucVersion = "0.18.2"
 
   osgimain group:    "org.apache.felix",      name: "org.apache.felix.main",                 version: "6.0.1"
 
@@ -50,16 +50,18 @@ dependencies {
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-mediaviewer",             version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-simpledemovisualisation", version: openmucVersion
 
+  osgibundles group: "org.openmuc.framework", name: "openmuc-server-opcua",                  version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-server-restws",                 version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-app-simpledemo",                version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv",                    version: openmucVersion
+  osgibundles group: "org.openmuc.framework", name: "openmuc-driver-opcua",                  version: openmucVersion
 
   //------------------------------------------------------------------------------------------------------
   // The official JDBC driver for MySQL.
   // Only necessary if the default configurations with the SQL DataLogger is used.
   //------------------------------------------------------------------------------------------------------
   //osgibundles group: 'mysql',                 name: 'mysql-connector-java',              version: "8.0.17"
-
+  //osbibundles group: 'org.postgresql'			name: 'postgresql',			               version: "42.2.10.jre7"
   //------------------------------------------------------------------------------------------------------
   // The Apache Felix Gogo standard shell for OSGi (http://felix.apache.org/site/apache-felix-gogo.html)
   //--------------------------------------------------------------------------------------------------
@@ -130,8 +132,8 @@ dependencies {
   // Adds Google dependencies, needed by REST, MySQL or OPC UA bundles
   //------------------------------------------------------------------------------------------------------
   osgibundles group: 'com.google.code.gson', name: 'gson',                               version: '2.8.5'
-  //osgibundles group: 'com.google.guava',     name: 'guava',                              version: '26.0-jre'
-  //osgibundles group: 'com.google.protobuf',  name: 'protobuf-java',                      version: '3.11.1'
+  osgibundles group: 'com.google.guava',     name: 'guava',                              version: '26.0-jre'
+  osgibundles group: 'com.google.protobuf',  name: 'protobuf-java',                      version: '3.11.1'
 }
 
 task loadBundles(type: Sync) {
