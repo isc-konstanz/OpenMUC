@@ -62,10 +62,6 @@ public class UaConnection extends Device<UaChannel>{
 
     private int namespaceIndex = 0;
 
-    public String getHost() {
-        return address;
-    }
-
     @Override
     protected void onConnect() throws ConnectionException {
         try {
