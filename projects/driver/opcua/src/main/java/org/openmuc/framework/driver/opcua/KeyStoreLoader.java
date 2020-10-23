@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class KeyStoreLoader {
+    private static final Logger logger = LoggerFactory.getLogger(KeyStoreLoader.class);
 
     private static final Pattern IP_ADDR_PATTERN = Pattern.compile(
         "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
@@ -26,17 +27,15 @@ public class KeyStoreLoader {
     private static final String CLIENT_ALIAS = "client-ai";
     private static final char[] PASSWORD = "password".toCharArray();
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private X509Certificate clientCertificate;
     private KeyPair clientKeyPair;
 
     KeyStoreLoader load(Path baseDir) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
-        Path serverKeyStore = baseDir.resolve("example-client.pfx");
+        Path serverKeyStore = baseDir.resolve("openmuc-client.pfx");
 
-        logger.info("Loading KeyStore at {}", serverKeyStore);
+        logger.debug("Loading KeyStore at {}", serverKeyStore);
 
         if (!Files.exists(serverKeyStore)) {
             keyStore.load(null, PASSWORD);
@@ -44,13 +43,13 @@ public class KeyStoreLoader {
             KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
             SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
-                .setCommonName("Eclipse Milo Example Client")
-                .setOrganization("digitalpetri")
+                .setCommonName("OpenMUC Client")
+                .setOrganization("OpenMUC")
                 .setOrganizationalUnit("dev")
-                .setLocalityName("Folsom")
-                .setStateName("CA")
-                .setCountryCode("US")
-                .setApplicationUri("urn:eclipse:milo:examples:client")
+                .setLocalityName("Freiburg")
+                .setStateName("BW")
+                .setCountryCode("DE")
+                .setApplicationUri("urn:openmuc:client")
                 .addDnsName("localhost")
                 .addIpAddress("127.0.0.1");
 
@@ -69,7 +68,8 @@ public class KeyStoreLoader {
             try (OutputStream out = Files.newOutputStream(serverKeyStore)) {
                 keyStore.store(out, PASSWORD);
             }
-        } else {
+        }
+        else {
             try (InputStream in = Files.newInputStream(serverKeyStore)) {
                 keyStore.load(in, PASSWORD);
             }
@@ -81,7 +81,6 @@ public class KeyStoreLoader {
             PublicKey serverPublicKey = clientCertificate.getPublicKey();
             clientKeyPair = new KeyPair(serverPublicKey, (PrivateKey) serverPrivateKey);
         }
-
         return this;
     }
 

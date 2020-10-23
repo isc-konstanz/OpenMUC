@@ -12,10 +12,7 @@ package org.openmuc.framework.server.opcua;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -25,13 +22,11 @@ import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class ChannelNamespace extends ManagedNamespace {
 
@@ -39,54 +34,50 @@ public class ChannelNamespace extends ManagedNamespace {
 
     private final SubscriptionModel subscriptionModel;
 
-//    private final Map<String, UaFolderNode> folders = new HashMap<String, UaFolderNode>();
-
     ChannelNamespace(OpcUaServer server) {
         super(server, NAMESPACE_URI);
         subscriptionModel = new SubscriptionModel(server, this);
     }
 
     public void addChannelNode(UaChannel channel) throws UaException {
-    	UaFolderNode folderNode;
-    	String folderName = channel.getFolder();
+        String folderName = channel.getFolder();
 
-    	//Adding folder to address Space
-     	if(folderName != null) {
-			folderNode = new UaFolderNode(
-	                getNodeContext(),
-	                newNodeId(folderName),
-	                newQualifiedName(folderName),
-	                LocalizedText.english(folderName));
-			
-	        folderNode.addReference(new Reference(
-	                folderNode.getNodeId(),
-	                Identifiers.Organizes,
-	                Identifiers.ObjectsFolder.expanded(),
-	                false));
+        UaFolderNode folderNode;
+         if (folderName != null) {
+            folderNode = new UaFolderNode(
+                    getNodeContext(),
+                    newNodeId(folderName),
+                    newQualifiedName(folderName),
+                    LocalizedText.english(folderName));
+            
+            folderNode.addReference(new Reference(
+                    folderNode.getNodeId(),
+                    Identifiers.Organizes,
+                    Identifiers.ObjectsFolder.expanded(),
+                    false));
+         }
+         else {
+            folderNode = new UaFolderNode(
+                    getNodeContext(),
+                    Identifiers.ObjectsFolder,
+                    newQualifiedName("ObjectsFolder"),
+                    LocalizedText.english("ObjectsFolder"));
+            
+            folderNode.addReference(new Reference(
+                    folderNode.getNodeId(),
+                    Identifiers.Organizes,
+                    Identifiers.RootFolder.expanded(),
+                    false));
+        }
+        getNodeManager().addNode(folderNode);
 
-     	}else {
-			folderNode = new UaFolderNode(
-	                getNodeContext(),
-	                Identifiers.ObjectsFolder,
-	                newQualifiedName("ObjectsFolder"),
-	                LocalizedText.english("ObjectsFolder"));
-			
-	        folderNode.addReference(new Reference(
-	                folderNode.getNodeId(),
-	                Identifiers.Organizes,
-	                Identifiers.RootFolder.expanded(),
-	                false));
-    	}
-		getNodeManager().addNode(folderNode);
-		
         //Adding variable to address space
-     	AttributeContext context = new AttributeContext(getServer());
+        AttributeContext context = new AttributeContext(getServer());
 
-     	String name = channel.getDescription();
+        String name = channel.getDescription();
         if (name.isEmpty()) {
             name = channel.getId();
         }
-
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId(channel.getId()))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
@@ -98,7 +89,7 @@ public class ChannelNamespace extends ManagedNamespace {
 
         node.setValue(channel.getValue(context, node));
         node.setAttributeDelegate(channel);
-        
+
         getNodeManager().addNode(node);
         folderNode.addOrganizes(node);
     }
@@ -106,7 +97,6 @@ public class ChannelNamespace extends ManagedNamespace {
     @Override
     protected void onStartup() {
         super.onStartup();
-
     }
 
     @Override

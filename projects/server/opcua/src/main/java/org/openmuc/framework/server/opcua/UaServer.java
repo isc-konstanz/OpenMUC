@@ -48,7 +48,6 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
@@ -166,14 +165,13 @@ public class UaServer extends Server<UaChannel> {
         
         for (UaChannel channel : channels) {
             try {
-                 namespace.addChannelNode(channel);
+                namespace.addChannelNode(channel);
                 
             } catch (UaException e) {
                 logger.info("Failed to register UA Node for channel {}: {}", channel.getId(), 
                         e.getMessage());
             }
         }
-//        UShort namespaceIndex = namespace.getNamespaceIndex();
         namespace.startup();
     }
 

@@ -24,17 +24,15 @@ import org.openmuc.framework.driver.Driver;
 import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component
 public class UaDriver extends Driver<UaConnection> implements DriverService {
-    private static final Logger logger = LoggerFactory.getLogger(UaDriver.class);
 
     private static final String ID = "opcua";
     private static final String NAME = "OPC UA";
-    private static final String DESCRIPTION = 
-    		"placeholder for description";
+    private static final String DESCRIPTION = "OPC Unified Architecture (OPC UA) "
+    		+ "is a machine to machine communication protocol for industrial automation "
+    		+ "developed by the OPC Foundation.";
 
 	@Override
     public String getId() {
@@ -46,13 +44,5 @@ public class UaDriver extends Driver<UaConnection> implements DriverService {
 		context.setName(NAME)
 				.setDescription(DESCRIPTION);
 	}
-
-	@Override
-    public void onActivate() {
-    }
-
-    @Override
-    public void onDeactivate() {
-    }
 
 }
