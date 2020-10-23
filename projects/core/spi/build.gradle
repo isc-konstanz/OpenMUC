@@ -8,9 +8,7 @@ dependencies {
 jar {
   manifest {
     name = projectName
-    instruction 'Export-Package', 'org.openmuc.framework.datalogger.*,' +
-                                  'org.openmuc.framework.driver.*,' +
-                                  'org.openmuc.framework.server.*'
+    instruction 'Export-Package', 'org.openmuc.framework.*.spi.*'
   }
 }
 

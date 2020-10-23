@@ -73,19 +73,19 @@ import org.openmuc.framework.dataaccess.LogicalDevice;
 import org.openmuc.framework.dataaccess.LogicalDeviceChangeListener;
 import org.openmuc.framework.dataaccess.ReadRecordContainer;
 import org.openmuc.framework.dataaccess.WriteValueContainer;
-import org.openmuc.framework.datalogger.DataLogger;
+import org.openmuc.framework.datalogger.spi.DataLoggerComponent;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
-import org.openmuc.framework.driver.Driver;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.driver.spi.DriverComponent;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.openmuc.framework.options.DriverInfoFactory;
-import org.openmuc.framework.server.Server;
+import org.openmuc.framework.server.spi.ServerComponent;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 import org.openmuc.framework.server.spi.ServerService;
 import org.osgi.service.component.annotations.Activate;
@@ -886,8 +886,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 logger.error("Unable to register driver: a driver with the ID {} is already registered.", driverId);
                 return;
             }
-            if (driver instanceof Driver) {
-                ((Driver<?>) driver).activate(this);
+            if (driver instanceof DriverComponent) {
+                ((DriverComponent) driver).activate(this);
             }
             newDrivers.put(driverId, driver);
             interrupt();
@@ -915,8 +915,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 newDrivers.remove(driverId);
             }
         }
-        if (driver instanceof Driver) {
-            ((Driver<?>) driver).deactivate();
+        if (driver instanceof DriverComponent) {
+            ((DriverComponent) driver).deactivate();
         }
         logger.info("Unregistered driver: {}", driverId);
     }
@@ -931,8 +931,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     private void bindServerService(ServerService server) {
         logger.debug("Registering server: {}", server.getId());
 
-        if (server instanceof Server) {
-            ((Server<?>) server).activate(this);
+        if (server instanceof ServerComponent) {
+            ((ServerComponent) server).activate(this);
         }
         synchronized (newServers) {
             newServers.add(server);
@@ -965,8 +965,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 newServers.remove(server);
             }
         }
-        if (server instanceof Server) {
-            ((Server<?>) server).deactivate();
+        if (server instanceof ServerComponent) {
+            ((ServerComponent) server).deactivate();
         }
         logger.info("Unregistered server: {}", serverId);
     }
@@ -1005,8 +1005,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
         logger.debug("Registering data logger: {}", dataLogger.getId());
         
         synchronized (newDataLoggers) {
-            if (dataLogger instanceof DataLogger) {
-                ((DataLogger<?>) dataLogger).activate(this);
+            if (dataLogger instanceof DataLoggerComponent) {
+                ((DataLoggerComponent) dataLogger).activate(this);
             }
             newDataLoggers.add(dataLogger);
             interrupt();
@@ -1032,8 +1032,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 newDataLoggers.remove(dataLogger);
             }
         }
-        if (dataLogger instanceof DataLogger) {
-            ((DataLogger<?>) dataLogger).deactivate();
+        if (dataLogger instanceof DataLoggerComponent) {
+            ((DataLoggerComponent) dataLogger).deactivate();
         }
         logger.info("Unregistered data logger: {}", dataLoggerId);
     }

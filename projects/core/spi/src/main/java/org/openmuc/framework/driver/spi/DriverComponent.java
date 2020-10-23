@@ -21,22 +21,12 @@
 
 package org.openmuc.framework.driver.spi;
 
-import org.openmuc.framework.data.Flag;
-import org.openmuc.framework.data.Value;
+import org.openmuc.framework.dataaccess.DataAccessService;
 
-public interface ChannelValueContainer {
+public interface DriverComponent extends DriverService {
 
-    String getChannelAddress();
+    public void activate(DataAccessService dataAccessService);
 
-    String getChannelSettings();
+    public void deactivate();
 
-    Object getChannelHandle();
-
-    void setChannelHandle(Object handle);
-
-    Value getValue();
-
-    void setFlag(Flag flag);
-
-    Flag getFlag();
 }

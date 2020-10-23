@@ -38,7 +38,6 @@ dependencies {
   osgibundles group: "org.openmuc.framework", name: "openmuc-core-datamanager",              version: openmucVersion
 
   osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger-ascii",              version: openmucVersion
-  //osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger-sql",                version: openmucVersion
 
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-spi",                     version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-base",                    version: openmucVersion
@@ -50,18 +49,17 @@ dependencies {
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-mediaviewer",             version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-simpledemovisualisation", version: openmucVersion
 
-  osgibundles group: "org.openmuc.framework", name: "openmuc-server-opcua",                  version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-server-restws",                 version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-app-simpledemo",                version: openmucVersion
+  osgibundles group: "org.openmuc.framework", name: "openmuc-driver",                        version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv",                    version: openmucVersion
-  osgibundles group: "org.openmuc.framework", name: "openmuc-driver-opcua",                  version: openmucVersion
 
   //------------------------------------------------------------------------------------------------------
   // The official JDBC driver for MySQL.
   // Only necessary if the default configurations with the SQL DataLogger is used.
   //------------------------------------------------------------------------------------------------------
   //osgibundles group: 'mysql',                 name: 'mysql-connector-java',              version: "8.0.17"
-  //osbibundles group: 'org.postgresql'			name: 'postgresql',			               version: "42.2.10.jre7"
+
   //------------------------------------------------------------------------------------------------------
   // The Apache Felix Gogo standard shell for OSGi (http://felix.apache.org/site/apache-felix-gogo.html)
   //--------------------------------------------------------------------------------------------------

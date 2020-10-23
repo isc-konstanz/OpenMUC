@@ -26,11 +26,11 @@ import java.lang.reflect.Type;
 import java.text.MessageFormat;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.server.spi.ServerService;
+import org.openmuc.framework.server.spi.ServerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ServerContext implements ServerService {
+public abstract class ServerContext implements ServerComponent {
     private static final Logger logger = LoggerFactory.getLogger(ServerContext.class);
 
     Class<? extends Channel> channel = null;

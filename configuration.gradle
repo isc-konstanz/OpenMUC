@@ -28,9 +28,11 @@ project.ext {
     it.getPath() == ":openmuc-core-api" ||
     it.getPath() == ":openmuc-core-datamanager" ||
     it.getPath() == ":openmuc-core-spi" ||
+    it.getPath() == ":openmuc-datalogger" ||
     it.getPath() == ":openmuc-datalogger-ascii" ||
     it.getPath() == ":openmuc-datalogger-slotsdb" ||
     it.getPath() == ":openmuc-datalogger-sql" ||
+    it.getPath() == ":openmuc-driver" ||
     it.getPath() == ":openmuc-driver-aggregator" ||
     it.getPath() == ":openmuc-driver-csv" ||
     it.getPath() == ":openmuc-driver-dlms" ||
@@ -48,6 +50,7 @@ project.ext {
     it.getPath() == ":openmuc-driver-snmp" ||
     it.getPath() == ":openmuc-driver-sql" ||
     it.getPath() == ":openmuc-driver-wmbus" ||
+    it.getPath() == ":openmuc-server" ||
     it.getPath() == ":openmuc-server-modbus" ||
     it.getPath() == ":openmuc-server-opcua" ||
     it.getPath() == ":openmuc-server-restws" ||

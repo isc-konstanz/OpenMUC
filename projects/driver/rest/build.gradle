@@ -8,8 +8,7 @@ def commonscodecversion = '1.11'
 def gsonversion = '2.8.5'
 
 dependencies {
-  implementation project(':openmuc-core-spi')
-  implementation project(':openmuc-core-api')
+  implementation project(':openmuc-driver')
   implementation group: 'com.google.code.gson', name: 'gson', version: gsonversion
   implementation group: 'commons-codec', name: 'commons-codec', version: commonscodecversion
   embed group: 'commons-codec', name: 'commons-codec', version: commonscodecversion

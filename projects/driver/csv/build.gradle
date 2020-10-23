@@ -7,7 +7,7 @@ def univocityVersion = '2.7.6'
 configurations.create('embed')
 
 dependencies {
-  implementation project(':openmuc-core-spi')
+  implementation project(':openmuc-driver')
   
   implementation group: 'com.univocity', name: 'univocity-parsers', version: univocityVersion
   embed group: 'com.univocity', name: 'univocity-parsers', version: univocityVersion

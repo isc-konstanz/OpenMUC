@@ -1,0 +1,24 @@
+
+def projectName = "OpenMUC Core - Driver"
+
+dependencies {
+  api project(':openmuc-core-spi')
+}
+
+jar {
+  manifest {
+    name = projectName
+    instruction 'Export-Package', 'org.openmuc.framework.driver.*'
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name projectName
+        description "The core driver component of the OpenMUC framework."
+      }
+    }
+  }
+}

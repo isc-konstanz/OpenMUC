@@ -46,6 +46,7 @@ public abstract class Server<C extends Channel> extends ServerContext {
         return this;
     }
 
+    @Override
     public final void activate(DataAccessService dataAccess) {
         try {
             onActivate(dataAccess);
@@ -56,6 +57,7 @@ public abstract class Server<C extends Channel> extends ServerContext {
         }
     }
 
+    @Override
     public final void deactivate() {
         onDeactivate();
     }

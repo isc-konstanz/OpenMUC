@@ -1,0 +1,24 @@
+
+def projectName = "OpenMUC Core - Server"
+
+dependencies {
+  api project(':openmuc-core-spi')
+}
+
+jar {
+  manifest {
+    name = projectName
+    instruction 'Export-Package', 'org.openmuc.framework.server.*'
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name projectName
+        description "The core server component of the OpenMUC framework."
+      }
+    }
+  }
+}

@@ -19,14 +19,14 @@
  *
  */
 
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.datalogger.spi;
 
-import java.util.List;
+import org.openmuc.framework.dataaccess.DataAccessService;
 
-public interface RecordsReceivedListener {
+public interface DataLoggerComponent extends DataLoggerService {
 
-    void newRecords(List<ChannelRecordContainer> recordContainers);
+    public void activate(DataAccessService dataAccessService);
 
-    void connectionInterrupted(String driverId, Connection connection);
+    public void deactivate();
 
 }

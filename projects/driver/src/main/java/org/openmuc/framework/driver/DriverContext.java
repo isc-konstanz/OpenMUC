@@ -29,7 +29,7 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DriverService;
+import org.openmuc.framework.driver.spi.DriverComponent;
 import org.openmuc.framework.options.Configurable;
 import org.openmuc.framework.options.DriverInfoFactory;
 import org.openmuc.framework.options.DriverOptions;
@@ -37,7 +37,7 @@ import org.openmuc.framework.options.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DriverContext implements DriverService {
+public abstract class DriverContext implements DriverComponent {
     private static final Logger logger = LoggerFactory.getLogger(DriverContext.class);
 
     final DriverOptions info;

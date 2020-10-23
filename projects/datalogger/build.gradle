@@ -2,7 +2,7 @@
 def projectName = "OpenMUC Core - Data Logger"
 
 dependencies {
-  api project(':openmuc-core-settings')
+  api project(':openmuc-core-spi')
 }
 
 jar {
@@ -17,7 +17,7 @@ uploadArchives {
     mavenDeployer {
       pom.project {
         name projectName
-        description "The core data logger of the OpenMUC framework."
+        description "The core data logger component of the OpenMUC framework."
       }
     }
   }

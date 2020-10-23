@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  implementation project(':openmuc-core-spi')
+  implementation project(':openmuc-server')
   implementation group: 'org.eclipse.milo', name: 'sdk-server', version: miloVersion
   embed          group: 'org.eclipse.milo', name: 'sdk-server', version: miloVersion
 }

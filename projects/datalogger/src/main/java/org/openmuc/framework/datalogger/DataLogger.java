@@ -52,6 +52,7 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
         return this;
     }
 
+    @Override
     public final void activate(DataAccessService dataAccess) {
         this.dataAccess = dataAccess;
         try {
@@ -63,6 +64,7 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
         }
     }
 
+    @Override
     public final void deactivate() {
         onDeactivate();
     }

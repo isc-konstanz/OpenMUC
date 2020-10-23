@@ -7,7 +7,7 @@ def c3poVersion =  '0.9.5.4'
 configurations.create('embed')
 
 dependencies {
-  implementation project(':openmuc-core-spi')
+  implementation project(':openmuc-datalogger')
   implementation group: 'com.mchange', name: 'c3p0',                 version: c3poVersion
   embed          group: 'com.mchange', name: 'c3p0',                 version: c3poVersion
 }

@@ -19,26 +19,14 @@
  *
  */
 
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.server.spi;
 
-public class ConnectionException extends Exception {
+import org.openmuc.framework.dataaccess.DataAccessService;
 
-    private static final long serialVersionUID = 4361169138720682346L;
+public interface ServerComponent extends ServerService {
 
-    public ConnectionException() {
-        super();
-    }
+    public void activate(DataAccessService dataAccessService);
 
-    public ConnectionException(String s) {
-        super(s);
-    }
-
-    public ConnectionException(Throwable cause) {
-        super(cause);
-    }
-
-    public ConnectionException(String s, Throwable cause) {
-        super(s, cause);
-    }
+    public void deactivate();
 
 }

@@ -45,6 +45,7 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
         return this;
     }
 
+    @Override
     public final void activate(DataAccessService dataAccess) {
         try {
             onActivate(dataAccess);
@@ -55,6 +56,7 @@ public abstract class Driver<D extends DeviceConfigs<?>> extends DriverContext {
         }
     }
 
+    @Override
     public final void deactivate() {
         onDeactivate();
     }
