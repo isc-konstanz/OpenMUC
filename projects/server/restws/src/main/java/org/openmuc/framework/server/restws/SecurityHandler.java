@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -22,11 +22,11 @@ package org.openmuc.framework.server.restws;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.openmuc.framework.authentication.AuthenticationService;
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpContext;
@@ -53,13 +53,16 @@ public class SecurityHandler implements HttpContext {
     }
 
     private boolean authenticated(HttpServletRequest request) {
+        if (request.getMethod().equals("OPTIONS")) {
+            return true;
+        }
         String authzHeader = request.getHeader("Authorization");
         if (authzHeader == null) {
             return false;
         }
         String usernameAndPassword;
         try {
-            usernameAndPassword = new String(Base64.getDecoder().decode(authzHeader.substring(6)));
+            usernameAndPassword = new String(Base64.decodeBase64(authzHeader.substring(6)));
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
         }

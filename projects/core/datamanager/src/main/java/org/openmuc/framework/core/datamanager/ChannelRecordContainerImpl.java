@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -30,10 +30,10 @@ public final class ChannelRecordContainerImpl implements ChannelRecordContainer 
     private static final Record defaulRecord = new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
 
     private final ChannelImpl channel;
-    private Record record;
-    private Object channelHandle;
     private final String channelAddress;
     private final String channelSettings;
+    private Record record;
+    private Object channelHandle;
 
     public ChannelRecordContainerImpl(ChannelImpl channel) {
         this(channel, defaulRecord);
@@ -41,8 +41,8 @@ public final class ChannelRecordContainerImpl implements ChannelRecordContainer 
 
     private ChannelRecordContainerImpl(ChannelImpl channel, Record record) {
         this.channel = channel;
-        this.channelAddress = channel.config.getChannelAddress();
-        this.channelSettings = channel.config.getChannelSettings();
+        this.channelAddress = channel.config.getAddress();
+        this.channelSettings = channel.config.getSettings();
         this.channelHandle = channel.handle;
         this.record = record;
     }
@@ -68,13 +68,10 @@ public final class ChannelRecordContainerImpl implements ChannelRecordContainer 
     }
 
     @Override
-    public void setRecord(Record record) {
-        this.record = record;
-    }
-
-    @Override
     public ChannelRecordContainer copy() {
-        return new ChannelRecordContainerImpl(channel, record);
+        Record copiedRecord = new Record(record.getValue(), record.getTimestamp(), record.getFlag());
+
+        return new ChannelRecordContainerImpl(channel, copiedRecord);
     }
 
     @Override
@@ -85,5 +82,10 @@ public final class ChannelRecordContainerImpl implements ChannelRecordContainer 
     @Override
     public Record getRecord() {
         return record;
+    }
+
+    @Override
+    public void setRecord(Record record) {
+        this.record = record;
     }
 }

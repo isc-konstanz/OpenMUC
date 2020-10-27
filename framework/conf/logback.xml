@@ -25,6 +25,7 @@
   </root>
 
 
-  <logger name="org.eclipse.jetty" level="WARN" />
+  <logger name="org.eclipse.jetty" level="INFO" />
+  <logger name="org.openmuc.framework.datalogger.timescaledb" level="TRACE" />
 
 </configuration>

@@ -45,6 +45,7 @@ build/
 
 #Framework
 framework/data
+framework/felix
 framework/felix-cache
 framework/conf/shadow
 framework/bundle

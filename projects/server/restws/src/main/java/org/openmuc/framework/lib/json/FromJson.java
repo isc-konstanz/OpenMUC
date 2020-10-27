@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -92,7 +92,7 @@ public class FromJson {
             return null;
         }
 
-        return convertRestRecordToRecord(gson.fromJson(jse, RestRecord.class), valueType);
+        return convertRecord(gson.fromJson(jse, RestRecord.class), valueType);
     }
 
     public ArrayList<Record> getRecordArrayList(ValueType valueType) throws ClassCastException {
@@ -253,7 +253,7 @@ public class FromJson {
             while (jseIterator.hasNext()) {
                 JsonObject jso = jseIterator.next().getAsJsonObject();
                 String id = getString(jso.get(Const.ID));
-                String deviceAddress = getString(jso.get(Const.DEVICEADDRESS));
+                String deviceAddress = getString(jso.get(Const.ADDRESS));
                 String settings = getString(jso.get(Const.SETTINGS));
                 String description = getString(jso.get(Const.DESCRIPTION));
                 returnValue.add(new DeviceScanInfo(id, deviceAddress, settings, description));
@@ -277,10 +277,10 @@ public class FromJson {
 
             while (jseIterator.hasNext()) {
                 JsonObject jso = jseIterator.next().getAsJsonObject();
-                String channelAddress = getString(jso.get(Const.CHANNELADDRESS));
-                String channelSettings = getString(jso.get(Const.CHANNELSETTINGS));
-                ValueType valueType = ValueType.valueOf(getString(jso.get(Const.VALUETYPE)));
-                int valueTypeLength = getInt(jso.get(Const.VALUETYPELENGTH));
+                String channelAddress = getString(jso.get(Const.ADDRESS));
+                String channelSettings = getString(jso.get(Const.SETTINGS));
+                ValueType valueType = ValueType.valueOf(getString(jso.get(Const.VALUE_TYPE)));
+                int valueTypeLength = getInt(jso.get(Const.VALUE_TYPE_LENGTH));
                 String description = getString(jso.get(Const.DESCRIPTION));
                 boolean readable = getBoolean(jso.get(Const.READABLE));
                 boolean writeable = getBoolean(jso.get(Const.WRITEABLE));
@@ -323,13 +323,13 @@ public class FromJson {
         }
     }
 
-    private Record convertRestRecordToRecord(RestRecord rrc, ValueType type) throws ClassCastException {
+    private Record convertRecord(RestRecord rrc, ValueType type) throws ClassCastException {
         Object value = rrc.getValue();
         Flag flag = rrc.getFlag();
         Value retValue = null;
 
         if (value != null) {
-            retValue = convertValueToMucValue(type, value);
+            retValue = convertValue(type, value);
         }
         if (flag == null) {
             return new Record(retValue, rrc.getTimestamp());
@@ -339,7 +339,7 @@ public class FromJson {
         }
     }
 
-    private Value convertValueToMucValue(ValueType type, Object value) throws ClassCastException {
+    private Value convertValue(ValueType type, Object value) throws ClassCastException {
         // TODO: check all value types, if it is really a float, double, ...
 
         if (value.getClass().isInstance(new RestValue())) {

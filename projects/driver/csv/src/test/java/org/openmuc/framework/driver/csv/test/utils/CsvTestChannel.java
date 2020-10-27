@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -38,24 +38,24 @@ import org.openmuc.framework.dataaccess.WriteValueContainer;
 
 public class CsvTestChannel implements Channel {
 
-    private final String channelAddress;
+    private final String address;
 
-    CsvTestChannel(String channelAddress) {
-        this.channelAddress = channelAddress;
+    CsvTestChannel(String address) {
+        this.address = address;
     }
 
 	@Override
 	public String getId() {
-		return channelAddress;
+		return address;
 	}
 
 	@Override
-	public String getChannelAddress() {
-        return this.channelAddress;
+	public String getAddress() {
+        return this.address;
 	}
 
 	@Override
-	public String getChannelSettings() {
+	public String getSettings() {
 		return "";
 	}
 
@@ -199,12 +199,6 @@ public class CsvTestChannel implements Channel {
 
 	@Override
 	public void writeFuture(List<FutureValue> values) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void write(List<Record> values) {
 		// TODO Auto-generated method stub
 		
 	}

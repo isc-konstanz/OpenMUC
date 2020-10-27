@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -37,8 +37,8 @@ public final class WriteValueContainerImpl implements WriteValueContainer, Chann
 
     public WriteValueContainerImpl(ChannelImpl channel) {
         this.channel = channel;
-        this.channelAddress = channel.config.getChannelAddress();
-        this.channelSettings = channel.config.getChannelSettings();
+        this.channelAddress = channel.config.getAddress();
+        this.channelSettings = channel.config.getSettings();
         this.channelHandle = channel.handle;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -79,11 +79,11 @@ public abstract class ChannelContext extends Configurable {
     }
 
     public final String getAddress() {
-        return channel.getChannelAddress();
+        return channel.getAddress();
     }
 
     public final String getSettings() {
-        return channel.getChannelSettings();
+        return channel.getSettings();
     }
 
     public final double getScalingFactor() {

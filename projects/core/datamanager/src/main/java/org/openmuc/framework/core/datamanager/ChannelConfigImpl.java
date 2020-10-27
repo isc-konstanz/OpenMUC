@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -46,8 +46,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     private static final Pattern timePattern = Pattern.compile("^([0-9]+)(ms|s|m|h)?$");
 
     private String id;
-    private String channelAddress = null;
-    private String channelSettings = null;
+    private String address = null;
     private String description = null;
     private String unit = null;
     private ValueType valueType = null;
@@ -58,6 +57,8 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     private Integer samplingInterval = null;
     private Integer samplingTimeOffset = null;
     private String samplingGroup = null;
+    private String settings;
+    private Boolean loggingEvent = null;
     private Integer loggingInterval = null;
     private Integer loggingTimeOffset = null;
     private String loggingSettings = null;
@@ -108,23 +109,13 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     }
 
     @Override
-    public String getChannelAddress() {
-        return channelAddress;
+    public String getAddress() {
+        return address;
     }
 
     @Override
-    public void setChannelAddress(String address) {
-        channelAddress = address;
-    }
-
-    @Override
-    public String getChannelSettings() {
-        return channelSettings;
-    }
-
-    @Override
-    public void setChannelSettings(String settings) {
-        channelSettings = settings;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Override
@@ -227,6 +218,16 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     }
 
     @Override
+    public String getSettings() {
+        return settings;
+    }
+
+    @Override
+    public void setSettings(String settings) {
+        this.settings = settings;
+    }
+
+    @Override
     public Integer getLoggingInterval() {
         return loggingInterval;
     }
@@ -234,6 +235,16 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     @Override
     public void setLoggingInterval(Integer loggingInterval) {
         this.loggingInterval = loggingInterval;
+    }
+
+    @Override
+    public void setLoggingEvent(Boolean loggingEvent) {
+        this.loggingEvent = loggingEvent;
+    }
+
+    @Override
+    public Boolean isLoggingEvent() {
+        return this.loggingEvent;
     }
 
     @Override
@@ -323,11 +334,8 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 else if (childName.equals("description")) {
                     config.setDescription(childNode.getTextContent());
                 }
-                else if (childName.equals("channelAddress")) {
-                    config.setChannelAddress(childNode.getTextContent());
-                }
-                else if (childName.equals("channelSettings")) {
-                    config.setChannelSettings(childNode.getTextContent());
+                else if (childName.equals("address") || childName.equals("channelAddress")) {
+                    config.setAddress(childNode.getTextContent());
                 }
                 else if (childName.equals("serverMapping")) {
                     NamedNodeMap attributes = childNode.getAttributes();
@@ -370,16 +378,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                     config.setValueOffset(Double.parseDouble(childNode.getTextContent()));
                 }
                 else if (childName.equals("listening")) {
-                    String listeningString = childNode.getTextContent().toLowerCase();
-                    if (listeningString.equals("true")) {
-                        config.setListening(true);
-                    }
-                    else if (listeningString.equals("false")) {
-                        config.setListening(false);
-                    }
-                    else {
-                        throw new ParseException("\"listening\" tag contains neither \"true\" nor \"false\"");
-                    }
+                    config.setListening(Boolean.parseBoolean(childNode.getTextContent()));
                 }
                 else if (childName.equals("samplingInterval")) {
                     config.setSamplingInterval(timeStringToMillis(childNode.getTextContent()));
@@ -390,6 +389,9 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 else if (childName.equals("samplingGroup")) {
                     config.setSamplingGroup(childNode.getTextContent());
                 }
+                else if (childName.equals("settings") || childName.equals("channelSettings")) {
+                    config.setSettings(childNode.getTextContent());
+                }
                 else if (childName.equals("loggingInterval")) {
                     config.setLoggingInterval(timeStringToMillis(childNode.getTextContent()));
                 }
@@ -398,6 +400,9 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 }
                 else if (childName.equals("loggingSettings")) {
                     config.setLoggingSettings(childNode.getTextContent());
+                }
+                else if (childName.equals("loggingEvent")) {
+                    config.setLoggingEvent(Boolean.parseBoolean(childNode.getTextContent()));
                 }
                 else if (childName.equals("disabled")) {
                     config.setDisabled(Boolean.parseBoolean(childNode.getTextContent()));
@@ -425,15 +430,9 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
-        if (channelAddress != null) {
-            childElement = document.createElement("channelAddress");
-            childElement.setTextContent(channelAddress);
-            parentElement.appendChild(childElement);
-        }
-
-        if (channelSettings != null) {
-            childElement = document.createElement("channelSettings");
-            childElement.setTextContent(channelSettings);
+        if (address != null) {
+            childElement = document.createElement("address");
+            childElement.setTextContent(address);
             parentElement.appendChild(childElement);
         }
 
@@ -500,6 +499,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
+        if (settings != null) {
+            childElement = document.createElement("settings");
+            childElement.setTextContent(settings);
+            parentElement.appendChild(childElement);
+        }
+
         if (loggingInterval != null) {
             childElement = document.createElement("loggingInterval");
             childElement.setTextContent(millisToTimeString(loggingInterval));
@@ -518,6 +523,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
+        if (loggingEvent != null) {
+            childElement = document.createElement("loggingEvent");
+            childElement.setTextContent(loggingEvent.toString());
+            parentElement.appendChild(childElement);
+        }
+
         if (disabled != null) {
             childElement = document.createElement("disabled");
             childElement.setTextContent(disabled.toString());
@@ -530,10 +541,8 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     ChannelConfigImpl clone(DeviceConfigImpl clonedParentConfig) {
         ChannelConfigImpl configClone = new ChannelConfigImpl(id, clonedParentConfig);
 
+        configClone.address = address;
         configClone.description = description;
-        configClone.channelAddress = channelAddress;
-        configClone.channelSettings = channelSettings;
-        configClone.serverMappings = serverMappings;
         configClone.unit = unit;
         configClone.valueType = valueType;
         configClone.valueTypeLength = valueTypeLength;
@@ -543,9 +552,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         configClone.samplingInterval = samplingInterval;
         configClone.samplingTimeOffset = samplingTimeOffset;
         configClone.samplingGroup = samplingGroup;
+        configClone.settings = settings;
         configClone.loggingInterval = loggingInterval;
         configClone.loggingTimeOffset = loggingTimeOffset;
         configClone.loggingSettings = loggingSettings;
+        configClone.loggingEvent = loggingEvent;
+        configClone.serverMappings = serverMappings;
         configClone.disabled = disabled;
 
         return configClone;
@@ -561,18 +573,11 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             configClone.description = description;
         }
 
-        if (channelAddress == null) {
-            configClone.channelAddress = CHANNEL_ADDRESS_DEFAULT;
+        if (address == null) {
+            configClone.address = ADDRESS_DEFAULT;
         }
         else {
-            configClone.channelAddress = channelAddress;
-        }
-
-        if (channelSettings == null) {
-            configClone.channelSettings = CHANNEL_SETTINGS_DEFAULT;
-        }
-        else {
-            configClone.channelSettings = channelSettings;
+            configClone.address = address;
         }
 
         if (serverMappings == null) {
@@ -660,11 +665,25 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             configClone.samplingGroup = samplingGroup;
         }
 
+        if (settings == null) {
+            configClone.settings = ChannelConfig.SETTINGS_DEFAULT;
+        }
+        else {
+            configClone.settings = settings;
+        }
+
         if (loggingInterval == null) {
             configClone.loggingInterval = ChannelConfig.LOGGING_INTERVAL_DEFAULT;
         }
         else {
             configClone.loggingInterval = loggingInterval;
+        }
+
+        if (loggingEvent == null) {
+            configClone.loggingEvent = ChannelConfig.LOGGING_EVENT_DEFAULT;
+        }
+        else {
+            configClone.loggingEvent = loggingEvent;
         }
 
         if (loggingTimeOffset == null) {
@@ -813,4 +832,5 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             serverMappings = newMappings;
         }
     }
+
 }

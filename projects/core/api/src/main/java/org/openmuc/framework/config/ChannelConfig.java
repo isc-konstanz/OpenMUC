@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -29,8 +29,7 @@ public interface ChannelConfig {
 
     static final Boolean DISABLED_DEFAULT = false;
     static final String DESCRIPTION_DEFAULT = "";
-    static final String CHANNEL_ADDRESS_DEFAULT = "";
-    static final String CHANNEL_SETTINGS_DEFAULT = "";
+    static final String ADDRESS_DEFAULT = "";
     static final String UNIT_DEFAULT = "";
     static final ValueType VALUE_TYPE_DEFAULT = ValueType.DOUBLE;
     static final int BYTE_ARRAY_SIZE_DEFAULT = 10;
@@ -39,8 +38,10 @@ public interface ChannelConfig {
     static final int SAMPLING_INTERVAL_DEFAULT = -1;
     static final int SAMPLING_TIME_OFFSET_DEFAULT = 0;
     static final String SAMPLING_GROUP_DEFAULT = "";
+    static final String SETTINGS_DEFAULT = "";
     static final int LOGGING_INTERVAL_DEFAULT = -1;
     static final int LOGGING_TIME_OFFSET_DEFAULT = 0;
+    static final boolean LOGGING_EVENT_DEFAULT = false;
 	static final String LOGGING_SETTINGS_DEFAULT = "";
 
     String getId();
@@ -51,13 +52,9 @@ public interface ChannelConfig {
 
     void setDescription(String description);
 
-    String getChannelAddress();
+    String getAddress();
 
-    void setChannelAddress(String address);
-
-    String getChannelSettings();
-
-    void setChannelSettings(String settings);
+    void setAddress(String address);
 
     String getUnit();
 
@@ -95,6 +92,10 @@ public interface ChannelConfig {
 
     void setSamplingGroup(String group);
 
+    String getSettings();
+
+    void setSettings(String settings);
+
     Integer getLoggingInterval();
 
     void setLoggingInterval(Integer interval);
@@ -120,4 +121,8 @@ public interface ChannelConfig {
     void addServerMapping(ServerMapping serverMapping);
 
     void deleteServerMappings(String id);
+
+    void setLoggingEvent(Boolean loggingEvent);
+
+    Boolean isLoggingEvent();
 }

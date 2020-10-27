@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -176,7 +176,7 @@ public class ToJson {
             JsonObject jso = new JsonObject();
 
             jso.addProperty(Const.ID, channel.getId());
-            jso.addProperty(Const.VALUETYPE, channel.getValueType().toString());
+            jso.addProperty(Const.VALUE_TYPE, channel.getValueType().toString());
             jso.add(Const.RECORD, getRecordAsJsonElement(channel.getLatestRecord(), channel.getValueType()));
             jsa.add(jso);
         }
@@ -360,10 +360,10 @@ public class ToJson {
         JsonArray jsa = new JsonArray();
         for (ChannelScanInfo channelScanInfo : channelScanInfoList) {
             JsonObject jso = new JsonObject();
-            jso.addProperty(Const.CHANNELADDRESS, channelScanInfo.getChannelAddress());
-            jso.addProperty(Const.CHANNELSETTINGS, channelScanInfo.getChannelSettings());
-            jso.addProperty(Const.VALUETYPE, channelScanInfo.getValueType().name());
-            jso.addProperty(Const.VALUETYPELENGTH, channelScanInfo.getValueTypeLength());
+            jso.addProperty(Const.ADDRESS, channelScanInfo.getChannelAddress());
+            jso.addProperty(Const.SETTINGS, channelScanInfo.getChannelSettings());
+            jso.addProperty(Const.VALUE_TYPE, channelScanInfo.getValueType().name());
+            jso.addProperty(Const.VALUE_TYPE_LENGTH, channelScanInfo.getValueTypeLength());
             jso.addProperty(Const.DESCRIPTION, channelScanInfo.getDescription());
             jso.addProperty(Const.METADATA, channelScanInfo.getMetaData());
             jso.addProperty(Const.UNIT, channelScanInfo.getUnit());
@@ -460,7 +460,7 @@ public class ToJson {
         for (DeviceScanInfo deviceScanInfo : deviceScanInfoList) {
             JsonObject jso = new JsonObject();
             jso.addProperty(Const.ID, deviceScanInfo.getId());
-            jso.addProperty(Const.DEVICEADDRESS, deviceScanInfo.getDeviceAddress());
+            jso.addProperty(Const.ADDRESS, deviceScanInfo.getAddress());
             jso.addProperty(Const.SETTINGS, deviceScanInfo.getSettings());
             jso.addProperty(Const.DESCRIPTION, deviceScanInfo.getDescription());
             jsa.add(jso);

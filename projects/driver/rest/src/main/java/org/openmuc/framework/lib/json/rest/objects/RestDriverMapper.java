@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,14 +20,9 @@
  */
 package org.openmuc.framework.lib.json.rest.objects;
 
-import java.io.IOException;
-
 import org.openmuc.framework.config.DriverConfig;
-import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.IdCollisionException;
-import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
-import org.openmuc.framework.options.DriverOptions;
 
 public class RestDriverMapper {
 
@@ -60,53 +55,5 @@ public class RestDriverMapper {
                 throw new RestConfigIsNotCorrectException();
             }
         }
-    }
-
-    public static RestDriverInfo getRestDriverDescription(DriverInfo driverInfo) {
-
-        RestDriverInfo restDriverInfo = new RestDriverInfo();
-        restDriverInfo.setId(driverInfo.getId());
-        restDriverInfo.setDescription(driverInfo.getDescription());
-
-    	if (driverInfo instanceof DriverOptions) {
-    		restDriverInfo.setName(((DriverOptions) driverInfo).getName());
-    	}
-        return restDriverInfo;
-    }
-
-    public static RestDriverInfo getRestDriverInfo(DriverInfo driverInfo) throws ParseException, IOException {
-
-        RestDriverInfo restDriverInfo = new RestDriverInfo();
-        restDriverInfo.setId(driverInfo.getId());
-        restDriverInfo.setDescription(driverInfo.getDescription());
-        
-    	if (driverInfo instanceof DriverOptions) {
-    		restDriverInfo.setName(((DriverOptions) driverInfo).getName());
-    	}
-        
-        RestOptions configs = RestOptions.parseOptions(DriverOptions.readDriverConfigs());
-        configs.setSyntax(null);
-        restDriverInfo.setConfigs(configs);
-        
-        return restDriverInfo;
-    }
-
-    public static RestDriverInfo getRestDriverOptions(DriverInfo driverInfo) throws ParseException, IOException {
-
-        RestDriverInfo restDriverInfo = new RestDriverInfo();
-        restDriverInfo.setId(driverInfo.getId());
-        restDriverInfo.setDescription(driverInfo.getDescription());
-        
-    	if (driverInfo instanceof DriverOptions) {
-    		restDriverInfo.setName(((DriverOptions) driverInfo).getName());
-    	}
-        restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
-        restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
-        
-        RestOptions configs = RestOptions.parseOptions(DriverOptions.readDriverConfigs());
-        configs.setSyntax(null);
-        restDriverInfo.setConfigs(configs);
-        
-        return restDriverInfo;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -54,7 +54,7 @@ public class ServletLib {
     }
 
     /**
-     * Only the first String will be sended over HTTP response.
+     * Only the first String will be sent over HTTP response.
      * 
      * @param response
      *            HttpServletResponse response
@@ -76,11 +76,13 @@ public class ServletLib {
         for (String m : msg) {
             warnMessage.append(m);
         }
-        logger.warn(warnMessage.toString());
+        if (logger.isWarnEnabled()) {
+            logger.warn(warnMessage.toString());
+        }
     }
 
     /*
-     * Only the first String will be sended over HTTP response.
+     * Only the first String will be sent over HTTP response.
      */
     protected static void sendHTTPErrorAndLogDebug(HttpServletResponse response, int errorCode, Logger logger,
             String... msg) {
@@ -93,7 +95,9 @@ public class ServletLib {
         for (String m : msg) {
             warnMessage.append(m);
         }
-        logger.debug(warnMessage.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug(warnMessage.toString());
+        }
     }
 
     /*
@@ -112,7 +116,6 @@ public class ServletLib {
         } catch (IOException e) {
             logger.error(COULD_NOT_SEND_HTTP_ERROR_MESSAGE, e);
         }
-
     }
 
     protected static String getJsonText(HttpServletRequest request) throws IOException {

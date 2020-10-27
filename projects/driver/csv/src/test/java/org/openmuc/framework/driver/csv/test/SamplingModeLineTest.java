@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +46,7 @@ public class SamplingModeLineTest {
     @Before
     public void setup() {
 
+        TimeZone.setDefault(TimeZone.getTimeZone("CET"));
         containers = new ArrayList<>();
         containers.add(INDEX_HHMMSS, CsvTestFactory.newRecodContainer("hhmmss"));
         containers.add(INDEX_POWER, CsvTestFactory.newRecodContainer("power_grid"));

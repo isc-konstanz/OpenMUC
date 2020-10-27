@@ -1,0 +1,34 @@
+def projectName = "OpenMUC Data Logger - MQTT"
+
+configurations.create('embed')
+
+
+dependencies {
+    implementation project(':openmuc-core-spi')
+    implementation project(':openmuc-core-datamanager')
+    implementation project(':openmuc-lib-mqtt')
+
+    testCompile 'org.junit.jupiter:junit-jupiter:5.5.2'
+}
+
+jar {
+    manifest {
+        name = projectName
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name projectName
+                description "MQTT data logger for the OpenMUC framework."
+            }
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -43,7 +43,7 @@ public class RestDeviceMapper {
         RestDeviceConfig rdc = new RestDeviceConfig();
         rdc.setConnectRetryInterval(dc.getConnectRetryInterval());
         rdc.setDescription(dc.getDescription());
-        rdc.setDeviceAddress(dc.getDeviceAddress());
+        rdc.setDeviceAddress(dc.getAddress());
         rdc.isDisabled(dc.isDisabled());
         rdc.setId(dc.getId());
         rdc.setSamplingTimeout(dc.getSamplingTimeout());
@@ -65,7 +65,7 @@ public class RestDeviceMapper {
                 }
                 dc.setConnectRetryInterval(rdc.getConnectRetryInterval());
                 dc.setDescription(rdc.getDescription());
-                dc.setDeviceAddress(rdc.getDeviceAddress());
+                dc.setAddress(rdc.getDeviceAddress());
                 dc.setDisabled(rdc.getDisabled());
                 dc.setSamplingTimeout(rdc.getSamplingTimeout());
                 dc.setSettings(rdc.getSettings());

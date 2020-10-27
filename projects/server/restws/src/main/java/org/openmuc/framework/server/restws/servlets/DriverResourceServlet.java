@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -30,7 +30,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.ConfigService;
 import org.openmuc.framework.config.ConfigWriteException;
@@ -42,8 +41,6 @@ import org.openmuc.framework.config.DriverNotAvailableException;
 import org.openmuc.framework.config.IdCollisionException;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.config.RootConfig;
-import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
 import org.openmuc.framework.lib.json.Const;
@@ -60,15 +57,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 public class DriverResourceServlet extends GenericServlet {
+    private static final long serialVersionUID = -2223282905555493215L;
+
+    private static final Logger logger = LoggerFactory.getLogger(DriverResourceServlet.class);
 
     private static final String REQUESTED_REST_PATH_IS_NOT_AVAILABLE = "Requested rest path is not available.";
     private static final String REQUESTED_ID_IS_NOT_AVAILABLE = "Requested driver is not available";
     private static final String REST_PATH = " Rest path = ";
     private static final String REST_ID = " Driver ID = ";
-    private static final String APPLICATION_JSON = "application/json";
-    private static final long serialVersionUID = -2223282905555493215L;
-
-    private static final Logger logger = LoggerFactory.getLogger(DriverResourceServlet.class);
 
     private DataAccessService dataAccess;
     private ConfigService configService;
@@ -80,7 +76,6 @@ public class DriverResourceServlet extends GenericServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -309,7 +304,6 @@ public class DriverResourceServlet extends GenericServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -350,7 +344,6 @@ public class DriverResourceServlet extends GenericServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -457,38 +450,11 @@ public class DriverResourceServlet extends GenericServlet {
         return scanForAllDevicesAsync(driverId, settings, response).getScannedDevicesResult();
     }
 
-    @SuppressWarnings("unused")
-    private List<DeviceScanInfo> scanForAllDrivers(String driverId, String settings, HttpServletResponse response) {
-        List<DeviceScanInfo> scannedDevicesList = new ArrayList<>();
-        
-        try {
-            scannedDevicesList = configService.scanForDevices(driverId, settings);
-
-        } catch (UnsupportedOperationException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Driver does not support scanning.", REST_ID, driverId);
-        } catch (DriverNotAvailableException e) {
-            driverNotAvailable(response, driverId);
-        } catch (ArgumentSyntaxException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_ACCEPTABLE, logger,
-                    "Argument syntax was wrong.", REST_ID, driverId, " Settings = ", settings);
-        } catch (ScanException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Error while scan driver devices", REST_ID, driverId, " Settings = ", settings);
-        } catch (ScanInterruptedException e) {
-            ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, logger,
-                    "Scan interrupt occured", REST_ID, driverId, " Settings = ", settings);
-        }
-
-        return scannedDevicesList;
-    }
-
     @Override
     public synchronized void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 

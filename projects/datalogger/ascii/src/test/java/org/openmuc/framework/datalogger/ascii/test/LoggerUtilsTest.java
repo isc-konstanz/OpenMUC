@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,7 +20,7 @@
  */
 package org.openmuc.framework.datalogger.ascii.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,8 +28,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Record;
@@ -54,7 +54,7 @@ public class LoggerUtilsTest {
     private static HashMap<String, LogChannel> logChannelList = new HashMap<>();
     private static Calendar calendar = new GregorianCalendar();
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
 
         int sub = (int) (calendar.getTimeInMillis() % 10l);
@@ -63,8 +63,8 @@ public class LoggerUtilsTest {
         TestUtils.createTestFolder();
         TestUtils.deleteExistingFile(loggingInterval, loggingTimeOffset, calendar);
 
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "dummy description", dummy, ValueType.DOUBLE,
-                loggingInterval, loggingTimeOffset);
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.DOUBLE, 0.0,
+                0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
 
         logChannelList.put(ch01, ch1);
 
@@ -124,8 +124,8 @@ public class LoggerUtilsTest {
         lfw.log(group, loggingInterval, loggingTimeOffset, calendar, logChannelList);
         AsciiLogger.setLastLoggedLineTimeStamp(loggingInterval, loggingTimeOffset, calendar.getTimeInMillis());
 
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "dummy description", dummy, ValueType.DOUBLE,
-                loggingInterval, loggingTimeOffset);
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.DOUBLE, 0.0,
+                0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
     }
 
     // ####################################################################################################################

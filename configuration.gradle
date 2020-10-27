@@ -1,8 +1,7 @@
-
 project.ext {
 
-  cfgVersion = "0.18.2"
-  
+  cfgVersion = "0.18.1"
+
   cfgGroup = "org.openmuc.framework"
 
   cfgCopyDependencies = false
@@ -29,11 +28,14 @@ project.ext {
     it.getPath() == ":openmuc-core-datamanager" ||
     it.getPath() == ":openmuc-core-spi" ||
     it.getPath() == ":openmuc-datalogger" ||
+    it.getPath() == ":openmuc-datalogger-amqp" ||
     it.getPath() == ":openmuc-datalogger-ascii" ||
+    it.getPath() == ":openmuc-datalogger-mqtt" ||
     it.getPath() == ":openmuc-datalogger-slotsdb" ||
     it.getPath() == ":openmuc-datalogger-sql" ||
     it.getPath() == ":openmuc-driver" ||
     it.getPath() == ":openmuc-driver-aggregator" ||
+    it.getPath() == ":openmuc-driver-amqp" ||
     it.getPath() == ":openmuc-driver-csv" ||
     it.getPath() == ":openmuc-driver-dlms" ||
     it.getPath() == ":openmuc-driver-ehz" ||
@@ -50,7 +52,13 @@ project.ext {
     it.getPath() == ":openmuc-driver-snmp" ||
     it.getPath() == ":openmuc-driver-sql" ||
     it.getPath() == ":openmuc-driver-wmbus" ||
+    it.getPath() == ":openmuc-lib-amqp" ||
+    it.getPath() == ":openmuc-lib-filePersistence" ||
+    it.getPath() == ":openmuc-lib-mqtt" ||
+    it.getPath() == ":openmuc-lib-parser-openmuc" ||
+    it.getPath() == ":openmuc-lib-ssl" ||
     it.getPath() == ":openmuc-server" ||
+    it.getPath() == ":openmuc-server-restws" ||
     it.getPath() == ":openmuc-server-modbus" ||
     it.getPath() == ":openmuc-server-opcua" ||
     it.getPath() == ":openmuc-server-restws" ||

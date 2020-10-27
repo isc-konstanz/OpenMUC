@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -40,7 +40,7 @@ public final class DeviceConfigImpl implements DeviceConfig {
 
     private String id;
     private String description;
-    private String deviceAddress;
+    private String address;
     private String settings;
 
     private Integer samplingTimeout;
@@ -62,7 +62,7 @@ public final class DeviceConfigImpl implements DeviceConfig {
         DeviceConfigImpl configClone = new DeviceConfigImpl(id, clonedParentConfig);
 
         configClone.description = description;
-        configClone.deviceAddress = deviceAddress;
+        configClone.address = address;
         configClone.settings = settings;
         configClone.samplingTimeout = samplingTimeout;
         configClone.connectRetryInterval = connectRetryInterval;
@@ -108,13 +108,13 @@ public final class DeviceConfigImpl implements DeviceConfig {
     }
 
     @Override
-    public String getDeviceAddress() {
-        return deviceAddress;
+    public String getAddress() {
+        return address;
     }
 
     @Override
-    public void setDeviceAddress(String address) {
-        deviceAddress = address;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Override
@@ -245,8 +245,8 @@ public final class DeviceConfigImpl implements DeviceConfig {
                 else if (childName.equals("description")) {
                     config.setDescription(childNode.getTextContent());
                 }
-                else if (childName.equals("deviceAddress")) {
-                    config.setDeviceAddress(childNode.getTextContent());
+                else if (childName.equals("address") || childName.equals("deviceAddress")) {
+                    config.setAddress(childNode.getTextContent());
                 }
                 else if (childName.equals("settings")) {
                     config.setSettings(childNode.getTextContent());
@@ -282,9 +282,9 @@ public final class DeviceConfigImpl implements DeviceConfig {
             parentElement.appendChild(childElement);
         }
 
-        if (deviceAddress != null) {
-            childElement = document.createElement("deviceAddress");
-            childElement.setTextContent(deviceAddress);
+        if (address != null) {
+            childElement = document.createElement("address");
+            childElement.setTextContent(address);
             parentElement.appendChild(childElement);
         }
 
@@ -335,11 +335,11 @@ public final class DeviceConfigImpl implements DeviceConfig {
             configClone.description = description;
         }
 
-        if (deviceAddress == null) {
-            configClone.deviceAddress = DEVICE_ADDRESS_DEFAULT;
+        if (address == null) {
+            configClone.address = ADDRESS_DEFAULT;
         }
         else {
-            configClone.deviceAddress = deviceAddress;
+            configClone.address = address;
         }
 
         if (settings == null) {

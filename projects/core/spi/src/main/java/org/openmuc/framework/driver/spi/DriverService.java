@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -103,7 +103,7 @@ public interface DriverService {
      * Some communication protocols are not connection oriented. That means no connection has to be build up in order to
      * read or write data. In this case the connect function may optionally test if the device is reachable.
      * 
-     * @param deviceAddress
+     * @param address
      *            the configured device address.
      * @param settings
      *            the settings that should be used for the communication with this device.
@@ -114,6 +114,6 @@ public interface DriverService {
      * @throws ConnectionException
      *             if the connection attempt fails.
      */
-    Connection connect(String deviceAddress, String settings) throws ArgumentSyntaxException, ConnectionException;
+    Connection connect(String address, String settings) throws ArgumentSyntaxException, ConnectionException;
 
 }

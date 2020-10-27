@@ -4,6 +4,7 @@ def projectName = "OpenMUC Data Logger - ASCII"
 dependencies {
   implementation project(':openmuc-core-spi')
   implementation project(':openmuc-core-datamanager')
+  testCompile 'org.junit.jupiter:junit-jupiter:5.5.2'
 }
 
 jar {

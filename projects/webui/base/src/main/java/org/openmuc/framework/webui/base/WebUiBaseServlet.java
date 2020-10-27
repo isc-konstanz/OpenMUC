@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -49,9 +49,19 @@ public class WebUiBaseServlet extends HttpServlet {
     private static final int SESSION_TIMEOUT = 600;
 
     private final WebUiBase webUiBase;
+    private boolean isSensitiveMode = true;
+    private AuthenticationService authService;
 
     public WebUiBaseServlet(WebUiBase webUiBase) {
         this.webUiBase = webUiBase;
+    }
+
+    public static void copyStream(InputStream input, OutputStream output) throws IOException {
+        byte[] buffer = new byte[1024]; // Adjust if you want
+        int bytesRead;
+        while ((bytesRead = input.read(buffer)) != -1) {
+            output.write(buffer, 0, bytesRead);
+        }
     }
 
     @Override
@@ -79,8 +89,9 @@ public class WebUiBaseServlet extends HttpServlet {
 
             String applicationsStr = jApplications.toString();
 
-            java.util.Date time = new java.util.Date(req.getSession().getLastAccessedTime());
-            logger.debug(applicationsStr);
+            if (logger.isDebugEnabled()) {
+                logger.debug(applicationsStr);
+            }
 
             resp.setContentType("application/json");
             resp.getWriter().println(applicationsStr);
@@ -97,18 +108,12 @@ public class WebUiBaseServlet extends HttpServlet {
         inputStream.close();
     }
 
-    public static void copyStream(InputStream input, OutputStream output) throws IOException {
-        byte[] buffer = new byte[1024]; // Adjust if you want
-        int bytesRead;
-        while ((bytesRead = input.read(buffer)) != -1) {
-            output.write(buffer, 0, bytesRead);
-        }
-    }
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String servletPath = req.getServletPath();
-        logger.info(servletPath);
+        if (logger.isInfoEnabled()) {
+            logger.info(servletPath);
+        }
         if (!servletPath.equals("/login")) {
             doGet(req, resp);
             return;
@@ -117,18 +122,52 @@ public class WebUiBaseServlet extends HttpServlet {
         String user = req.getParameter("user");
         String pwd = req.getParameter("pwd");
 
-        AuthenticationService auth = webUiBase.getAuthenticationService();
-        if (auth.login(user, pwd)) {
+        if (authService.login(user, pwd)) {
+            updateView(user);
             HttpSession session = req.getSession(true); // create a new session
             session.setMaxInactiveInterval(SESSION_TIMEOUT); // set session timeout
             session.setAttribute("user", user);
             resp.setStatus(HttpServletResponse.SC_ACCEPTED);
         }
         else {
-            logger.info("login failed!");
+            if (logger.isInfoEnabled()) {
+                logger.info("login failed!");
+            }
             req.getSession().invalidate(); // invalidate the session
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
+    }
 
+    private void updateView(String user) {
+        if (!authService.isUserAdmin(user) && isSensitiveMode) {
+            hideSensitiveContent();
+            isSensitiveMode = false;
+        }
+        else if (authService.isUserAdmin(user) && !isSensitiveMode) {
+            showSensitiveContent();
+            isSensitiveMode = true;
+        }
+    }
+
+    private void hideSensitiveContent() {
+        webUiBase.unsetWebUiPluginServiceByAlias("channelaccesstool");
+        webUiBase.unsetWebUiPluginServiceByAlias("channelconfigurator");
+        webUiBase.unsetWebUiPluginServiceByAlias("userconfigurator");
+        webUiBase.unsetWebUiPluginServiceByAlias("mediaviewer");
+        webUiBase.unsetWebUiPluginServiceByAlias("dataplotter");
+        webUiBase.unsetWebUiPluginServiceByAlias("dataexporter");
+    }
+
+    private void showSensitiveContent() {
+        webUiBase.restoreWebUiPlugin("channelaccesstool");
+        webUiBase.restoreWebUiPlugin("channelconfigurator");
+        webUiBase.restoreWebUiPlugin("userconfigurator");
+        webUiBase.restoreWebUiPlugin("mediaviewer");
+        webUiBase.restoreWebUiPlugin("dataplotter");
+        webUiBase.restoreWebUiPlugin("dataexporter");
+    }
+
+    public void setAuthentification(AuthenticationService authService) {
+        this.authService = authService;
     }
 }

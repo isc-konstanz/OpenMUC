@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -45,13 +45,13 @@ public class CsvTestContainer implements ChannelRecordContainer {
 
     @Override
     public String getChannelAddress() {
-        return this.channel.getChannelAddress();
+        return this.channel.getAddress();
     }
 
 	@Override
 	public String getChannelSettings() {
 		// TODO Auto-generated method stub
-		return this.channel.getChannelSettings();
+		return this.channel.getSettings();
 	}
 
     @Override

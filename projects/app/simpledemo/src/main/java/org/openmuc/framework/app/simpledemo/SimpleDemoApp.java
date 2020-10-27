@@ -37,6 +37,7 @@ public final class SimpleDemoApp extends Thread {
     // ChannelIDs, see conf/channel.xml
     private static final String ID_POWER_ELECTIC_VEHICLE = "power_electric_vehicle";
     private static final String ID_POWER_GRID = "power_grid";
+    private static final String ID_POWER_PHOTOVOLTAICS = "power_photovoltaics";
     private static final String ID_STATUS_ELECTRIC_VEHICLE = "status_electric_vehicle";
     private static final String ID_ENERGY_EXPORTED = "energy_exported";
     private static final String ID_ENERGY_IMPORTED = "energy_imported";
@@ -47,7 +48,7 @@ public final class SimpleDemoApp extends Thread {
     private static final double SECONDS_PER_HOUR = 3600.0;
     private static final double SECONDS_PER_INTERVAL = 5.0;
     private static final double HOUR_BASED_INTERVAL_TIME = SECONDS_PER_INTERVAL / SECONDS_PER_HOUR;
-
+    int printCounter; // for slowing down the output of the console
     private volatile boolean deactivatedSignal;
 
     // With the dataAccessService you can access to your measured and control data of your devices.
@@ -56,21 +57,17 @@ public final class SimpleDemoApp extends Thread {
 
     // Channel for accessing data of a channel.
     private Channel chPowerElecticVehicle;
+    private Channel chPowerPhotovoltaics;
     private Channel chPowerGrid;
     private Channel chEvStatus;
     private Channel chEnergyExported;
     private Channel chEnergyImported;
-
     private double energyExportedKWh = 0;
     private double energyImportedKWh = 0;
-
-    int printCounter; // for slowing down the output of the console
 
     /**
      * Every app needs one activate method. Is is called at begin. Here you can configure all you need at start of your
      * app. The Activate method can block the start of your OpenMUC, f.e. if you use Thread.sleep().
-     * 
-     * @param context
      */
     @Activate
     private void activate() {
@@ -81,8 +78,6 @@ public final class SimpleDemoApp extends Thread {
 
     /**
      * Every app needs one deactivate method. It handles the shutdown of your app e.g. closing open streams.
-     * 
-     * @param context
      */
     @Deactivate
     private void deactivate() {
@@ -110,6 +105,10 @@ public final class SimpleDemoApp extends Thread {
         }
 
         initializeChannels();
+
+        // Example to demonstrate the possibility of individual settings of each channel
+        logger.info("Settings of the PV system: {}", chPowerPhotovoltaics.getSettings());
+
         applyListener();
 
         while (!deactivatedSignal) {
@@ -125,6 +124,7 @@ public final class SimpleDemoApp extends Thread {
     private void initializeChannels() {
         chPowerElecticVehicle = dataAccessService.getChannel(ID_POWER_ELECTIC_VEHICLE);
         chPowerGrid = dataAccessService.getChannel(ID_POWER_GRID);
+        chPowerPhotovoltaics = dataAccessService.getChannel(ID_POWER_PHOTOVOLTAICS);
         chEvStatus = dataAccessService.getChannel(ID_STATUS_ELECTRIC_VEHICLE);
         chEnergyExported = dataAccessService.getChannel(ID_ENERGY_EXPORTED);
         chEnergyImported = dataAccessService.getChannel(ID_ENERGY_IMPORTED);
@@ -147,7 +147,7 @@ public final class SimpleDemoApp extends Thread {
     /**
      * Calculate energy imported and exported from current grid power. (Demonstrates how to access the latest record of
      * a channel and how to set it.)
-     * 
+     *
      * @param gridPowerRecord
      */
     private void updateEnergyChannels(Record gridPowerRecord) {

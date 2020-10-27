@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,30 +20,18 @@
  */
 package org.openmuc.framework.lib.json.rest.objects;
 
-import java.util.List;
-
 import org.openmuc.framework.config.DeviceConfig;
 import org.openmuc.framework.config.IdCollisionException;
-import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
 
 public class RestDeviceMapper {
-
-    public static RestDevice getRestDevice(DeviceConfig dc, DeviceState state, List<RestChannel> channels) {
-
-        RestDevice rd = new RestDevice();
-        rd.setId(dc.getId());
-        rd.setState(state);
-        rd.setRecords(channels);
-        return rd;
-    }
 
     public static RestDeviceConfig getRestDeviceConfig(DeviceConfig dc) {
 
         RestDeviceConfig rdc = new RestDeviceConfig();
         rdc.setConnectRetryInterval(dc.getConnectRetryInterval());
         rdc.setDescription(dc.getDescription());
-        rdc.setDeviceAddress(dc.getDeviceAddress());
+        rdc.setDeviceAddress(dc.getAddress());
         rdc.isDisabled(dc.isDisabled());
         rdc.setId(dc.getId());
         rdc.setSamplingTimeout(dc.getSamplingTimeout());
@@ -65,7 +53,7 @@ public class RestDeviceMapper {
                 }
                 dc.setConnectRetryInterval(rdc.getConnectRetryInterval());
                 dc.setDescription(rdc.getDescription());
-                dc.setDeviceAddress(rdc.getDeviceAddress());
+                dc.setAddress(rdc.getDeviceAddress());
                 dc.setDisabled(rdc.getDisabled());
                 dc.setSamplingTimeout(rdc.getSamplingTimeout());
                 dc.setSettings(rdc.getSettings());

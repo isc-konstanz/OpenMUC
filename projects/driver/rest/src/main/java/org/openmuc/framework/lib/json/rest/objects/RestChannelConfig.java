@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,8 +28,7 @@ import org.openmuc.framework.data.ValueType;
 public class RestChannelConfig {
 
     private String id = null;
-    private String channelAddress = null;
-    private String channelSettings = null;
+    private String address = null;
     private String description = null;
     private String unit = null;
     private ValueType valueType = null;
@@ -40,9 +39,11 @@ public class RestChannelConfig {
     private Integer samplingInterval = null;
     private Integer samplingTimeOffset = null;
     private String samplingGroup = null;
+    private String settings = null;
     private Integer loggingInterval = null;
     private Integer loggingTimeOffset = null;
     private String loggingSettings = null;
+    private Boolean loggingEvent = null;
     private Boolean disabled = null;
     private List<ServerMapping> serverMappings = null;
 
@@ -54,20 +55,12 @@ public class RestChannelConfig {
         this.id = id;
     }
 
-    public String getChannelAddress() {
-        return channelAddress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setChannelAddress(String channelAddress) {
-        this.channelAddress = channelAddress;
-    }
-
-    public String getChannelSettings() {
-        return channelSettings;
-    }
-
-    public void setChannelSettings(String settings) {
-        channelSettings = settings;
+    public void setAddress(String channelAddress) {
+        this.address = channelAddress;
     }
 
     public String getDescription() {
@@ -150,6 +143,14 @@ public class RestChannelConfig {
         this.samplingGroup = samplingGroup;
     }
 
+    public String getSettings() {
+        return settings;
+    }
+
+    public void setSettings(String settings) {
+        this.settings = settings;
+    }
+
     public Integer getLoggingInterval() {
         return loggingInterval;
     }
@@ -166,13 +167,21 @@ public class RestChannelConfig {
         this.loggingTimeOffset = loggingTimeOffset;
     }
 
-	public String getLoggingSettings() {
-		return loggingSettings;
-	}
+    public String getLoggingSettings() {
+        return loggingSettings;
+    }
 
-	public void setLoggingSettings(String settings) {
-		this.loggingSettings = settings;
-	}
+    public void setLoggingSettings(String settings) {
+        this.loggingSettings = settings;
+    }
+
+    public Boolean isLoggingEvent() {
+        return loggingEvent;
+    }
+
+    public void setLoggingEvent(Boolean loggingEvent) {
+        this.loggingEvent = loggingEvent;
+    }
 
     public Boolean isDisabled() {
         return disabled;

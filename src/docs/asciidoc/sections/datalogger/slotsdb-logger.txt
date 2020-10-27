@@ -1,0 +1,8 @@
+=== SlotsDB Logger
+==== General Information
+
+[width="100%",options="header"]]
+|=========================================================
+|Option |  Description
+|Event logging | not supported
+|=========================================================

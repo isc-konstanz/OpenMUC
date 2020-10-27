@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -53,12 +53,12 @@ public class SnmpChannelRecordContainer implements ChannelRecordContainer {
 
     @Override
     public String getChannelAddress() {
-        return snmpChannel.getChannelAddress();
+        return snmpChannel.getAddress();
     }
 
 	@Override
 	public String getChannelSettings() {
-		return snmpChannel.getChannelSettings();
+		return snmpChannel.getSettings();
 	}
 
     @Override

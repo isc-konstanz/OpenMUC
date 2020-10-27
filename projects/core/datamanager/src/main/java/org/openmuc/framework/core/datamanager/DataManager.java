@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -521,12 +521,29 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
         synchronized (receivedRecordContainers) {
             List<ChannelRecordContainer> recordContainers;
+            List<LogRecordContainer> logRecordContainers = new ArrayList<>();
+
             while ((recordContainers = receivedRecordContainers.poll()) != null) {
                 for (ChannelRecordContainer container : recordContainers) {
-                	ChannelImpl channelImpl = (ChannelImpl) container.getChannel();
-                    if (channelImpl.getChannelState() == ChannelState.LISTENING) {
-                    	channelImpl.setNewRecord(container.getRecord());
+                    ChannelRecordContainerImpl containerImpl = (ChannelRecordContainerImpl) container;
+
+                    if (containerImpl.getChannel().getChannelState() == ChannelState.LISTENING) {
+                        containerImpl.getChannel().setNewRecord(containerImpl.getRecord());
+                        if (containerImpl.getChannel().isLoggingEvent()) {
+                            LogRecordContainer logRecordContainer = new LogRecordContainerImpl(
+                                    containerImpl.getChannel().getId(), containerImpl.getRecord());
+                            logRecordContainers.add(logRecordContainer);
+                        }
                     }
+                }
+            }
+            if (!logRecordContainers.isEmpty()) {
+                DataLoggerService datalogger;
+                try {
+                    datalogger = getDataLogger();
+                    datalogger.logEvent(logRecordContainers, System.currentTimeMillis());
+                } catch (DataLoggerNotAvailableException e) {
+                    logger.error(e.getMessage());
                 }
             }
         }
@@ -922,7 +939,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     }
 
     /**
-     * Registeres a new ServerService.
+     * Registers a new ServerService.
      * 
      * @param server
      *            ServerService object to register
@@ -1397,7 +1414,9 @@ public final class DataManager extends Thread implements DataAccessService, Conf
         if (dataLogger == null) {
             throw new DataLoggerNotAvailableException();
         }
-        logger.debug("Accessing logged values using " + dataLogger.getId());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Accessing logged values using {}", dataLogger.getId());
+        }
         return dataLogger;
     }
 

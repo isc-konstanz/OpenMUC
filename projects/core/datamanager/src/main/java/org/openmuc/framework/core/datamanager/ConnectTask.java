@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -41,7 +41,7 @@ public final class ConnectTask extends DeviceTask {
     public void run() {
 
         try {
-            device.connection = driver.connect(device.deviceConfig.getDeviceAddress(),
+            device.connection = driver.connect(device.deviceConfig.getAddress(),
                     device.deviceConfig.getSettings());
 
             if (logger.isDebugEnabled()) {

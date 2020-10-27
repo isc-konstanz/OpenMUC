@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -101,24 +101,24 @@ public class RestChannelMapper {
     public static RestChannelConfig getRestChannelConfig(ChannelConfig cc) {
 
         RestChannelConfig rcc = new RestChannelConfig();
-        rcc.setChannelAddress(cc.getChannelAddress());
-        rcc.setChannelSettings(cc.getChannelSettings());
-        rcc.setDescription(cc.getDescription());
-        rcc.setDisabled(cc.isDisabled());
         rcc.setId(cc.getId());
-        rcc.setListening(cc.isListening());
+        rcc.setAddress(cc.getAddress());
+        rcc.setDescription(cc.getDescription());
+        rcc.setUnit(cc.getUnit());
+        rcc.setValueType(cc.getValueType());
+        rcc.setValueTypeLength(cc.getValueTypeLength());
+        rcc.setScalingFactor(cc.getScalingFactor());
+        rcc.setValueOffset(cc.getValueOffset());
+        rcc.setSamplingInterval(cc.getSamplingInterval());
+        rcc.setSamplingTimeOffset(cc.getSamplingTimeOffset());
+        rcc.setSamplingGroup(cc.getSamplingGroup());
+        rcc.setSettings(cc.getSettings());
         rcc.setLoggingInterval(cc.getLoggingInterval());
         rcc.setLoggingTimeOffset(cc.getLoggingTimeOffset());
         rcc.setLoggingSettings(cc.getLoggingSettings());
-        rcc.setSamplingGroup(cc.getSamplingGroup());
-        rcc.setSamplingInterval(cc.getSamplingInterval());
-        rcc.setSamplingTimeOffset(cc.getSamplingTimeOffset());
-        rcc.setScalingFactor(cc.getScalingFactor());
+        rcc.setLoggingEvent(cc.isLoggingEvent());
+        rcc.setDisabled(cc.isDisabled());
         // rcc.setServerMappings(cc.getServerMappings());
-        rcc.setUnit(cc.getUnit());
-        rcc.setValueOffset(cc.getValueOffset());
-        rcc.setValueType(cc.getValueType());
-        rcc.setValueTypeLength(cc.getValueTypeLength());
         return rcc;
     }
 
@@ -135,23 +135,24 @@ public class RestChannelMapper {
         if (rcc.getId() != null && !rcc.getId().isEmpty() && !idFromUrl.equals(rcc.getId())) {
             cc.setId(rcc.getId());
         }
-        cc.setChannelAddress(rcc.getChannelAddress());
-        cc.setChannelSettings(rcc.getChannelSettings());
+        cc.setAddress(rcc.getAddress());
         cc.setDescription(rcc.getDescription());
-        cc.setDisabled(rcc.isDisabled());
+        cc.setUnit(rcc.getUnit());
+        cc.setValueType(rcc.getValueType());
+        cc.setValueTypeLength(rcc.getValueTypeLength());
+        cc.setScalingFactor(rcc.getScalingFactor());
+        cc.setValueOffset(rcc.getValueOffset());
         cc.setListening(rcc.isListening());
-        cc.setLoggingInterval(rcc.getLoggingInterval());
-        cc.setLoggingTimeOffset(rcc.getLoggingTimeOffset());
-        cc.setLoggingSettings(rcc.getLoggingSettings());
         cc.setSamplingGroup(rcc.getSamplingGroup());
         cc.setSamplingInterval(rcc.getSamplingInterval());
         cc.setSamplingTimeOffset(rcc.getSamplingTimeOffset());
-        cc.setScalingFactor(rcc.getScalingFactor());
+        cc.setLoggingInterval(rcc.getLoggingInterval());
+        cc.setLoggingTimeOffset(rcc.getLoggingTimeOffset());
+        cc.setLoggingSettings(rcc.getLoggingSettings());
+        cc.setLoggingEvent(rcc.isLoggingEvent());
+        cc.setSettings(rcc.getSettings());
+        cc.setDisabled(rcc.isDisabled());
         // cc.setServerMappings(rcc.getServerMappings());
-        cc.setUnit(rcc.getUnit());
-        cc.setValueOffset(rcc.getValueOffset());
-        cc.setValueType(rcc.getValueType());
-        cc.setValueTypeLength(rcc.getValueTypeLength());
     }
 
 }

@@ -16,7 +16,7 @@
 ----
 def projectName = "EMS"
 ...
-description "OpenMUC Energy Management System.."
+description "OpenMUC Energy Management System."
 ----
 
 . Navigate to app/ems/src/main/java/org/openmuc/framework/app/ and rename the folder simpledemo to ems
@@ -25,7 +25,7 @@ description "OpenMUC Energy Management System.."
 
 +
 ----
-package org.openmuc.framework.app.simpledemo;
+package org.openmuc.framework.app.ems;
 
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;

@@ -1,4 +1,3 @@
-
 def projectName = "OpenMUC Driver - Modbus"
 def projectDescription = "Modbus driver for the OpenMUC framework."
 
@@ -8,9 +7,12 @@ def jrxtxversion = '1.0.1'
 
 dependencies {
   implementation project(':openmuc-core-spi')
+
   implementation group: 'org.openmuc', name: 'jrxtx', version: jrxtxversion
   implementation files('../../../dependencies/j2mod/j2mod-r100.jar')
   embed files('../../../dependencies/j2mod/j2mod-r100.jar')
+  
+  testCompile 'commons-codec:commons-codec:1.13'
 }
 
 jar {

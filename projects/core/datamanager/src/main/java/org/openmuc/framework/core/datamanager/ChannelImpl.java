@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -64,14 +64,13 @@ import org.slf4j.LoggerFactory;
 public final class ChannelImpl implements Channel {
 
     private static final Logger logger = LoggerFactory.getLogger(ChannelImpl.class);
-
-    private volatile Record latestRecord;
+    private final Set<RecordListener> listeners = new LinkedHashSet<>();
+    private final DataManager dataManager;
     volatile ChannelConfigImpl config;
     ChannelCollection samplingCollection;
     ChannelCollection loggingCollection;
-    private final Set<RecordListener> listeners = new LinkedHashSet<>();
-    private final DataManager dataManager;
     volatile Object handle;
+    private volatile Record latestRecord;
     private Timer timer = null;
     private List<FutureValue> futureValues;
 
@@ -101,6 +100,10 @@ public final class ChannelImpl implements Channel {
         	}
             logChannels.add(config);
         }
+        else if (config.getLoggingInterval() == ChannelConfig.LOGGING_INTERVAL_DEFAULT && config.isLoggingEvent()
+                && config.isListening()) {
+            logChannels.add(config);
+        }
     }
 
     @Override
@@ -109,18 +112,18 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
-    public String getChannelAddress() {
-        return config.getChannelAddress();
-    }
-
-    @Override
-    public String getChannelSettings() {
-        return config.getChannelSettings();
+    public String getAddress() {
+        return config.getAddress();
     }
 
     @Override
     public String getDescription() {
         return config.getDescription();
+    }
+
+    @Override
+    public String getSettings() {
+        return config.getSettings();
     }
 
     @Override
@@ -178,7 +181,7 @@ public final class ChannelImpl implements Channel {
 
     @Override
     public String getDeviceAddress() {
-        return config.deviceParent.getDeviceAddress();
+        return config.deviceParent.getAddress();
     }
 
     @Override
@@ -502,16 +505,6 @@ public final class ChannelImpl implements Channel {
 
     }
 
-    @Override
-    public void write(List<Record> values) {
-        ArrayList<FutureValue> fValues = new ArrayList<>(values.size());
-        for (Record record : values) {
-            fValues.add(new FutureValue(record.getValue(), record.getTimestamp()));
-        }
-        writeFuture(fValues);
-    }
-
-    @Override
     public Record read() {
         CountDownLatch readTaskFinishedSignal = new CountDownLatch(1);
 
@@ -548,6 +541,10 @@ public final class ChannelImpl implements Channel {
     @Override
     public ReadRecordContainer getReadContainer() {
         return new ChannelRecordContainerImpl(this);
+    }
+
+    public boolean isLoggingEvent() {
+        return config.isLoggingEvent() && config.isListening() && config.getLoggingInterval() == -1;
     }
 
 }

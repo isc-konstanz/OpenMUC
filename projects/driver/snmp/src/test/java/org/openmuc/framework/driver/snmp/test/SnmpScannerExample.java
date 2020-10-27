@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -51,7 +51,7 @@ public class SnmpScannerExample {
             public void deviceFound(DeviceScanInfo device) {
                 System.out.println("-----------------------------");
                 System.out.println("New device found: ");
-                System.out.println("Address: " + device.getDeviceAddress());
+                System.out.println("Address: " + device.getAddress());
                 System.out.println("Description: " + device.getDescription());
                 System.out.println("-----------------------------");
             }

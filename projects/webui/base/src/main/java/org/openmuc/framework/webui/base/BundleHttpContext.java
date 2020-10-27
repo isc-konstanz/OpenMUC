@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -37,7 +37,7 @@ public class BundleHttpContext implements HttpContext {
 
     private static final Logger logger = LoggerFactory.getLogger(BundleHttpContext.class);
 
-    private Bundle contextBundle;
+    private final Bundle contextBundle;
 
     public BundleHttpContext(Bundle contextBundle) {
         this.contextBundle = contextBundle;

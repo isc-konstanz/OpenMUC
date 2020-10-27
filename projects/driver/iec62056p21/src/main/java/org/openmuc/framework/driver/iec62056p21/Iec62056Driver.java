@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -38,13 +38,9 @@ import org.openmuc.j62056.DataSet;
 import org.openmuc.j62056.Iec21Port;
 import org.openmuc.j62056.Iec21Port.Builder;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component
 public final class Iec62056Driver implements DriverService {
-
-    private static final Logger logger = LoggerFactory.getLogger(Iec62056Driver.class);
 
     private static final DriverInfo info = DriverInfoFactory.readInfo(Iec62056Driver.class);
 
@@ -76,7 +72,7 @@ public final class Iec62056Driver implements DriverService {
     @Override
     public void scanForDevices(String settings, DriverDeviceScanListener listener)
             throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ScanInterruptedException {
-        handleParameter(settings, true);
+        handleScanParameter(settings);
 
         Iec21Port iec21Port = null;
         Builder iec21PortBuilder = getConfiguredBuilder();
@@ -84,8 +80,7 @@ public final class Iec62056Driver implements DriverService {
         try {
             iec21Port = iec21PortBuilder.buildAndOpen();
         } catch (IOException e) {
-            logger.error("Failed to open serial port: " + e.getMessage());
-            System.exit(1);
+            throw new ScanException("Failed to open serial port: " + e.getMessage());
         }
 
         try {
@@ -118,7 +113,7 @@ public final class Iec62056Driver implements DriverService {
     public Connection connect(String deviceAddress, String settings)
             throws ArgumentSyntaxException, ConnectionException {
         serialPortName = deviceAddress;
-        handleParameter(settings, false);
+        handleParameter(settings);
         Builder configuredBuilder = getConfiguredBuilder();
         return new Iec62056Connection(configuredBuilder, retries, readStandard, requestStartCharacter);
     }
@@ -133,31 +128,38 @@ public final class Iec62056Driver implements DriverService {
                 .setRequestStartCharacters(requestStartCharacter);
     }
 
-    private void handleParameter(String settings, boolean isScan) throws ArgumentSyntaxException {
-        if (isScan && settings.isEmpty()) {
+    private void handleScanParameter(String settings) throws ArgumentSyntaxException {
+        if (settings.isEmpty()) {
             throw new ArgumentSyntaxException("No parameter given. At least serial port is needed");
-        }
-        else if (settings.isEmpty()) {
-        	return;
         }
         String[] args = settings.split("\\s+", 0);
 
-        if (isScan) {
-            serialPortName = args[0];
-            if (serialPortName.isEmpty()) {
-                throw new ArgumentSyntaxException("The <serial_port> has to be specified in the settings");
-            }
+        serialPortName = args[0].trim();
+        if (serialPortName.isEmpty()) {
+            throw new ArgumentSyntaxException(
+                    "The <serial_port> has to be specified in the settings, as first parameter");
         }
 
-        parseArguments(args);
+        parseArguments(args, true);
         if (requestStartCharacter.isEmpty()) {
             readStandard = false;
         }
 
     }
 
-    private void parseArguments(String[] args) throws ArgumentSyntaxException {
-        for (int i = 0; i < args.length; i++) {
+    private void handleParameter(String settings) throws ArgumentSyntaxException {
+        String[] args = settings.split("\\s+", 0);
+
+        parseArguments(args, false);
+        if (requestStartCharacter.isEmpty()) {
+            readStandard = false;
+        }
+    }
+
+    private void parseArguments(String[] args, boolean isScan) throws ArgumentSyntaxException {
+        int i = isScan ? 1 : 0;
+
+        for (; i < args.length; i++) {
 
             if (args[i].equals(BAUD_RATE_CHANGE_DELAY)) {
                 ++i;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -313,10 +313,10 @@ public class LogFileWriter {
 
         try {
             if (file.exists()) {
-                out = new PrintStream(new FileOutputStream(file, true), false, Const.CHAR_SET);
+                out = new PrintStream(new FileOutputStream(file, true), false, Const.CHAR_SET.toString());
             }
             else {
-                out = new PrintStream(new FileOutputStream(file, true), false, Const.CHAR_SET);
+                out = new PrintStream(new FileOutputStream(file, true), false, Const.CHAR_SET.toString());
                 String headerString = LogFileHeader.getIESDataFormatHeaderString(group, file.getName(), loggingInterval,
                         logChannelList);
 

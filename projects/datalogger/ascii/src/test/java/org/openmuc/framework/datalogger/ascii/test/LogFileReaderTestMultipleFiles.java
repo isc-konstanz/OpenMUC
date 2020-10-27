@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,16 +20,16 @@
  */
 package org.openmuc.framework.datalogger.ascii.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Record;
@@ -57,10 +57,10 @@ public class LogFileReaderTestMultipleFiles {
     private static String dateFormat = "yyyyMMdd HH:mm:ss";
     // private static String ext = ".dat";
 
-    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "Comment", "W", ValueType.DOUBLE,
-            loggingInterval, loggingTimeOffset);
+    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "Comment", "W", ValueType.DOUBLE, 0.0,
+            0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
 
         System.out.println("### Setup() LogFileReaderTestMultipleFiles");
@@ -68,8 +68,8 @@ public class LogFileReaderTestMultipleFiles {
         TestUtils.createTestFolder();
         // drei Dateien
 
-        // 1 Kanal im Sekunden-Takt loggen über von 23 Uhr bis 1 Uhr des übernächsten Tages
-        // --> Ergebnis müssten drei
+        // 1 Kanal im Sekunden-Takt loggen ueber von 23 Uhr bis 1 Uhr des uebernaechsten Tages
+        // --> Ergebnis muessten drei
         // Dateien sein die vom LogFileWriter erstellt wurden
 
         String filename0 = TestUtils.TESTFOLDERPATH + fileDate0 + "_" + loggingInterval + EXT;
@@ -95,8 +95,8 @@ public class LogFileReaderTestMultipleFiles {
 
         HashMap<String, LogChannel> logChannelList = new HashMap<>();
 
-        LogChannelTestImpl ch0 = new LogChannelTestImpl("power", "dummy description", "kW", ValueType.DOUBLE,
-                loggingInterval, loggingTimeOffset);
+        LogChannelTestImpl ch0 = new LogChannelTestImpl("power", "", "dummy description", "kW", ValueType.DOUBLE, 0.0,
+                0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
 
         logChannelList.put(Channel0Name, ch0);
 
@@ -121,7 +121,7 @@ public class LogFileReaderTestMultipleFiles {
         // }
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
 
         System.out.println("tearing down");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -40,13 +40,13 @@ public class SnmpChannel implements Channel {
 
     private String id;
     private String address;
-    private String settings;
     private String description;
     private String unit;
     private ValueType valueType;
     private int samplingInterval;
     private int samplingTimeOffset;
     private String deviceAddress;
+    private String settings;
 
     SnmpChannel() {
     }
@@ -62,18 +62,18 @@ public class SnmpChannel implements Channel {
     }
 
     @Override
-    public String getChannelAddress() {
+    public String getAddress() {
         return address;
     }
-
-	@Override
-	public String getChannelSettings() {
-		return settings;
-	}
 
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String getSettings() {
+        return settings;
     }
 
     @Override
@@ -244,13 +244,6 @@ public class SnmpChannel implements Channel {
     public double getScalingFactor() {
         // TODO Auto-generated method stub
         return 0;
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void write(List<Record> values) {
-        // TODO Auto-generated method stub
-
     }
 
 }

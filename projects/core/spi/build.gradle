@@ -2,7 +2,7 @@
 def projectName = "OpenMUC Core - SPI"
 
 dependencies {
-  api project(':openmuc-core-api')
+  api project(':openmuc-core-api') 
 }
 
 jar {

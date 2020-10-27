@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -53,103 +53,108 @@ import org.slf4j.LoggerFactory;
 public class DriverConnection implements Connection {
     private static final Logger logger = LoggerFactory.getLogger(DriverConnection.class);
 
-    private final ConnectionInterface serialInterface;
+    private final ConnectionInterface connectionInterface;
     private final int mBusAddress;
     private final SecondaryAddress secondaryAddress;
-    private final static int delay = 100; // delay in ms // ToDo: make it configurable (some devices need 2 s)
+    private final int delay;
 
     private boolean resetApplication = false;
     private boolean resetLink = false;
 
-    public DriverConnection(ConnectionInterface serialInterface, int mBusAddress, SecondaryAddress secondaryAddress) {
-        this.serialInterface = serialInterface;
+    public DriverConnection(ConnectionInterface connectionInterface, int mBusAddress, SecondaryAddress secondaryAddress,
+            int delay) {
+        this.connectionInterface = connectionInterface;
         this.secondaryAddress = secondaryAddress;
         this.mBusAddress = mBusAddress;
+        this.delay = delay;
     }
 
     @Override
     public List<ChannelScanInfo> scanForChannels(String settings)
             throws UnsupportedOperationException, ConnectionException {
+        int scanDelay = 50 + this.delay;
 
-        synchronized (serialInterface) {
+        synchronized (connectionInterface) {
 
-            List<ChannelScanInfo> chanScanInf = new ArrayList<>();
-
+            List<ChannelScanInfo> channelScanInfo = new ArrayList<>();
             try {
-                MBusConnection mBusConnection = serialInterface.getMBusConnection();
+                MBusConnection mBusConnection = connectionInterface.getMBusConnection();
+
                 if (secondaryAddress != null) {
                     mBusConnection.selectComponent(secondaryAddress);
                 }
                 else {
                     mBusConnection.linkReset(mBusAddress);
+                    sleep(delay);
+                    mBusConnection.resetReadout(mBusAddress);
                 }
-                sleep(delay);
 
-                VariableDataStructure variableDataStructure = mBusConnection.read(mBusAddress);
-
-                List<DataRecord> dataRecords = variableDataStructure.getDataRecords();
-
-                for (DataRecord dataRecord : dataRecords) {
-
-                    String vib = Helper.bytesToHex(dataRecord.getVib());
-                    String dib = Helper.bytesToHex(dataRecord.getDib());
-
-                    ValueType valueType;
-                    Integer valueLength;
-
-                    switch (dataRecord.getDataValueType()) {
-
-                    case STRING:
-                        valueType = ValueType.STRING;
-                        valueLength = 25;
-                        break;
-                    case LONG:
-                        if (dataRecord.getMultiplierExponent() == 0) {
-                            valueType = ValueType.LONG;
-                        }
-                        else {
-                            valueType = ValueType.DOUBLE;
-                        }
-                        valueLength = null;
-                        break;
-                    case DOUBLE:
-                    case DATE:
-                        valueType = ValueType.DOUBLE;
-                        valueLength = null;
-                        break;
-                    case BCD:
-                        if (dataRecord.getMultiplierExponent() == 0) {
-                            valueType = ValueType.DOUBLE;
-                        }
-                        else {
-                            valueType = ValueType.LONG;
-                        }
-                        valueLength = null;
-                        break;
-                    case NONE:
-                    default:
-                        valueType = ValueType.BYTE_ARRAY;
-                        valueLength = 100;
-                        break;
+                VariableDataStructure variableDataStructure;
+                do {
+                    sleep(scanDelay);
+                    variableDataStructure = mBusConnection.read(mBusAddress);
+                    List<DataRecord> dataRecords = variableDataStructure.getDataRecords();
+                    for (DataRecord dataRecord : dataRecords) {
+                        fillDataRecordInChannelScanInfo(channelScanInfo, dataRecord);
                     }
-
-                    String unit = "";
-                    if (dataRecord.getUnit() != null) {
-                        unit = dataRecord.getUnit().getUnit();
-                    }
-
-                    chanScanInf.add(new ChannelScanInfo(dib + ":" + vib, getDescription(dataRecord), valueType,
-                            valueLength, true, true, "", unit));
-                }
-            } catch (SerialPortTimeoutException e) {
-                throw new ConnectionException("Scan timeout.");
+                } while (variableDataStructure.moreRecordsFollow());
             } catch (IOException e) {
                 throw new ConnectionException(e);
             }
-
-            return chanScanInf;
-
+            return channelScanInfo;
         }
+    }
+
+    private void fillDataRecordInChannelScanInfo(List<ChannelScanInfo> channelScanInfo, DataRecord dataRecord) {
+        String vib = Helper.bytesToHex(dataRecord.getVib());
+        String dib = Helper.bytesToHex(dataRecord.getDib());
+
+        ValueType valueType;
+        Integer valueLength;
+
+        switch (dataRecord.getDataValueType()) {
+
+        case STRING:
+            valueType = ValueType.STRING;
+            valueLength = 25;
+            break;
+        case LONG:
+            if (dataRecord.getMultiplierExponent() == 0) {
+                valueType = ValueType.LONG;
+            }
+            else {
+                valueType = ValueType.DOUBLE;
+            }
+            valueLength = null;
+            break;
+        case DOUBLE:
+        case DATE:
+            valueType = ValueType.DOUBLE;
+            valueLength = null;
+            break;
+        case BCD:
+            if (dataRecord.getMultiplierExponent() == 0) {
+                valueType = ValueType.DOUBLE;
+            }
+            else {
+                valueType = ValueType.LONG;
+            }
+            valueLength = null;
+            break;
+        case NONE:
+        default:
+            valueType = ValueType.BYTE_ARRAY;
+            valueLength = 100;
+            break;
+        }
+
+        String unit = "";
+        if (dataRecord.getUnit() != null) {
+            unit = dataRecord.getUnit().getUnit();
+        }
+
+        channelScanInfo.add(new ChannelScanInfo(dib + ':' + vib, getDescription(dataRecord), valueType, valueLength,
+                true, true, "", unit));
     }
 
     private String getDescription(DataRecord dataRecord) {
@@ -223,67 +228,74 @@ public class DriverConnection implements Connection {
     @Override
     public void disconnect() {
 
-        synchronized (serialInterface) {
+        synchronized (connectionInterface) {
 
-            if (!serialInterface.isOpen()) {
+            if (!connectionInterface.isOpen()) {
                 return;
             }
 
-            serialInterface.decreaseConnectionCounter();
+            connectionInterface.decreaseConnectionCounter();
         }
     }
 
     @Override
     public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
-            throws UnsupportedOperationException, ConnectionException {
+            throws ConnectionException {
+        synchronized (connectionInterface) {
+            List<DataRecord> dataRecords = new ArrayList<>();
 
-        synchronized (serialInterface) {
-
-            if (!serialInterface.isOpen()) {
-                throw new ConnectionException();
+            if (!connectionInterface.isOpen()) {
+                throw new ConnectionException(
+                        "Connection " + connectionInterface.getInterfaceAddress() + " is closed.");
             }
 
-            MBusConnection mBusConnection = serialInterface.getMBusConnection();
+            MBusConnection mBusConnection = connectionInterface.getMBusConnection();
             if (secondaryAddress != null) {
                 try {
                     mBusConnection.selectComponent(secondaryAddress);
+                    sleep(delay);
                 } catch (SerialPortTimeoutException e) {
                     for (ChannelRecordContainer container : containers) {
                         container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
                     }
                     return null;
                 } catch (IOException e) {
-                    serialInterface.close();
-                    throw new ConnectionException(e);
+                    for (ChannelRecordContainer container : containers) {
+                        container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
+                    }
+                    logger.error(e.getMessage());
+                    return null;
                 }
             }
 
-            VariableDataStructure variableDataStructure = null;
             try {
-
                 if (secondaryAddress == null) {
                     if (resetLink) {
                         mBusConnection.linkReset(mBusAddress);
+                        sleep(delay);
                     }
                     if (resetApplication) {
                         mBusConnection.resetReadout(mBusAddress);
+                        sleep(delay);
                     }
                 }
+                VariableDataStructure variableDataStructure = null;
+                do {
+                    variableDataStructure = mBusConnection.read(mBusAddress);
+                    sleep(delay);
+                    dataRecords.addAll(variableDataStructure.getDataRecords());
+                } while (variableDataStructure.moreRecordsFollow());
 
-                variableDataStructure = mBusConnection.read(mBusAddress);
-            } catch (SerialPortTimeoutException e1) {
+            } catch (IOException e) {
                 for (ChannelRecordContainer container : containers) {
                     container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
                 }
+                logger.error(e.getMessage());
                 return null;
-            } catch (IOException e1) {
-                serialInterface.close();
-                throw new ConnectionException(e1);
             }
 
             long timestamp = System.currentTimeMillis();
 
-            List<DataRecord> dataRecords = variableDataStructure.getDataRecords();
             String[] dibvibs = new String[dataRecords.size()];
 
             int i = 0;
@@ -294,23 +306,27 @@ public class DriverConnection implements Connection {
             if (selectForReadoutSet) {
                 try {
                     mBusConnection.resetReadout(mBusAddress);
+                    sleep(delay);
                 } catch (SerialPortTimeoutException e) {
                     try {
                         mBusConnection.linkReset(mBusAddress);
-                    } catch (SerialPortTimeoutException e1) {
-                        serialInterface.close();
-                        throw new ConnectionException(e1);
+                        sleep(delay);
                     } catch (IOException e1) {
-                        serialInterface.close();
-                        throw new ConnectionException(e1);
+                        for (ChannelRecordContainer container : containers) {
+                            container.setRecord(new Record(Flag.CONNECTION_EXCEPTION));
+                        }
+                        logger.error(e.getMessage());
                     }
                 } catch (IOException e) {
-                    serialInterface.close();
-                    throw new ConnectionException(e);
+                    for (ChannelRecordContainer container : containers) {
+                        container.setRecord(new Record(Flag.CONNECTION_EXCEPTION));
+                    }
+                    logger.error(e.getMessage());
                 }
             }
             return null;
         }
+
     }
 
     private int setDibVibs(List<DataRecord> dataRecords, String[] dibvibs, int i) {
@@ -336,20 +352,17 @@ public class DriverConnection implements Connection {
                     container.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID));
                 }
                 List<DataRecord> dataRecordsToSelectForReadout = new ArrayList<>(1);
-                // TODO
-                // dataRecordsToSelectForReadout
-                // .add(new DataRecord(HexConverter.fromShortHexString(dibAndVib[0].substring(1)),
-                // HexConverter.fromShortHexString(dibAndVib[1]), new byte[] {}, 0));
 
                 selectForReadoutSet = true;
 
                 try {
                     mBusConnection.selectForReadout(mBusAddress, dataRecordsToSelectForReadout);
+                    sleep(delay);
                 } catch (SerialPortTimeoutException e) {
                     container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
                     continue;
                 } catch (IOException e) {
-                    serialInterface.close();
+                    connectionInterface.close();
                     throw new ConnectionException(e);
                 }
 
@@ -360,7 +373,7 @@ public class DriverConnection implements Connection {
                     container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
                     continue;
                 } catch (IOException e1) {
-                    serialInterface.close();
+                    connectionInterface.close();
                     throw new ConnectionException(e1);
                 }
 
@@ -455,10 +468,12 @@ public class DriverConnection implements Connection {
     }
 
     private void sleep(long millisec) throws ConnectionException {
-        try {
-            Thread.sleep(millisec);
-        } catch (InterruptedException e) {
-            throw new ConnectionException(e);
+        if (millisec > 0) {
+            try {
+                Thread.sleep(millisec);
+            } catch (InterruptedException e) {
+                throw new ConnectionException(e);
+            }
         }
     }
 

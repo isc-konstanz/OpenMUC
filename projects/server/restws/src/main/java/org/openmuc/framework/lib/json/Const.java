@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -51,18 +51,16 @@ public class Const {
     public static final String SCAN = "scan";
     public static final String WRITE = "write";
     public static final String HISTORY = "history";
+    public static final String ADDRESS = "address";
     public static final String SETTINGS = "settings";
     public static final String TYPE = "type";
-    public static final String DEVICEADDRESS = "deviceAddress";
     public static final String DESCRIPTION = "description";
     public static final String READABLE = "readable";
     public static final String WRITEABLE = "writeable";
     public static final String METADATA = "metadata";
     public static final String UNIT = "unit";
-    public static final String CHANNELADDRESS = "channelAddress";
-    public static final String CHANNELSETTINGS = "channelSettings";
-    public static final String VALUETYPE = "valueType";
-    public static final String VALUETYPELENGTH = "valueTypeLength";
+    public static final String VALUE_TYPE = "valueType";
+    public static final String VALUE_TYPE_LENGTH = "valueTypeLength";
     public static final String GROUPS = "groups";
 
     public static final String CHANNEL = "channel";

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -237,6 +237,10 @@ public class LoggerUtils {
         if (file.exists()) {
             String currentName = file.getName();
 
+            if (logger.isTraceEnabled()) {
+                logger.trace(MessageFormat.format("Header not identical. Rename file {0} to old.", currentName));
+            }
+
             String newName = currentName.substring(0, currentName.length() - Const.EXTENSION.length());
             newName += Const.EXTENSION_OLD;
             int j = 0;
@@ -329,7 +333,7 @@ public class LoggerUtils {
 
         int channelColumn = -1;
 
-        // erst Zeile ohne Kommentar finden, dann den Spaltennamen suchen und dessen Possitionsnummer zurückgeben.
+        // erst Zeile ohne Kommentar finden, dann den Spaltennamen suchen und dessen Possitionsnummer zurueckgeben.
         if (!line.startsWith(Const.COMMENT_SIGN)) {
             String[] columns = line.split(Const.SEPARATOR);
             for (int i = 0; i < columns.length; i++) {
