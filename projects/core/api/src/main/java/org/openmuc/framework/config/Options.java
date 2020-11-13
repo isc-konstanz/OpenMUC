@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.options;
+package org.openmuc.framework.config;
 
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -28,8 +28,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.ParseException;
+import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.address.AddressSyntax;
+import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.settings.SettingsSyntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;

@@ -20,10 +20,10 @@
  */
 package org.openmuc.framework.driver.rpi.gpio.configs;
 
+import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.address.AddressSyntax;
+import org.openmuc.framework.config.settings.Setting;
 import org.openmuc.framework.driver.DeviceConfigs;
-import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.AddressSyntax;
-import org.openmuc.framework.options.Setting;
 
 import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.PinPullResistance;

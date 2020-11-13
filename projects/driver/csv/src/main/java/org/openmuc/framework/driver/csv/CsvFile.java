@@ -24,6 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.address.AddressSyntax;
+import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.settings.SettingsSyntax;
 import org.openmuc.framework.driver.Device;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.channel.CsvChannelHHMMSS;
@@ -31,10 +35,6 @@ import org.openmuc.framework.driver.csv.channel.CsvChannelLine;
 import org.openmuc.framework.driver.csv.channel.CsvChannelUnixtimestamp;
 import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.AddressSyntax;
-import org.openmuc.framework.options.Setting;
-import org.openmuc.framework.options.SettingsSyntax;
 
 @AddressSyntax(separator = ";")
 @SettingsSyntax(separator = ";", assignmentOperator = "=")

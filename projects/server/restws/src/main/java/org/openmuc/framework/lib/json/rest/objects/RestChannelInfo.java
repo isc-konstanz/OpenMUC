@@ -23,9 +23,9 @@ package org.openmuc.framework.lib.json.rest.objects;
 import java.io.IOException;
 
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverOptions;
+import org.openmuc.framework.config.Options;
 import org.openmuc.framework.config.ParseException;
-import org.openmuc.framework.options.DriverOptions;
-import org.openmuc.framework.options.Options;
 
 public class RestChannelInfo {
 

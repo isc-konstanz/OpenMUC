@@ -25,10 +25,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.openmuc.framework.config.Option;
+import org.openmuc.framework.config.Options;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.options.Option;
-import org.openmuc.framework.options.Options;
 
 public class RestOption {
 

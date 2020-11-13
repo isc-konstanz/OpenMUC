@@ -21,9 +21,9 @@
 package org.openmuc.framework.driver.rest;
 
 import org.apache.commons.codec.binary.Base64;
+import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.settings.Setting;
 import org.openmuc.framework.driver.Device;
-import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.Setting;
 
 public abstract class RestConfigs extends Device<RestChannel> {
 

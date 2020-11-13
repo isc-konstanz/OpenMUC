@@ -20,9 +20,9 @@
  */
 package org.openmuc.framework.driver.rpi.w1.configs;
 
+import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.settings.Setting;
 import org.openmuc.framework.driver.DeviceConfigs;
-import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.Setting;
 
 public class W1Configs extends DeviceConfigs<W1Channel> {
 

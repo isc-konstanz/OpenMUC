@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.options;
+package org.openmuc.framework.config;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -32,7 +32,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.settings.Setting;
 import org.openmuc.framework.data.Value;
 
 public abstract class Configurable {

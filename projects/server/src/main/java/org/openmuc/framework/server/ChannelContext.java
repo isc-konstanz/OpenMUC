@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.FutureValue;
 import org.openmuc.framework.data.Record;
@@ -34,7 +35,6 @@ import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DataLoggerNotAvailableException;
 import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.dataaccess.RecordListener;
-import org.openmuc.framework.options.Configurable;
 
 public abstract class ChannelContext extends Configurable {
 

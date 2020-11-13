@@ -21,7 +21,7 @@
 package org.openmuc.framework.driver;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.options.Configurable;
+import org.openmuc.framework.config.Configurable;
 
 public abstract class DeviceContext extends Configurable {
 

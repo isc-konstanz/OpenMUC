@@ -26,10 +26,10 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.settings.SettingsSyntax;
 import org.openmuc.framework.driver.DeviceScanner;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
-import org.openmuc.framework.options.Setting;
-import org.openmuc.framework.options.SettingsSyntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -26,14 +26,14 @@ import java.lang.reflect.Type;
 import java.text.MessageFormat;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverInfoFactory;
+import org.openmuc.framework.config.DriverOptions;
+import org.openmuc.framework.config.Options;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverComponent;
-import org.openmuc.framework.options.Configurable;
-import org.openmuc.framework.options.DriverInfoFactory;
-import org.openmuc.framework.options.DriverOptions;
-import org.openmuc.framework.options.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

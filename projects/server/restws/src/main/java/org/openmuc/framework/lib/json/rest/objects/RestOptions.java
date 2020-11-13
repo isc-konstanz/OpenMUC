@@ -23,8 +23,8 @@ package org.openmuc.framework.lib.json.rest.objects;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openmuc.framework.config.Options;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.options.Options;
 
 public class RestOptions {
 

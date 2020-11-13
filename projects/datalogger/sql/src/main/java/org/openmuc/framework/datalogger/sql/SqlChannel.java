@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
+import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.settings.Setting;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -17,8 +19,6 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.Setting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

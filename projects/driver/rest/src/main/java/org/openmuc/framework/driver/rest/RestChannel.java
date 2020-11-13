@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.address.Address;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.Channel;
@@ -32,7 +33,6 @@ import org.openmuc.framework.lib.json.Const;
 import org.openmuc.framework.lib.json.FromJson;
 import org.openmuc.framework.lib.json.ToJson;
 import org.openmuc.framework.lib.json.rest.objects.RestRecord;
-import org.openmuc.framework.options.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

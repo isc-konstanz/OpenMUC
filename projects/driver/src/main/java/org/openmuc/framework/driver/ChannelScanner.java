@@ -24,9 +24,9 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
+import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.options.Configurable;
 
 public abstract class ChannelScanner extends Configurable {
 

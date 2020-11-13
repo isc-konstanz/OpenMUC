@@ -33,12 +33,12 @@ import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.address.AddressSyntax;
+import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.settings.SettingsSyntax;
 import org.openmuc.framework.driver.Device;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.AddressSyntax;
-import org.openmuc.framework.options.Setting;
-import org.openmuc.framework.options.SettingsSyntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

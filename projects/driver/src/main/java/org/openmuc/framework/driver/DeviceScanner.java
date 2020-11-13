@@ -21,10 +21,10 @@
 package org.openmuc.framework.driver;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
-import org.openmuc.framework.options.Configurable;
 
 public abstract class DeviceScanner extends Configurable {
 

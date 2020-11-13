@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.options;
+package org.openmuc.framework.config;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,8 +29,6 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

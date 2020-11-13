@@ -18,27 +18,26 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.openmuc.framework.config.address;
 
-package org.openmuc.framework.datalogger.spi;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.openmuc.framework.data.ValueType;
+@Documented
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, })
+public @interface AddressSyntax {
 
-public interface LogChannel {
+    public static final String SEPARATOR_DEFAULT = ":";
+    public static final String ASSIGNMENT_OPERATOR_DEFAULT = "";
+    public static final boolean KEY_VAL_PAIRS_DEFAULT = false;
 
-    public String getId();
-
-    public String getDescription();
-
-    public String getUnit();
-
-    public ValueType getValueType();
-
-    public Integer getValueTypeLength();
-
-    public Integer getLoggingInterval();
-
-    public Integer getLoggingTimeOffset();
-
-    public String getLoggingSettings();
-
+	String separator() default SEPARATOR_DEFAULT;
+	String assignmentOperator() default ASSIGNMENT_OPERATOR_DEFAULT;
+	boolean keyValuePairs() default KEY_VAL_PAIRS_DEFAULT;
 }

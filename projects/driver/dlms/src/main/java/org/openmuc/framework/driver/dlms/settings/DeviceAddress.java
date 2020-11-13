@@ -23,9 +23,9 @@ package org.openmuc.framework.driver.dlms.settings;
 import java.net.InetAddress;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.AddressSyntax;
-import org.openmuc.framework.options.Configurable;
+import org.openmuc.framework.config.Configurable;
+import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.address.AddressSyntax;
 
 @AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 public class DeviceAddress extends Configurable {

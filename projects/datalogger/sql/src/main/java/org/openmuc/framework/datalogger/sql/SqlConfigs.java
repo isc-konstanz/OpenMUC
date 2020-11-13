@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.address.AddressSyntax;
+import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.settings.SettingsSyntax;
 import org.openmuc.framework.datalogger.Channel;
 import org.openmuc.framework.datalogger.sql.time.TimestampIndex;
 import org.openmuc.framework.datalogger.sql.time.TimestampSplit;
 import org.openmuc.framework.datalogger.sql.time.TimestampUnix;
-import org.openmuc.framework.options.AddressSyntax;
-import org.openmuc.framework.options.Setting;
-import org.openmuc.framework.options.SettingsSyntax;
 
 @AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 @SettingsSyntax(separator = ";", assignmentOperator = "=")

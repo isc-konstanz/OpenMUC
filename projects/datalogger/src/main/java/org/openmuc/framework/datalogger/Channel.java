@@ -24,12 +24,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.settings.Setting;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.options.Setting;
 
 public class Channel extends ChannelContext {
 

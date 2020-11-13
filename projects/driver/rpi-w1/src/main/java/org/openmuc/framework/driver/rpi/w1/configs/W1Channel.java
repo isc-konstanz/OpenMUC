@@ -20,8 +20,8 @@
  */
 package org.openmuc.framework.driver.rpi.w1.configs;
 
+import org.openmuc.framework.config.settings.Setting;
 import org.openmuc.framework.driver.Channel;
-import org.openmuc.framework.options.Setting;
 
 import com.pi4j.temperature.TemperatureScale;
 

@@ -21,13 +21,13 @@
 package org.openmuc.framework.datalogger;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.dataaccess.RecordListener;
-import org.openmuc.framework.options.Configurable;
 
 public abstract class ChannelContext extends Configurable {
 

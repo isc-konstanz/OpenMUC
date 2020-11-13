@@ -24,10 +24,10 @@ import java.io.IOException;
 
 import org.openmuc.framework.config.DriverConfig;
 import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.DriverOptions;
 import org.openmuc.framework.config.IdCollisionException;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
-import org.openmuc.framework.options.DriverOptions;
 
 public class RestDriverMapper {
 
