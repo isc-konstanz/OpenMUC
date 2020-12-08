@@ -20,10 +20,6 @@
  */
 package org.openmuc.framework.driver.opcua;
 
-import java.util.concurrent.ExecutionException;
-
-import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -34,7 +30,6 @@ import org.openmuc.framework.config.settings.SettingsSyntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
-import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.FloatValue;
 import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.LongValue;
@@ -42,14 +37,10 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.driver.Channel;
-import org.openmuc.framework.driver.spi.ConnectionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @AddressSyntax(separator = ";")
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
 public class UaChannel extends Channel {
-    private static final Logger logger = LoggerFactory.getLogger(UaChannel.class);
 
     @Address(id = "id",
              name = "Identifier",
@@ -57,56 +48,74 @@ public class UaChannel extends Channel {
     private String identifier;
 
     @Setting(id="ns",
-    		name = "Namespace index",
-    		description = "The namespace index formatted as a base 10 number. The index an OPC UA server uses "
-    				    + "for a namespace URI. The namespace URI identifies the naming authority defining the "
-    				    + "identifiers of NodeIds, e.g. the OPC Foundation, other standard bodies and consortia, "
-    				    + "the underlying system, the local server.")
+            name = "Namespace index",
+            description = "The namespace index formatted as a base 10 number. The index an OPC UA server uses "
+                        + "for a namespace URI. The namespace URI identifies the naming authority defining the "
+                        + "identifiers of NodeIds, e.g. the OPC Foundation, other standard bodies and consortia, "
+                        + "the underlying system, the local server.",
+            mandatory = false)
     private int namespaceIndex = 0;
 
-    private VariableNode node;
+    private NodeId nodeId;
 
-    private final AddressSpace addressSpace;
+    public NodeId getNodeId() {
+    	return nodeId;
+    }
 
-    public UaChannel(AddressSpace addressSpace, int namespaceDefault) {
-    	this.addressSpace = addressSpace;
-    	this.namespaceIndex = namespaceDefault;
+    public UaChannel(int namespaceDefault) {
+        namespaceIndex = namespaceDefault;
     }
 
     @Override
     protected void onConfigure() {
-    	NodeId nodeId = new NodeId(namespaceIndex, identifier);
-    	this.node = addressSpace.createVariableNode(nodeId);
+        nodeId = new NodeId(namespaceIndex, identifier);
     }
 
-    @Override
-    protected Record onRead() throws UnsupportedOperationException, ConnectionException {
-        try {
-            DataValue value = node.readValue().get();
-            Variant variant = value.getValue();
-            switch (getValueType()) {
-            case BOOLEAN:
-                return new Record(new BooleanValue((Boolean) variant.getValue()), value.getServerTime().getUtcTime());
-            case BYTE:
-                return new Record(new ByteValue((Byte) variant.getValue()), value.getServerTime().getUtcTime());
-            case SHORT:
-                return new Record(new ShortValue((Short) variant.getValue()), value.getServerTime().getUtcTime());
-            case INTEGER:
-                return new Record(new IntValue((Integer) variant.getValue()), value.getServerTime().getUtcTime());
-            case LONG:
-                return new Record(new LongValue((Long) variant.getValue()), value.getServerTime().getUtcTime());
-            case FLOAT:
-                return new Record(new FloatValue((Float) variant.getValue()), value.getServerTime().getUtcTime());
-            case DOUBLE:
-                return new Record(new DoubleValue((Double) variant.getValue()), value.getServerTime().getUtcTime());    
-            default:
-                return new Record(new StringValue((String) variant.getValue()), value.getServerTime().getUtcTime());
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            logger.warn("Reading data from OPC server failed. {}", e);
+    public Record decode(DataValue data) {
+		long timestamp = data.getServerTime().getJavaTime();
+		Object value = data.getValue().getValue();
+		if (value == null) {
+			return null;
+		}
+        switch (getValueType()) {
+        case BOOLEAN:
+            return new Record(new BooleanValue((Boolean) value), timestamp);
+        case BYTE:
+            return new Record(new ByteValue((Byte) value), timestamp);
+        case SHORT:
+            return new Record(new ShortValue((Short) value), timestamp);
+        case INTEGER:
+            return new Record(new IntValue((Integer) value), timestamp);
+        case LONG:
+            return new Record(new LongValue((Long) value), timestamp);
+        case FLOAT:
+            return new Record(new FloatValue((Float) value), timestamp);
+        case DOUBLE:
+            return new Record(new DoubleValue((Double) value), timestamp);    
+        default:
+            return new Record(new StringValue((String) value), timestamp);
         }
-        return new Record(new DoubleValue(Double.NaN), System.currentTimeMillis(), 
-                Flag.DRIVER_ERROR_READ_FAILURE);
+    }
+
+    public DataValue encode() {
+        switch (getValueType()) {
+        case BOOLEAN:
+        	return new DataValue(new Variant(getValue().asBoolean()));
+        case BYTE:
+        	return new DataValue(new Variant(getValue().asByte()));
+        case SHORT:
+        	return new DataValue(new Variant(getValue().asShort()));
+        case INTEGER:
+        	return new DataValue(new Variant(getValue().asInt()));
+        case LONG:
+        	return new DataValue(new Variant(getValue().asLong()));
+        case FLOAT:
+        	return new DataValue(new Variant(getValue().asFloat()));
+        case DOUBLE:
+        	return new DataValue(new Variant(getValue().asDouble()));
+        default:
+        	return new DataValue(new Variant(getValue().asString()));
+        }
     }
 
 }
