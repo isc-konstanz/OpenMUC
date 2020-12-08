@@ -72,11 +72,6 @@ public class Channel extends ChannelContext implements ChannelRecordContainer, C
         setRecord(onRead(timestamp));
     }
 
-    protected Record onRead() throws UnsupportedOperationException, ConnectionException {
-        // Placeholder for the optional implementation
-        return onRead(System.currentTimeMillis());
-    }
-
     protected Record onRead(long timestamp)
             throws UnsupportedOperationException, ConnectionException {
         // Placeholder for the optional implementation

@@ -25,6 +25,8 @@
   </root>
 
 
+  <logger name="io.netty" level="INFO" />
+  <logger name="org.eclipse.milo" level="INFO" />
   <logger name="org.eclipse.jetty" level="INFO" />
   <logger name="org.openmuc.framework.datalogger.timescaledb" level="TRACE" />
 
