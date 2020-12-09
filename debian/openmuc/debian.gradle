@@ -1,0 +1,11 @@
+copy {
+  from project.configurations.osgibundles
+  into rootDir.getPath() + '/build/debian/openmuc' + cfgDebianDir + '/bundle'
+  exclude 'openmuc*'
+  exclude 'gson*'
+}
+copy {
+  from project.configurations.osgimain;
+  into rootDir.getPath() + '/build/debian/openmuc' + cfgDebianDir + '/bin'
+  rename (/org.apache.felix.main-.*jar/, "felix.jar")
+}

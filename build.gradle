@@ -103,10 +103,10 @@ configure(javaProjects) {
 
       sourceSets.main.output.classesDirs.each{ f ->
         // Copy directories from main source to instrumented path
-	    copy {
-		  from f
-		  into buildDir.path + '/instrumented_classes'
-	    }
+        copy {
+          from f
+          into buildDir.path + '/instrumented_classes'
+        }
       }
 
       ant.instrument(destdir: outputDir) {
@@ -333,6 +333,16 @@ task release {
   dependsOn(distributionProjects.build)
   dependsOn(javadocAll)
   dependsOn(tar)
+}
+
+task framework {
+  apply from: rootDir.getPath() + "/framework/conf/bundles.conf.gradle"
+  dependsOn updateBundles
+}
+
+task packages {
+  apply from: rootDir.getPath() + "/debian/packages.gradle"
+  dependsOn copyPackages
 }
 
 subprojects {
