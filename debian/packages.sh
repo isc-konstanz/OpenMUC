@@ -27,7 +27,7 @@ find_gradle() {
     if hash gradle 2>/dev/null; then
         GRADLE="gradle"
     else
-        GRADLE=$OPENMUC_HOME"/../gradlew"
+        GRADLE=$OPENMUC_HOME"/gradlew"
     fi
 }
 
