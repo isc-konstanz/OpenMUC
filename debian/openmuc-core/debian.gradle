@@ -1,6 +1,6 @@
 copy {
   from project.configurations.default.getAllArtifacts().getFiles()
   from project.configurations.default
-  into rootDir.getPath() + '/build/debian/openmuc-core' + cfgDebianDir + '/bundle'
+  into rootDir.getPath() + '/build/dpkg/openmuc-core' + cfgDebianDir + '/bundle'
   include 'openmuc-core*.jar'
 }

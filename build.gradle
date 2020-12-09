@@ -337,12 +337,12 @@ task release {
 
 task framework {
   apply from: rootDir.getPath() + "/framework/conf/bundles.conf.gradle"
-  dependsOn updateBundles
+  dependsOn(updateBundles)
 }
 
 task packages {
   apply from: rootDir.getPath() + "/debian/packages.gradle"
-  dependsOn copyPackages
+  dependsOn(copyPackages)
 }
 
 subprojects {

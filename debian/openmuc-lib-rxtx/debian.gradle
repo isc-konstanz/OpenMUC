@@ -11,6 +11,6 @@ dependencies {
 }
 copy {
   from project.configurations.osgilibs
-  into rootDir.getPath() + '/build/debian/openmuc-lib-rxtx' + cfgDebianDir + '/bundle'
+  into rootDir.getPath() + '/build/dpkg/openmuc-lib-rxtx' + cfgDebianDir + '/bundle'
   include 'jrxtx*'
 }

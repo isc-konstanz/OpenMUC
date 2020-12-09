@@ -1,29 +1,28 @@
 task copyPackages {
-  for (Project project: distributionProjects) {
-    if (project.getProjectDir().equals(getProjectDir())) {
-      continue;
-    }
-    configure(project) {
-      def projectName = project.name
-      if (['openmuc-core', 'openmuc-webui'].any { project.name.contains(it) }) {
-        ['openmuc-core', 'openmuc-webui'].each {
-          if (project.name.contains(it)) {
-            projectName = it
+  dependsOn(distributionProjects.build)
+  doLast {
+    for (Project project: distributionProjects) {
+      if (project.getProjectDir().equals(getProjectDir())) {
+        continue;
+      }
+      configure(project) {
+        def projectName = project.name
+        if (['openmuc-core', 'openmuc-webui'].any { project.name.contains(it) }) {
+          ['openmuc-core', 'openmuc-webui'].each {
+            if (project.name.contains(it)) {
+              projectName = it
+            }
           }
         }
-      }
-      def projectPackage = rootDir.getPath() + '/debian/' + projectName
-      def projectPackageDest = rootDir.getPath() + '/build/debian/' + projectName
-      
-      if (new File(projectPackage).exists()) {
-        task copyPackage << {
+        def projectPackage = rootDir.getPath() + '/debian/' + projectName
+        def projectPackageDest = rootDir.getPath() + '/build/dpkg/' + projectName
+
+        if (new File(projectPackage).exists()) {
           copy {
             from projectPackage
             into projectPackageDest
             exclude '*.gradle'
           }
-        }
-        task copyPackageJars << {
           if (new File(projectPackage + '/debian.gradle').exists()) {
             apply from: projectPackage + '/debian.gradle'
           }
@@ -36,22 +35,20 @@ task copyPackages {
             }
           }
         }
-        copyPackages.dependsOn(copyPackageJars)
-        copyPackages.dependsOn(copyPackage)
       }
     }
-  }
 
-  configure(project) {
-    ['openmuc', 'openmuc-lib-gson', 'openmuc-lib-rxtx'].each {
-      def projectPackage = rootDir.getPath() + '/debian/' + it
-      def projectPackageDest = rootDir.getPath() + '/build/debian/' + it
-	  
-      apply from: projectPackage + '/debian.gradle'
-      copy {
-        from projectPackage
-        into projectPackageDest
-        exclude '*.gradle'
+    configure(project) {
+      ['openmuc', 'openmuc-lib-gson', 'openmuc-lib-rxtx'].each {
+        def projectPackage = rootDir.getPath() + '/debian/' + it
+        def projectPackageDest = rootDir.getPath() + '/build/dpkg/' + it
+
+        apply from: projectPackage + '/debian.gradle'
+        copy {
+          from projectPackage
+          into projectPackageDest
+          exclude '*.gradle'
+        }
       }
     }
   }

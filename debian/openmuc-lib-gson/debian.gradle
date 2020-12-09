@@ -1,5 +1,5 @@
 copy {
   from project.configurations.osgibundles
-  into rootDir.getPath() + '/build/debian/openmuc-lib-gson' + cfgDebianDir + '/bundle'
+  into rootDir.getPath() + '/build/dpkg/openmuc-lib-gson' + cfgDebianDir + '/bundle'
   include 'gson*'
 }
