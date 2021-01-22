@@ -31,7 +31,6 @@ task copyPackages {
               from project.configurations.default.getAllArtifacts().getFiles()
               from project.configurations.default
               into projectPackageDest + cfgDebianDir + '/bundle'
-              include 'openmuc-core*.jar'
             }
           }
         }

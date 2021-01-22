@@ -38,4 +38,6 @@ cd "$OPENMUC_HOME"
 
 eval $GRADLE packages
 
+
+
 exit 0
