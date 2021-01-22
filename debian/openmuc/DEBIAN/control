@@ -3,6 +3,6 @@ Version: 0.18.2
 Section: base
 Priority: optional
 Architecture: armhf
-Depends: openmuc-core, git-core, build-essential, python3
+Depends: default-jre-headless
 Maintainer: Adrian Minde <adrian.minde@isc-konstanz.de>
 Description: openmuc package 
