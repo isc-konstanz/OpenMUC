@@ -105,7 +105,7 @@ configure(javaProjects) {
 }
 
 task framework {
-  apply from: "./framework/conf/bundles.conf.gradle"
+  apply from: "./framework/conf/bundles.gradle"
   dependsOn updateBundles
 }
 

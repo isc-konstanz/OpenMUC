@@ -1,15 +1,6 @@
-if (project.hasProperty('cfgVersion')) {
-  project.ext {
-    openmucPath = rootDir.getPath()
-    openmucVersion = cfgVersion
-  }
-}
-else {
-  project.ext {
-    openmucPath = rootDir.getPath() + "/../.."
-    openmucVersion = "0.18.1"
-  }
-}
+
+def openmucPath = rootDir.getPath()
+def openmucVersion = cfgVersion
 
 repositories {
   flatDir {
@@ -135,12 +126,12 @@ dependencies {
 
 task loadBundles(type: Sync) {
   from configurations.osgibundles;
-  into project.ext.openmucPath + "/framework/bundle"
+  into openmucPath + "/framework/bundle"
 }
 
 task loadFelixMain(type: Copy) {
   from configurations.osgimain;
-  into project.ext.openmucPath + "/framework/felix"
+  into openmucPath + "/framework/felix"
   rename (/org.apache.felix.main-.*jar/, "felix.jar")
 }
 
