@@ -141,6 +141,14 @@ public final class ChannelImpl implements Channel {
         return config.getValueTypeLength();
     }
 
+	@Override
+	public double getValueOffset() {
+        if (config.getValueOffset() == null) {
+            return 0d;
+        }
+        return config.getValueOffset();
+	}
+
     @Override
     public double getScalingFactor() {
         if (config.getScalingFactor() == null) {

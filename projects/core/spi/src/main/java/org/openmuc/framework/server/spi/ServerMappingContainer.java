@@ -30,6 +30,7 @@ import org.openmuc.framework.dataaccess.Channel;
  *
  */
 public class ServerMappingContainer {
+
     private final Channel channel;
     private final ServerMapping serverMapping;
 

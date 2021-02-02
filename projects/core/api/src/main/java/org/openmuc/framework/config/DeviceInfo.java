@@ -19,26 +19,12 @@
  *
  */
 
-package org.openmuc.framework.datalogger.spi;
+package org.openmuc.framework.config;
 
-import org.openmuc.framework.config.ChannelInfo;
+public interface DeviceInfo {
 
-public interface LogChannel extends ChannelInfo {
+    public String getId();
 
-    public Boolean isListening();
-
-    public Integer getSamplingInterval();
-
-    public Integer getSamplingTimeOffset();
-
-    public String getSamplingGroup();
-
-    public Integer getLoggingInterval();
-
-    public Integer getLoggingTimeOffset();
-
-    public String getLoggingSettings();
-
-    public Boolean isLoggingEvent();
+    public String getDescription();
 
 }

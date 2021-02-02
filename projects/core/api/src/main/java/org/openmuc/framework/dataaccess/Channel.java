@@ -112,6 +112,21 @@ public interface Channel {
     int getValueTypeLength();
 
     /**
+     * Returns the value offset. Returns 0.0 if the offset is not configured.
+     * <p>
+     * The value offset is applied in the following cases:
+     * <ul>
+     * <li>Values received by this channel's driver or from apps through {@link #setLatestRecord(Record)} will get the
+     * value offset added before they are stored in the latest record.</li>
+     * <li>Values written (e.g. using {@link #write(Value)}) are subtracted by the value offset before they are handed to
+     * the driver for transmission.</li>
+     * </ul>
+     *
+     * @return the value offset
+     */
+    double getValueOffset();
+
+    /**
      * Returns the scaling factor. Returns 1.0 if the scaling factor is not configured.
      * <p>
      * The scaling factor is applied in the following cases:

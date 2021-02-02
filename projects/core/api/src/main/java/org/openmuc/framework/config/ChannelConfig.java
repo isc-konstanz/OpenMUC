@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.openmuc.framework.data.ValueType;
 
-public interface ChannelConfig {
+public interface ChannelConfig extends ChannelInfo {
 
     static final Boolean DISABLED_DEFAULT = false;
     static final String DESCRIPTION_DEFAULT = "";
@@ -44,11 +44,7 @@ public interface ChannelConfig {
     static final boolean LOGGING_EVENT_DEFAULT = false;
 	static final String LOGGING_SETTINGS_DEFAULT = "";
 
-    String getId();
-
     void setId(String id) throws IdCollisionException;
-
-    String getDescription();
 
     void setDescription(String description);
 
@@ -56,25 +52,15 @@ public interface ChannelConfig {
 
     void setAddress(String address);
 
-    String getUnit();
-
     void setUnit(String unit);
-
-    ValueType getValueType();
 
     void setValueType(ValueType type);
 
-    Integer getValueTypeLength();
-
     void setValueTypeLength(Integer maxLength);
 
-    Double getScalingFactor();
+    void setValueOffset(Double offset);
 
     void setScalingFactor(Double factor);
-
-    Double getValueOffset();
-
-    void setValueOffset(Double offset);
 
     Boolean isListening();
 
@@ -108,6 +94,10 @@ public interface ChannelConfig {
 
 	void setLoggingSettings(String settings);
 
+	Boolean isLoggingEvent();
+
+    void setLoggingEvent(Boolean loggingEvent);
+
     Boolean isDisabled();
 
     void setDisabled(Boolean disabled);
@@ -121,8 +111,4 @@ public interface ChannelConfig {
     void addServerMapping(ServerMapping serverMapping);
 
     void deleteServerMappings(String id);
-
-    void setLoggingEvent(Boolean loggingEvent);
-
-    Boolean isLoggingEvent();
 }

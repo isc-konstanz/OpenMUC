@@ -23,18 +23,14 @@ package org.openmuc.framework.config;
 
 import java.util.Collection;
 
-public interface DeviceConfig {
+public interface DeviceConfig extends DeviceInfo {
 
     public static final String DESCRIPTION_DEFAULT = "";
     public static final String ADDRESS_DEFAULT = "";
     public static final String SETTINGS_DEFAULT = "";
     public static final Boolean DISABLED_DEFAULT = false;
 
-    public String getId();
-
     public void setId(String id) throws IdCollisionException;
-
-    public String getDescription();
 
     public void setDescription(String description);
 

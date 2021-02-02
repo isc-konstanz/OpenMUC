@@ -19,26 +19,28 @@
  *
  */
 
-package org.openmuc.framework.datalogger.spi;
+package org.openmuc.framework.config;
 
-import org.openmuc.framework.config.ChannelInfo;
+import org.openmuc.framework.data.ValueType;
 
-public interface LogChannel extends ChannelInfo {
+/**
+ * The <code>ChannelInfo</code> class is used to access a single data field of a communication device. 
+ * A channel info instance can be used to get configuration information about this channel such as its unit.
+ */
+public interface ChannelInfo {
 
-    public Boolean isListening();
+    String getId();
 
-    public Integer getSamplingInterval();
+    String getDescription();
 
-    public Integer getSamplingTimeOffset();
+    String getUnit();
 
-    public String getSamplingGroup();
+    ValueType getValueType();
 
-    public Integer getLoggingInterval();
+    Integer getValueTypeLength();
 
-    public Integer getLoggingTimeOffset();
+    Double getValueOffset();
 
-    public String getLoggingSettings();
-
-    public Boolean isLoggingEvent();
+    Double getScalingFactor();
 
 }
