@@ -94,7 +94,7 @@ public class UaConnection extends Device<UaChannel>{
                             .setCertificate(loader.getClientCertificate()).setKeyPair(loader.getClientKeyPair())
                             .setIdentityProvider(new AnonymousProvider()).setRequestTimeout(uint(5000))
                             .build());
-
+            
             client.connect().get();
             
             // Get a typed reference to the Server object: ServerNode
@@ -134,21 +134,21 @@ public class UaConnection extends Device<UaChannel>{
 	    	List<DataValue> values = client.readValues(0.0, TimestampsToReturn.Both, nodeIds).get();
 	    	
 	        for (UaChannel channel : channels) {
-	    		int index = nodeIds.indexOf(channel.getNodeId());
-	    		
-	    		Record record = channel.decode(values.get(index));
-	        	if (record == null) {
-	                record = new Record(new DoubleValue(Double.NaN), System.currentTimeMillis(), 
-	                		Flag.DRIVER_ERROR_READ_FAILURE);
+	        	try {
+		    		int index = nodeIds.indexOf(channel.getNodeId());
+		        	channel.setRecord(channel.decode(values.get(index)));
+	        		
+	        	} catch (NullPointerException e) {
+		        	channel.setRecord(new Record(new DoubleValue(Double.NaN), System.currentTimeMillis(), 
+	                		Flag.DRIVER_ERROR_READ_FAILURE));
 	        	}
-	        	channel.setRecord(record);
 	        }
 		} catch (InterruptedException e) {
 	        for (UaChannel channel : channels) {
 	        	channel.setRecord(new Record(new DoubleValue(Double.NaN), System.currentTimeMillis(), 
 	                		Flag.DRIVER_ERROR_TIMEOUT));
 	        }
-		} catch (ExecutionException e) {
+		} catch (ExecutionException | NullPointerException e) {
             logger.warn("Reading data from OPC server failed. {}", e);
 			throw new ConnectionException(e);
 		}

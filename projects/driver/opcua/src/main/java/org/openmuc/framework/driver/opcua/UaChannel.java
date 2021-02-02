@@ -74,9 +74,6 @@ public class UaChannel extends Channel {
     public Record decode(DataValue data) {
 		long timestamp = data.getServerTime().getJavaTime();
 		Object value = data.getValue().getValue();
-		if (value == null) {
-			return null;
-		}
         switch (getValueType()) {
         case BOOLEAN:
             return new Record(new BooleanValue((Boolean) value), timestamp);
