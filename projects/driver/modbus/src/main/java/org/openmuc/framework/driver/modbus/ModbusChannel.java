@@ -199,13 +199,13 @@ public class ModbusChannel {
         case SHORT:
         case INT16:
         case UINT16:
-            if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
-                functionCode = EFunctionCode.FC_06_WRITE_SINGLE_REGISTER;
-            }
-            else {
-                invalidWriteAddressParameterCombination();
-            }
-            break;
+//            if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
+//                functionCode = EFunctionCode.FC_06_WRITE_SINGLE_REGISTER;
+//            }
+//            else {
+//                invalidWriteAddressParameterCombination();
+//            }
+//            break;
         case INT32:
         case UINT32:
         case FLOAT:
