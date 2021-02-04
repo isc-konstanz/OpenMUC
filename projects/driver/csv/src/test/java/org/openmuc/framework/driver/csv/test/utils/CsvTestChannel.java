@@ -84,6 +84,12 @@ public class CsvTestChannel implements Channel {
 	}
 
 	@Override
+	public double getValueOffset() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
 	public double getScalingFactor() {
 		// TODO Auto-generated method stub
 		return 0;

@@ -92,6 +92,18 @@ public class SnmpChannel implements Channel {
         return 0;
     }
 
+	@Override
+	public double getValueOffset() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+    @Override
+    public double getScalingFactor() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
     @Override
     public int getSamplingInterval() {
         return samplingInterval;
@@ -238,12 +250,6 @@ public class SnmpChannel implements Channel {
             throws DataLoggerNotAvailableException, IOException {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public double getScalingFactor() {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
 }

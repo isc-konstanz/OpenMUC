@@ -23,7 +23,10 @@ package org.openmuc.framework.datalogger.spi;
 
 import org.openmuc.framework.config.ChannelInfo;
 
+
 public interface LogChannel extends ChannelInfo {
+
+    public String getAddress();
 
     public Boolean isListening();
 
@@ -40,5 +43,7 @@ public interface LogChannel extends ChannelInfo {
     public String getLoggingSettings();
 
     public Boolean isLoggingEvent();
+
+    public Boolean isDisabled();
 
 }
