@@ -23,11 +23,11 @@ package org.openmuc.framework.lib.json.rest.objects;
 import java.io.IOException;
 
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverOptions;
-import org.openmuc.framework.config.Options;
 import org.openmuc.framework.config.ParseException;
+import org.openmuc.framework.config.option.ChannelOptions;
+import org.openmuc.framework.config.option.DriverOptions;
 
-public class RestChannelInfo {
+public class RestChannelOptions {
 
     private String description = null;
 
@@ -76,34 +76,34 @@ public class RestChannelInfo {
         this.configs = configs;
     }
 
-    public static RestChannelInfo getRestChannelInfo(DriverInfo driverInfo) 
+    public static RestChannelOptions getRestChannelInfo(DriverInfo driverInfo) 
             throws ParseException, IOException {
-    	
-    	if (driverInfo instanceof DriverOptions) {
-    		return getRestChannelDetail((DriverOptions) driverInfo);
-    	}
-    	
-        RestChannelInfo restChannelInfo = new RestChannelInfo();
-        restChannelInfo.setAddress(RestOptions.parseOptions(RestOptions.ADDRESS, driverInfo.getChannelAddressSyntax()));
-        restChannelInfo.setSettings(RestOptions.parseOptions(RestOptions.SETTINGS, driverInfo.getChannelSettingsSyntax()));
-        restChannelInfo.setScanSettings(RestOptions.parseOptions(RestOptions.SCAN_SETTINGS, driverInfo.getChannelScanSettingsSyntax()));
         
-        RestOptions configs = RestOptions.parseOptions(DriverOptions.readChannelConfigs());
+        if (driverInfo instanceof DriverOptions) {
+            return getRestChannelDetail((DriverOptions) driverInfo);
+        }
+        
+        RestChannelOptions restChannelInfo = new RestChannelOptions();
+        restChannelInfo.setAddress(RestOptions.parseOptions(RestOptions.ADDRESS, driverInfo.getChannel().getAddressSyntax()));
+        restChannelInfo.setSettings(RestOptions.parseOptions(RestOptions.SETTINGS, driverInfo.getChannel().getSettingsSyntax()));
+        restChannelInfo.setScanSettings(RestOptions.parseOptions(RestOptions.SCAN_SETTINGS, driverInfo.getChannel().getScanSettingsSyntax()));
+        
+        RestOptions configs = RestOptions.parseOptions(ChannelOptions.readConfigOptions());
         configs.setSyntax(null);
         restChannelInfo.setConfigs(configs);
         
         return restChannelInfo;
     }
 
-    private static RestChannelInfo getRestChannelDetail(DriverOptions driverDetail) 
+    private static RestChannelOptions getRestChannelDetail(DriverOptions driverDetail) 
             throws ParseException, IOException {
 
-        RestChannelInfo restChannelInfo = new RestChannelInfo();
-        restChannelInfo.setAddress(RestOptions.parseOptions(driverDetail.getChannelAddress()));
-        restChannelInfo.setSettings(RestOptions.parseOptions(driverDetail.getChannelSettings()));
-        restChannelInfo.setScanSettings(RestOptions.parseOptions(driverDetail.getChannelScanSettings()));
+        RestChannelOptions restChannelInfo = new RestChannelOptions();
+        restChannelInfo.setAddress(RestOptions.parseOptions(driverDetail.getChannel().getAddressOptions()));
+        restChannelInfo.setSettings(RestOptions.parseOptions(driverDetail.getChannel().getSettingsOptions()));
+        restChannelInfo.setScanSettings(RestOptions.parseOptions(driverDetail.getChannel().getScanSettingsOptions()));
 
-        RestOptions configs = RestOptions.parseOptions(DriverOptions.readChannelConfigs());
+        RestOptions configs = RestOptions.parseOptions(ChannelOptions.readConfigOptions());
         configs.setSyntax(null);
         restChannelInfo.setConfigs(configs);
         

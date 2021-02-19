@@ -38,15 +38,15 @@ public class LogChannelTestImpl implements LogChannel {
     private final String samplingGroup;
     private final Integer loggingInterval;
     private final Integer loggingTimeOffset;
-	private final String loggingSettings;
+    private final String loggingSettings;
     private final Boolean isEventLogging;
     private final Boolean disabled;
     private Integer valueLength;
 
     public LogChannelTestImpl(String id, String address, String description, String unit, 
-    		ValueType valueType, Double scalingFactor, Double valueOffset, Boolean listening, 
-    		Integer samplingInterval, Integer samplingTimeOffset, String samplingGroup, 
-    		Integer loggingInterval, Integer loggingTimeOffset, String loggingSettings, 
+            ValueType valueType, Double scalingFactor, Double valueOffset, Boolean listening, 
+            Integer samplingInterval, Integer samplingTimeOffset, String samplingGroup, 
+            Integer loggingInterval, Integer loggingTimeOffset, String loggingSettings, 
             Boolean isEventLogging, Boolean disabled) {
 
         this.id = id;
@@ -68,9 +68,9 @@ public class LogChannelTestImpl implements LogChannel {
     }
 
     public LogChannelTestImpl(String id, String channelAddress, String description, String unit, 
-    		ValueType valueType, Double scalingFactor, Double valueOffset, Boolean listening, 
-    		Integer samplingInterval, Integer samplingTimeOffset, String samplingGroup, 
-    		Integer loggingInterval, Integer loggingTimeOffset, String loggingSettings, 
+            ValueType valueType, Double scalingFactor, Double valueOffset, Boolean listening, 
+            Integer samplingInterval, Integer samplingTimeOffset, String samplingGroup, 
+            Integer loggingInterval, Integer loggingTimeOffset, String loggingSettings, 
             Boolean isEventLogging, Boolean disabled, int valueLength) {
 
         this(id, description, channelAddress, unit, valueType, scalingFactor, valueOffset, listening, samplingInterval,
@@ -162,11 +162,11 @@ public class LogChannelTestImpl implements LogChannel {
         return loggingTimeOffset;
     }
 
-	@Override
-	public String getLoggingSettings() {
+    @Override
+    public String getLoggingSettings() {
 
-		return loggingSettings;
-	}
+        return loggingSettings;
+    }
 
     @Override
     public Boolean isLoggingEvent() {

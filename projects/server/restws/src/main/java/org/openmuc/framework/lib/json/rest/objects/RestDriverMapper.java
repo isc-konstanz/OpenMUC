@@ -24,9 +24,9 @@ import java.io.IOException;
 
 import org.openmuc.framework.config.DriverConfig;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverOptions;
 import org.openmuc.framework.config.IdCollisionException;
 import org.openmuc.framework.config.ParseException;
+import org.openmuc.framework.config.option.DriverOptions;
 import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
 
 public class RestDriverMapper {
@@ -68,9 +68,9 @@ public class RestDriverMapper {
         restDriverInfo.setId(driverInfo.getId());
         restDriverInfo.setDescription(driverInfo.getDescription());
 
-    	if (driverInfo instanceof DriverOptions) {
-    		restDriverInfo.setName(((DriverOptions) driverInfo).getName());
-    	}
+        if (driverInfo instanceof DriverOptions) {
+            restDriverInfo.setName(((DriverOptions) driverInfo).getName());
+        }
         return restDriverInfo;
     }
 
@@ -80,9 +80,9 @@ public class RestDriverMapper {
         restDriverInfo.setId(driverInfo.getId());
         restDriverInfo.setDescription(driverInfo.getDescription());
         
-    	if (driverInfo instanceof DriverOptions) {
-    		restDriverInfo.setName(((DriverOptions) driverInfo).getName());
-    	}
+        if (driverInfo instanceof DriverOptions) {
+            restDriverInfo.setName(((DriverOptions) driverInfo).getName());
+        }
         
         RestOptions configs = RestOptions.parseOptions(DriverOptions.readDriverConfigs());
         configs.setSyntax(null);
@@ -100,8 +100,8 @@ public class RestDriverMapper {
     	if (driverInfo instanceof DriverOptions) {
     		restDriverInfo.setName(((DriverOptions) driverInfo).getName());
     	}
-        restDriverInfo.setDevice(RestDeviceInfo.getRestDeviceInfo(driverInfo));
-        restDriverInfo.setChannel(RestChannelInfo.getRestChannelInfo(driverInfo));
+        restDriverInfo.setDevice(RestDeviceOptions.getRestDeviceInfo(driverInfo));
+        restDriverInfo.setChannel(RestChannelOptions.getRestChannelInfo(driverInfo));
         
         RestOptions configs = RestOptions.parseOptions(DriverOptions.readDriverConfigs());
         configs.setSyntax(null);

@@ -24,8 +24,8 @@ import java.net.InetAddress;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.address.AddressSyntax;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.AddressSyntax;
 
 @AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 public class DeviceAddress extends Configurable {

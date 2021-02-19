@@ -18,8 +18,9 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config;
+package org.openmuc.framework.config.option;
 
+import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -144,7 +145,7 @@ public class Option {
                     option.name = childNode.getTextContent().trim();
                 }
                 else if (childNodeName.equals("description")) {
-                    option.description = DriverOptions.trimTextFromDomNode(childNode);
+                    option.description = Options.trimDomNodeText(childNode);
                 }
                 else if (childNodeName.equals("mandatory")) {
                     String mandatoryString = childNode.getTextContent().trim().toLowerCase();

@@ -20,27 +20,26 @@
  */
 package org.openmuc.framework.driver.csv;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.address.AddressSyntax;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.config.settings.SettingsSyntax;
-import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.driver.ChannelFactory.Factory;
+import org.openmuc.framework.driver.DeviceConnection;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.channel.CsvChannelHHMMSS;
 import org.openmuc.framework.driver.csv.channel.CsvChannelLine;
 import org.openmuc.framework.driver.csv.channel.CsvChannelUnixtimestamp;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
-@AddressSyntax(separator = ";")
-@SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class CsvFile extends Device<CsvChannel> {
+@Factory(channel = CsvChannel.class, 
+         scanner = ColumnScanner.class)
+public class CsvFile extends DeviceConnection {
 
-	public static final String SAMPLING_MODE = "samplingmode";
+    public static final String SAMPLING_MODE = "samplingmode";
 
     @Address(id = "filePath",
              name = "CSV file path",
@@ -74,41 +73,44 @@ public class CsvFile extends Device<CsvChannel> {
     /** Map containing 'column name' as key and 'list of all column data' as value */
     protected Map<String, List<String>> data;
 
+    public Map<String, List<String>> getData() {
+        return data;
+    }
+
+    public List<String> getColumns() {
+        return new ArrayList<String>(data.keySet());
+    }
+
     @Override
     protected void onConnect() throws ArgumentSyntaxException, ConnectionException {
         data = CsvFileReader.readCsvFile(filePath);
         switch (samplingMode) {
         case UNIXTIMESTAMP:
-        	if (!data.containsKey(CsvChannelUnixtimestamp.INDEX) || 
-        			data.get(CsvChannelUnixtimestamp.INDEX).isEmpty()) {
+            if (!data.containsKey(CsvChannelUnixtimestamp.INDEX) || 
+                    data.get(CsvChannelUnixtimestamp.INDEX).isEmpty()) {
                 throw new ArgumentSyntaxException("unixtimestamp column not availiable in file or empty");
-        	}
+            }
         case HHMMSS:
-        	if (!data.containsKey(CsvChannelHHMMSS.INDEX) || 
-        			data.get(CsvChannelHHMMSS.INDEX).isEmpty()) {
+            if (!data.containsKey(CsvChannelHHMMSS.INDEX) || 
+                    data.get(CsvChannelHHMMSS.INDEX).isEmpty()) {
                 throw new ArgumentSyntaxException("hhmmss column not availiable in file or empty");
-        	}
+            }
         default:
-        	break;
+            break;
         }
     }
 
-	@Override
-    protected ColumnScanner onCreateScanner(String settings) {
-		return new ColumnScanner(data);
-	}
-
-	@Override
-    protected CsvChannel onCreateChannel(ChannelContainer container) throws ArgumentSyntaxException {
+    @Override
+    public CsvChannel newChannel(String column, String settings) throws ArgumentSyntaxException {
         switch (samplingMode) {
         case UNIXTIMESTAMP:
-            return new CsvChannelUnixtimestamp(container, data, rewind);
+            return new CsvChannelUnixtimestamp(column, data, rewind);
 
         case HHMMSS:
-            return new CsvChannelHHMMSS(container, data, rewind);
+            return new CsvChannelHHMMSS(column, data, rewind);
 
         case LINE:
-            return new CsvChannelLine(container, data, rewind);
+            return new CsvChannelLine(column, data, rewind);
 
         default:
             throw new ArgumentSyntaxException("Invalid sampling mode " + samplingMode);

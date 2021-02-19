@@ -27,13 +27,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.data.Value;
 
 public abstract class Configurable {
@@ -41,144 +39,49 @@ public abstract class Configurable {
     protected Configurable() {
     }
 
-    public void configure(String addressStr, String settingsStr) throws ArgumentSyntaxException {
+    protected void configure(String addressStr, String settingsStr) throws ArgumentSyntaxException {
         configureAddress(addressStr);
         configureSettings(settingsStr);
     }
 
-    public void configureAddress(String addressStr) throws ArgumentSyntaxException {
-        Map<String, Value> address = parse(addressStr, Options.parseAddress(this.getClass()));
+    protected void configureAddress(String addressStr) throws ArgumentSyntaxException {
+        Configurations configs = Configurations.parseAddress(addressStr, getClass());
 
         List<Field> fields = getFields();
         for (Field field : fields) {
-            Address option = field.getAnnotation(Address.class);
-            if (option == null) {
+            Address annotation = field.getAnnotation(Address.class);
+            if (annotation == null) {
                 continue;
             }
-            String id = option.id()[0];
-            if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
-                id = option.value();
-            }
-            if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
-                id = field.getName();
+            String id = annotation.id()[0];
+            if (id.isEmpty() || id.equals(Address.DEFAULT)) {
+                id = annotation.value();
             }
             if (id.isEmpty() || id.equals(Address.DEFAULT)) {
                 id = field.getName();
             }
-            setField(field, address.get(id));
+            setField(field, configs.get(id));
         }
     }
 
-    public void configureSettings(String settingsStr) throws ArgumentSyntaxException {
-        Map<String, Value> settings = parse(settingsStr, Options.parseSettings(this.getClass()));
+    protected void configureSettings(String settingsStr) throws ArgumentSyntaxException {
+        Configurations configs = Configurations.parseSettings(settingsStr, getClass());
         
         List<Field> fields = getFields();
         for (Field field : fields) {
-            Setting option = field.getAnnotation(Setting.class);
-            if (option == null) {
+            Setting annotation = field.getAnnotation(Setting.class);
+            if (annotation == null) {
                 continue;
             }
-            String id = option.id()[0];
+            String id = annotation.id()[0];
             if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
-                id = option.value();
+                id = annotation.value();
             }
             if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
                 id = field.getName();
             }
-            setField(field, settings.get(id));
+            setField(field, configs.get(id));
         }
-    }
-
-    private Map<String, Value> parse(String parameterStr, Options options) throws UnsupportedOperationException, ArgumentSyntaxException {
-        Map<String, Value> result = new HashMap<String, Value>();
-        if (parameterStr != null && !parameterStr.trim().isEmpty()) {
-            String[] parameterArr = parameterStr.trim().split(options.getSeparator());
-            
-            if (parameterArr.length >= options.getMandatoryCount()) {
-                if (options.hasKeyValuePairs()) {
-                    for (Option option : options) {
-                        String key = option.getId();
-                        Value value = null;
-                        
-                        boolean mandatoryOptMissing = option.isMandatory() ? true : false;
-                        
-                        parameterLoop:
-                        for (String parameter : parameterArr) {
-                            String[] keyValue = parameter.trim().split(options.getAssignmentOperator(), 2);
-                            if (keyValue.length != 2) {
-                                throw new ArgumentSyntaxException("Parameter is not a key value pair of type " 
-                                        + "<key>" + options.getAssignmentOperator() + "<value> in parsed options: " + parameter);
-                            }
-                            if (keyValue[1].trim().isEmpty()) {
-                                throw new ArgumentSyntaxException("Parameter " + parameter + "is empty");
-                            }
-                            for (String id : option.getIds()) {
-                                if (keyValue[0].trim().equalsIgnoreCase(id)) {
-                                    mandatoryOptMissing = false;
-                                    
-                                    value = Options.parseValue(option.getType(), keyValue[1].trim());
-                                    break parameterLoop;
-                                }
-                            }
-                        }
-                        if (mandatoryOptMissing) {
-                            throw new ArgumentSyntaxException("Mandatory parameter " + key + " is not present in parsed Settings");
-                        }
-                        
-                        if (value == null) {
-                            value = option.getValueDefault();
-                        }
-                        if (value != null) {
-                            if (option.getValueSelection() != null && 
-                                    option.getValueSelection().hasValidation() &&
-                                   !option.getValueSelection().contains(value)) {
-                                throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
-                            }
-                            result.put(key, value);
-                        }
-                    }
-                }
-                else {
-                    int optionalOptCount = 0;
-                    
-                    int i = 0;
-                    for (Option option : options) {
-                        Value value = null;
-                        
-                        if (i >= parameterArr.length) {
-                            break;
-                        }
-                        else if (option.isMandatory() || options.getMandatoryCount()+optionalOptCount < parameterArr.length) {
-                            value = Options.parseValue(option.getType(), parameterArr[i].trim());
-                            
-                            if (!option.isMandatory()) {
-                                optionalOptCount++;
-                            }
-                            i++;
-                        }
-                        
-                        if (value == null) {
-                            value = option.getValueDefault();
-                        }
-                        if (value != null) {
-                            if (option.getValueSelection() != null && 
-                                    option.getValueSelection().hasValidation() &&
-                                   !option.getValueSelection().contains(value)) {
-                                throw new ArgumentSyntaxException("Parameter value not a valid selection: " + value.toString());
-                            }
-                            result.put(option.getId(), value);
-                        }
-                    }
-                }
-            }
-            else {
-                throw new ArgumentSyntaxException("Mandatory parameters not configured in parameter string: " + parameterStr);
-            }
-        }
-        else if (options.getMandatoryCount() > 0) {
-            throw new ArgumentSyntaxException("Mandatory parameters not configured in empty string");
-        }
-        return result;
     }
 
     private List<Field> getFields() {
@@ -195,9 +98,9 @@ public abstract class Configurable {
     private void setField(Field field, Value value) throws ArgumentSyntaxException {
         if (value != null) {
             try {
-            	Object object = extractValue(field, value);
-            	
-        		field.setAccessible(true);
+                Object object = extractValue(field, value);
+                
+                field.setAccessible(true);
                 field.set(this, object);
                 
             } catch (IllegalAccessException | NoSuchFieldException e) {

@@ -55,6 +55,13 @@ public interface Channel {
     String getId();
 
     /**
+     * Returns the description of this channel. Returns the empty string if not configured.
+     *
+     * @return the description of this channel.
+     */
+    String getDescription();
+
+    /**
      * Returns the address of this channel. Returns the empty string if not configured.
      *
      * @return the address of this channel.
@@ -68,15 +75,8 @@ public interface Channel {
      */
     @Deprecated
     default String getChannelAddress() {
-    	return getAddress();
+        return getAddress();
     }
-
-    /**
-     * Returns the description of this channel. Returns the empty string if not configured.
-     *
-     * @return the description of this channel.
-     */
-    String getDescription();
 
     /**
      * Returns the unit of this channel. Returns the empty string if not configured. The unit is used for informational
@@ -157,6 +157,13 @@ public interface Channel {
     int getSamplingTimeOffset();
 
     /**
+     * Returns <code>true</code> if the channel is configured to listen for new values instead of sampling.
+     *
+     * @return <code>true</code> if the channel is configured to listen for new values instead of sampling.
+     */
+    boolean isListening();
+
+    /**
      * Returns the settings of this channel. Returns the empty string if not configured.
      *
      * @return the settings of this channel.
@@ -176,6 +183,13 @@ public interface Channel {
      * @return the channel's configured logging time offset in milliseconds.
      */
     int getLoggingTimeOffset();
+
+    /**
+     * Returns <code>true</code> if the channel is configured to immediately log received values.
+     *
+     * @return <code>true</code> if the channel is configured to immediately log received values.
+     */
+    boolean isLoggingEvent();
 
     /**
      * Returns the channel's configured logging settings. Returns the empty string if not configured.

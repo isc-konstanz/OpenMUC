@@ -20,6 +20,7 @@
  */
 package org.openmuc.framework.driver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
@@ -30,24 +31,22 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 
 public abstract class ChannelScanner extends Configurable {
 
+	ChannelContext context;
+
+    public ChannelContext getContext() {
+    	return context;
+    }
+
     protected ChannelScanner() {
     }
 
-    protected final void doConfigure(String settings) throws ArgumentSyntaxException, ConnectionException {
-        configureSettings(settings);
-        onConfigure();
+    final void doCreate(ChannelContext context) throws ArgumentSyntaxException, ConnectionException {
+    	this.context = context;
+        this.onCreate(context);
+        this.onCreate();
     }
 
-    protected void onConfigure() throws ArgumentSyntaxException, ConnectionException {
-        // Placeholder for the optional implementation
-    }
-
-    final void doCreate(DeviceContext context) throws ArgumentSyntaxException, ConnectionException {
-        onCreate(context);
-        onCreate();
-    }
-
-    protected void onCreate(DeviceContext context) throws ArgumentSyntaxException, ConnectionException {
+    protected void onCreate(ChannelContext context) throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
     }
 
@@ -55,7 +54,24 @@ public abstract class ChannelScanner extends Configurable {
         // Placeholder for the optional implementation
     }
 
-    public abstract List<ChannelScanInfo> doScan() 
+    final void doConfigure(String settings) throws ArgumentSyntaxException, ConnectionException {
+    	this.configureSettings(settings);
+    	this.onConfigure();
+    }
+
+    protected void onConfigure() throws ArgumentSyntaxException, ConnectionException {
+        // Placeholder for the optional implementation
+    }
+
+    protected List<ChannelScanInfo> doScan() 
+            throws ArgumentSyntaxException, ScanException, ConnectionException {
+        
+        List<ChannelScanInfo> channels = new ArrayList<>();
+        this.onScan(channels);
+        return channels;
+    }
+
+    protected abstract void onScan(List<ChannelScanInfo> channelScanInfos) 
             throws ArgumentSyntaxException, ScanException, ConnectionException;
 
 }

@@ -18,12 +18,12 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.gpio.configs;
+package org.openmuc.framework.driver.rpi.gpio;
 
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.driver.Channel;
+import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.driver.ChannelContainer;
 
-public class GpioChannel extends Channel {
+public class GpioChannel extends ChannelContainer {
 
     @Setting(id = "inverted",
              name = "Inverted state logic",
@@ -73,9 +73,9 @@ public class GpioChannel extends Channel {
     }
 
     public boolean isDerivative() {
-    	if (derivativeTime != null) {
-    		return true;
-    	}
+        if (derivativeTime != null) {
+            return true;
+        }
         return false;
     }
 

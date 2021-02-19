@@ -22,9 +22,9 @@
 package org.openmuc.framework.parser.spi;
 
 public class SerializationException extends Exception {
-	private static final long serialVersionUID = -4382803230580264267L;
+    private static final long serialVersionUID = -4382803230580264267L;
 
-	public SerializationException() {
+    public SerializationException() {
         super();
     }
 

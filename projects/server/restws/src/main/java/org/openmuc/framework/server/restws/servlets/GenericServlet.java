@@ -152,10 +152,10 @@ public abstract class GenericServlet extends HttpServlet implements ConfigChange
         String pathAndQueryString[] = new String[2];
 
         String pathInfo = request.getRequestURI()
-        		.replaceFirst(request.getContextPath(), "")
-        		.replaceFirst(request.getServletPath(), "");
+                .replaceFirst(request.getContextPath(), "")
+                .replaceFirst(request.getServletPath(), "");
         if (pathInfo == null || pathInfo.isEmpty()) {
-        	pathInfo = "/";
+            pathInfo = "/";
         }
 
         String queryStr = request.getQueryString();

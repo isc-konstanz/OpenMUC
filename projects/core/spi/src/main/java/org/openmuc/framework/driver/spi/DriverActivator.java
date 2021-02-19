@@ -18,29 +18,15 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.w1.configs;
 
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.driver.Channel;
+package org.openmuc.framework.driver.spi;
 
-import com.pi4j.temperature.TemperatureScale;
+import org.openmuc.framework.dataaccess.DataAccessService;
 
-public class W1Channel extends Channel {
+public interface DriverActivator extends DriverService {
 
-    @Setting(id = "unit",
-            name = "Unit",
-            description = "The unit of the value, read from e.g. a 1-Wire temperature sensor.",
-            valueSelection = 
-            		"CELSIUS:Celsius," +
-            		"KELVIN:Kelvin," +
-            		"FARENHEIT:Farenheit," +
-            		"RANKINE:Rankine",
-            valueDefault = "CELSIUS"
-    )
-    private TemperatureScale unit = TemperatureScale.CELSIUS;
+    void activate(DataAccessService dataAccessService);
 
-    public TemperatureScale getScale() {
-        return unit;
-    }
+    void deactivate();
 
 }

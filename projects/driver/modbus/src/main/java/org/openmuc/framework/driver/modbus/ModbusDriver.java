@@ -23,9 +23,9 @@ package org.openmuc.framework.driver.modbus;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.option.DriverOptionsFactory;
 import org.openmuc.framework.driver.modbus.rtu.ModbusConfigurationException;
 import org.openmuc.framework.driver.modbus.rtu.ModbusRTUConnection;
 import org.openmuc.framework.driver.modbus.rtutcp.ModbusRTUTCPConnection;
@@ -46,7 +46,7 @@ public final class ModbusDriver implements DriverService {
 
     private static final Logger logger = LoggerFactory.getLogger(ModbusDriver.class);
 
-    private static final DriverInfo info = DriverInfoFactory.readInfo(ModbusDriver.class);
+    private static final DriverInfo info = DriverOptionsFactory.readInfo(ModbusDriver.class);
 
     private static final int DEFAULT_TIMEOUT_MS = 3000;
 

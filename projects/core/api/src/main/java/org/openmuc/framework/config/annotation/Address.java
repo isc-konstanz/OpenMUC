@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config.settings;
+package org.openmuc.framework.config.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -30,14 +30,17 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, })
-public @interface SettingsSyntax {
+@Target({ElementType.FIELD})
+public @interface Address {
 
-    public static final String SEPARATOR_DEFAULT = ",";
-    public static final String ASSIGNMENT_OPERATOR_DEFAULT = ":";
-    public static final boolean KEY_VAL_PAIRS_DEFAULT = true;
+    public final static String DEFAULT = "org.openmuc.framework.config.annotation.DEFAULT";
 
-	String separator() default SEPARATOR_DEFAULT;
-	String assignmentOperator() default ASSIGNMENT_OPERATOR_DEFAULT;
-	boolean keyValuePairs() default KEY_VAL_PAIRS_DEFAULT;
+    String value() default DEFAULT;
+    String[] id() default DEFAULT;
+    String name() default DEFAULT;
+    String description() default DEFAULT;
+    String valueDefault() default DEFAULT;
+    String valueSelection() default DEFAULT;
+    boolean mandatory() default true;
+    double scale() default 1;
 }

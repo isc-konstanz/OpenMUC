@@ -18,11 +18,13 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config;
+package org.openmuc.framework.config.option;
 
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 
+import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -110,45 +112,45 @@ public class OptionSelection extends LinkedHashMap<Value, String>{
 
     public boolean contains(Value value) {
         if (value != null) {
-            for (Value option : keySet()) {
+            for (Value config : keySet()) {
                 switch (this.type) {
                 case BOOLEAN:
-                    if (option.asBoolean() == value.asBoolean()) {
+                    if (config.asBoolean() == value.asBoolean()) {
                         return true;
                     }
                     break;
                 case BYTE:
-                    if (option.asByte() == value.asByte()) {
+                    if (config.asByte() == value.asByte()) {
                         return true;
                     }
                     break;
                 case DOUBLE:
-                    if (option.asDouble() == value.asDouble()) {
+                    if (config.asDouble() == value.asDouble()) {
                         return true;
                     }
                     break;
                 case FLOAT:
-                    if (option.asFloat() == value.asFloat()) {
+                    if (config.asFloat() == value.asFloat()) {
                         return true;
                     }
                     break;
                 case INTEGER:
-                    if (option.asInt() == value.asInt()) {
+                    if (config.asInt() == value.asInt()) {
                         return true;
                     }
                     break;
                 case LONG:
-                    if (option.asLong() == value.asLong()) {
+                    if (config.asLong() == value.asLong()) {
                         return true;
                     }
                     break;
                 case SHORT:
-                    if (option.asShort() == value.asShort()) {
+                    if (config.asShort() == value.asShort()) {
                         return true;
                     }
                     break;
                 case STRING:
-                    if (option.asString().equals(value.asString())) {
+                    if (config.asString().equals(value.asString())) {
                         return true;
                     }
                     break;

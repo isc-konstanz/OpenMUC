@@ -21,11 +21,10 @@
 package org.openmuc.framework.driver.rpi.gpio;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.driver.DeviceConnection;
+import org.openmuc.framework.driver.DeviceFactory.Factory;
 import org.openmuc.framework.driver.Driver;
-import org.openmuc.framework.driver.DriverContext;
-import org.openmuc.framework.driver.rpi.gpio.configs.GpioConfigs;
 import org.openmuc.framework.driver.rpi.gpio.count.EdgeCounter;
-import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
@@ -40,31 +39,35 @@ import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.wiringpi.GpioUtil;
 
 @Component
-public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
+@Factory(device = GpioPin.class, scanner = GpioScanner.class)
+public class GpioDriver extends Driver implements DriverService {
     private static final Logger logger = LoggerFactory.getLogger(GpioDriver.class);
 
     private static final String ID = "rpi-gpio";
     private static final String NAME = "GPIO (Raspberry Pi)";
     private static final String DESCRIPTION = 
-    		"This driver enables the access to the variety of pins of the Raspberry Pi platform. " +
+            "This driver enables the access to the variety of pins of the Raspberry Pi platform. " +
             "Devices represent the General-Purpose Inputs/Outputs (GPIOs) of the Raspberry Pi, " +
             "generic pins to be used either as input or output.";
 
     private GpioController gpio;
 
-	@Override
+    @Override
     public String getId() {
-    	return ID;
+        return ID;
     }
 
-	@Override
-	protected void onCreate(DriverContext context) {
-		context.setName(NAME)
-				.setDescription(DESCRIPTION)
-				.setDeviceScanner(GpioScanner.class);
-	}
+    @Override
+    public String getName() {
+        return NAME;
+    }
 
-	@Override
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
+    }
+
+    @Override
     public void onActivate() {
         // Check if privileged access is required on the running system and enable non-
         // privileged GPIO access if not.
@@ -85,10 +88,12 @@ public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
     }
 
     @Override
-	protected GpioPin onCreateConnection(GpioConfigs configs) throws ArgumentSyntaxException, ConnectionException {
-        logger.trace("Connect Raspberry Pi {} pin {}", configs.getPinMode().getName(), configs.getPin());
+	public GpioPin newDevice(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
         try {
+        	GpioConfigs configs = new GpioConfigs(address, settings);
             GpioPin connection;
+            
+            logger.trace("Connect Raspberry Pi {} pin {}", configs.getPinMode().getName(), configs.getPin());
             
             Pin p = RaspiPin.getPinByAddress(configs.getPin());
             if (p == null) {
@@ -125,8 +130,8 @@ public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
     }
 
     @Override
-	protected void onDisconnect(Connection connection) {
-    	gpio.unprovisionPin(((GpioPin) connection).getPin());
-	}
+	public void onDisconnect(DeviceConnection device) {
+        gpio.unprovisionPin(((GpioPin) device).getGpioPin());
+    }
 
 }

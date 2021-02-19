@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config.address;
+package org.openmuc.framework.config.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -31,16 +31,16 @@ import java.lang.annotation.Target;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
-public @interface Address {
+public @interface Setting {
 
-	public final static String DEFAULT = "org.openmuc.framework.options.OPTION_DEFAULT";
+    public final static String DEFAULT = "org.openmuc.framework.config.annotation.DEFAULT";
 
-	String value() default DEFAULT;
-	String[] id() default DEFAULT;
-	String name() default DEFAULT;
-	String description() default DEFAULT;
-	String valueDefault() default DEFAULT;
-	String valueSelection() default DEFAULT;
-	boolean mandatory() default true;
-	double scale() default 1;
+    String value() default DEFAULT;
+    String[] id() default DEFAULT;
+    String name() default DEFAULT;
+    String description() default DEFAULT;
+    String valueDefault() default DEFAULT;
+    String valueSelection() default DEFAULT;
+    boolean mandatory() default true;
+    double scale() default 1;
 }

@@ -5,8 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;

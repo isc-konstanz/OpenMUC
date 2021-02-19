@@ -25,14 +25,18 @@ public class DriverInfo {
     protected String id;
     protected String name;
     protected String description;
-    protected String deviceAddressSyntax;
-    protected String deviceSettingsSyntax;
-    protected String deviceScanSettingsSyntax;
-    protected String channelAddressSyntax;
-    protected String channelSettingsSyntax;
-    protected String channelScanSettingsSyntax;
 
-    protected DriverInfo() {
+    protected final DeviceInfo device;
+
+    protected DriverInfo(DeviceInfo device) {
+        this.device = device;
+    }
+
+    protected DriverInfo(DeviceInfo device, String id, String name, String description) {
+        this(device);
+        this.id = id;
+        this.name = name;
+        this.description = description;
     }
 
     /**
@@ -56,16 +60,14 @@ public class DriverInfo {
      *            channel scan settings syntax
      */
     public DriverInfo(String id, String description, 
-    		String deviceAddressSyntax, String deviceSettingsSyntax, String deviceScanSettingsSyntax, 
-    		String channelAddressSyntax, String channelSettingsSyntax, String channelScanSettingsSyntax) {
+            String deviceAddressSyntax, String deviceSettingsSyntax, String deviceScanSettingsSyntax, 
+            String channelAddressSyntax, String channelSettingsSyntax, String channelScanSettingsSyntax) {
         this.id = id;
+        this.name = null;
         this.description = description;
-        this.deviceAddressSyntax = deviceAddressSyntax;
-        this.deviceSettingsSyntax = deviceSettingsSyntax;
-        this.deviceScanSettingsSyntax = deviceScanSettingsSyntax;
-        this.channelAddressSyntax = channelAddressSyntax;
-        this.channelSettingsSyntax = channelSettingsSyntax;
-        this.channelScanSettingsSyntax = channelScanSettingsSyntax;
+        
+        this.device = new DeviceInfo.StaticInfo(deviceAddressSyntax, deviceSettingsSyntax, deviceScanSettingsSyntax, 
+                      new ChannelInfo.StaticInfo(channelAddressSyntax, channelSettingsSyntax, channelScanSettingsSyntax));
     }
 
     /**
@@ -85,14 +87,14 @@ public class DriverInfo {
      *            channel address syntax
      */
     public DriverInfo(String id, String description, 
-    		String deviceAddressSyntax, String deviceSettingsSyntax, String channelAddressSyntax, 
-    		String deviceScanSettingsSyntax) {
+            String deviceAddressSyntax, String deviceSettingsSyntax, String channelAddressSyntax, 
+            String deviceScanSettingsSyntax) {
         this.id = id;
+        this.name = null;
         this.description = description;
-        this.deviceAddressSyntax = deviceAddressSyntax;
-        this.deviceSettingsSyntax = deviceSettingsSyntax;
-        this.deviceScanSettingsSyntax = deviceScanSettingsSyntax;
-        this.channelAddressSyntax = channelAddressSyntax;
+        
+        this.device = new DeviceInfo.StaticInfo(deviceAddressSyntax, deviceSettingsSyntax, deviceScanSettingsSyntax, 
+                      new ChannelInfo.StaticInfo(channelAddressSyntax));
     }
 
     /**
@@ -105,32 +107,30 @@ public class DriverInfo {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public DriverInfo setName(String name) {
+        this.name = name;
+        return this;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public String getDeviceAddressSyntax() {
-        return deviceAddressSyntax;
+    public DriverInfo setDescription(String description) {
+        this.description = description;
+        return this;
     }
 
-    public String getDeviceSettingsSyntax() {
-        return deviceSettingsSyntax;
+    public DeviceInfo getDevice() {
+        return device;
     }
 
-    public String getDeviceScanSettingsSyntax() {
-        return deviceScanSettingsSyntax;
-    }
-
-    public String getChannelAddressSyntax() {
-        return channelAddressSyntax;
-    }
-
-    public String getChannelSettingsSyntax() {
-        return channelSettingsSyntax;
-    }
-
-    public String getChannelScanSettingsSyntax() {
-        return channelScanSettingsSyntax;
+    public ChannelInfo getChannel() {
+        return device.getChannel();
     }
 
 }

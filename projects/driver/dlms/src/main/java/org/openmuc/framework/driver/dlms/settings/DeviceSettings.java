@@ -22,8 +22,8 @@ package org.openmuc.framework.driver.dlms.settings;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.config.settings.SettingsSyntax;
+import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.annotation.SettingsSyntax;
 
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
 public class DeviceSettings extends Configurable {

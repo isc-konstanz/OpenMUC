@@ -38,20 +38,20 @@ public class RestDevice {
         this.id = id;
     }
 
-	public DeviceState getState() {
-		return state;
-	}
+    public DeviceState getState() {
+        return state;
+    }
 
-	public void setState(DeviceState state) {
-		this.state = state;
-	}
+    public void setState(DeviceState state) {
+        this.state = state;
+    }
 
-	public List<RestChannel> getRecords() {
-		return records;
-	}
+    public List<RestChannel> getRecords() {
+        return records;
+    }
 
-	public void setRecords(List<RestChannel> records) {
-		this.records = records;
-	}
+    public void setRecords(List<RestChannel> records) {
+        this.records = records;
+    }
 
 }

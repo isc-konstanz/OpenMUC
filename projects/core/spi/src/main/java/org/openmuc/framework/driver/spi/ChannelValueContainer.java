@@ -24,11 +24,12 @@ package org.openmuc.framework.driver.spi;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Value;
 
-public interface ChannelValueContainer extends ChannelContainer {
+public interface ChannelValueContainer extends ChannelTaskContainer {
 
-    Value getValue();
+    Flag getFlag();
 
     void setFlag(Flag flag);
 
-    Flag getFlag();
+    Value getValue();
+
 }

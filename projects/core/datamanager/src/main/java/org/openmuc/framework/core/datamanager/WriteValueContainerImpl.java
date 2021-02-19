@@ -26,25 +26,24 @@ import org.openmuc.framework.data.Value;
 import org.openmuc.framework.dataaccess.WriteValueContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 
-public final class WriteValueContainerImpl implements WriteValueContainer, ChannelValueContainer {
+public final class WriteValueContainerImpl extends ChannelContainerImpl implements WriteValueContainer, ChannelValueContainer {
 
-    private final ChannelImpl channel;
-    private Value value = null;
     private Flag flag = Flag.DRIVER_ERROR_UNSPECIFIED;
-    private Object channelHandle;
-    private final String channelAddress;
-    private final String channelSettings;
+    private Value value = null;
+    private Object handle;
 
     public WriteValueContainerImpl(ChannelImpl channel) {
-        this.channel = channel;
-        this.channelAddress = channel.config.getAddress();
-        this.channelSettings = channel.config.getSettings();
-        this.channelHandle = channel.handle;
+        super(channel);
     }
 
     @Override
-    public void setValue(Value value) {
-        this.value = value;
+    public Object getChannelHandle() {
+        return handle;
+    }
+
+    @Override
+    public void setChannelHandle(Object handle) {
+        this.handle = handle;
     }
 
     @Override
@@ -53,38 +52,18 @@ public final class WriteValueContainerImpl implements WriteValueContainer, Chann
     }
 
     @Override
-    public Flag getFlag() {
-        return flag;
-    }
-
-    @Override
-    public ChannelImpl getChannel() {
-        return channel;
-    }
-
-    @Override
-    public String getChannelAddress() {
-        return channelAddress;
-    }
-
-    @Override
-    public String getChannelSettings() {
-        return channelSettings;
-    }
-
-    @Override
-    public Object getChannelHandle() {
-        return channelHandle;
-    }
-
-    @Override
-    public void setChannelHandle(Object handle) {
-        channelHandle = handle;
+    public void setValue(Value value) {
+        this.value = value;
     }
 
     @Override
     public void setFlag(Flag flag) {
         this.flag = flag;
+    }
+
+    @Override
+    public Flag getFlag() {
+        return flag;
     }
 
 }

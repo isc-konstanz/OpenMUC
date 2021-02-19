@@ -22,9 +22,9 @@ package org.openmuc.framework.driver.dlms;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.option.DriverOptionsFactory;
 import org.openmuc.framework.driver.dlms.settings.ChannelAddress;
 import org.openmuc.framework.driver.dlms.settings.DeviceAddress;
 import org.openmuc.framework.driver.dlms.settings.DeviceSettings;
@@ -44,17 +44,17 @@ public class DlmsCosemDriver implements DriverService {
     private static final String ID = "dlms";
     private static final String NAME = "DLMS/COSEM";
     private static final String DESCRIPTION = 
-    		"DLMS/COSEM is a international standardized protocol used mostly to communicate with " +
+            "DLMS/COSEM is a international standardized protocol used mostly to communicate with " +
             "smart meter devices. The DLMS/COSEM driver uses the client library developed by the jDLMS project. " +
             "Currently, the DLMS/COSEM driver supports communication via HDLC and TCP/IP using Logical " +
             "Name Referencing to retrieve values from the device.";
 
-    private static final DriverInfo info = DriverInfoFactory.getInfo(ID)
-    		.setName(NAME)
-    		.setDescription(DESCRIPTION)
-    		.setDeviceAddress(DeviceAddress.class)
-			.setDeviceSettings(DeviceSettings.class)
-    		.setChannelAddress(ChannelAddress.class);
+    private static final DriverInfo info = DriverOptionsFactory.getInfo(ID)
+            .setName(NAME)
+            .setDescription(DESCRIPTION)
+            .setDeviceAddress(DeviceAddress.class)
+            .setDeviceSettings(DeviceSettings.class)
+            .setChannelAddress(ChannelAddress.class);
 
     public DlmsCosemDriver() {
         logger.debug("DLMS Driver instantiated. Expecting rxtxserial.so in: " + System.getProperty("java.library.path")

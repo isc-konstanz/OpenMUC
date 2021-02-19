@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.address.AddressSyntax;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.config.settings.SettingsSyntax;
+import org.openmuc.framework.config.annotation.AddressSyntax;
+import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.annotation.SettingsSyntax;
 import org.openmuc.framework.datalogger.Channel;
 import org.openmuc.framework.datalogger.sql.time.TimestampIndex;
 import org.openmuc.framework.datalogger.sql.time.TimestampSplit;

@@ -267,8 +267,8 @@ public abstract class SnmpDevice implements Connection {
 
         // send SET request
         try {
-			snmp.set(pdu, target);
-			
+            snmp.set(pdu, target);
+            
         } catch (IOException e) {
             throw new ConnectionException("SNMP set request failed! " + e.getMessage());
         } catch (NullPointerException e) {

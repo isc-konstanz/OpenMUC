@@ -18,28 +18,31 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config;
+package org.openmuc.framework.config.option;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DriverInfoFactory {
+import org.openmuc.framework.config.DriverInfo;
+import org.openmuc.framework.config.option.DriverOptions.DriverConfigs;
+
+public class DriverOptionsFactory {
 
     public static final String VIRTUAL = "virtual";
 
-    private static final Map<String, DriverOptions> infos = new HashMap<String, DriverOptions>();
+    private static final Map<String, DriverConfigs> configs = new HashMap<String, DriverConfigs>();
 
-    public static DriverOptions getInfo(String id) {
-    	DriverOptions info;
-        if (infos.containsKey(id)) {
-            info = infos.get(id);
+    public static DriverConfigs getInfo(String id) {
+        DriverConfigs config;
+        if (configs.containsKey(id)) {
+            config = configs.get(id);
         }
         else {
-            info = new DriverOptions(id);
-            infos.put(id, info);
+            config = new DriverConfigs(id);
+            configs.put(id, config);
         }
-        return info;
+        return config;
     }
 
     /**
@@ -62,15 +65,15 @@ public class DriverInfoFactory {
      * @return the driver information
      */
     public static DriverOptions readInfo(InputStream is) {
-    	DriverOptions info = new DriverOptions(is);
-    	if (!infos.containsKey(info.getId())) {
-            infos.put(info.getId(), info);
+        DriverConfigs config = new DriverConfigs(is);
+        if (!configs.containsKey(config.getId())) {
+            configs.put(config.getId(), config);
         }
-    	return info;
+        return config;
     }
 
-    public static DriverOptions readVirtualInfo() {
-        return new DriverOptions(DriverOptions.class.getResourceAsStream("virtual.xml"));
+    public static DriverInfo readVirtualInfo() {
+        return new DriverConfigs(DriverConfigs.class.getResourceAsStream("virtual.xml"));
     }
 
 }

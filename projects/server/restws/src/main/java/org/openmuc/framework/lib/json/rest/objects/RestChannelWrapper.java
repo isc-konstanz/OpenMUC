@@ -33,31 +33,31 @@ public class RestChannelWrapper {
     private final Channel channel;
 
     private RestChannelWrapper(ChannelConfig config, Channel channel) {
-		this.config = config;
-		this.channel = channel;
-	}
+        this.config = config;
+        this.channel = channel;
+    }
 
     public String getId() {
-    	return config.getId();
+        return config.getId();
     }
 
     public RestChannelConfig getConfig() {
-    	return RestChannelMapper.getRestChannelConfig(config);
+        return RestChannelMapper.getRestChannelConfig(config);
     }
 
     public ValueType getValueType() {
-    	if (config.getValueType() != null) {
-    		return config.getValueType();
-    	}
-    	return ChannelConfig.VALUE_TYPE_DEFAULT;
+        if (config.getValueType() != null) {
+            return config.getValueType();
+        }
+        return ChannelConfig.VALUE_TYPE_DEFAULT;
     }
 
     public String getDriver() {
-    	return channel.getDriverId();
+        return channel.getDriverId();
     }
 
     public String getDevice() {
-    	return channel.getDeviceId();
+        return channel.getDeviceId();
     }
 
     public ChannelState getState() {
@@ -65,11 +65,11 @@ public class RestChannelWrapper {
     }
 
     public Record getLatestRecord() {
-    	return channel.getLatestRecord();
+        return channel.getLatestRecord();
     }
 
     public static RestChannelWrapper getChannel(ChannelConfig config, DataAccessService data) {
-    	return new RestChannelWrapper(config, data.getChannel(config.getId()));
+        return new RestChannelWrapper(config, data.getChannel(config.getId()));
     }
 
 }

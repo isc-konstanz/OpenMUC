@@ -21,218 +21,49 @@
 package org.openmuc.framework.driver;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.text.MessageFormat;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
-import org.openmuc.framework.config.DriverOptions;
-import org.openmuc.framework.config.Options;
-import org.openmuc.framework.driver.spi.Connection;
-import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DriverComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openmuc.framework.config.option.DriverOptions;
 
-public abstract class DriverContext implements DriverComponent {
-    private static final Logger logger = LoggerFactory.getLogger(DriverContext.class);
+public class DriverContext extends DriverOptions {
 
-    final DriverOptions info;
-
-    Class<? extends DeviceConfigs<?>> device = null;
-    Class<? extends DeviceScanner> deviceScanner = null;
-
-    Class<? extends Channel> channel = null;
-    Class<? extends ChannelScanner> channelScanner = null;
-
-    @SuppressWarnings("unchecked")
-    protected DriverContext() {
-        this.info = DriverInfoFactory.getInfo(getId());
-        try {
-            setDevice((Class<? extends DeviceConfigs<?>>) getType(this.getClass(), Driver.class, DriverContext.class));
-            setChannel((Class<? extends Channel>) getType(device, Device.class, DeviceConfigs.class));
-            
-            onCreate(this);
-            onCreate();
-            
-        } catch(Exception e) {
-            logger.info("Error while creating driver: {}", e.getMessage());
-        }
+    DriverContext(Driver driver) {
+        super(driver, 
+              driver.getId(),
+              driver.getName(),
+              driver.getDescription());
     }
 
-    protected void onCreate(DriverContext context) throws Exception {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onCreate() throws Exception {
-        // Placeholder for the optional implementation
-    }
-
-    private Type getType(Class<?> clazz, Class<?> type, Class<?> context) {
-        while (clazz.getSuperclass() != null) {
-            if (clazz.getSuperclass().equals(type) || clazz.getSuperclass().equals(context)) {
-                break;
-            }
-            clazz = clazz.getSuperclass();
-        }
-        // This operation is safe. Because clazz is a direct sub-class, getGenericSuperclass() will
-        // always return the Type of this class. Because this class is parameterized, the cast is safe
-        ParameterizedType superclass = (ParameterizedType) clazz.getGenericSuperclass();
-        return superclass.getActualTypeArguments()[0];
-    }
-
-    /**
-     * Returns the ID of the driver. The ID may only contain ASCII letters, digits, hyphens and underscores. By
-     * convention the ID should be meaningful and all lower case letters (e.g. "mbus", "modbus").
-     * 
-     * @return the unique ID of the driver.
-     */
-    public abstract String getId();
-
-    public final String getName() {
-        return info.getName();
-    }
-
-    public final DriverContext setName(String name) {
-        info.setName(name);
-        return this;
-    }
-
-    public final String getDescription() {
-        return info.getDescription();
-    }
-
-    public final DriverContext setDescription(String description) {
-        info.setDescription(description);
+    @Override
+    public DriverContext setName(String name) {
+        super.setName(name);
         return this;
     }
 
     @Override
-    public DriverInfo getInfo() {
-        return info;
+    public DriverContext setDescription(String description) {
+        super.setDescription(description);
+        return this;
     }
 
-    public abstract Driver<?> getDriver();
-
-    protected void onConnect(Connection connection) {
-        // Placeholder for the optional implementation
+    public DeviceContext getDevice() {
+        return (DeviceContext) super.getDevice();
     }
 
-    protected void onDisconnect(Connection connection) {
-        // Placeholder for the optional implementation
+    public ChannelContext getChannel() {
+        return (ChannelContext) super.getChannel();
     }
 
-    @SuppressWarnings("unchecked")
-    <D extends DeviceConfigs<?>> D newConnection() throws ArgumentSyntaxException, ConnectionException {
-        D device;
+    static <C extends Configurable> C newInstance(Class<C> configurable) throws IllegalArgumentException {
         try {
-            device = (D) this.device.getDeclaredConstructor().newInstance();
+            return (C) configurable.getDeclaredConstructor().newInstance();
             
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
-            throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-                    this.device.getSimpleName(), e.getMessage()));
+            throw new IllegalArgumentException(MessageFormat.format("Unable to instance {0}: {1}", 
+                    configurable.getSimpleName(), e.getMessage()));
         }
-        return device;
-    }
-
-    public final DriverContext setDevice(Class<? extends DeviceConfigs<?>> device) {
-        info.setDeviceAddress(Options.parseAddress(device));
-        info.setDeviceSettings(Options.parseSettings(device));
-        this.device = device;
-        return this;
-    }
-
-    public final DriverContext setDeviceAddress(Class<? extends Configurable> configs) {
-        info.setDeviceAddress(Options.parseAddress(configs));
-        return this;
-    }
-
-    public final DriverContext setDeviceSettings(Class<? extends Configurable> configs) {
-        info.setDeviceSettings(Options.parseSettings(configs));
-        return this;
-    }
-
-    boolean hasDeviceScanner() {
-        return deviceScanner != null;
-    }
-
-    @SuppressWarnings("unchecked")
-    <S extends DeviceScanner> S newDeviceScanner() throws ArgumentSyntaxException {
-        S scanner;
-        try {
-            scanner = (S) deviceScanner.getDeclaredConstructor().newInstance();
-            
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-                    deviceScanner.getSimpleName(), e.getMessage()));
-        }
-        return scanner;
-    }
-
-    public final <S extends DeviceScanner> DriverContext setDeviceScanner(Class<S> scanner) {
-        info.setDeviceScanSettings(Options.parseSettings(scanner));
-        this.deviceScanner = scanner;
-        return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    <C extends Channel> C newChannel() throws ArgumentSyntaxException {
-        C channel;
-        try {
-            channel = (C) this.channel.getDeclaredConstructor().newInstance();
-            
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-                    this.channel.getSimpleName(), e.getMessage()));
-        }
-        return channel;
-    }
-
-    public final DriverContext setChannel(Class<? extends Channel> channel) {
-        info.setChannelAddress(Options.parseAddress(channel));
-        info.setChannelSettings(Options.parseSettings(channel));
-        this.channel = channel;
-        return this;
-    }
-
-    public final DriverContext setChannelAddress(Class<? extends Configurable> configs) {
-        info.setChannelAddress(Options.parseAddress(configs));
-        return this;
-    }
-
-    public final DriverContext setChannelSettings(Class<? extends Configurable> configs) {
-        info.setChannelSettings(Options.parseSettings(configs));
-        return this;
-    }
-
-    boolean hasChannelScanner() {
-        return channelScanner != null;
-    }
-
-    @SuppressWarnings("unchecked")
-    <S extends ChannelScanner> S newChannelScanner() throws ArgumentSyntaxException, ConnectionException {
-        S scanner;
-        try {
-            scanner = (S) channelScanner.getDeclaredConstructor().newInstance();
-            
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new ArgumentSyntaxException(MessageFormat.format("Unable to instance {0}: {1}", 
-                    channelScanner.getSimpleName(), e.getMessage()));
-        }
-        return scanner;
-    }
-
-    public final <S extends ChannelScanner> DriverContext setChannelScanner(Class<S> scanner) {
-        info.setChannelScanSettings(Options.parseSettings(scanner));
-        this.channelScanner = scanner;
-        return this;
     }
 
 }

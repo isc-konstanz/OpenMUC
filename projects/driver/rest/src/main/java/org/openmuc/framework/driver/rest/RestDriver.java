@@ -23,13 +23,14 @@ package org.openmuc.framework.driver.rest;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.openmuc.framework.driver.DeviceFactory.Factory;
 import org.openmuc.framework.driver.Driver;
-import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
 @Component(service = DriverService.class)
-public class RestDriver extends Driver<RestRemote> {
+@Factory(device = RestRemote.class)
+public class RestDriver extends Driver {
     public static final Charset CHARSET = StandardCharsets.UTF_8;
 
     private static final String ID = "rest";
@@ -42,10 +43,13 @@ public class RestDriver extends Driver<RestRemote> {
     }
 
     @Override
-    protected void onCreate(DriverContext context) {
-        context.setName(NAME)
-               .setDescription(DESCRIPTION)
-               .setChannelScanner(RestChannelScanner.class);
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
     }
 
 }

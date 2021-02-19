@@ -25,10 +25,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.address.AddressSyntax;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.config.settings.SettingsSyntax;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.AddressSyntax;
+import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.annotation.SettingsSyntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -41,14 +41,14 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.Channel;
-import org.openmuc.framework.driver.DeviceContext;
+import org.openmuc.framework.driver.ChannelContainer;
+import org.openmuc.framework.driver.ChannelContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class SqlChannel extends Channel {
+public class SqlChannel extends ChannelContainer {
     private static final Logger logger = LoggerFactory.getLogger(SqlChannel.class);
 
     @Address(id = "table",
@@ -79,7 +79,7 @@ public class SqlChannel extends Channel {
     protected String dataColumn = "data";
 
     @Override
-    protected void onCreate(DeviceContext context) {
+    protected void onCreate(ChannelContext context) {
         if (table == null) {
             table = ((SqlClient) context).getTable();
         }
@@ -88,7 +88,7 @@ public class SqlChannel extends Channel {
     @Override
     protected void onConfigure() {
         if (table == null) {
-            table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
+            table = getChannel().getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
         }
     }
 
@@ -119,16 +119,16 @@ public class SqlChannel extends Channel {
                 return new Record(value, time, Flag.VALID);
             
             } catch(NullPointerException  | IllegalArgumentException | ParseException e) {
-                logger.warn("Error decoding column {} ({}): {}", getDataColumn(), getValueType(), valueStr);
+                logger.warn("Error decoding column {} ({}): {}", getDataColumn(), getChannel().getValueType(), valueStr);
             }
         } catch (SQLException e) {
-            logger.warn("Error reading column {} ({}): {}", getDataColumn(), getValueType(), e.getMessage());
+            logger.warn("Error reading column {} ({}): {}", getDataColumn(), getChannel().getValueType(), e.getMessage());
         }
         return new Record(Flag.DRIVER_ERROR_DECODING_RESPONSE_FAILED);
     }
 
     public Value decode(String value) throws NullPointerException, IllegalArgumentException {
-        switch(getValueType()) {
+        switch(getChannel().getValueType()) {
         case DOUBLE:
             return new DoubleValue(Double.valueOf(value));
         case FLOAT:
@@ -158,7 +158,7 @@ public class SqlChannel extends Channel {
     }
 
     public String encodeValue() {
-        return getValue().asString();
+        return getRecord().getValue().asString();
     }
 
     static byte[] hexToBytes(String s) {

@@ -26,9 +26,9 @@ import java.util.List;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.option.DriverOptionsFactory;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Component;
 @Component
 public final class Iec62056Driver implements DriverService {
 
-    private static final DriverInfo info = DriverInfoFactory.readInfo(Iec62056Driver.class);
+    private static final DriverInfo info = DriverOptionsFactory.readInfo(Iec62056Driver.class);
 
     private static final String BAUD_RATE_CHANGE_DELAY = "-d";
     private static final String TIMEOUT_PARAM = "-t";

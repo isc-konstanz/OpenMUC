@@ -23,60 +23,34 @@ package org.openmuc.framework.core.datamanager;
 
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.dataaccess.ReadRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 
-public final class ChannelRecordContainerImpl implements ChannelRecordContainer {
+public final class ReadRecordContainerImpl extends ChannelContainerImpl implements ReadRecordContainer, ChannelRecordContainer {
 
-    private static final Record defaulRecord = new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
+    private static final Record RECORD_DEFAULT = new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
 
-    private final ChannelImpl channel;
-    private final String channelAddress;
-    private final String channelSettings;
     private Record record;
-    private Object channelHandle;
+    private Object handle;
 
-    public ChannelRecordContainerImpl(ChannelImpl channel) {
-        this(channel, defaulRecord);
+    public ReadRecordContainerImpl(ChannelImpl channel) {
+        this(channel, RECORD_DEFAULT);
     }
 
-    private ChannelRecordContainerImpl(ChannelImpl channel, Record record) {
-        this.channel = channel;
-        this.channelAddress = channel.config.getAddress();
-        this.channelSettings = channel.config.getSettings();
-        this.channelHandle = channel.handle;
+    private ReadRecordContainerImpl(ChannelImpl channel, Record record) {
+        super(channel);
         this.record = record;
-    }
-
-    @Override
-    public String getChannelAddress() {
-        return channelAddress;
-    }
-
-    @Override
-    public String getChannelSettings() {
-        return channelSettings;
+        this.handle = channel.handle;
     }
 
     @Override
     public Object getChannelHandle() {
-        return channelHandle;
+        return handle;
     }
 
     @Override
     public void setChannelHandle(Object handle) {
-        channelHandle = handle;
-    }
-
-    @Override
-    public ChannelRecordContainer copy() {
-        Record copiedRecord = new Record(record.getValue(), record.getTimestamp(), record.getFlag());
-
-        return new ChannelRecordContainerImpl(channel, copiedRecord);
-    }
-
-    @Override
-    public ChannelImpl getChannel() {
-        return channel;
+        this.handle = handle;
     }
 
     @Override
@@ -88,4 +62,10 @@ public final class ChannelRecordContainerImpl implements ChannelRecordContainer 
     public void setRecord(Record record) {
         this.record = record;
     }
+
+    @Override
+    public ChannelRecordContainer copy() {
+        return new ReadRecordContainerImpl(channel, getRecord());
+    }
+
 }

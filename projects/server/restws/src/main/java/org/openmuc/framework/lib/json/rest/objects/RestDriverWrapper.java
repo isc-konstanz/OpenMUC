@@ -47,7 +47,7 @@ public class RestDriverWrapper {
     }
 
     public String getId() {
-    	return config.getId();
+        return config.getId();
     }
 
     public RestDriverConfig getConfig() {
@@ -63,16 +63,16 @@ public class RestDriverWrapper {
     }
 
     public boolean isRunning() {
-    	return running;
+        return running;
     }
 
     public static RestDriverWrapper getDriver(DriverConfig config, ConfigService configService, DataAccessService data) {
-    	boolean running;
+        boolean running;
         DriverInfo driver;
-		try {
-			driver = configService.getDriverInfo(config.getId());
-			running = true;
-			
+        try {
+            driver = configService.getDriverInfo(config.getId());
+            running = true;
+            
         } catch (DriverNotAvailableException e) {
             driver = new DriverInfo(config.getId(), null, null, null, null, null);
             running = false;

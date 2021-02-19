@@ -318,91 +318,91 @@ public class ModbusRTUTCPTransport implements ModbusTransport {
         
         try
         {
-        	do
-        	{
-        		// block the input stream
-        		synchronized (byteInputStream)
-        		{
-        			// get the packet uid
-        			int uid = inputStream.read();
-        			
-        			if (Modbus.debug)
-        				System.out.println(ModbusRTUTCPTransport.logId + "UID: " + uid);
-        			
-        			// if the uid is valid (i.e., > 0) continue
-        			if (uid != -1)
-        			{
-        				// get the function code
-        				int fc = inputStream.read();
-        				
-        				if (Modbus.debug)
-        					System.out.println(ModbusRTUTCPTransport.logId + "Function code: " + uid);
-        				
-        				//bufferize the response
-        				byteOutputStream.reset();
-        				byteOutputStream.writeByte(uid);
-        				byteOutputStream.writeByte(fc);
-        				
-        				// create the Modbus Response object to acquire length of message
-        				response = ModbusResponse.createModbusResponse(fc);
-        				response.setHeadless();
-        				
-        				// With Modbus RTU, there is no end frame. Either we
-        				// assume the message is complete as is or we must do
-        				// function specific processing to know the correct length.
-        				
-        				//bufferize the response according to the given function code
-        				getResponse(fc, byteOutputStream);
-        				
-        				//compute the response length without considering the CRC
-        				dlength = byteOutputStream.size() - 2; // less the crc
-        				
-        				//debug
-        				if (Modbus.debug)
-        					System.out.println("Response: "
-        							+ ModbusUtil.toHex(byteOutputStream.getBuffer(), 0, dlength + 2));
-        				
-        				//TODO: check if needed (restore the buffer state, cursor at 0, same content)
-        				byteInputStream.reset(inputBuffer, dlength);
-        				
-        				// cmopute the buffer CRC
-        				int[] crc = ModbusUtil.calculateCRC(inputBuffer, 0, dlength);
-        				
-        				// check the CRC against the received one...
-        				if (ModbusUtil.unsignedByteToInt(inputBuffer[dlength]) != crc[0]
-        						|| ModbusUtil.unsignedByteToInt(inputBuffer[dlength + 1]) != crc[1])
-        				{
-        					throw new IOException("CRC Error in received frame: " + dlength + " bytes: "
-        							+ ModbusUtil.toHex(byteInputStream.getBuffer(), 0, dlength));
-        				}
-        			}
-        			else
-        			{
-        				throw new IOException("Error reading response");
-        			}
-        			
-        			// restore the buffer state, cursor at 0, same content
-        			byteInputStream.reset(inputBuffer, dlength);
-        			
-        			//actually read the response
-        			if (response != null)
-        			{
-        				response.readFrom(byteInputStream);
-        			}
-        			
-        			//flag completion...
-        			done = true;
-        			
-        		}// synchronized
-        	}
-        	while (!done);
-        	return response;
+            do
+            {
+                // block the input stream
+                synchronized (byteInputStream)
+                {
+                    // get the packet uid
+                    int uid = inputStream.read();
+                    
+                    if (Modbus.debug)
+                        System.out.println(ModbusRTUTCPTransport.logId + "UID: " + uid);
+                    
+                    // if the uid is valid (i.e., > 0) continue
+                    if (uid != -1)
+                    {
+                        // get the function code
+                        int fc = inputStream.read();
+                        
+                        if (Modbus.debug)
+                            System.out.println(ModbusRTUTCPTransport.logId + "Function code: " + uid);
+                        
+                        //bufferize the response
+                        byteOutputStream.reset();
+                        byteOutputStream.writeByte(uid);
+                        byteOutputStream.writeByte(fc);
+                        
+                        // create the Modbus Response object to acquire length of message
+                        response = ModbusResponse.createModbusResponse(fc);
+                        response.setHeadless();
+                        
+                        // With Modbus RTU, there is no end frame. Either we
+                        // assume the message is complete as is or we must do
+                        // function specific processing to know the correct length.
+                        
+                        //bufferize the response according to the given function code
+                        getResponse(fc, byteOutputStream);
+                        
+                        //compute the response length without considering the CRC
+                        dlength = byteOutputStream.size() - 2; // less the crc
+                        
+                        //debug
+                        if (Modbus.debug)
+                            System.out.println("Response: "
+                                    + ModbusUtil.toHex(byteOutputStream.getBuffer(), 0, dlength + 2));
+                        
+                        //TODO: check if needed (restore the buffer state, cursor at 0, same content)
+                        byteInputStream.reset(inputBuffer, dlength);
+                        
+                        // cmopute the buffer CRC
+                        int[] crc = ModbusUtil.calculateCRC(inputBuffer, 0, dlength);
+                        
+                        // check the CRC against the received one...
+                        if (ModbusUtil.unsignedByteToInt(inputBuffer[dlength]) != crc[0]
+                                || ModbusUtil.unsignedByteToInt(inputBuffer[dlength + 1]) != crc[1])
+                        {
+                            throw new IOException("CRC Error in received frame: " + dlength + " bytes: "
+                                    + ModbusUtil.toHex(byteInputStream.getBuffer(), 0, dlength));
+                        }
+                    }
+                    else
+                    {
+                        throw new IOException("Error reading response");
+                    }
+                    
+                    // restore the buffer state, cursor at 0, same content
+                    byteInputStream.reset(inputBuffer, dlength);
+                    
+                    //actually read the response
+                    if (response != null)
+                    {
+                        response.readFrom(byteInputStream);
+                    }
+                    
+                    //flag completion...
+                    done = true;
+                    
+                }// synchronized
+            }
+            while (!done);
+            return response;
         }
         catch (Exception ex)
         {
-        	System.err.println("Last request: " + ModbusUtil.toHex(lastRequest));
-        	System.err.println(ex.getMessage());
-        	throw new ModbusIOException("I/O exception - failed to read");
+            System.err.println("Last request: " + ModbusUtil.toHex(lastRequest));
+            System.err.println(ex.getMessage());
+            throw new ModbusIOException("I/O exception - failed to read");
         }
         
         ------------------------------------------------------------------------------*/

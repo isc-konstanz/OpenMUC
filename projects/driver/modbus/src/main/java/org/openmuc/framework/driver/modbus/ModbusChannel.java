@@ -186,7 +186,7 @@ public class ModbusChannel {
     }
 
     @SuppressWarnings("deprecation")
-	private void setFunctionCodeForWriting() {
+    private void setFunctionCodeForWriting() {
         switch (datatype) {
         case BOOLEAN:
             if (primaryTable.equals(EPrimaryTable.COILS)) {

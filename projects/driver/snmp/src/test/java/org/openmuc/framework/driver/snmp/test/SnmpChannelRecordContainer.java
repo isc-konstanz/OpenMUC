@@ -56,10 +56,10 @@ public class SnmpChannelRecordContainer implements ChannelRecordContainer {
         return snmpChannel.getAddress();
     }
 
-	@Override
-	public String getChannelSettings() {
-		return snmpChannel.getSettings();
-	}
+    @Override
+    public String getChannelSettings() {
+        return snmpChannel.getSettings();
+    }
 
     @Override
     public Object getChannelHandle() {

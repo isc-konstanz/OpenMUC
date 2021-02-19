@@ -25,16 +25,15 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.driver.ChannelContext;
 import org.openmuc.framework.driver.ChannelScanner;
-import org.openmuc.framework.driver.DeviceContext;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.sql.SqlClient;
 import org.slf4j.Logger;
@@ -61,17 +60,16 @@ public class ColumnScanner extends ChannelScanner {
     }
 
     @Override
-    protected void onCreate(DeviceContext context) {
+    protected void onCreate(ChannelContext context) {
         if (table == null) {
             table = ((SqlClient) context).getTable();
         }
     }
 
     @Override
-    public List<ChannelScanInfo> doScan() throws ArgumentSyntaxException, ScanException, ConnectionException {
+    public void onScan(List<ChannelScanInfo> channels) throws ArgumentSyntaxException, ScanException, ConnectionException {
         logger.info("Scan for columns in {}.{}", database, table);
         
-        List<ChannelScanInfo> channels = new ArrayList<>();
         try (Connection connection = source.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 try (ResultSet result = statement.executeQuery(String.format("SELECT * FROM %s LIMIT 1", table))) {
@@ -125,7 +123,6 @@ public class ColumnScanner extends ChannelScanner {
         } catch (SQLException e) {
             throw new ConnectionException(e);
         }
-        return channels;
     }
 
 }

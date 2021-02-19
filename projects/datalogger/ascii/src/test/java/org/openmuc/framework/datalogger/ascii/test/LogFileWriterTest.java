@@ -30,7 +30,6 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -345,22 +344,22 @@ public class LogFileWriterTest {
 
         LogIntervalContainerGroup group = new LogIntervalContainerGroup();
 
-        LogRecordContainer container1 = new LogRecordContainerImpl(ch01,
+        LogRecordContainer container1 = new LogRecordContainerTestImpl(ch01,
                 new Record(new FloatValue(i * -7 - 0.555F), timeStamp));
-        LogRecordContainer container2 = new LogRecordContainerImpl(ch02,
+        LogRecordContainer container2 = new LogRecordContainerTestImpl(ch02,
                 new Record(new DoubleValue(i * +7 - 0.555), timeStamp));
-        LogRecordContainer container3 = new LogRecordContainerImpl(ch03,
+        LogRecordContainer container3 = new LogRecordContainerTestImpl(ch03,
                 new Record(new BooleanValue(boolValue), timeStamp));
-        LogRecordContainer container4 = new LogRecordContainerImpl(ch04,
+        LogRecordContainer container4 = new LogRecordContainerTestImpl(ch04,
                 new Record(new ShortValue((short) i), timeStamp));
-        LogRecordContainer container5 = new LogRecordContainerImpl(ch05, new Record(new IntValue(i), timeStamp));
-        LogRecordContainer container6 = new LogRecordContainerImpl(ch06,
+        LogRecordContainer container5 = new LogRecordContainerTestImpl(ch05, new Record(new IntValue(i), timeStamp));
+        LogRecordContainer container6 = new LogRecordContainerTestImpl(ch06,
                 new Record(new LongValue(i * 1000000), timeStamp));
-        LogRecordContainer container7 = new LogRecordContainerImpl(ch07,
+        LogRecordContainer container7 = new LogRecordContainerTestImpl(ch07,
                 new Record(new ByteValue(byteValue), timeStamp));
-        LogRecordContainer container8 = new LogRecordContainerImpl(ch08,
+        LogRecordContainer container8 = new LogRecordContainerTestImpl(ch08,
                 new Record(new StringValue(testString), timeStamp));
-        LogRecordContainer container9 = new LogRecordContainerImpl(ch09,
+        LogRecordContainer container9 = new LogRecordContainerTestImpl(ch09,
                 new Record(new ByteArrayValue(testByteArray), timeStamp));
 
         group.add(container1);

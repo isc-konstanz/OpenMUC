@@ -21,7 +21,6 @@
 package org.openmuc.framework.driver.rest;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
@@ -34,16 +33,9 @@ import org.openmuc.framework.lib.json.rest.objects.RestChannel;
 
 public class RestChannelScanner extends ChannelScanner {
 
-    private final RestConfigs configs;
-
-    public RestChannelScanner(RestConfigs configs) {
-        this.configs = configs;
-    }
-
     @Override
-    public List<ChannelScanInfo> doScan() throws ArgumentSyntaxException, ScanException, ConnectionException {
-        List<ChannelScanInfo> channelScanInfos = new ArrayList<>();
-        try (RestConnection connection = new RestConnection(configs)) {
+    public void onScan(List<ChannelScanInfo> channelScanInfos) throws ArgumentSyntaxException, ScanException, ConnectionException {
+        try (RestConnection connection = new RestConnection((RestConfigs) getContext())) {
             FromJson json = new FromJson(connection.get(""));
             List<RestChannel> channels = json.getRestChannelList();
             
@@ -55,7 +47,6 @@ public class RestChannelScanner extends ChannelScanner {
         } catch (IOException e) {
             throw new ConnectionException(e.getMessage());
         }
-        return channelScanInfos;
     }
 
 }

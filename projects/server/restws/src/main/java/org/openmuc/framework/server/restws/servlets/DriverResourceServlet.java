@@ -202,7 +202,7 @@ public class DriverResourceServlet extends GenericServlet {
             }
             else {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-                		REQUESTED_ID_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
+                        REQUESTED_ID_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
             }
         }
         else {
@@ -539,7 +539,7 @@ public class DriverResourceServlet extends GenericServlet {
 
     private static void driverNotAvailable(HttpServletResponse response, String driverId) {
         ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-        		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, driverId);
+                REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, driverId);
     }
 
     private void setConfigAccess() {

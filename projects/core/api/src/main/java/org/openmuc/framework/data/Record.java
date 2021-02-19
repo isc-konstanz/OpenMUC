@@ -77,6 +77,10 @@ public class Record {
         return flag;
     }
 
+    public boolean isValid() {
+    	return flag == Flag.VALID;
+    }
+
     @Override
     public String toString() {
         return "value: " + value + "; timestamp: " + timestamp + "; flag: " + flag;

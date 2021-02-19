@@ -26,7 +26,6 @@ import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
 import com.pi4j.io.gpio.GpioPinDigital;
@@ -35,13 +34,13 @@ import com.pi4j.io.gpio.PinState;
 public class InputPin extends GpioPin {
 
     public InputPin(GpioPinDigital pin) {
-		super(pin);
-	}
+        super(pin);
+    }
 
     @Override
-    public Object onRead(List<GpioChannel> channels, Object containerListHandle, String samplingGroup)
+	protected void onRead(List<GpioChannel> channels, String samplingGroup)
             throws ConnectionException {
-    	
+        
         long samplingTime = System.currentTimeMillis();
         
         for (GpioChannel channel : channels) {
@@ -55,7 +54,6 @@ public class InputPin extends GpioPin {
             }
             channel.setRecord(new Record(value, samplingTime, Flag.VALID));
         }
-        return null;
     }
 
 }

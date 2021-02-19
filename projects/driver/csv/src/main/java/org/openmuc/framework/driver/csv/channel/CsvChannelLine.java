@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 
 /**
  * Channel to return value of next line in the file. Timestamps are ignored. It always starts with the first line, which
@@ -32,10 +31,10 @@ import org.openmuc.framework.driver.spi.ChannelContainer;
  */
 public class CsvChannelLine extends CsvChannel {
 
-    public CsvChannelLine(ChannelContainer channel, Map<String, List<String>> data, boolean rewind) 
-    		throws ArgumentSyntaxException {
-    	super(channel, data, rewind);
-    	this.lastIndexRead = -1;
+    public CsvChannelLine(String column, Map<String, List<String>> data, boolean rewind) 
+            throws ArgumentSyntaxException {
+        super(column, data, rewind);
+        this.lastIndexRead = -1;
     }
 
     @Override

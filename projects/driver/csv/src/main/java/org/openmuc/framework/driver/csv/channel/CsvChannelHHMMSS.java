@@ -29,24 +29,23 @@ import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 
 public class CsvChannelHHMMSS extends CsvChannelTime {
 
     public static final String INDEX = "hhmmss";
 
-    public CsvChannelHHMMSS(ChannelContainer channel, Map<String, List<String>> csv, boolean rewind) 
-    		throws ArgumentSyntaxException {
-    	super(channel, csv, rewind);
+    public CsvChannelHHMMSS(String column, Map<String, List<String>> csv, boolean rewind) 
+            throws ArgumentSyntaxException {
+        super(column, csv, rewind);
     }
 
-    public CsvChannelHHMMSS(ChannelContainer channel, long[] index, Map<String, List<String>> csv, boolean rewind) 
-    		throws ArgumentSyntaxException {
-    	super(channel, index, csv, rewind);
+    public CsvChannelHHMMSS(String column, long[] index, Map<String, List<String>> csv, boolean rewind) 
+            throws ArgumentSyntaxException {
+        super(column, index, csv, rewind);
     }
 
-	@Override
-	protected long[] parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException {
+    @Override
+    protected long[] parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException {
         List<String> hoursList = csv.get(INDEX);
         
         long[] hours = new long[hoursList.size()];
@@ -54,7 +53,7 @@ public class CsvChannelHHMMSS extends CsvChannelTime {
             hours[i] = Long.parseLong(hoursList.get(i));
         }
         return hours;
-	}
+    }
 
     @Override
     public double readValue(long samplingTime) throws CsvException {

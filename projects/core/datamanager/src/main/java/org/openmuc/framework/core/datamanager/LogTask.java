@@ -37,15 +37,15 @@ class LogTask extends Thread {
     private final long timestamp;
 
     public LogTask(DataLoggerService dataLogger, List<LogRecordContainer> containers, long timestamp) {
-    	this.dataLogger = dataLogger;
-    	this.containers = containers;
-    	this.timestamp = timestamp;
+        this.dataLogger = dataLogger;
+        this.containers = containers;
+        this.timestamp = timestamp;
     }
 
     @Override
     public void run() {
         try {
-        	dataLogger.log(containers, timestamp);
+            dataLogger.log(containers, timestamp);
             
         } catch(Exception e) {
             logger.warn("Unexpected exception thrown by log funtion of data logger {}: {}", 

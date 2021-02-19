@@ -29,8 +29,8 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
+import org.openmuc.framework.driver.rpi.gpio.GpioChannel;
 import org.openmuc.framework.driver.rpi.gpio.InputPin;
-import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 
@@ -50,19 +50,19 @@ public class EdgeCounter extends InputPin {
     }
 
     @Override
-    public void onStartListening(List<GpioChannel> channels, RecordsReceivedListener listener) throws ConnectionException {
-    	counter.setRecordListener(channels, listener);
+    protected void onStartListening(List<GpioChannel> channels, RecordsReceivedListener listener) throws ConnectionException {
+        counter.setRecordListener(channels, listener);
     }
 
     @Override
-    public Object onRead(List<GpioChannel> channels, Object containerListHandle, String samplingGroup) throws ConnectionException {
+    protected void onRead(List<GpioChannel> channels, String samplingGroup) throws ConnectionException {
         long samplingTime = System.currentTimeMillis();
         int newVal = counter.getValue();
 
         for (GpioChannel channel : channels) {
             Value value = null;
             if (channel.isDerivative() || channel.isIntervalCount()) {
-                String channelId = channel.getId();
+                String channelId = channel.getChannel().getId();
                 Record lastRecord = null;
                 int lastVal;
                 if (counters.containsKey(channelId)) {
@@ -98,7 +98,6 @@ public class EdgeCounter extends InputPin {
                 channel.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
             }
         }
-        return null;
     }
 
 }

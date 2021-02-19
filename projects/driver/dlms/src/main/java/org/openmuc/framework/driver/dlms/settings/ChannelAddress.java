@@ -22,8 +22,8 @@ package org.openmuc.framework.driver.dlms.settings;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.address.AddressSyntax;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.AddressSyntax;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
@@ -41,31 +41,31 @@ public class ChannelAddress extends Configurable {
 
     @Address(id = "t",
              name = "Data Object Type",
-    		 valueSelection = "NULL_DATA:Null," +
-		    		          "ARRAY:Array," +
-		    		          "STRUCTURE:Structure," +
-		    		          "BOOLEAN:Bool," +
-		    		          "BIT_STRING:Bit String," +
-		    		          "DOUBLE_LONG:Integer 32," +
-		    		          "DOUBLE_LONG_UNSIGNED:Unsigned integer 32," +
-		    		          "OCTET_STRING:Octet String," +
-		    		          "UTF8_STRING:UTF-8 String," +
-		    		          "VISIBLE_STRING:Visible String," +
-		    		          "BCD:BCD," +
-		    		          "INTEGER:Integer 8," +
-		    		          "LONG_INTEGER:Integer 16," +
-		    		          "UNSIGNED:Unsigned integer 8," +
-		    		          "LONG_UNSIGNED:Unsigned integer 16," +
-		    		          "COMPACT_ARRAY:Compact array," +
-		    		          "LONG64:Integer 64," +
-		    		          "LONG64_UNSIGNED:Unsigned integer 64," +
-		    		          "ENUMERATE:Enum," +
-		    		          "FLOAT32:Float 32," +
-		    		          "FLOAT64:Float 64," +
-		    		          "DATE_TIME:Date Time," +
-		    		          "DATE:Date," +
-		    		          "TIME:Time," +
-		    		          "DONT_CARE:None"
+             valueSelection = "NULL_DATA:Null," +
+                              "ARRAY:Array," +
+                              "STRUCTURE:Structure," +
+                              "BOOLEAN:Bool," +
+                              "BIT_STRING:Bit String," +
+                              "DOUBLE_LONG:Integer 32," +
+                              "DOUBLE_LONG_UNSIGNED:Unsigned integer 32," +
+                              "OCTET_STRING:Octet String," +
+                              "UTF8_STRING:UTF-8 String," +
+                              "VISIBLE_STRING:Visible String," +
+                              "BCD:BCD," +
+                              "INTEGER:Integer 8," +
+                              "LONG_INTEGER:Integer 16," +
+                              "UNSIGNED:Unsigned integer 8," +
+                              "LONG_UNSIGNED:Unsigned integer 16," +
+                              "COMPACT_ARRAY:Compact array," +
+                              "LONG64:Integer 64," +
+                              "LONG64_UNSIGNED:Unsigned integer 64," +
+                              "ENUMERATE:Enum," +
+                              "FLOAT32:Float 32," +
+                              "FLOAT64:Float 64," +
+                              "DATE_TIME:Date Time," +
+                              "DATE:Date," +
+                              "TIME:Time," +
+                              "DONT_CARE:None"
     )
     private Type type;
 

@@ -48,11 +48,11 @@ public class CsvTestContainer implements ChannelRecordContainer {
         return this.channel.getAddress();
     }
 
-	@Override
-	public String getChannelSettings() {
-		// TODO Auto-generated method stub
-		return this.channel.getSettings();
-	}
+    @Override
+    public String getChannelSettings() {
+        // TODO Auto-generated method stub
+        return this.channel.getSettings();
+    }
 
     @Override
     public Object getChannelHandle() {

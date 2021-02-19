@@ -36,7 +36,7 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 
 public class RestConnection implements AutoCloseable {
 
-    private final String address;
+    private final String url;
     private final String authorization;
 
     private final int timeout;
@@ -44,13 +44,19 @@ public class RestConnection implements AutoCloseable {
     private URLConnection connection;
 
     public RestConnection(RestConfigs configs) {
-        timeout = configs.getTimeout();
-        address = configs.getAddress();
-        authorization = configs.getAuthorization();
+        this(configs.getUrl(), 
+             configs.getAuthorization(),
+             configs.getTimeout());
+    }
+
+    public RestConnection(String url, String authorization, int timeout) {
+        this.url = url;
+        this.authorization = authorization;
+        this.timeout = timeout;
     }
 
     private URLConnection open(String suffix) throws IOException {
-        URL url = new URL(address + suffix);
+        URL url = new URL(this.url + suffix);
         URLConnection connection = url.openConnection();
         connection.setConnectTimeout(timeout);
         connection.setReadTimeout(timeout);
@@ -64,14 +70,14 @@ public class RestConnection implements AutoCloseable {
 
     public RestConnection connect() throws ConnectionException {
         try {
-			connection = open("rest/connect/");
-	        connection.connect();
-	        
-	        verifyResponseCode(connection);
-	        
-		} catch (IOException e) {
+            connection = open("rest/connect/");
+            connection.connect();
+            
+            verifyResponseCode(connection);
+            
+        } catch (IOException e) {
             throw new ConnectionException(e.getMessage());
-		}
+        }
         return this;
     }
 

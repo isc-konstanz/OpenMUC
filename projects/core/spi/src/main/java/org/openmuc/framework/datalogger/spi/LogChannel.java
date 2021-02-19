@@ -21,12 +21,25 @@
 
 package org.openmuc.framework.datalogger.spi;
 
-import org.openmuc.framework.config.ChannelInfo;
+import org.openmuc.framework.data.ValueType;
 
+public interface LogChannel {
 
-public interface LogChannel extends ChannelInfo {
+    public String getId();
+
+    public String getDescription();
 
     public String getAddress();
+
+    public String getUnit();
+
+    public ValueType getValueType();
+
+    public Integer getValueTypeLength();
+
+    public Double getValueOffset();
+
+    public Double getScalingFactor();
 
     public Boolean isListening();
 

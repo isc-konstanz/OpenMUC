@@ -23,12 +23,13 @@ package org.openmuc.framework.driver.rpi.gpio;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openmuc.framework.config.annotation.AddressSyntax;
+import org.openmuc.framework.config.annotation.SettingsSyntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.Device;
-import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
+import org.openmuc.framework.driver.ChannelFactory.Factory;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
@@ -40,8 +41,11 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
-public class GpioPin extends Device<GpioChannel> {
-	protected static final Logger logger = LoggerFactory.getLogger(GpioPin.class);
+@AddressSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
+@SettingsSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
+@Factory(channel = GpioChannel.class)
+public abstract class GpioPin extends GpioConfigs {
+    protected static final Logger logger = LoggerFactory.getLogger(GpioPin.class);
 
     protected final GpioPinDigital pin;
 
@@ -49,13 +53,14 @@ public class GpioPin extends Device<GpioChannel> {
         this.pin = pin;
     }
 
-    @Override
-    public void onStartListening(List<GpioChannel> channels, RecordsReceivedListener listener) throws ConnectionException {
-        pin.addListener(new GpioListener(channels, listener, pin));
+    public GpioPinDigital getGpioPin() {
+    	return pin;
     }
 
-    public GpioPinDigital getPin() {
-    	return pin;
+    @Override
+    protected void onStartListening(List<GpioChannel> channels, RecordsReceivedListener listener)
+            throws UnsupportedOperationException, ConnectionException {
+        pin.addListener(new GpioListener(channels, listener, pin));
     }
 
     protected class GpioListener implements GpioPinListenerDigital {
@@ -93,4 +98,5 @@ public class GpioPin extends Device<GpioChannel> {
             listener.newRecords(containers);
         }
     }
+
 }

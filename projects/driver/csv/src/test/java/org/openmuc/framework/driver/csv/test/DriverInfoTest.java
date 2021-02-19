@@ -33,10 +33,10 @@ public class DriverInfoTest {
 
         System.out.println("Id: " + info.getId());
         System.out.println("Description: " + info.getDescription());
-        System.out.println("DeviceAddressSyntax: " + info.getDeviceAddressSyntax());
-        System.out.println("DeviceSettingsSyntax: " + info.getDeviceSettingsSyntax());
-        System.out.println("DeviceScanSettingsSyntax: " + info.getDeviceScanSettingsSyntax());
-        System.out.println("ChannelAddressSyntax: " + info.getChannelAddressSyntax());
+        System.out.println("DeviceAddressSyntax: " + info.getDevice().getAddressSyntax());
+        System.out.println("DeviceSettingsSyntax: " + info.getDevice().getSettingsSyntax());
+        System.out.println("DeviceScanSettingsSyntax: " + info.getDevice().getScanSettingsSyntax());
+        System.out.println("ChannelAddressSyntax: " + info.getChannel().getAddressSyntax());
     }
 
 }

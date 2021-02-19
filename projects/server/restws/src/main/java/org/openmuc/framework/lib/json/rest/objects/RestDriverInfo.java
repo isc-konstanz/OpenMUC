@@ -26,8 +26,8 @@ public class RestDriverInfo {
     private String name = null;
     private String description = null;
 
-    private RestDeviceInfo device = null;
-    private RestChannelInfo channel = null;
+    private RestDeviceOptions device = null;
+    private RestChannelOptions channel = null;
     private RestOptions configs = null;
 
     public String getId() {
@@ -54,19 +54,19 @@ public class RestDriverInfo {
         this.description = description;
     }
 
-    public RestDeviceInfo getDevice() {
+    public RestDeviceOptions getDevice() {
         return device;
     }
 
-    public void setDevice(RestDeviceInfo device) {
+    public void setDevice(RestDeviceOptions device) {
         this.device = device;
     }
 
-    public RestChannelInfo getChannel() {
+    public RestChannelOptions getChannel() {
         return channel;
     }
 
-    public void setChannel(RestChannelInfo channel) {
+    public void setChannel(RestChannelOptions channel) {
         this.channel = channel;
     }
 

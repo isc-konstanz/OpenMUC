@@ -55,13 +55,13 @@ import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DeviceScanListener;
 import org.openmuc.framework.config.DriverConfig;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.DriverNotAvailableException;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.config.RootConfig;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.config.ServerMapping;
+import org.openmuc.framework.config.option.DriverOptionsFactory;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;
@@ -81,7 +81,7 @@ import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.spi.DriverComponent;
+import org.openmuc.framework.driver.spi.DriverActivator;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
@@ -281,9 +281,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                             toRemove.add(channel);
                         }
                         else if (!channel.config.isDisabled()) {
-                            String channelId = channel.getId();
                             Record latestRecord = channel.getLatestRecord();
-                            logContainers.add(new LogRecordContainerImpl(channelId, latestRecord));
+                            logContainers.add(new LogRecordContainerImpl(channel, latestRecord));
                         }
                     }
 
@@ -297,10 +296,10 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                     }
                 }
                 for (DataLoggerService dataLogger : activeDataLoggers) {
-                	LogTask logTask = new LogTask(dataLogger, 
-                			logContainers, currentAction.startTime);
-                	
-                	executor.execute(logTask);
+                    LogTask logTask = new LogTask(dataLogger, 
+                            logContainers, currentAction.startTime);
+                    
+                    executor.execute(logTask);
                 }
             }
 
@@ -313,7 +312,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             if (currentAction.samplingCollections != null && !currentAction.samplingCollections.isEmpty()) {
 
                 for (ChannelCollection samplingCollection : currentAction.samplingCollections) {
-                    List<ChannelRecordContainerImpl> selectedChannels = new ArrayList<>(
+                    List<ReadRecordContainerImpl> selectedChannels = new ArrayList<>(
                             samplingCollection.channels.size());
                     for (ChannelImpl channel : samplingCollection.channels) {
                         selectedChannels.add(channel.createChannelRecordContainer());
@@ -525,13 +524,13 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
             while ((recordContainers = receivedRecordContainers.poll()) != null) {
                 for (ChannelRecordContainer container : recordContainers) {
-                    ChannelRecordContainerImpl containerImpl = (ChannelRecordContainerImpl) container;
+                    ReadRecordContainerImpl containerImpl = (ReadRecordContainerImpl) container;
 
                     if (containerImpl.getChannel().getChannelState() == ChannelState.LISTENING) {
                         containerImpl.getChannel().setNewRecord(containerImpl.getRecord());
                         if (containerImpl.getChannel().isLoggingEvent()) {
                             LogRecordContainer logRecordContainer = new LogRecordContainerImpl(
-                                    containerImpl.getChannel().getId(), containerImpl.getRecord());
+                                    containerImpl.getChannel(), containerImpl.getRecord());
                             logRecordContainers.add(logRecordContainer);
                         }
                     }
@@ -903,8 +902,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 logger.error("Unable to register driver: a driver with the ID {} is already registered.", driverId);
                 return;
             }
-            if (driver instanceof DriverComponent) {
-                ((DriverComponent) driver).activate(this);
+            if (driver instanceof DriverActivator) {
+                ((DriverActivator) driver).activate(this);
             }
             newDrivers.put(driverId, driver);
             interrupt();
@@ -932,8 +931,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 newDrivers.remove(driverId);
             }
         }
-        if (driver instanceof DriverComponent) {
-            ((DriverComponent) driver).deactivate();
+        if (driver instanceof DriverActivator) {
+            ((DriverActivator) driver).deactivate();
         }
         logger.info("Unregistered driver: {}", driverId);
     }
@@ -1322,7 +1321,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 availableDrivers.add(activeDriverName);
             }
         }
-        availableDrivers.add(DriverInfoFactory.VIRTUAL);
+        availableDrivers.add(DriverOptionsFactory.VIRTUAL);
         
         return availableDrivers;
     }
@@ -1369,27 +1368,27 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
     @Override
     public void read(List<ReadRecordContainer> readContainers) {
-        Map<Device, List<ChannelRecordContainerImpl>> containersByDevice = new HashMap<>();
+        Map<Device, List<ReadRecordContainerImpl>> containersByDevice = new HashMap<>();
 
         for (ReadRecordContainer container : readContainers) {
-            if (container instanceof ChannelRecordContainerImpl == false) {
+            if (container instanceof ReadRecordContainerImpl == false) {
                 throw new IllegalArgumentException(
                         "Only use ReadRecordContainer created by Channel.getReadContainer()");
             }
 
             ChannelImpl channel = (ChannelImpl) container.getChannel();
-            List<ChannelRecordContainerImpl> containersOfDevice = containersByDevice
+            List<ReadRecordContainerImpl> containersOfDevice = containersByDevice
                     .get(channel.config.deviceParent.device);
             if (containersOfDevice == null) {
                 containersOfDevice = new LinkedList<>();
                 containersByDevice.put(channel.config.deviceParent.device, containersOfDevice);
             }
-            containersOfDevice.add((ChannelRecordContainerImpl) container);
+            containersOfDevice.add((ReadRecordContainerImpl) container);
         }
         CountDownLatch readTasksFinishedSignal = new CountDownLatch(containersByDevice.size());
 
         synchronized (newReadTasks) {
-            for (Entry<Device, List<ChannelRecordContainerImpl>> channelRecordContainers : containersByDevice
+            for (Entry<Device, List<ReadRecordContainerImpl>> channelRecordContainers : containersByDevice
                     .entrySet()) {
                 ReadTask readTask = new ReadTask(this, channelRecordContainers.getKey(),
                         channelRecordContainers.getValue(), readTasksFinishedSignal);
@@ -1422,8 +1421,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
     @Override
     public DriverInfo getDriverInfo(String driverId) throws DriverNotAvailableException {
-        if (driverId.equals(DriverInfoFactory.VIRTUAL)) {
-            return DriverInfoFactory.readVirtualInfo();
+        if (driverId.equals(DriverOptionsFactory.VIRTUAL)) {
+            return DriverOptionsFactory.readVirtualInfo();
         }
         DriverService driver = activeDrivers.get(driverId);
         if (driver == null) {

@@ -18,32 +18,36 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.w1.configs;
+package org.openmuc.framework.datalogger.ascii.test;
 
-import com.pi4j.component.temperature.TemperatureSensor;
-import com.pi4j.io.w1.W1Device;
+import org.openmuc.framework.data.Record;
+import org.openmuc.framework.dataaccess.Channel;
+import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 
-public enum W1Type {
+public class LogRecordContainerTestImpl implements LogRecordContainer {
 
-    SENSOR_TEMPERATURE("TemperatureSensor");
+	private String channelId;
+	private Record record;
 
-    private final String name;
+	public LogRecordContainerTestImpl(String channelId, Record record) {
+		this.channelId = channelId;
+		this.record = record;
+	}
 
-    private W1Type(String name) {
-        this.name = name;
+	@Override
+	public Channel getChannel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+    public String getChannelId() {
+        return channelId;
     }
 
-    public String getName() {
-        return name;
-    }
+	@Override
+	public Record getRecord() {
+		return record;
+	}
 
-    public static W1Type valueOf(W1Device device) throws IllegalArgumentException {
-        
-        if (device instanceof TemperatureSensor) {
-            return W1Type.SENSOR_TEMPERATURE;
-        }
-        else {
-            throw new IllegalArgumentException("Unknown 1-Wire device type: " + device.getClass().getSimpleName());
-        }
-    }
 }

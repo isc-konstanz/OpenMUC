@@ -20,29 +20,34 @@
  */
 package org.openmuc.framework.driver.opcua;
 
+import org.openmuc.framework.driver.DeviceFactory.Factory;
 import org.openmuc.framework.driver.Driver;
-import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
 @Component
-public class UaDriver extends Driver<UaConnection> implements DriverService {
+@Factory(device = UaConnection.class)
+public class UaDriver extends Driver implements DriverService {
 
     private static final String ID = "opcua";
     private static final String NAME = "OPC UA";
     private static final String DESCRIPTION = "OPC Unified Architecture (OPC UA) "
-    		+ "is a machine to machine communication protocol for industrial automation "
-    		+ "developed by the OPC Foundation.";
+            + "is a machine to machine communication protocol for industrial automation "
+            + "developed by the OPC Foundation.";
 
-	@Override
+    @Override
     public String getId() {
-    	return ID;
+        return ID;
     }
 
-	@Override
-	protected void onCreate(DriverContext context) {
-		context.setName(NAME)
-				.setDescription(DESCRIPTION);
-	}
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
+    }
 
 }

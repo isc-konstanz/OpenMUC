@@ -39,21 +39,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.address.AddressSyntax;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.config.settings.SettingsSyntax;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.driver.ChannelContainer;
+import org.openmuc.framework.driver.ChannelFactory.Factory;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@AddressSyntax(separator = ";")
-@SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class UaConnection extends Device<UaChannel>{
+@Factory(channel = UaChannel.class)
+public class UaConnection extends Device<UaChannel> {
     private static final Logger logger = LoggerFactory.getLogger(UaConnection.class);
 
     private OpcUaClient client;
@@ -124,61 +123,61 @@ public class UaConnection extends Device<UaChannel>{
     }
 
     @Override
-    protected UaChannel onCreateChannel() { return new UaChannel(namespaceIndex); }
-
-    @Override
-    protected Object onRead(List<UaChannel> channels, Object containerListHandle, String samplingGroup) 
-    		throws ConnectionException {
-		try {
-	    	List<NodeId> nodeIds = channels.stream().map(c -> c.getNodeId()).collect(Collectors.toList());
-	    	List<DataValue> values = client.readValues(0.0, TimestampsToReturn.Both, nodeIds).get();
-	    	
-	        for (UaChannel channel : channels) {
-	        	try {
-		    		int index = nodeIds.indexOf(channel.getNodeId());
-		        	channel.setRecord(channel.decode(values.get(index)));
-	        		
-	        	} catch (NullPointerException e) {
-		        	channel.setRecord(new Record(new DoubleValue(Double.NaN), System.currentTimeMillis(), 
-	                		Flag.DRIVER_ERROR_READ_FAILURE));
-	        	}
-	        }
-		} catch (InterruptedException e) {
-	        for (UaChannel channel : channels) {
-	        	channel.setRecord(new Record(new DoubleValue(Double.NaN), System.currentTimeMillis(), 
-	                		Flag.DRIVER_ERROR_TIMEOUT));
-	        }
-		} catch (ExecutionException | NullPointerException e) {
-            logger.warn("Reading data from OPC server failed. {}", e);
-			throw new ConnectionException(e);
-		}
-        return null;
+    protected ChannelContainer newChannel() {
+        return new UaChannel(namespaceIndex);
     }
 
     @Override
-    protected Object onWrite(List<UaChannel> channels, Object containerListHandle)
+    protected void onRead(List<UaChannel> channels, String samplingGroup) 
             throws ConnectionException {
         try {
-	        for (UaChannel channel : channels) {
-	            DataValue value = channel.encode();
-	            try {
-	                StatusCode status = client.writeValue(channel.getNodeId(), value).get();
-	                
-	                if (status.isGood()) {
-	                	channel.setFlag(Flag.VALID);
-	                }
-	                else {
-	                    logger.warn("Writing data to OPC UA channel {} failed: {}", channel.getId(), status.toString());
-	                }
-	    		} catch (InterruptedException e) {
-		        	channel.setFlag(Flag.DRIVER_ERROR_TIMEOUT);
-	    		}
-	        }
+            List<NodeId> nodeIds = channels.stream().map(c -> c.getNodeId()).collect(Collectors.toList());
+            List<DataValue> values = client.readValues(0.0, TimestampsToReturn.Both, nodeIds).get();
+            
+            for (UaChannel channel : channels) {
+                try {
+                    int index = nodeIds.indexOf(channel.getNodeId());
+                    channel.setRecord(channel.decode(values.get(index)));
+                    
+                } catch (NullPointerException e) {
+                    channel.setRecord(new Record(new DoubleValue(Double.NaN), System.currentTimeMillis(), 
+                            Flag.DRIVER_ERROR_READ_FAILURE));
+                }
+            }
+        } catch (InterruptedException e) {
+            for (UaChannel channel : channels) {
+                channel.setRecord(new Record(new DoubleValue(Double.NaN), System.currentTimeMillis(), 
+                            Flag.DRIVER_ERROR_TIMEOUT));
+            }
+        } catch (ExecutionException | NullPointerException e) {
+            logger.warn("Reading data from OPC server failed. {}", e);
+            throw new ConnectionException(e);
+        }
+    }
+
+    @Override
+    protected void onWrite(List<UaChannel> channels)
+            throws ConnectionException {
+        try {
+            for (UaChannel channel : channels) {
+                DataValue value = channel.encode();
+                try {
+                    StatusCode status = client.writeValue(channel.getNodeId(), value).get();
+                    
+                    if (status.isGood()) {
+                        channel.setFlag(Flag.VALID);
+                    }
+                    else {
+                        logger.warn("Writing data to OPC UA channel {} failed: {}", channel.getChannel().getId(), status.toString());
+                    }
+                } catch (InterruptedException e) {
+                    channel.setFlag(Flag.DRIVER_ERROR_TIMEOUT);
+                }
+            }
         } catch (ExecutionException e) {
             logger.warn("Writing data to OPC server failed. {}", e);
-			throw new ConnectionException(e);
-		}
-        return null;
+            throw new ConnectionException(e);
+        }
     }
 
 }

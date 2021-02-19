@@ -171,7 +171,7 @@ public class DeviceResourceServlet extends GenericServlet {
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
         }
     }
 
@@ -206,7 +206,7 @@ public class DeviceResourceServlet extends GenericServlet {
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
         }
     }
 
@@ -236,7 +236,7 @@ public class DeviceResourceServlet extends GenericServlet {
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
         }
     }
 
@@ -387,7 +387,7 @@ public class DeviceResourceServlet extends GenericServlet {
                 json.setDeviceConfig(deviceConfig, deviceId);
             } catch (IdCollisionException e) {
             }
-        	
+            
             configService.setConfig(rootConfig);
             configService.writeConfigToFile();
             response.setStatus(HttpServletResponse.SC_OK);

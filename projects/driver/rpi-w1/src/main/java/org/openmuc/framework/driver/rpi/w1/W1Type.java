@@ -18,15 +18,32 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.openmuc.framework.driver.rpi.w1;
 
-package org.openmuc.framework.driver.spi;
+import com.pi4j.component.temperature.TemperatureSensor;
+import com.pi4j.io.w1.W1Device;
 
-import org.openmuc.framework.dataaccess.DataAccessService;
+public enum W1Type {
 
-public interface DriverComponent extends DriverService {
+    SENSOR_TEMPERATURE("TemperatureSensor");
 
-    public void activate(DataAccessService dataAccessService);
+    private final String name;
 
-    public void deactivate();
+    private W1Type(String name) {
+        this.name = name;
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public static W1Type valueOf(W1Device device) throws IllegalArgumentException {
+        
+        if (device instanceof TemperatureSensor) {
+            return W1Type.SENSOR_TEMPERATURE;
+        }
+        else {
+            throw new IllegalArgumentException("Unknown 1-Wire device type: " + device.getClass().getSimpleName());
+        }
+    }
 }

@@ -37,7 +37,7 @@ public class CsvScanDeviceTest {
 
     private final String dir = System.getProperty("user.dir");
 
-	@Test
+    @Test
     public void testDeviceScan()
             throws ArgumentSyntaxException, UnsupportedOperationException, ScanException, ScanInterruptedException {
         CsvDriver csvDriver = new CsvDriver();

@@ -94,10 +94,10 @@ public final class ChannelImpl implements Channel {
         }
 
         if (!config.getLoggingSettings().equals(ChannelConfig.LOGGING_SETTINGS_DEFAULT) || 
-        		config.getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT) {
-        	if (config.getLoggingInterval() > 0) {
+                config.getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT) {
+            if (config.getLoggingInterval() > 0) {
                 dataManager.addToLoggingCollections(this, currentTime);
-        	}
+            }
             logChannels.add(config);
         }
         else if (config.getLoggingInterval() == ChannelConfig.LOGGING_INTERVAL_DEFAULT && config.isLoggingEvent()
@@ -141,13 +141,13 @@ public final class ChannelImpl implements Channel {
         return config.getValueTypeLength();
     }
 
-	@Override
-	public double getValueOffset() {
+    @Override
+    public double getValueOffset() {
         if (config.getValueOffset() == null) {
             return 0d;
         }
         return config.getValueOffset();
-	}
+    }
 
     @Override
     public double getScalingFactor() {
@@ -155,6 +155,11 @@ public final class ChannelImpl implements Channel {
             return 1d;
         }
         return config.getScalingFactor();
+    }
+
+    @Override
+    public boolean isListening() {
+        return config.isListening();
     }
 
     @Override
@@ -175,6 +180,11 @@ public final class ChannelImpl implements Channel {
     @Override
     public int getLoggingTimeOffset() {
         return config.getLoggingTimeOffset();
+    }
+
+    @Override
+    public boolean isLoggingEvent() {
+        return config.isLoggingEvent() && config.isListening() && config.getLoggingInterval() == -1;
     }
 
     @Override
@@ -365,8 +375,8 @@ public final class ChannelImpl implements Channel {
 
     }
 
-    ChannelRecordContainerImpl createChannelRecordContainer() {
-        return new ChannelRecordContainerImpl(this);
+    ReadRecordContainerImpl createChannelRecordContainer() {
+        return new ReadRecordContainerImpl(this);
     }
 
     void setFlag(Flag flag) {
@@ -516,8 +526,8 @@ public final class ChannelImpl implements Channel {
     public Record read() {
         CountDownLatch readTaskFinishedSignal = new CountDownLatch(1);
 
-        ChannelRecordContainerImpl readValueContainer = new ChannelRecordContainerImpl(this);
-        List<ChannelRecordContainerImpl> readValueContainerList = Arrays.asList(readValueContainer);
+        ReadRecordContainerImpl readValueContainer = new ReadRecordContainerImpl(this);
+        List<ReadRecordContainerImpl> readValueContainerList = Arrays.asList(readValueContainer);
 
         ReadTask readTask = new ReadTask(dataManager, config.deviceParent.device, readValueContainerList,
                 readTaskFinishedSignal);
@@ -548,11 +558,7 @@ public final class ChannelImpl implements Channel {
 
     @Override
     public ReadRecordContainer getReadContainer() {
-        return new ChannelRecordContainerImpl(this);
-    }
-
-    public boolean isLoggingEvent() {
-        return config.isLoggingEvent() && config.isListening() && config.getLoggingInterval() == -1;
+        return new ReadRecordContainerImpl(this);
     }
 
 }

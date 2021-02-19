@@ -18,13 +18,55 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.openmuc.framework.config;
 
 public interface DeviceInfo {
 
-    public String getId();
+    public static class StaticInfo implements DeviceInfo {
 
-    public String getDescription();
+        private final String addressSyntax;
+        private final String settingsSyntax;
+
+        private final String scanSettingsSyntax;
+
+        private final ChannelInfo channel;
+
+        public StaticInfo(String addressSyntax, String settingsSyntax, String scanSettingsSyntax,
+                ChannelInfo channel) {
+            this.channel = channel;
+            this.addressSyntax = addressSyntax;
+            this.settingsSyntax = settingsSyntax;
+            this.scanSettingsSyntax = scanSettingsSyntax;
+        }
+
+        @Override
+        public String getAddressSyntax() {
+            return addressSyntax;
+        }
+
+        @Override
+        public String getSettingsSyntax() {
+            return settingsSyntax;
+        }
+
+        @Override
+        public String getScanSettingsSyntax() {
+            return scanSettingsSyntax;
+        }
+
+        @Override
+        public ChannelInfo getChannel() {
+            return channel;
+        }
+
+    }
+
+    public String getAddressSyntax();
+
+    public String getSettingsSyntax();
+
+    public String getScanSettingsSyntax();
+
+    public ChannelInfo getChannel();
 
 }

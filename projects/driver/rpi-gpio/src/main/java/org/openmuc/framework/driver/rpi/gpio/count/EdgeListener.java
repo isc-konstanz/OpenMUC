@@ -27,7 +27,7 @@ import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
+import org.openmuc.framework.driver.rpi.gpio.GpioChannel;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ public class EdgeListener implements GpioPinListenerDigital {
         else edge = PinEdge.RISING;
         
         this.counter = 0;
-    	logger.debug("Registered edge listener for {}", pin.getName());
+        logger.debug("Registered edge listener for {}", pin.getName());
     }
 
     public void setRecordListener(List<GpioChannel> channels, RecordsReceivedListener listener) {
@@ -99,11 +99,11 @@ public class EdgeListener implements GpioPinListenerDigital {
                                 value = new DoubleValue(counter/channel.getImpulses());
                             }
                             if (value != null) {
-                            	logger.debug("Registered {}. edge for {}: {}", counter, event.getPin().getName(), value);
-                            	channel.setRecord(new Record(value, samplingTime, Flag.VALID));
+                                logger.debug("Registered {}. edge for {}: {}", counter, event.getPin().getName(), value);
+                                channel.setRecord(new Record(value, samplingTime, Flag.VALID));
                             }
                             else {
-                            	channel.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
+                                channel.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
                             }
                             containers.add(channel);
                         }

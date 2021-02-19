@@ -28,24 +28,22 @@ import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 
 public abstract class DeviceScanner extends Configurable {
 
+    DeviceContext context;
+
+    public DeviceContext getContext() {
+    	return context;
+    }
+
     protected DeviceScanner() {
     }
 
-    protected final void doConfigure(String settings) throws ArgumentSyntaxException {
-        configureSettings(settings);
-        onConfigure();
+    final void doCreate(DeviceContext context) throws ArgumentSyntaxException {
+    	this.context = context;
+    	this.onCreate(context);
+        this.onCreate();
     }
 
-    protected void onConfigure() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    final void doCreate(DriverContext context) throws ArgumentSyntaxException {
-        onCreate(context);
-        onCreate();
-    }
-
-    protected void onCreate(DriverContext context) throws ArgumentSyntaxException {
+    protected void onCreate(DeviceContext context) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 
@@ -53,9 +51,23 @@ public abstract class DeviceScanner extends Configurable {
         // Placeholder for the optional implementation
     }
 
-    public abstract void onScan(DriverDeviceScanListener listener) 
+    final void doConfigure(String settings) throws ArgumentSyntaxException {
+    	this.configureSettings(settings);
+        this.onConfigure();
+    }
+
+    protected void onConfigure() throws ArgumentSyntaxException {
+        // Placeholder for the optional implementation
+    }
+
+    final void doScan(DriverDeviceScanListener listener) 
+            throws ArgumentSyntaxException, ScanException, ScanInterruptedException {
+        onScan(listener);
+    }
+
+    protected abstract void onScan(DriverDeviceScanListener listener) 
             throws ArgumentSyntaxException, ScanException, ScanInterruptedException;
 
-    public abstract void onScanInterrupt();
+    protected abstract void onScanInterrupt() throws UnsupportedOperationException;
 
 }

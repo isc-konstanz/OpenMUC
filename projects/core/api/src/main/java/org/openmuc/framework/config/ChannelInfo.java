@@ -18,29 +18,45 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.openmuc.framework.config;
 
-import org.openmuc.framework.data.ValueType;
-
-/**
- * The <code>ChannelInfo</code> class is used to access a single data field of a communication device. 
- * A channel info instance can be used to get configuration information about this channel such as its unit.
- */
 public interface ChannelInfo {
 
-    String getId();
+    public static class StaticInfo implements ChannelInfo {
+    
+        private String addressSyntax;
+        private String settingsSyntax;
 
-    String getDescription();
+        private String scanSettingsSyntax;
 
-    String getUnit();
+        public StaticInfo(String addressSyntax) {
+            this.addressSyntax = addressSyntax;
+        }
 
-    ValueType getValueType();
+        public StaticInfo(String addressSyntax, String settingsSyntax, String scanSettingsSyntax) {
+            this.addressSyntax = addressSyntax;
+            this.settingsSyntax = settingsSyntax;
+            this.scanSettingsSyntax = scanSettingsSyntax;
+        }
 
-    Integer getValueTypeLength();
+        public String getAddressSyntax() {
+            return addressSyntax;
+        }
 
-    Double getValueOffset();
+        public String getSettingsSyntax() {
+            return settingsSyntax;
+        }
 
-    Double getScalingFactor();
+        public String getScanSettingsSyntax() {
+            return scanSettingsSyntax;
+        }
+
+    }
+
+    public String getAddressSyntax();
+
+    public String getSettingsSyntax();
+
+    public String getScanSettingsSyntax();
 
 }

@@ -44,12 +44,12 @@ import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.lib.json.rest.objects.RestChannel;
 import org.openmuc.framework.lib.json.rest.objects.RestChannelConfig;
-import org.openmuc.framework.lib.json.rest.objects.RestChannelInfo;
+import org.openmuc.framework.lib.json.rest.objects.RestChannelOptions;
 import org.openmuc.framework.lib.json.rest.objects.RestChannelMapper;
 import org.openmuc.framework.lib.json.rest.objects.RestChannelWrapper;
 import org.openmuc.framework.lib.json.rest.objects.RestDevice;
 import org.openmuc.framework.lib.json.rest.objects.RestDeviceConfig;
-import org.openmuc.framework.lib.json.rest.objects.RestDeviceInfo;
+import org.openmuc.framework.lib.json.rest.objects.RestDeviceOptions;
 import org.openmuc.framework.lib.json.rest.objects.RestDeviceMapper;
 import org.openmuc.framework.lib.json.rest.objects.RestDeviceWrapper;
 import org.openmuc.framework.lib.json.rest.objects.RestDriverConfig;
@@ -202,17 +202,17 @@ public class ToJson {
 
         JsonArray jsa = new JsonArray();
         for (RestChannelWrapper channel : channels) {
-        	JsonObject jso = new JsonObject();
-        	addChannel(channel, jso);
-        	
-        	jsa.add(jso);
+            JsonObject jso = new JsonObject();
+            addChannel(channel, jso);
+            
+            jsa.add(jso);
         }
         jsonObject.add(Const.CHANNELS, jsa);
     }
 
     public void addChannel(RestChannelWrapper channel) {
 
-    	addChannel(channel, jsonObject);
+        addChannel(channel, jsonObject);
     }
 
     private void addChannel(RestChannelWrapper channel, JsonObject jso) {
@@ -374,18 +374,18 @@ public class ToJson {
 
     public void addChannelInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
-        RestChannelInfo restChannelInfo = RestChannelInfo.getRestChannelInfo(driverInfo);
+        RestChannelOptions restChannelInfo = RestChannelOptions.getRestChannelInfo(driverInfo);
         restChannelInfo.setDescription(driverInfo.getDescription());
         
-        jsonObject.add(Const.INFOS, gson.toJsonTree(restChannelInfo, RestChannelInfo.class).getAsJsonObject());
+        jsonObject.add(Const.INFOS, gson.toJsonTree(restChannelInfo, RestChannelOptions.class).getAsJsonObject());
     }
 
     public void addDeviceList(List<RestDeviceWrapper> devices) {
 
         JsonArray jsa = new JsonArray();
         for (RestDeviceWrapper device : devices) {
-        	JsonObject jso = new JsonObject();
-        	addDevice(device, jso);
+            JsonObject jso = new JsonObject();
+            addDevice(device, jso);
             
             jsa.add(jso);
         }
@@ -394,7 +394,7 @@ public class ToJson {
 
     public void addDevice(RestDeviceWrapper device) {
 
-    	addDevice(device, jsonObject);
+        addDevice(device, jsonObject);
     }
 
     private void addDevice(RestDeviceWrapper device, JsonObject jso) {
@@ -470,18 +470,18 @@ public class ToJson {
 
     public void addDeviceInfo(DriverInfo driverInfo) throws ParseException, IOException {
 
-        RestDeviceInfo restDeviceInfo = RestDeviceInfo.getRestDeviceInfo(driverInfo);
+        RestDeviceOptions restDeviceInfo = RestDeviceOptions.getRestDeviceInfo(driverInfo);
         restDeviceInfo.setDescription(driverInfo.getDescription());
         
-        jsonObject.add(Const.INFOS, gson.toJsonTree(restDeviceInfo, RestDeviceInfo.class).getAsJsonObject());
+        jsonObject.add(Const.INFOS, gson.toJsonTree(restDeviceInfo, RestDeviceOptions.class).getAsJsonObject());
     }
 
     public void addDriverList(List<RestDriverWrapper> drivers) {
 
         JsonArray jsa = new JsonArray();
         for (RestDriverWrapper driver : drivers) {
-        	JsonObject jso = new JsonObject();
-        	addDriver(driver, jso);
+            JsonObject jso = new JsonObject();
+            addDriver(driver, jso);
             
             jsa.add(jso);
         }
@@ -490,7 +490,7 @@ public class ToJson {
 
     public void addDriver(RestDriverWrapper driver) {
 
-    	addDriver(driver, jsonObject);
+        addDriver(driver, jsonObject);
     }
 
     private void addDriver(RestDriverWrapper driver, JsonObject jso) {

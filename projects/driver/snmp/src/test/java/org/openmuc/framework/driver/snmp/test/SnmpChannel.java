@@ -92,11 +92,11 @@ public class SnmpChannel implements Channel {
         return 0;
     }
 
-	@Override
-	public double getValueOffset() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    @Override
+    public double getValueOffset() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
     @Override
     public double getScalingFactor() {
@@ -114,6 +114,12 @@ public class SnmpChannel implements Channel {
         return samplingTimeOffset;
     }
 
+	@Override
+	public boolean isListening() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
     @Override
     public int getLoggingInterval() {
         // TODO Auto-generated method stub
@@ -126,10 +132,16 @@ public class SnmpChannel implements Channel {
         return 0;
     }
 
+    @Override
+    public String getLoggingSettings() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 	@Override
-	public String getLoggingSettings() {
+	public boolean isLoggingEvent() {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
     @Override

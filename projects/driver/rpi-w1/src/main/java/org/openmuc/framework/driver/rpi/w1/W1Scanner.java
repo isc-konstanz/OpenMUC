@@ -26,10 +26,8 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.driver.DeviceScanner;
-import org.openmuc.framework.driver.rpi.w1.configs.W1Configs;
-import org.openmuc.framework.driver.rpi.w1.configs.W1Type;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +50,7 @@ public class W1Scanner extends DeviceScanner {
 
     private volatile boolean interrupt = false;
 
-    public W1Scanner(List<W1Device> devices, List<String> connected, String settings) throws ArgumentSyntaxException {
+    public W1Scanner(List<W1Device> devices, List<String> connected) {
         this.devices = devices;
         this.connected = connected;
     }
@@ -69,7 +67,7 @@ public class W1Scanner extends DeviceScanner {
             logger.debug("Scan discovered {} 1-Wire devices: {}", size, devices.toString());
             
             int counter = 1;
-            for (W1Device device : devices) {
+            for (com.pi4j.io.w1.W1Device device : devices) {
                 if (interrupt) {
                     break;
                 }
@@ -79,10 +77,10 @@ public class W1Scanner extends DeviceScanner {
                     String name = device.getClass().getSimpleName();
                     W1Type type = W1Type.valueOf(device);
                     
-                    String scanSettings = W1Configs.TYPE + ":" + type.name();
+                    String scanSettings = "type:" + type.name();
                     
                     listener.deviceFound(new DeviceScanInfo(name.toLowerCase()+"_"+id, 
-                    		id, scanSettings, "1-Wire "+ type.getName() +": "+ name));
+                            id, scanSettings, "1-Wire "+ type.getName() +": "+ name));
                 }
                 
                 listener.scanProgressUpdate((int) Math.round(counter/(double) size*100));

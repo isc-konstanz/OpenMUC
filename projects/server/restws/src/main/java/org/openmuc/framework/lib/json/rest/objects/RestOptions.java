@@ -23,7 +23,7 @@ package org.openmuc.framework.lib.json.rest.objects;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openmuc.framework.config.Options;
+import org.openmuc.framework.config.option.Options;
 import org.openmuc.framework.data.ValueType;
 
 public class RestOptions {
@@ -44,10 +44,10 @@ public class RestOptions {
     }
 
     protected void addOption(RestOption option) {
-    	if (options == null) {
-    		options = new LinkedList<RestOption>();
-    	}
-    	options.add(option);
+        if (options == null) {
+            options = new LinkedList<RestOption>();
+        }
+        options.add(option);
     }
 
     public RestOptionSyntax getSyntax() {

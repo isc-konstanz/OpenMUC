@@ -23,10 +23,8 @@ package org.openmuc.framework.driver.opcua;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.address.AddressSyntax;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.config.settings.SettingsSyntax;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -36,11 +34,10 @@ import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
-import org.openmuc.framework.driver.Channel;
+import org.openmuc.framework.data.Value;
+import org.openmuc.framework.driver.ChannelContainer;
 
-@AddressSyntax(separator = ";")
-@SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class UaChannel extends Channel {
+public class UaChannel extends ChannelContainer {
 
     @Address(id = "id",
              name = "Identifier",
@@ -59,7 +56,7 @@ public class UaChannel extends Channel {
     private NodeId nodeId;
 
     public NodeId getNodeId() {
-    	return nodeId;
+        return nodeId;
     }
 
     public UaChannel(int namespaceDefault) {
@@ -72,9 +69,9 @@ public class UaChannel extends Channel {
     }
 
     public Record decode(DataValue data) {
-		long timestamp = data.getServerTime().getJavaTime();
-		Object value = data.getValue().getValue();
-        switch (getValueType()) {
+        long timestamp = data.getServerTime().getJavaTime();
+        Object value = data.getValue().getValue();
+        switch (getChannel().getValueType()) {
         case BOOLEAN:
             return new Record(new BooleanValue((Boolean) value), timestamp);
         case BYTE:
@@ -95,23 +92,24 @@ public class UaChannel extends Channel {
     }
 
     public DataValue encode() {
-        switch (getValueType()) {
+        Value value = getRecord().getValue();
+        switch (getChannel().getValueType()) {
         case BOOLEAN:
-        	return new DataValue(new Variant(getValue().asBoolean()));
+            return new DataValue(new Variant(value.asBoolean()));
         case BYTE:
-        	return new DataValue(new Variant(getValue().asByte()));
+            return new DataValue(new Variant(value.asByte()));
         case SHORT:
-        	return new DataValue(new Variant(getValue().asShort()));
+            return new DataValue(new Variant(value.asShort()));
         case INTEGER:
-        	return new DataValue(new Variant(getValue().asInt()));
+            return new DataValue(new Variant(value.asInt()));
         case LONG:
-        	return new DataValue(new Variant(getValue().asLong()));
+            return new DataValue(new Variant(value.asLong()));
         case FLOAT:
-        	return new DataValue(new Variant(getValue().asFloat()));
+            return new DataValue(new Variant(value.asFloat()));
         case DOUBLE:
-        	return new DataValue(new Variant(getValue().asDouble()));
+            return new DataValue(new Variant(value.asDouble()));
         default:
-        	return new DataValue(new Variant(getValue().asString()));
+            return new DataValue(new Variant(value.asString()));
         }
     }
 

@@ -20,124 +20,109 @@
  */
 package org.openmuc.framework.driver;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.data.Record;
-import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.dataaccess.ChannelState;
-import org.openmuc.framework.dataaccess.DeviceState;
+import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.config.option.ChannelOptions;
+import org.openmuc.framework.config.option.Options;
+import org.openmuc.framework.driver.spi.ChannelTaskContainer;
 
-public abstract class ChannelContext extends Configurable {
+public abstract class ChannelContext extends Configurable implements ChannelOptions, ChannelFactory, ChannelScannerFactory {
 
-    Channel channel;
+    Class<? extends ChannelContainer> channelClass;
+
+    Class<? extends ChannelScanner> scannerClass;
 
     DeviceContext context;
 
-    <C extends DeviceContext> void doCreate(C context, Channel channel) throws ArgumentSyntaxException {
-        this.channel = channel;
-        this.context = context;
-        this.onCreate(context);
-        this.onCreate();
+    ChannelContext() {
+        bindContext(getClass());
     }
 
-    protected <C extends DeviceContext> void onCreate(C context) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    ChannelContext(Class<? extends ChannelContext> context) {
+        bindContext(context);
     }
 
-    protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    ChannelContext bindContext(Class<? extends ChannelContext> context) {
+        ChannelFactory.Factory factory = context.getAnnotation(ChannelFactory.Factory.class);
+        if (factory != null) {
+            scannerClass = factory.scanner();
+            channelClass = factory.channel();
+        }
+        return this;
     }
 
-    protected void onDestroy() {
-        // Placeholder for the optional implementation
-    }
-
-    public final DeviceContext getDevice() {
+    public final DeviceContext getContext() {
         return context;
     }
 
-    public final String getId() {
-        return channel.getId();
+    @Override
+    public final Options getAddressOptions() {
+        Options channelAddress = null;
+        if (channelClass != null) {
+            channelAddress = Options.parseAddress(channelClass);
+        }
+        return channelAddress;
     }
-
-    public final String getDescription() {
-        return channel.getDescription();
-    }
-
-    public final String getUnit() {
-        return channel.getUnit();
-    }
-
-    public final ValueType getValueType() {
-        return channel.getValueType();
-    }
-
-    public final int getValueTypeLength() {
-        return channel.getValueTypeLength();
-    }
-
-    public final double getScalingFactor() {
-        return channel.getScalingFactor();
-    }
-
-    public final int getSamplingInterval() {
-        return channel.getSamplingInterval();
-    }
-
-    public final int getSamplingTimeOffset() {
-        return channel.getSamplingTimeOffset();
-    }
-
-    public final int getLoggingInterval() {
-        return channel.getLoggingInterval();
-    }
-
-    public final int getLoggingTimeOffset() {
-        return channel.getLoggingTimeOffset();
-    }
-
-    public final String getLoggingSettings() {
-        return channel.getLoggingSettings();
-    }
-
-    public final String getDriverId() {
-        return channel.getDriverId();
-    }
-
-    public final String getDeviceId() {
-        return channel.getDeviceId();
-    }
-
-    public final String getDeviceDescription() {
-        return channel.getDeviceDescription();
-    }
-
-    public final String getDeviceAddress() {
-        return channel.getDeviceAddress();
-    }
-
-    public final String getDeviceSettings() {
-        return channel.getDeviceSettings();
-    }
-
-    public final DeviceState getDeviceState() {
-        return channel.getDeviceState();
-    }
-
-    public final ChannelState getState() {
-        return channel.getChannelState();
-    }
-
-    public final boolean isConnected() {
-        return channel.isConnected();
-    }
-
-    public abstract Record getRecord();
 
     @Override
-    public String toString() {
-        return getId()+" ("+getValueType().toString()+"): "+getRecord().toString();
+    public final Options getSettingsOptions() {
+        Options channelSettings = null;
+        if (channelClass != null) {
+            channelSettings = Options.parseSettings(channelClass);
+        }
+        return channelSettings;
+    }
+
+    @Override
+    public final Options getScanSettingsOptions() {
+        Options scanSettings = null;
+        if (scannerClass != null && !scannerClass.equals(ChannelScanner.class)) {
+            scanSettings = Options.parseSettings(scannerClass);
+        }
+        return scanSettings;
+    }
+
+    final void bindChannel(Class<? extends ChannelContainer> channelClass) {
+        this.channelClass = channelClass;
+    }
+
+    final ChannelContainer newChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
+        return this.newChannel(container.getChannel().getAddress(), 
+                               container.getChannel().getSettings());
+    }
+
+    public ChannelContainer newChannel(String address, String settings) throws ArgumentSyntaxException {
+        return this.newChannel(Configurations.parseAddress(address, channelClass),
+                              Configurations.parseSettings(settings, channelClass));
+    }
+
+    @Override
+    public ChannelContainer newChannel(Address address, Settings settings) throws ArgumentSyntaxException {
+        return this.newChannel();
+    }
+
+    protected ChannelContainer newChannel() {
+        return DriverContext.newInstance(channelClass);
+    }
+
+    final void bindScanner(Class<? extends ChannelScanner> scannerClass) {
+        this.scannerClass = scannerClass;
+    }
+
+    public ChannelScanner newScanner(String settings) throws ArgumentSyntaxException {
+        return this.newScanner(Configurations.parseSettings(settings, scannerClass));
+    }
+
+    @Override
+    public ChannelScanner newScanner(Settings settings) throws ArgumentSyntaxException {
+        return this.newScanner();
+    }
+
+    protected ChannelScanner newScanner() {
+        return DriverContext.newInstance(scannerClass);
     }
 
 }

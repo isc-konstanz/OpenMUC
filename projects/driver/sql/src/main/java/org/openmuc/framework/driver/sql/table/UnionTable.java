@@ -56,7 +56,7 @@ public class UnionTable extends SqlTable {
         StringBuilder columns = new StringBuilder();
         for (SqlChannel channel : channels) {
             if (channel.getKey() != null && !channel.getKey().isEmpty()) {
-                logger.warn("Unable to unite of unnormalized tables for channel: {}", channel.getId());
+                logger.warn("Unable to unite of unnormalized tables for channel: {}", channel.getChannel().getId());
                 channel.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID));
                 continue;
             }

@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
@@ -48,7 +48,7 @@ public class Channel extends ChannelContext {
     Record record = new Record(Flag.DATA_LOGGING_NOT_ACTIVE);
 
     protected void doConfigure(LogChannel configs) throws ArgumentSyntaxException {
-    	this.configs = configs;
+        this.configs = configs;
         doConfigure(configs.getLoggingSettings());
         onConfigure();
     }
@@ -172,7 +172,7 @@ public class Channel extends ChannelContext {
     }
 
     public boolean equals(String settings) {
-    	return this.settings.equals(settings);
+        return this.settings.equals(settings);
     }
 
 }

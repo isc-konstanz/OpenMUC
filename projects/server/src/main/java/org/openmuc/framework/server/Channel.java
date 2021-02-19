@@ -48,7 +48,7 @@ public class Channel extends ChannelContext {
     }
 
     public boolean equals(String settings) {
-    	return this.settings.equals(settings);
+        return this.settings.equals(settings);
     }
 
 }

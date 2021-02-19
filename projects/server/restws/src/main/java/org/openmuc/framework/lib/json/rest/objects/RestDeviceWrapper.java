@@ -46,7 +46,7 @@ public class RestDeviceWrapper {
     }
 
     public String getId() {
-    	return config.getId();
+        return config.getId();
     }
 
     public RestDeviceConfig getConfig() {

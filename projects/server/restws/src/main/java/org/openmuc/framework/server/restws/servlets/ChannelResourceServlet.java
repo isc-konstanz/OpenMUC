@@ -609,7 +609,7 @@ public class ChannelResourceServlet extends GenericServlet {
         
         if (channel == null) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, channelId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, channelId);
         }
         return channel;
     }
@@ -618,7 +618,7 @@ public class ChannelResourceServlet extends GenericServlet {
         ChannelConfig channelConfig = rootConfig.getChannel(channelId);
         if (channelConfig == null) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, channelId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, channelId);
         }
         return channelConfig;
     }

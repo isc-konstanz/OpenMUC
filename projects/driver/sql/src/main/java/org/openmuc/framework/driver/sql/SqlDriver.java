@@ -20,14 +20,15 @@
  */
 package org.openmuc.framework.driver.sql;
 
+import org.openmuc.framework.driver.DeviceFactory.Factory;
 import org.openmuc.framework.driver.Driver;
 import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
-import org.openmuc.framework.driver.sql.table.ColumnScanner;
 import org.osgi.service.component.annotations.Component;
 
 @Component(service = DriverService.class)
-public class SqlDriver extends Driver<SqlClient> {
+@Factory(device = SqlClient.class)
+public class SqlDriver extends Driver {
 
     private static final String ID = "sql";
     private static final String NAME = "SQL";
@@ -52,8 +53,7 @@ public class SqlDriver extends Driver<SqlClient> {
     @Override
     protected void onCreate(DriverContext context) {
         context.setName(NAME)
-               .setDescription(DESCRIPTION)
-               .setChannelScanner(ColumnScanner.class);
+               .setDescription(DESCRIPTION);
     }
 
 }

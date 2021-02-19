@@ -18,28 +18,23 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.w1;
 
-import java.util.List;
+package org.openmuc.framework.driver.spi;
 
-import org.openmuc.framework.driver.Device;
-import org.openmuc.framework.driver.rpi.w1.configs.W1Channel;
-import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.dataaccess.ChannelContainer;
 
-public abstract class W1Connection extends Device<W1Channel> {
+public interface ChannelTaskContainer extends ChannelContainer {
 
-    private final String id;
-
-    public W1Connection(String id) {
-        this.id = id;
+    default String getChannelAddress() {
+    	return getChannel().getAddress();
     }
 
-    public String getId() {
-    	return id;
+	default String getChannelSettings() {
+    	return getChannel().getSettings();
     }
 
-    @Override
-    public abstract Object onRead(List<W1Channel> channels, Object containerListHandle, String samplingGroup) 
-    		throws ConnectionException;
+    Object getChannelHandle();
+
+    void setChannelHandle(Object handle);
 
 }

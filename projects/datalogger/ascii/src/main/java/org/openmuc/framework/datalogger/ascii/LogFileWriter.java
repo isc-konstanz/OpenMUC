@@ -35,6 +35,7 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.datalogger.ascii.exceptions.WrongCharacterException;
 import org.openmuc.framework.datalogger.ascii.exceptions.WrongScalingException;
 import org.openmuc.framework.datalogger.ascii.utils.Const;
@@ -139,6 +140,7 @@ public class LogFileWriter {
 
             Record record = logRecordContainer.get(i).getRecord();
             String channelID = logRecordContainer.get(i).getChannelId();
+            Channel channel = logRecordContainer.get(i).getChannel();
             LogChannel logChannel = logChannelList.get(channelID);
 
             sbValue.setLength(0);
@@ -150,7 +152,7 @@ public class LogFileWriter {
                 if (isError32) {
                     recordBackup = logRecordContainer.get(i).getRecord();
                     logRecordContainer.set(i,
-                            new LogRecordContainerAscii(channelID, new Record(Flag.DATA_LOGGING_NOT_ACTIVE)));
+                            new LogRecordContainerAscii(channel, new Record(Flag.DATA_LOGGING_NOT_ACTIVE)));
                 }
                 record = logRecordContainer.get(i).getRecord();
 
@@ -236,7 +238,7 @@ public class LogFileWriter {
                 }
 
                 if (isError32) {
-                    logRecordContainer.set(i, new LogRecordContainerAscii(channelID, recordBackup));
+                    logRecordContainer.set(i, new LogRecordContainerAscii(channel, recordBackup));
                 }
             }
             else {

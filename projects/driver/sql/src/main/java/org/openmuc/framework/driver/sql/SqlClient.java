@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.address.AddressSyntax;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.config.settings.SettingsSyntax;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.AddressSyntax;
+import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.annotation.SettingsSyntax;
 import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.driver.ChannelFactory.Factory;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.sql.table.ColumnScanner;
 import org.openmuc.framework.driver.sql.table.TimestampTable;
@@ -51,6 +51,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
+@Factory(channel = SqlChannel.class, scanner = ColumnScanner.class)
 public class SqlClient extends Device<SqlChannel> {
     private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);
 
@@ -257,7 +258,7 @@ public class SqlClient extends Device<SqlChannel> {
     }
 
     @Override
-    protected ColumnScanner onCreateScanner(String settings) throws ScanException, ConnectionException {
+    protected ColumnScanner newScanner() {
         return new ColumnScanner(source, type + "://" + host + ":" + port + "/" + database);
     }
 
@@ -268,7 +269,7 @@ public class SqlClient extends Device<SqlChannel> {
     }
 
     @Override
-    public Object onRead(List<SqlChannel> channels, Object handle, String samplingGroup) throws  ConnectionException {
+    public void onRead(List<SqlChannel> channels, String samplingGroup) throws  ConnectionException {
         try (Connection connection = source.getConnection()) {
             if (union) {
                 readTables();
@@ -280,7 +281,6 @@ public class SqlClient extends Device<SqlChannel> {
         } catch (SQLException e) {
             throw new ConnectionException(e);
         }
-        return null;
     }
 
     private void read(List<SqlChannel> channels, Connection connection) throws SQLException {
@@ -327,7 +327,7 @@ public class SqlClient extends Device<SqlChannel> {
     }
 
     @Override
-    public Object onWrite(List<SqlChannel> channels, Object containerListHandle) throws ConnectionException {
+    public void onWrite(List<SqlChannel> channels) throws ConnectionException {
         try (Connection connection = source.getConnection()) {
             try (Transaction transaction = new Transaction(connection)) {
                 for (SqlTable table : groupChannels(channels)) {
@@ -337,7 +337,6 @@ public class SqlClient extends Device<SqlChannel> {
         } catch (Exception e) {
             throw new ConnectionException(e);
         }
-        return null;
     }
 
 }

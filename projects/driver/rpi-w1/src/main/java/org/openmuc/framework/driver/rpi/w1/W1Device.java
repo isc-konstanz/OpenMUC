@@ -18,28 +18,31 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.w1.configs;
+package org.openmuc.framework.driver.rpi.w1;
 
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.driver.DeviceConfigs;
+import java.util.List;
 
-public class W1Configs extends DeviceConfigs<W1Channel> {
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.annotation.SettingsSyntax;
+import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.driver.spi.ConnectionException;
 
-    public static final String TYPE = "type";
+@SettingsSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
+public abstract class W1Device extends Device<W1Channel> {
 
     @Address(id = "id",
              name = "Identifier",
              description = "The device ID, retrievable through scanning."
     )
-    private String id;
+    protected String id;
 
-    @Setting(id = TYPE,
+    @Setting(id = "type",
              name = "Type",
              description = "The type of the 1-Wire device, e.g. a temperature or humidity sensor.",
              valueSelection = "SENSOR_TEMPERATURE:Temperature sensor"
     )
-    private W1Type type;
+    protected W1Type type;
 
     @Setting(id = "maximum",
              name = "Maximum sensor value",
@@ -47,7 +50,7 @@ public class W1Configs extends DeviceConfigs<W1Channel> {
                            "Used e.g. in error detection of temperature sensors.",
              mandatory = false
     )
-    private Double maximum = Double.NaN;
+    protected Double maximum = Double.NaN;
 
     public String getId() {
         return id.trim().replace("\n", "").replace("\r", "");
@@ -60,5 +63,9 @@ public class W1Configs extends DeviceConfigs<W1Channel> {
     public Double getMaximum() {
         return maximum;
     }
+
+    @Override
+    public abstract void onRead(List<W1Channel> channels, String samplingGroup) 
+            throws ConnectionException;
 
 }

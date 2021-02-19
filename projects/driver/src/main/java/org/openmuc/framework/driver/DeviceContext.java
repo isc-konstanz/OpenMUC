@@ -1,52 +1,110 @@
-/*
- * Copyright 2011-2020 Fraunhofer ISE
- *
- * This file is part of OpenMUC.
- * For more information visit http://www.openmuc.org
- *
- * OpenMUC is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenMUC is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 package org.openmuc.framework.driver;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurable;
+import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.config.option.DeviceOptions;
+import org.openmuc.framework.config.option.Options;
+import org.openmuc.framework.driver.spi.ConnectionException;
 
-public abstract class DeviceContext extends Configurable {
+public abstract class DeviceContext implements DeviceOptions, DeviceFactory, DeviceScannerFactory, DeviceConnection.Callbacks {
+
+    private Class<? extends DeviceConnection> deviceClass;
+
+    private Class<? extends DeviceScanner> scannerClass;
+
+    private class ChannelFactory extends ChannelContext {
+
+        ChannelFactory(Class<? extends ChannelContext> context) {
+            super(context);
+        }
+
+    }
+
+    // TODO: This could be replaced with a dynamic approach, depending on device options
+    ChannelContext channel;
 
     DriverContext context;
 
-    <C extends DriverContext> void doCreate(C context) throws ArgumentSyntaxException {
-        this.context = context;
-        this.onCreate(context);
-        this.onCreate();
+    DeviceContext() {
+        DeviceFactory.Factory factory = getClass().getAnnotation(DeviceFactory.Factory.class);
+        if (factory != null) {
+            scannerClass = factory.scanner();
+            deviceClass = factory.device();
+        }
+        this.channel = new ChannelFactory(deviceClass);
     }
 
-    protected <C extends DriverContext> void onCreate(C context) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    @Override
+    public final ChannelContext getChannel() {
+        return channel;
     }
 
-    protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onDestroy() {
-        // Placeholder for the optional implementation
-    }
-
-    public DriverContext getDriver() {
+    public final DriverContext getContext() {
         return context;
+    }
+
+    @Override
+    public final Options getAddressOptions() {
+        Options deviceAddress = null;
+        if (deviceClass != null) {
+            deviceAddress = Options.parseAddress(deviceClass);
+        }
+        return deviceAddress;
+    }
+
+    @Override
+    public final Options getSettingsOptions() {
+        Options deviceSettings = null;
+        if (deviceClass != null) {
+            deviceSettings = Options.parseSettings(deviceClass);
+        }
+        return deviceSettings;
+    }
+
+    @Override
+    public final Options getScanSettingsOptions() {
+        Options scanSettings = null;
+        if (scannerClass != null && !scannerClass.equals(DeviceScanner.class)) {
+            scanSettings = Options.parseSettings(scannerClass);
+        }
+        return scanSettings;
+    }
+
+    final void bindDevice(Class<? extends DeviceConnection> deviceClass) {
+        this.deviceClass = deviceClass;
+    }
+
+    public DeviceConnection newDevice(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
+        return this.newDevice(Configurations.parseAddress(address, deviceClass),
+                              Configurations.parseSettings(settings, deviceClass));
+    }
+
+    @Override
+    public DeviceConnection newDevice(Address address, Settings settings) throws ArgumentSyntaxException, ConnectionException {
+        return this.newDevice();
+    }
+
+    protected DeviceConnection newDevice() throws ConnectionException {
+        return DriverContext.newInstance(deviceClass);
+    }
+
+    final void bindScanner(Class<? extends DeviceScanner> scannerClass) {
+        this.scannerClass = scannerClass;
+    }
+
+    public DeviceScanner newScanner(String settings) throws ArgumentSyntaxException {
+        return this.newScanner(Configurations.parseSettings(settings, scannerClass));
+    }
+
+    @Override
+    public DeviceScanner newScanner(Settings settings) throws ArgumentSyntaxException {
+        return this.newScanner();
+    }
+
+    protected DeviceScanner newScanner() {
+        return DriverContext.newInstance(scannerClass);
     }
 
 }

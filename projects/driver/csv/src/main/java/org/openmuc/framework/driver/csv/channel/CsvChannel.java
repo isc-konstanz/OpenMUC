@@ -24,20 +24,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.address.Address;
+import org.openmuc.framework.config.annotation.Address;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.driver.Channel;
+import org.openmuc.framework.driver.ChannelContainer;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class CsvChannel extends Channel {
+public abstract class CsvChannel extends ChannelContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvChannel.class);
 
@@ -55,23 +54,22 @@ public abstract class CsvChannel extends Channel {
     /** remember index of last valid sampled value */
     protected int lastIndexRead = 0;
 
-    public CsvChannel(ChannelContainer channel, Map<String, List<String>> csv, boolean rewind) throws ArgumentSyntaxException {
-    	doConfigure(channel);
-    	if (!csv.containsKey(column)) {
-    		throw new ArgumentSyntaxException("Unknown column header specified: " + column);
-    	}
+    public CsvChannel(String column, Map<String, List<String>> csv, boolean rewind) throws ArgumentSyntaxException {
+        if (!csv.containsKey(column)) {
+            throw new ArgumentSyntaxException("Unknown column header specified: " + column);
+        }
         this.data = csv.get(column);
         this.maxIndex = data.size() - 1;
         this.rewind = rewind;
     }
 
     public String getColumnHeader() {
-    	return column;
+        return column;
     }
 
     @Override
     public Record onRead(long samplingTime) throws ConnectionException {
-		try {
+        try {
             double value = readValue(samplingTime);
             return new Record(new DoubleValue(value), samplingTime, Flag.VALID);
         

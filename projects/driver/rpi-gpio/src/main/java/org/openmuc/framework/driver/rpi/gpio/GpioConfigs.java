@@ -18,21 +18,22 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.rpi.gpio.configs;
+package org.openmuc.framework.driver.rpi.gpio;
 
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.address.AddressSyntax;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.driver.DeviceConfigs;
+import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.AddressSyntax;
+import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.annotation.SettingsSyntax;
+import org.openmuc.framework.driver.Device;
 
 import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 
-@AddressSyntax(separator = ",",
-               assignmentOperator = ":",
-               keyValuePairs = true)
-public class GpioConfigs extends DeviceConfigs<GpioChannel> {
+@AddressSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
+@SettingsSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
+public class GpioConfigs extends Device<GpioChannel> {
 
     public static final String PIN = "pin";
     public static final String MODE = "mode";
@@ -86,7 +87,7 @@ public class GpioConfigs extends DeviceConfigs<GpioChannel> {
     @Setting(id = "counter",
              name = "Edge counter",
              description = "Enable the counting of detected edges.<br><br>" + 
-             		       "<i>This setting is only applicable for input pins</i>",
+                            "<i>This setting is only applicable for input pins</i>",
              valueDefault = "false",
              mandatory = false
     )
@@ -101,6 +102,14 @@ public class GpioConfigs extends DeviceConfigs<GpioChannel> {
     )
     private int bounceTime = 60;
 
+    protected GpioConfigs() {
+    }
+
+    protected GpioConfigs(String address, String settings) throws ArgumentSyntaxException {
+    	this.configureAddress(address);
+    	this.configureSettings(settings);
+    }
+
     public int getPin() {
         return pin;
     }
@@ -110,16 +119,16 @@ public class GpioConfigs extends DeviceConfigs<GpioChannel> {
     }
 
     public PinState getDefaultState() {
-    	if (defaultState) {
+        if (defaultState) {
             return PinState.HIGH;
-    	}
+        }
         return PinState.LOW;
     }
 
     public PinState getShutdownState() {
-    	if (shutdownState) {
+        if (shutdownState) {
             return PinState.HIGH;
-    	}
+        }
         return PinState.LOW;
     }
 
@@ -132,11 +141,11 @@ public class GpioConfigs extends DeviceConfigs<GpioChannel> {
     }
 
     public boolean isCounter() {
-    	return counter;
+        return counter;
     }
 
     public int getBounceTime() {
-    	return bounceTime;
+        return bounceTime;
     }
 
 }

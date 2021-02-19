@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
-import org.openmuc.framework.config.Options;
+import org.openmuc.framework.config.option.Options;
 
 public class SettingsTest {
 

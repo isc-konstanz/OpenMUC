@@ -95,14 +95,14 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
                     ChannelHandler<C> handler;
                     if (channel.isAveraging()) {
                         handler = new ChannelHandlerAverage<C>(channel);
-                    	try {
+                        try {
                             channel.addListener((ChannelHandlerAverage<C>) handler);
                             ((ChannelHandlerAverage<C>) handler).setListening(true);
-                    		
-                		} catch (NullPointerException e) {
+                            
+                        } catch (NullPointerException e) {
                             logger.warn("Failed to start averaging listener channel: {}", id);
-                			// FIXME: Channel not instanced yet.
-                		}
+                            // FIXME: Channel not instanced yet.
+                        }
                     }
                     else if (channel.getLoggingIntervalMax() > channel.getLoggingInterval()) {
                         handler = new ChannelHandlerDynamic<C>(channel);

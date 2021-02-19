@@ -26,8 +26,7 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.config.settings.Setting;
-import org.openmuc.framework.config.settings.SettingsSyntax;
+import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.driver.DeviceScanner;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.slf4j.Logger;
@@ -36,7 +35,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Scanner to look for CSV files.
  */
-@SettingsSyntax(separator = ";", assignmentOperator = "=")
 public class CsvScanner extends DeviceScanner {
     private static final Logger logger = LoggerFactory.getLogger(CsvScanner.class);
 
@@ -58,17 +56,17 @@ public class CsvScanner extends DeviceScanner {
     }
 
     public CsvScanner(String settings) throws ArgumentSyntaxException {
-    	super.doConfigure(settings);
+        super.configureSettings(settings);
     }
 
-	@Override
+    @Override
     protected void onConfigure() throws ArgumentSyntaxException {
-		files = listFiles();
+        files = listFiles();
     }
 
-	@Override
-	public void onScan(DriverDeviceScanListener listener) 
-			throws ArgumentSyntaxException, ScanException, ScanInterruptedException {
+    @Override
+    protected void onScan(DriverDeviceScanListener listener) 
+            throws ArgumentSyntaxException, ScanException, ScanInterruptedException {
         logger.info("Scan for CSV files in directory: {}", path);
         
         interrupt = false;
@@ -102,8 +100,8 @@ public class CsvScanner extends DeviceScanner {
     }
 
     @Override
-    public void onScanInterrupt() throws UnsupportedOperationException {
-    	interrupt = true;
+    protected void onScanInterrupt() throws UnsupportedOperationException {
+        interrupt = true;
     }
 
     private File[] listFiles() throws ArgumentSyntaxException {

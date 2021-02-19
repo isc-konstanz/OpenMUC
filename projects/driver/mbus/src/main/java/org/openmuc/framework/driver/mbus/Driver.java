@@ -28,9 +28,9 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DriverInfo;
-import org.openmuc.framework.config.DriverInfoFactory;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.option.DriverOptionsFactory;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -50,7 +50,7 @@ public class Driver implements DriverService {
 
     private static final Logger logger = LoggerFactory.getLogger(Driver.class);
 
-    private static final DriverInfo info = DriverInfoFactory.readInfo(Driver.class);
+    private static final DriverInfo info = DriverOptionsFactory.readInfo(Driver.class);
 
     private final Map<String, ConnectionInterface> interfaces = new HashMap<>();
 

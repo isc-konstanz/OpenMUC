@@ -143,10 +143,10 @@ public class DriverConnectionTest {
                 return channel;
             }
 
-			@Override
-			public String getChannelSettings() {
-				return null;
-			}
+            @Override
+            public String getChannelSettings() {
+                return null;
+            }
 
             @Override
             public ChannelRecordContainer copy() {

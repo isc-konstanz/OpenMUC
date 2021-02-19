@@ -21,8 +21,8 @@
 package org.openmuc.framework.driver.rest;
 
 import org.apache.commons.codec.binary.Base64;
-import org.openmuc.framework.config.address.Address;
-import org.openmuc.framework.config.settings.Setting;
+import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.driver.Device;
 
 public abstract class RestConfigs extends Device<RestChannel> {
@@ -77,7 +77,7 @@ public abstract class RestConfigs extends Device<RestChannel> {
             mandatory = false)
     protected int timeout = 10000;
 
-    protected String address;
+    protected String url;
     protected String authorization;
 
     @Override
@@ -88,7 +88,7 @@ public abstract class RestConfigs extends Device<RestChannel> {
     	if (host.endsWith("/")) {
     		host = host.substring(0, host.length()-1);
     	}
-    	address = prefix + "://" + host + ":" + port + "/";
+    	url = prefix + "://" + host + ":" + port + "/";
     	
     	String authorization = username + ":" + password;
     	this.authorization = new String(Base64.encodeBase64(authorization.getBytes()));
@@ -126,8 +126,8 @@ public abstract class RestConfigs extends Device<RestChannel> {
 		return timeout;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getUrl() {
+		return url;
 	}
 
 	public String getAuthorization() {

@@ -123,19 +123,19 @@ public class ServletLib {
     }
 
     protected static String[] getPathInfoArray(String pathInfo) {
-    	String[] pathInfoArray;
+        String[] pathInfoArray;
         if (pathInfo.length() > 1) {
-        	pathInfoArray = pathInfo.replaceFirst("/", "").split("/");
-        	for (int i=0; i<pathInfoArray.length; i++) {
-        		try {
-					pathInfoArray[i] = URLDecoder.decode(pathInfoArray[i], "UTF-8");
-					
-				} catch (UnsupportedEncodingException e) {
-				}
-        	}
+            pathInfoArray = pathInfo.replaceFirst("/", "").split("/");
+            for (int i=0; i<pathInfoArray.length; i++) {
+                try {
+                    pathInfoArray[i] = URLDecoder.decode(pathInfoArray[i], "UTF-8");
+                    
+                } catch (UnsupportedEncodingException e) {
+                }
+            }
         }
         else {
-        	pathInfoArray = new String[] { "/" };
+            pathInfoArray = new String[] { "/" };
         }
         return pathInfoArray;
     }

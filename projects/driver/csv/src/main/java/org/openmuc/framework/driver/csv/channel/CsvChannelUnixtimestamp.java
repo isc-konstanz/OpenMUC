@@ -25,24 +25,23 @@ import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 
 public class CsvChannelUnixtimestamp extends CsvChannelTime {
 
     public static final String INDEX = "unixtimestamp";
 
-    public CsvChannelUnixtimestamp(ChannelContainer channel, Map<String, List<String>> csv, boolean rewind) 
-    		throws ArgumentSyntaxException {
-    	super(channel, csv, rewind);
+    public CsvChannelUnixtimestamp(String column, Map<String, List<String>> csv, boolean rewind) 
+            throws ArgumentSyntaxException {
+        super(column, csv, rewind);
     }
 
-    public CsvChannelUnixtimestamp(ChannelContainer channel, long[] index, Map<String, List<String>> csv, boolean rewind) 
-    		throws ArgumentSyntaxException {
-    	super(channel, index, csv, rewind);
+    public CsvChannelUnixtimestamp(String column, long[] index, Map<String, List<String>> csv, boolean rewind) 
+            throws ArgumentSyntaxException {
+        super(column, index, csv, rewind);
     }
 
-	@Override
-	protected long[] parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException {
+    @Override
+    protected long[] parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException {
         List<String> timestampsList = csv.get(INDEX);
         
         long[] timestamps = new long[timestampsList.size()];
@@ -50,7 +49,7 @@ public class CsvChannelUnixtimestamp extends CsvChannelTime {
             timestamps[i] = Long.parseLong(timestampsList.get(i));
         }
         return timestamps;
-	}
+    }
 
     @Override
     public double readValue(long samplingTime) throws CsvException {

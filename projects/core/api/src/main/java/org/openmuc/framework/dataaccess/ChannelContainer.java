@@ -19,20 +19,10 @@
  *
  */
 
-package org.openmuc.framework.driver.spi;
-
-import org.openmuc.framework.dataaccess.Channel;
+package org.openmuc.framework.dataaccess;
 
 public interface ChannelContainer {
 
     Channel getChannel();
-
-    String getChannelAddress();
-
-    String getChannelSettings();
-
-    Object getChannelHandle();
-
-    void setChannelHandle(Object handle);
 
 }
