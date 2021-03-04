@@ -23,15 +23,17 @@ package org.openmuc.framework.driver;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.driver.spi.ChannelTaskContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 
-public class ChannelContainer extends ChannelContainerWrapper {
+public abstract class DeviceChannel extends ChannelContainerWrapper {
 
     ChannelContext context;
 
-    protected ChannelContainer() {
+    protected DeviceChannel() {
     }
 
     final void doCreate(ChannelContext context) throws ArgumentSyntaxException {
@@ -57,7 +59,7 @@ public class ChannelContainer extends ChannelContainerWrapper {
             doConfigure(container.getChannel().getAddress(), container.getChannel().getSettings());
             onConfigure();
         }
-        setContainer(container);
+        setTaskContainer(container);
     }
 
     protected void doConfigure(String address, String settings) throws ArgumentSyntaxException {
@@ -103,22 +105,46 @@ public class ChannelContainer extends ChannelContainerWrapper {
         return context;
     }
 
-    @Override
-    public String toString() {
-        return getChannel().getId() + " (" + getChannel().getValueType().toString() + "); " + getRecord().toString();
+    private Channel getChannel() {
+    	return container.getChannel();
     }
 
-	@Override
-	public ChannelContainer copy() {
-		ChannelContainer channel = context.newChannel();
-		try {
-			channel.doCreate(context);
-			channel.doConfigure(container);
-			
-		} catch (ArgumentSyntaxException e) {
-			// Impossible to occur and may be ignored
-		}
-		return channel;
+	public String getId() {
+		return getChannel().getId();
 	}
+
+	public String getDescription() {
+		return getChannel().getDescription();
+	}
+
+	public String getUnit() {
+		return getChannel().getUnit();
+	}
+
+	public ValueType getValueType() {
+		return getChannel().getValueType();
+	}
+
+	public int getValueTypeLength() {
+		return getChannel().getValueTypeLength();
+	}
+
+    @Override
+    public String toString() {
+        return getId() + " (" + getValueType().toString() + "); " + getRecord().toString();
+    }
+
+//	@Override
+//	public Channel copy() {
+//		Channel channel = context.newChannel();
+//		try {
+//			channel.doCreate(context);
+//			channel.doConfigure(container);
+//			
+//		} catch (ArgumentSyntaxException e) {
+//			// Impossible to occur and may be ignored
+//		}
+//		return channel;
+//	}
 
 }

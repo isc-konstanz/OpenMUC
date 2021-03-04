@@ -27,7 +27,7 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.annotation.Address;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.driver.ChannelContainer;
+import org.openmuc.framework.driver.DeviceChannel;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.lib.json.Const;
 import org.openmuc.framework.lib.json.FromJson;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
-public class RestChannel extends ChannelContainer {
+public class RestChannel extends DeviceChannel {
     private static final Logger logger = LoggerFactory.getLogger(RestRemote.class);
 
     @Address(id = "id",
@@ -46,6 +46,8 @@ public class RestChannel extends ChannelContainer {
             description = "The ID of the remote OpenMUC channel")
     private String id;
     private String uri;
+
+    private Record record = new Record(Flag.NO_VALUE_RECEIVED_YET);
 
     @Override
     protected void onConfigure() throws ArgumentSyntaxException {
@@ -58,8 +60,6 @@ public class RestChannel extends ChannelContainer {
     }
 
     public boolean checkTimestamp(RestConnection connection) throws ConnectionException {
-        Record record = getChannel().getLatestRecord();
-        
         if (record.getTimestamp() == null || record.getFlag() != Flag.VALID
                 || record.getTimestamp() < readTimestamp(connection)) {
             
@@ -87,7 +87,7 @@ public class RestChannel extends ChannelContainer {
         FromJson json = new FromJson(jsonStr);
         logger.debug("Received json string: {}", jsonStr);
         
-        Record record = json.getRecord(getChannel().getValueType());
+        Record record = json.getRecord(getValueType());
         if (record != null) {
             setRecord(record);
         }
@@ -97,15 +97,15 @@ public class RestChannel extends ChannelContainer {
     }
 
     public void setRecord(RestRecord record) {
-        if (record != null) {
-            setRecord(FromJson.convertRecord(record, getChannel().getValueType()));
+        if (record == null) {
+            setRecord(this.record = FromJson.convertRecord(record, getValueType()));
         }
     }
 
     public void write(RestConnection connection) throws ConnectionException {
         Record record = getRecord();
         ToJson json = new ToJson();
-        json.addRecord(record, getChannel().getValueType());
+        json.addRecord(record, getValueType());
         
         Flag flag = connection.put(uri, json.toString());
         setFlag(flag);

@@ -26,11 +26,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.DeviceConnection;
-import org.openmuc.framework.driver.DeviceFactory.Factory;
 import org.openmuc.framework.driver.Driver;
-import org.openmuc.framework.driver.DriverContext;
+import org.openmuc.framework.driver.annotation.Factory;
 import org.openmuc.framework.driver.rpi.w1.device.TemperatureDevice;
+import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
@@ -40,13 +39,13 @@ import org.slf4j.LoggerFactory;
 import com.pi4j.io.w1.W1Master;
 
 @Component(service = DriverService.class)
-@Factory(device = W1Device.class, scanner = W1Scanner.class)
-public class W1Driver extends Driver {
+@Factory(scanner = W1Scanner.class)
+public class W1Driver extends Driver<W1Device> {
     private static final Logger logger = LoggerFactory.getLogger(W1Driver.class);
 
-    private static final String ID = "rpi-w1";
-    private static final String NAME = "1-Wire (Raspberry Pi)";
-    private static final String DESCRIPTION = 
+    public static final String ID = "rpi-w1";
+    public static final String NAME = "1-Wire (Raspberry Pi)";
+    public static final String DESCRIPTION = 
             "The 1-Wire Driver enables the access to 1-Wire devices, connected to the Raspberry Pi platform.";
 
     private final List<String> connected = Collections.synchronizedList(new ArrayList<String>());
@@ -59,9 +58,13 @@ public class W1Driver extends Driver {
     }
 
     @Override
-    protected void onCreate(DriverContext context) {
-        context.setName(NAME)
-                .setDescription(DESCRIPTION);
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
     }
 
     @Override
@@ -77,7 +80,7 @@ public class W1Driver extends Driver {
     }
 
     @Override
-    public DeviceConnection newDevice(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
+    public W1Device newDevice(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
         logger.trace("Connect 1-Wire device: {}", address);
         try {
             List<com.pi4j.io.w1.W1Device> devices = master.getDevices();
@@ -97,13 +100,13 @@ public class W1Driver extends Driver {
     }
 
     @Override
-    public void onConnect(DeviceConnection connection) {
+    public void onConnect(Connection connection) {
         String id = ((W1Device) connection).getId();
         connected.add(id);
     }
 
     @Override
-    public void onDisconnect(DeviceConnection connection) {
+    public void onDisconnect(Connection connection) {
         String id = ((W1Device) connection).getId();
         connected.remove(id);
     }

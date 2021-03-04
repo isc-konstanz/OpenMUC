@@ -106,8 +106,8 @@ public class GpioConfigs extends Device<GpioChannel> {
     }
 
     protected GpioConfigs(String address, String settings) throws ArgumentSyntaxException {
-    	this.configureAddress(address);
-    	this.configureSettings(settings);
+        this.configureAddress(address);
+        this.configureSettings(settings);
     }
 
     public int getPin() {

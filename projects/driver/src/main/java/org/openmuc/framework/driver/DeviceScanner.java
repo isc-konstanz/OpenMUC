@@ -21,12 +21,11 @@
 package org.openmuc.framework.driver;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 
-public abstract class DeviceScanner extends Configurable {
+public abstract class DeviceScanner extends Scanner {
 
     DeviceContext context;
 
@@ -48,15 +47,6 @@ public abstract class DeviceScanner extends Configurable {
     }
 
     protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    final void doConfigure(String settings) throws ArgumentSyntaxException {
-    	this.configureSettings(settings);
-        this.onConfigure();
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 

@@ -36,7 +36,7 @@ import org.openmuc.framework.config.annotation.AddressSyntax;
 import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.config.annotation.SettingsSyntax;
 import org.openmuc.framework.driver.Device;
-import org.openmuc.framework.driver.ChannelFactory.Factory;
+import org.openmuc.framework.driver.annotation.Factory;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.sql.table.ColumnScanner;
 import org.openmuc.framework.driver.sql.table.TimestampTable;
@@ -51,7 +51,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
-@Factory(channel = SqlChannel.class, scanner = ColumnScanner.class)
+@Factory(scanner = ColumnScanner.class)
 public class SqlClient extends Device<SqlChannel> {
     private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);
 

@@ -41,14 +41,14 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.ChannelContainer;
+import org.openmuc.framework.driver.DeviceChannel;
 import org.openmuc.framework.driver.ChannelContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class SqlChannel extends ChannelContainer {
+public class SqlChannel extends DeviceChannel {
     private static final Logger logger = LoggerFactory.getLogger(SqlChannel.class);
 
     @Address(id = "table",
@@ -88,7 +88,7 @@ public class SqlChannel extends ChannelContainer {
     @Override
     protected void onConfigure() {
         if (table == null) {
-            table = getChannel().getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
+            table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
         }
     }
 
@@ -119,16 +119,16 @@ public class SqlChannel extends ChannelContainer {
                 return new Record(value, time, Flag.VALID);
             
             } catch(NullPointerException  | IllegalArgumentException | ParseException e) {
-                logger.warn("Error decoding column {} ({}): {}", getDataColumn(), getChannel().getValueType(), valueStr);
+                logger.warn("Error decoding column {} ({}): {}", getDataColumn(), getValueType(), valueStr);
             }
         } catch (SQLException e) {
-            logger.warn("Error reading column {} ({}): {}", getDataColumn(), getChannel().getValueType(), e.getMessage());
+            logger.warn("Error reading column {} ({}): {}", getDataColumn(), getValueType(), e.getMessage());
         }
         return new Record(Flag.DRIVER_ERROR_DECODING_RESPONSE_FAILED);
     }
 
     public Value decode(String value) throws NullPointerException, IllegalArgumentException {
-        switch(getChannel().getValueType()) {
+        switch(getValueType()) {
         case DOUBLE:
             return new DoubleValue(Double.valueOf(value));
         case FLOAT:

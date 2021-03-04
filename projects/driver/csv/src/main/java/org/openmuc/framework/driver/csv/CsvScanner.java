@@ -42,9 +42,9 @@ public class CsvScanner extends DeviceScanner {
             + SamplingMode.LINE.toString();
 
     @Setting(id = "path",
-            name = "CSV files directory path",
-            description = "The systems path to the folder, containing the CSV files.<br><br>" + 
-                          "<b>Example:</b> /home/usr/bin/openmuc/csv/"
+             name = "CSV files directory path",
+             description = "The systems path to the folder, containing the CSV files.<br><br>" + 
+                           "<b>Example:</b> /home/usr/bin/openmuc/csv/"
     )
     private String path;
 
@@ -57,6 +57,7 @@ public class CsvScanner extends DeviceScanner {
 
     public CsvScanner(String settings) throws ArgumentSyntaxException {
         super.configureSettings(settings);
+        this.onConfigure();
     }
 
     @Override

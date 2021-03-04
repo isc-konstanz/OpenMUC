@@ -18,7 +18,6 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.openmuc.framework.driver;
 
 import java.text.MessageFormat;
@@ -34,7 +33,7 @@ import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Driver extends DeviceContext implements DriverActivator {
+public abstract class Driver<D extends Device<? extends DeviceChannel>> extends DeviceContext implements DriverActivator {
 
     private static final Logger logger = LoggerFactory.getLogger(Driver.class);
 
@@ -48,13 +47,24 @@ public abstract class Driver extends DeviceContext implements DriverActivator {
      */
     public abstract String getId();
 
+    /**
+     * Returns the name of the driver. The name should be meaningfull to decorate the driver (e.g. "M-Bus", "Modbus").
+     * 
+     * @return the unique name of the driver.
+     */
     public String getName() {
         // Placeholder for the optional implementation
         String id = getId();
         return id.substring(0, 1).toUpperCase() + 
-                id.substring(1, id.length());
+               id.substring(1, id.length());
     }
 
+    /**
+     * Returns the description of the driver. The description should provide a short summary of the functionality 
+     * and/or purpose of the driver.
+     * 
+     * @return the description of the driver.
+     */
     public String getDescription() {
         // Placeholder for the optional implementation
         return MessageFormat.format("Driver implementation for the {0} protocol", getName());
@@ -66,18 +76,18 @@ public abstract class Driver extends DeviceContext implements DriverActivator {
     }
 
     public Driver() {
-        super();
-        this.context = new DriverContext(this);
-        doCreate(context);
+    	super();
+        try {
+			this.context = new DriverContext(this);
+	        doCreate(context);
+	        
+		} catch (Exception e) {
+            logger.warn("Error instancing driver {}: {}", getContext().getId(), e.getMessage());
+		}
     }
 
-    void doCreate(DriverContext context) {
-        try {
-            onCreate(context);
-            
-        } catch (Exception e) {
-            logger.warn("Error instancing driver {}: {}", getId(), e.getMessage());
-        }
+    void doCreate(DriverContext context) throws Exception {
+        onCreate(context);
     }
 
     protected void onCreate(DriverContext context) throws Exception {
@@ -86,17 +96,17 @@ public abstract class Driver extends DeviceContext implements DriverActivator {
 
     @Override
     public final void activate(DataAccessService dataAccess) {
-        doActivate(dataAccess);
-    }
-
-    void doActivate(DataAccessService dataAccess) {
         try {
-            onActivate(dataAccess);
-            onActivate();
+            doActivate(dataAccess);
             
         } catch (Exception e) {
-            logger.warn("Error activating driver {}: {}", getId(), e.getMessage());
+            logger.warn("Error activating driver {}: {}", getContext().getId(), e.getMessage());
         }
+    }
+
+    void doActivate(DataAccessService dataAccess) throws Exception {
+        onActivate(dataAccess);
+        onActivate();
     }
 
     protected void onActivate(DataAccessService dataAccess) throws Exception {
@@ -109,19 +119,19 @@ public abstract class Driver extends DeviceContext implements DriverActivator {
 
     @Override
     public final void deactivate() {
-        doDeactivate();
-    }
-
-    void doDeactivate() {
         try {
-            onDeactivate();
+            doDeactivate();
             
         } catch (Exception e) {
-            logger.warn("Error deactivating driver {}: {}", getId(), e.getMessage());
+            logger.warn("Error deactivating driver {}: {}", getContext().getId(), e.getMessage());
         }
     }
 
-    protected void onDeactivate() {
+    void doDeactivate() throws Exception {
+        onDeactivate();
+    }
+
+    protected void onDeactivate() throws Exception {
         // Placeholder for the optional implementation
     }
 
@@ -143,7 +153,7 @@ public abstract class Driver extends DeviceContext implements DriverActivator {
 
     @Override
     public final Connection connect(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
-        DeviceConnection device = newDevice(address, settings);
+        Device<?> device = newDevice(address, settings);
         device.doCreate(this);
         device.doConfigure(address, settings);
         device.doConnect();
@@ -152,12 +162,12 @@ public abstract class Driver extends DeviceContext implements DriverActivator {
     }
 
     @Override
-    public void onConnect(DeviceConnection device) {
+    public void onConnect(Connection connection) {
         // Placeholder for the optional implementation
     }
 
     @Override
-    public void onDisconnect(DeviceConnection device) {
+    public void onDisconnect(Connection connection) {
         // Placeholder for the optional implementation
     }
 

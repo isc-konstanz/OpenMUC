@@ -62,7 +62,7 @@ public class EdgeCounter extends InputPin {
         for (GpioChannel channel : channels) {
             Value value = null;
             if (channel.isDerivative() || channel.isIntervalCount()) {
-                String channelId = channel.getChannel().getId();
+                String channelId = channel.getId();
                 Record lastRecord = null;
                 int lastVal;
                 if (counters.containsKey(channelId)) {

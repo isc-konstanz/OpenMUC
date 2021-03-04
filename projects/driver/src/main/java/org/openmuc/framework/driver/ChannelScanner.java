@@ -25,11 +25,10 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
-import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
-public abstract class ChannelScanner extends Configurable {
+public abstract class ChannelScanner extends Scanner {
 
 	ChannelContext context;
 
@@ -51,15 +50,6 @@ public abstract class ChannelScanner extends Configurable {
     }
 
     protected void onCreate() throws ArgumentSyntaxException, ConnectionException {
-        // Placeholder for the optional implementation
-    }
-
-    final void doConfigure(String settings) throws ArgumentSyntaxException, ConnectionException {
-    	this.configureSettings(settings);
-    	this.onConfigure();
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException, ConnectionException {
         // Placeholder for the optional implementation
     }
 

@@ -18,37 +18,23 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.server;
+package org.openmuc.framework.driver;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.server.spi.ServerMappingContainer;
+import org.openmuc.framework.config.Configurable;
 
-public class Channel extends ChannelContext {
+public abstract class Scanner extends Configurable {
 
-    private String settings = "";
-
-    protected void doConfigure(ServerMappingContainer container) throws ArgumentSyntaxException {
-        doConfigure(container.getServerMapping().getServerAddress());
-        onConfigure();
+    Scanner() {
     }
 
-    protected void doConfigure(String settings) throws ArgumentSyntaxException {
-        if (!equals(settings)) {
-            configureSettings(settings);
-        }
-        this.settings = settings;
+    final void doConfigure(String settings) throws ArgumentSyntaxException {
+    	this.configureSettings(settings);
+        this.onConfigure();
     }
 
     protected void onConfigure() throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
-    }
-
-    public final ChannelContext getContext() {
-        return this;
-    }
-
-    public boolean equals(String settings) {
-        return this.settings.equals(settings);
     }
 
 }

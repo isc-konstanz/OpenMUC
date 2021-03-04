@@ -28,7 +28,7 @@ import org.openmuc.framework.config.option.DriverOptions;
 
 public class DriverContext extends DriverOptions {
 
-    DriverContext(Driver driver) {
+    <D extends Device<?>> DriverContext(Driver<D> driver) {
         super(driver, 
               driver.getId(),
               driver.getName(),

@@ -44,11 +44,11 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.server.Channel;
+import org.openmuc.framework.server.ServerChannel;
 
 @AddressSyntax(separator = ";")
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class UaChannel extends Channel implements AttributeDelegate {
+public class UaChannel extends ServerChannel implements AttributeDelegate {
 
     @Setting(mandatory = false)
     private String folder = null;

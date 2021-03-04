@@ -21,9 +21,9 @@
 package org.openmuc.framework.driver.rpi.gpio;
 
 import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.driver.ChannelContainer;
+import org.openmuc.framework.driver.DeviceChannel;
 
-public class GpioChannel extends ChannelContainer {
+public class GpioChannel extends DeviceChannel {
 
     @Setting(id = "inverted",
              name = "Inverted state logic",

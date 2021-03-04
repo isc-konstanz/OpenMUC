@@ -20,22 +20,19 @@
  */
 package org.openmuc.framework.driver.sql;
 
-import org.openmuc.framework.driver.DeviceFactory.Factory;
 import org.openmuc.framework.driver.Driver;
-import org.openmuc.framework.driver.DriverContext;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
 @Component(service = DriverService.class)
-@Factory(device = SqlClient.class)
-public class SqlDriver extends Driver {
+public class SqlDriver extends Driver<SqlClient> {
 
-    private static final String ID = "sql";
-    private static final String NAME = "SQL";
-    private static final String DESCRIPTION = "SQL \"sequel\" (Structured Query Language) is a domain-specific language " +
-                                              "designed for managing data held in databases. The SQL driver connects to " +
-                                              "single database instances and provides several possibilities to read data " +
-                                              "from columns.";
+    public static final String ID = "sql";
+    public static final String NAME = "SQL";
+    public static final String DESCRIPTION = "SQL \"sequel\" (Structured Query Language) is a domain-specific language " +
+                                             "designed for managing data held in databases. The SQL driver connects to " +
+                                             "single database instances and provides several possibilities to read data " +
+                                             "from columns.";
 
     private static final String PKG = SqlDriver.class.getPackage().getName().toLowerCase().replace(".driver", "");
 
@@ -51,9 +48,13 @@ public class SqlDriver extends Driver {
     }
 
     @Override
-    protected void onCreate(DriverContext context) {
-        context.setName(NAME)
-               .setDescription(DESCRIPTION);
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
     }
 
 }

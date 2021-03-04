@@ -27,17 +27,16 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.annotation.Address;
 import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.driver.ChannelFactory.Factory;
-import org.openmuc.framework.driver.DeviceConnection;
+import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.driver.annotation.Factory;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.channel.CsvChannelHHMMSS;
 import org.openmuc.framework.driver.csv.channel.CsvChannelLine;
 import org.openmuc.framework.driver.csv.channel.CsvChannelUnixtimestamp;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
-@Factory(channel = CsvChannel.class, 
-         scanner = ColumnScanner.class)
-public class CsvFile extends DeviceConnection {
+@Factory(scanner = ColumnScanner.class)
+public class CsvFile extends Device<CsvChannel> {
 
     public static final String SAMPLING_MODE = "samplingmode";
 
@@ -49,24 +48,24 @@ public class CsvFile extends DeviceConnection {
     private String filePath;
 
     @Setting(id = SAMPLING_MODE,
-            name = "Sampling mode",
-            description = "The sampling mode configures the drivers method to read the CSV file:<br><br>" + 
-                          "<b>Modes:</b>" + 
-                          "<ol>" + 
-                              "<li><b>Unix timestamp</b>: Find the line closest to the sampling timestamp in the <em>unixtimestamp</em> column.</li>" + 
-                              "<li><b>Closest time</b>: Find the line closest to the sampling times hours, minutes and seconds in the <em>hhmmss</em> column.</li>" + 
-                              "<li><b>Line by line</b>: Read the file line by line.</li>" + 
-                          "</ol>",
-            valueSelection = "unixtimestamp:Unix timestamp,hhmmss:Closest time,line:Line by line",
-            valueDefault = "line"
+             name = "Sampling mode",
+             description = "The sampling mode configures the drivers method to read the CSV file:<br><br>" + 
+                           "<b>Modes:</b>" + 
+                           "<ol>" + 
+                               "<li><b>Unix timestamp</b>: Find the line closest to the sampling timestamp in the <em>unixtimestamp</em> column.</li>" + 
+                               "<li><b>Closest time</b>: Find the line closest to the sampling times hours, minutes and seconds in the <em>hhmmss</em> column.</li>" + 
+                               "<li><b>Line by line</b>: Read the file line by line.</li>" + 
+                           "</ol>",
+             valueSelection = "unixtimestamp:Unix timestamp,hhmmss:Closest time,line:Line by line",
+             valueDefault = "line"
     )
     private SamplingMode samplingMode;
 
     @Setting(id = "rewind",
-            name = "Rewind",
-            description = "Start from the beginning of the file again, when the end was reached.",
-            valueDefault = "false",
-            mandatory = false
+             name = "Rewind",
+             description = "Start from the beginning of the file again, when the end was reached.",
+             valueDefault = "false",
+             mandatory = false
     )
     private boolean rewind = false;
 

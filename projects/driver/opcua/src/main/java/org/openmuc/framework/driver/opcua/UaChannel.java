@@ -35,9 +35,9 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.ChannelContainer;
+import org.openmuc.framework.driver.DeviceChannel;
 
-public class UaChannel extends ChannelContainer {
+public class UaChannel extends DeviceChannel {
 
     @Address(id = "id",
              name = "Identifier",
@@ -71,7 +71,7 @@ public class UaChannel extends ChannelContainer {
     public Record decode(DataValue data) {
         long timestamp = data.getServerTime().getJavaTime();
         Object value = data.getValue().getValue();
-        switch (getChannel().getValueType()) {
+        switch (getValueType()) {
         case BOOLEAN:
             return new Record(new BooleanValue((Boolean) value), timestamp);
         case BYTE:
@@ -93,7 +93,7 @@ public class UaChannel extends ChannelContainer {
 
     public DataValue encode() {
         Value value = getRecord().getValue();
-        switch (getChannel().getValueType()) {
+        switch (getValueType()) {
         case BOOLEAN:
             return new DataValue(new Variant(value.asBoolean()));
         case BYTE:

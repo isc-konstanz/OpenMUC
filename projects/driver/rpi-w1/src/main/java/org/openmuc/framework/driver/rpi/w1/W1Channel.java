@@ -22,12 +22,12 @@ package org.openmuc.framework.driver.rpi.w1;
 
 import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.config.annotation.SettingsSyntax;
-import org.openmuc.framework.driver.ChannelContainer;
+import org.openmuc.framework.driver.DeviceChannel;
 
 import com.pi4j.temperature.TemperatureScale;
 
 @SettingsSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
-public class W1Channel extends ChannelContainer {
+public class W1Channel extends DeviceChannel {
 
     @Setting(id = "unit",
             name = "Unit",

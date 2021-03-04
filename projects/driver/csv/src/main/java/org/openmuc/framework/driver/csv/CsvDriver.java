@@ -20,8 +20,8 @@
  */
 package org.openmuc.framework.driver.csv;
 
-import org.openmuc.framework.driver.DeviceFactory.Factory;
 import org.openmuc.framework.driver.Driver;
+import org.openmuc.framework.driver.annotation.Factory;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
@@ -37,16 +37,14 @@ import org.osgi.service.component.annotations.Component;
  * </ul>
  */
 @Component(service = DriverService.class)
-@Factory(device = CsvFile.class, 
-         scanner = CsvScanner.class)
-public class CsvDriver extends Driver {
+@Factory(scanner = CsvScanner.class)
+public class CsvDriver extends Driver<CsvFile> {
 
-    private static final String ID = "csv";
-    private static final String NAME = "CSV";
-    private static final String DESCRIPTION = 
-                    "The CSV Driver reads out values from configured files. Each device represents a specific file " + 
-                    "which may contain several columns, addressed by their headers. Rows in those columns are read " + 
-                    "either line by line or by a defined index.";
+	public static final String ID = "csv";
+	public static final String NAME = "CSV";
+	public static final String DESCRIPTION = "The CSV Driver reads out values from configured files. "
+            + "Each device represents a specific file which may contain several columns, addressed by their headers. "
+            + "Rows in those columns are read either line by line or by a defined index.";
 
     @Override
     public String getId() {

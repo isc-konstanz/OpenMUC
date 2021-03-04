@@ -28,7 +28,7 @@ import org.openmuc.framework.config.annotation.Address;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.driver.ChannelContainer;
+import org.openmuc.framework.driver.DeviceChannel;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
@@ -36,7 +36,7 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class CsvChannel extends ChannelContainer {
+public abstract class CsvChannel extends DeviceChannel {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvChannel.class);
 

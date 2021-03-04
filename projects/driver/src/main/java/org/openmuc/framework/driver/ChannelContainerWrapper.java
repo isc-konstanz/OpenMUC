@@ -24,15 +24,14 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.ChannelContainer;
-import org.openmuc.framework.driver.spi.ChannelTaskContainer;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
+import org.openmuc.framework.driver.spi.ChannelTaskContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 
-public abstract class ChannelContainerWrapper extends Configurable implements ChannelRecordContainer {
+public abstract class ChannelContainerWrapper extends Configurable { //implements ChannelRecordContainer {
 
-    private enum ChannelTaskType {
+    public static enum ChannelTaskType {
         WRITE,
         READ;
     }
@@ -42,11 +41,15 @@ public abstract class ChannelContainerWrapper extends Configurable implements Ch
     protected ChannelContainerWrapper() {
     }
 
-    final ChannelContainer getContainer() {
+    public final ChannelTaskType getTaskType() {
+    	return containerType;
+    }
+
+    public final ChannelTaskContainer getTaskContainer() {
         return container;
     }
 
-    final void setContainer(ChannelTaskContainer container) throws ArgumentSyntaxException {
+    final void setTaskContainer(ChannelTaskContainer container) throws ArgumentSyntaxException {
         this.container = container;
         if (container instanceof ChannelRecordContainer) {
             containerType = ChannelTaskType.READ;
@@ -59,22 +62,21 @@ public abstract class ChannelContainerWrapper extends Configurable implements Ch
         }
     }
 
-    @Override
-    public final Channel getChannel() {
-        return container.getChannel();
-    }
+//	@Override
+//	public Channel getChannel() {
+//		return container.getChannel();
+//	}
+//
+//	@Override
+//	public Object getChannelHandle() {
+//		return container.getChannelHandle();
+//	}
+//
+//	@Override
+//	public void setChannelHandle(Object handle) {
+//		container.setChannelHandle(handle);
+//	}
 
-    @Override
-    public final Object getChannelHandle() {
-        return container.getChannelHandle();
-    }
-
-    @Override
-    public final void setChannelHandle(Object handle) {
-    	this.container.setChannelHandle(handle);
-    }
-
-    @Override
     public final Record getRecord() {
         switch (containerType) {
         default:
@@ -93,7 +95,6 @@ public abstract class ChannelContainerWrapper extends Configurable implements Ch
         return new Record(container.getValue(), System.currentTimeMillis());
     }
 
-    @Override
     public final void setRecord(Record record) {
         switch (containerType) {
         default:

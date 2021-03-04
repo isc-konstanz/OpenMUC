@@ -162,6 +162,12 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
         }
     }
 
+    @Override
+    public void logEvent(List<LogRecordContainer> containers, long timestamp) {
+        // TODO Auto-generated method stub
+        
+    }
+
     protected void onWrite(List<C> channels, long timestamp) throws IOException {
         // Placeholder for the optional implementation
         for (C channel : channels) {

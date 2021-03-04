@@ -23,19 +23,17 @@ package org.openmuc.framework.driver.rest;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import org.openmuc.framework.driver.DeviceFactory.Factory;
 import org.openmuc.framework.driver.Driver;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
 @Component(service = DriverService.class)
-@Factory(device = RestRemote.class)
-public class RestDriver extends Driver {
+public class RestDriver extends Driver<RestRemote> {
     public static final Charset CHARSET = StandardCharsets.UTF_8;
 
-    private static final String ID = "rest";
-    private static final String NAME = "Rest";
-    private static final String DESCRIPTION = "Driver to connect this OpenMUC instance with another, remote OpenMUC instance with rest.";
+    public static final String ID = "rest";
+    public static final String NAME = "Rest";
+    public static final String DESCRIPTION = "Driver to connect this OpenMUC instance with another, remote OpenMUC instance with rest.";
 
     @Override
     public String getId() {

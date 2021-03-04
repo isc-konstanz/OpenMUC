@@ -29,7 +29,6 @@ import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.ChannelFactory.Factory;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
@@ -43,7 +42,6 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 @AddressSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
 @SettingsSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
-@Factory(channel = GpioChannel.class)
 public abstract class GpioPin extends GpioConfigs {
     protected static final Logger logger = LoggerFactory.getLogger(GpioPin.class);
 
@@ -91,7 +89,7 @@ public abstract class GpioPin extends GpioConfigs {
                     value = new BooleanValue(state.isLow());
                 }
                 channel.setRecord(new Record(value, samplingTime, Flag.VALID));
-                containers.add(channel);
+                containers.add((ChannelRecordContainer) channel.getTaskContainer());
                 
                 logger.debug("Received value for listened pin \"{}\": {}", pin.getName(), value);
             }

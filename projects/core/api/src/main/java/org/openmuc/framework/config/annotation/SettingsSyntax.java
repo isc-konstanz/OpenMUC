@@ -30,14 +30,15 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, })
+@Target(ElementType.TYPE)
 public @interface SettingsSyntax {
 
     public static final String SEPARATOR_DEFAULT = ";";
-    public static final String ASSIGNMENT_OPERATOR_DEFAULT = ",";
+    public static final String ASSIGNMENT_OPERATOR_DEFAULT = "=";
     public static final boolean KEY_VAL_PAIRS_DEFAULT = true;
 
     String separator() default SEPARATOR_DEFAULT;
     String assignmentOperator() default ASSIGNMENT_OPERATOR_DEFAULT;
     boolean keyValuePairs() default KEY_VAL_PAIRS_DEFAULT;
+
 }

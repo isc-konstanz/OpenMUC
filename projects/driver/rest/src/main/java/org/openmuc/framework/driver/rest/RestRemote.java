@@ -33,13 +33,13 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.openmuc.framework.data.Flag;
-import org.openmuc.framework.driver.ChannelFactory.Factory;
+import org.openmuc.framework.driver.annotation.Factory;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.lib.json.FromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Factory(channel = RestChannel.class, scanner = RestChannelScanner.class)
+@Factory(scanner = RestChannelScanner.class)
 public class RestRemote extends RestConfigs {
     private static final Logger logger = LoggerFactory.getLogger(RestRemote.class);
 

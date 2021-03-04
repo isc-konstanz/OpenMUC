@@ -45,13 +45,11 @@ import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.Device;
-import org.openmuc.framework.driver.ChannelContainer;
-import org.openmuc.framework.driver.ChannelFactory.Factory;
+import org.openmuc.framework.driver.DeviceChannel;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Factory(channel = UaChannel.class)
 public class UaConnection extends Device<UaChannel> {
     private static final Logger logger = LoggerFactory.getLogger(UaConnection.class);
 
@@ -123,7 +121,7 @@ public class UaConnection extends Device<UaChannel> {
     }
 
     @Override
-    protected ChannelContainer newChannel() {
+    protected DeviceChannel newChannel() {
         return new UaChannel(namespaceIndex);
     }
 
@@ -168,7 +166,7 @@ public class UaConnection extends Device<UaChannel> {
                         channel.setFlag(Flag.VALID);
                     }
                     else {
-                        logger.warn("Writing data to OPC UA channel {} failed: {}", channel.getChannel().getId(), status.toString());
+                        logger.warn("Writing data to OPC UA channel {} failed: {}", channel.getId(), status.toString());
                     }
                 } catch (InterruptedException e) {
                     channel.setFlag(Flag.DRIVER_ERROR_TIMEOUT);

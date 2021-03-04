@@ -18,7 +18,6 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.openmuc.framework.driver.amqp;
 
 import java.io.IOException;
@@ -36,6 +35,7 @@ import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
@@ -163,17 +163,17 @@ public class AmqpDriverConnection implements Connection {
     }
 
     private class LogRecordContainerImpl implements LogRecordContainer {
-        private final String channelId;
+        private final Channel channel;
         private final Record record;
 
-        public LogRecordContainerImpl(String channelId, Record record) {
-            this.channelId = channelId;
+        public LogRecordContainerImpl(Channel channel, Record record) {
+            this.channel = channel;
             this.record = record;
         }
 
         @Override
-        public String getChannelId() {
-            return channelId;
+        public Channel getChannel() {
+            return channel;
         }
 
         @Override
@@ -187,7 +187,7 @@ public class AmqpDriverConnection implements Connection {
             throws UnsupportedOperationException, ConnectionException {
         for (ChannelValueContainer container : containers) {
             Record record = new Record(container.getValue(), System.currentTimeMillis());
-            LogRecordContainer logRecordContainer = new LogRecordContainerImpl(container.getChannelAddress(), record);
+            LogRecordContainer logRecordContainer = new LogRecordContainerImpl(container.getChannel(), record);
             if (parsers.containsKey(setting.parser)) {
                 byte[] message = new byte[0];
                 try {

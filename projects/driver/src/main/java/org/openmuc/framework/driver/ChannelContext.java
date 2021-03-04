@@ -20,6 +20,8 @@
  */
 package org.openmuc.framework.driver;
 
+import java.lang.reflect.ParameterizedType;
+
 import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
@@ -27,13 +29,14 @@ import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.ChannelOptions;
 import org.openmuc.framework.config.option.Options;
+import org.openmuc.framework.driver.annotation.Factory;
 import org.openmuc.framework.driver.spi.ChannelTaskContainer;
 
-public abstract class ChannelContext extends Configurable implements ChannelOptions, ChannelFactory, ChannelScannerFactory {
-
-    Class<? extends ChannelContainer> channelClass;
+public class ChannelContext extends Configurable implements ChannelOptions, ChannelFactory, ChannelScannerFactory {
 
     Class<? extends ChannelScanner> scannerClass;
+
+    Class<? extends DeviceChannel> channelClass;
 
     DeviceContext context;
 
@@ -45,13 +48,29 @@ public abstract class ChannelContext extends Configurable implements ChannelOpti
         bindContext(context);
     }
 
-    ChannelContext bindContext(Class<? extends ChannelContext> context) {
-        ChannelFactory.Factory factory = context.getAnnotation(ChannelFactory.Factory.class);
+    @SuppressWarnings("unchecked")
+	ChannelContext bindContext(Class<? extends ChannelContext> context) {
+        Factory factory = context.getAnnotation(Factory.class);
         if (factory != null) {
-            scannerClass = factory.scanner();
-            channelClass = factory.channel();
+            scannerClass = (Class<? extends ChannelScanner>) factory.scanner();
         }
+        this.channelClass = getChannelClass(context);
+        
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+	private Class<? extends DeviceChannel> getChannelClass(Class<?> deviceClass) {
+        while (deviceClass.getSuperclass() != null) {
+            if (deviceClass.getSuperclass().equals(Device.class)) {
+                break;
+            }
+            deviceClass = deviceClass.getSuperclass();
+        }
+        // This operation is safe. Because deviceClass is a direct sub-class, getGenericSuperclass() will
+        // always return the Type of this class. Because this class is parameterized, the cast is safe
+        ParameterizedType superClass = (ParameterizedType) deviceClass.getGenericSuperclass();
+        return (Class<? extends DeviceChannel>) superClass.getActualTypeArguments()[0];
     }
 
     public final DeviceContext getContext() {
@@ -85,26 +104,26 @@ public abstract class ChannelContext extends Configurable implements ChannelOpti
         return scanSettings;
     }
 
-    final void bindChannel(Class<? extends ChannelContainer> channelClass) {
+    final void bindChannel(Class<? extends DeviceChannel> channelClass) {
         this.channelClass = channelClass;
     }
 
-    final ChannelContainer newChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
+    final DeviceChannel newChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
         return this.newChannel(container.getChannel().getAddress(), 
                                container.getChannel().getSettings());
     }
 
-    public ChannelContainer newChannel(String address, String settings) throws ArgumentSyntaxException {
+    public DeviceChannel newChannel(String address, String settings) throws ArgumentSyntaxException {
         return this.newChannel(Configurations.parseAddress(address, channelClass),
                               Configurations.parseSettings(settings, channelClass));
     }
 
     @Override
-    public ChannelContainer newChannel(Address address, Settings settings) throws ArgumentSyntaxException {
+    public DeviceChannel newChannel(Address address, Settings settings) throws ArgumentSyntaxException {
         return this.newChannel();
     }
 
-    protected ChannelContainer newChannel() {
+    protected DeviceChannel newChannel() {
         return DriverContext.newInstance(channelClass);
     }
 

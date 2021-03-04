@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface Address {
 
-    public final static String DEFAULT = "org.openmuc.framework.config.annotation.DEFAULT";
+    public final static String DEFAULT = "org.openmuc.framework.config.annotation.Address.DEFAULT";
 
     String value() default DEFAULT;
     String[] id() default DEFAULT;

@@ -105,7 +105,7 @@ public class EdgeListener implements GpioPinListenerDigital {
                             else {
                                 channel.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE));
                             }
-                            containers.add(channel);
+                            containers.add((ChannelRecordContainer) channel.getTaskContainer());
                         }
                         listener.newRecords(containers);
                     }
