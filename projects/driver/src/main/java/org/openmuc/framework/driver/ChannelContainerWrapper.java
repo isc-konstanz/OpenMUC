@@ -41,6 +41,22 @@ public abstract class ChannelContainerWrapper extends Configurable { //implement
     protected ChannelContainerWrapper() {
     }
 
+    protected void doConfigure(ChannelTaskContainer container) throws ArgumentSyntaxException {
+        if (!equals(container)) {
+            doConfigure(container.getChannel().getAddress(), container.getChannel().getSettings());
+            onConfigure();
+        }
+        setTaskContainer(container);
+    }
+
+    protected void doConfigure(String address, String settings) throws ArgumentSyntaxException {
+        configure(address, settings);
+    }
+
+    protected void onConfigure() throws ArgumentSyntaxException {
+        // Placeholder for the optional implementation
+    }
+
     public final ChannelTaskType getTaskType() {
     	return containerType;
     }

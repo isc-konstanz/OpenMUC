@@ -30,9 +30,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.openmuc.framework.config.annotation.Address;
 import org.openmuc.framework.config.annotation.AddressSyntax;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.config.annotation.SettingsSyntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -46,14 +45,13 @@ import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.server.ServerChannel;
 
-@AddressSyntax(separator = ";")
-@SettingsSyntax(separator = ";", assignmentOperator = "=")
+@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 public class UaChannel extends ServerChannel implements AttributeDelegate {
 
-    @Setting(mandatory = false)
+    @Address(mandatory = false)
     private String folder = null;
 
-    @Setting(id="ns",
+    @Address(id="ns",
              mandatory = false)
     private int namespaceIndex = 0;
 

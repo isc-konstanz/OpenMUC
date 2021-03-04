@@ -20,28 +20,18 @@
  */
 package org.openmuc.framework.driver;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.data.Flag;
-import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
-import org.openmuc.framework.driver.spi.ChannelTaskContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class Device<C extends DeviceChannel> extends ChannelContext implements Connection {
-
-    private static final Logger logger = LoggerFactory.getLogger(Device.class);
 
     public static interface Callbacks {
 
@@ -49,8 +39,6 @@ public abstract class Device<C extends DeviceChannel> extends ChannelContext imp
 
         void onDisconnect(Connection connection);
     }
-
-    private final Map<String, C> channels = new HashMap<String, C>();
 
     final void doCreate(DeviceContext context) {
         this.context = context;
@@ -114,12 +102,13 @@ public abstract class Device<C extends DeviceChannel> extends ChannelContext imp
         return scanner.doScan();
     }
 
-    @Override
+	@Override
+    @SuppressWarnings("unchecked")
     public final void startListening(List<ChannelRecordContainer> containers, 
     		RecordsReceivedListener listener) throws UnsupportedOperationException, ConnectionException {
         
         synchronized(channels) {
-        	onStartListening(newChannels(containers), listener);
+        	onStartListening((List<C>) newChannels(containers), listener);
         }
     }
 
@@ -132,11 +121,12 @@ public abstract class Device<C extends DeviceChannel> extends ChannelContext imp
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public final Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
             throws UnsupportedOperationException, ConnectionException {
         
         synchronized(channels) {
-            onRead(getChannels(containers), samplingGroup);
+            onRead((List<C>) getChannels(containers), samplingGroup);
         }
         return null;
     }
@@ -151,11 +141,12 @@ public abstract class Device<C extends DeviceChannel> extends ChannelContext imp
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public final Object write(List<ChannelValueContainer> containers, Object containerListHandle)
             throws UnsupportedOperationException, ConnectionException {
 
         synchronized(channels) {
-            onWrite(getChannels(containers));
+            onWrite((List<C>) getChannels(containers));
         }
         return null;
     }
@@ -166,88 +157,6 @@ public abstract class Device<C extends DeviceChannel> extends ChannelContext imp
         for (DeviceChannel channel : channels) {
             channel.doWrite();
         }
-    }
-
-    @SuppressWarnings("unchecked")
-	final DeviceChannel getChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
-        String id = container.getChannel().getId();
-        C channel = channels.get(id);
-        try {
-            if (channel == null) {
-                channel = (C) newChannel(container);
-                channel.doCreate(this);
-                channel.doConfigure(container);
-                
-                channels.put(id, channel);
-            }
-            else {
-	            channel.doConfigure(container);
-        	}
-        } catch (ArgumentSyntaxException e) {
-        	
-            channels.remove(id);
-            
-            throw e;
-        }
-        return channel;
-    }
-
-    public List<C> getChannels() {
-        return (List<C>) channels.values();
-    }
-
-    @SuppressWarnings("unchecked")
-	final List<C> getChannels(List<? extends ChannelTaskContainer> containers) {
-        List<C> channels = new ArrayList<C>();
-        for (ChannelTaskContainer container : containers) {
-            try {
-				channels.add((C) getChannel(container));
-				
-			} catch (ArgumentSyntaxException e) {
-                logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
-                
-            	setChannelContainerFlag(container, Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
-			}
-        }
-        return channels;
-    }
-
-	@SuppressWarnings("unchecked")
-	final List<C> newChannels(List<? extends ChannelTaskContainer> containers) {
-        List<C> channels = new ArrayList<C>();
-        for (ChannelTaskContainer container : containers) {
-        	C channel;
-            try {
-                channel = (C) newChannel(container);
-                channel.doCreate(this);
-                channel.doConfigure(container);
-                
-                channels.add(channel);
-                
-            } catch (ArgumentSyntaxException e) {
-                logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
-                
-            	setChannelContainerFlag(container, Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
-            }
-        }
-        return channels;
-    }
-
-    private void setChannelContainerFlag(ChannelTaskContainer container, Flag flag) {
-        if (container instanceof ChannelRecordContainer) {
-        	setChannelContainerFlag((ChannelRecordContainer) container, flag);
-        }
-        else if (container instanceof ChannelValueContainer) {
-        	setChannelContainerFlag((ChannelValueContainer) container, flag);
-        }
-    }
-
-    private void setChannelContainerFlag(ChannelRecordContainer container, Flag flag) {
-        container.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
-    }
-
-    private void setChannelContainerFlag(ChannelValueContainer container, Flag flag) {
-        container.setFlag(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
     }
 
 }

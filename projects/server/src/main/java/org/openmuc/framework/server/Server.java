@@ -21,45 +21,49 @@
 
 package org.openmuc.framework.server;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.dataaccess.DataAccessService;
+import org.openmuc.framework.server.spi.ServerActivator;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Server<C extends Channel> extends ServerContext {
+public abstract class Server<C extends ServerChannel> extends ChannelContext implements ServerActivator {
+
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
-    private final Map<String, C> channels = new HashMap<String, C>();
-
-    @Override
-    public final Server<C> getServer() {
-        return this;
+    public Server() {
+    	super();
+        try {
+	        doCreate();
+	        
+		} catch (Exception e) {
+            logger.warn("Error instancing driver {}: {}", getId(), e.getMessage());
+		}
     }
 
-    public final ServerContext getContext() {
-        return this;
+    void doCreate() throws Exception {
+    	onCreate();
+    }
+
+    protected void onCreate() throws Exception {
+        // Placeholder for the optional implementation
     }
 
     @Override
     public final void activate(DataAccessService dataAccess) {
         try {
-            onActivate(dataAccess);
-            onActivate();
+            doActivate(dataAccess);
             
         } catch (Exception e) {
             logger.warn("Error activating server {}: {}", getId(), e.getMessage());
         }
     }
 
-    @Override
-    public final void deactivate() {
-        onDeactivate();
+    void doActivate(DataAccessService dataAccess) throws Exception {
+        onActivate(dataAccess);
+        onActivate();
     }
 
     protected void onActivate(DataAccessService dataAccess) throws Exception {
@@ -70,77 +74,41 @@ public abstract class Server<C extends Channel> extends ServerContext {
         // Placeholder for the optional implementation
     }
 
-    protected void onDeactivate() {
+    @Override
+    public final void deactivate() {
+        try {
+            doDeactivate();
+            
+        } catch (Exception e) {
+            logger.warn("Error deactivating server {}: {}", getId(), e.getMessage());
+        }
+    }
+
+    void doDeactivate() throws Exception {
+        onDeactivate();
+    }
+
+    protected void onDeactivate() throws Exception {
         // Placeholder for the optional implementation
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public final void serverMappings(List<ServerMappingContainer> mappings) {
-        onConfigure(getChannels(mappings));
+        onConfigure((List<C>) getChannels(mappings));
     }
 
     protected abstract void onConfigure(List<C> channels);
 
-    @Override
+	@Override
+    @SuppressWarnings("unchecked")
     public final void updatedConfiguration(List<ServerMappingContainer> mappings) {
-        onUpdate(getChannels(mappings));
+        onUpdate((List<C>) getChannels(mappings));
     }
 
     protected void onUpdate(List<C> channels) {
         // Placeholder for the optional implementation
         onConfigure(channels);
-    }
-
-    protected List<C> getChannels() {
-        return (List<C>) channels.values();
-    }
-
-    protected List<C> getChannels(List<ServerMappingContainer> mappings) {
-        List<C> channels = new LinkedList<C>();
-        for (ServerMappingContainer mapping : mappings) {
-            try {
-                channels.add(getChannel(mapping));
-                
-            } catch (ArgumentSyntaxException e) {
-                logger.warn("Unable to configure channel \"{}\": {}", mapping.getChannel().getId(), e.getMessage());
-            }
-        }
-        return channels;
-    }
-
-    protected C getChannel(String id) {
-        return channels.get(id);
-    }
-
-    protected C getChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
-        String id = mapping.getChannel().getId();
-        C channel = channels.get(id);
-        if (channel == null) {
-            channel = doCreateChannel(mapping);
-            channels.put(id, channel);
-        }
-        else {
-            channel.doConfigure(mapping);
-        }
-        return channel;
-    }
-
-    final C doCreateChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
-        C channel = onCreateChannel(mapping);
-        channel.doCreate(this, mapping.getChannel());
-        channel.doConfigure(mapping);
-        
-        return channel;
-    }
-
-    protected C onCreateChannel(ServerMappingContainer mapping) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-        return onCreateChannel();
-    }
-
-    protected C onCreateChannel() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-        return super.newChannel();
     }
 
 }

@@ -21,6 +21,10 @@
 package org.openmuc.framework.driver;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
@@ -29,16 +33,26 @@ import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.ChannelOptions;
 import org.openmuc.framework.config.option.Options;
+import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.annotation.Factory;
+import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelTaskContainer;
+import org.openmuc.framework.driver.spi.ChannelValueContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChannelContext extends Configurable implements ChannelOptions, ChannelFactory, ChannelScannerFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(ChannelContext.class);
+
+    DeviceContext context;
 
     Class<? extends ChannelScanner> scannerClass;
 
     Class<? extends DeviceChannel> channelClass;
 
-    DeviceContext context;
+    final Map<String, DeviceChannel> channels = new HashMap<String, DeviceChannel>();
 
     ChannelContext() {
         bindContext(getClass());
@@ -104,8 +118,48 @@ public class ChannelContext extends Configurable implements ChannelOptions, Chan
         return scanSettings;
     }
 
-    final void bindChannel(Class<? extends DeviceChannel> channelClass) {
-        this.channelClass = channelClass;
+    public ChannelScanner newScanner(String settings) throws ArgumentSyntaxException {
+        return this.newScanner(Configurations.parseSettings(settings, scannerClass));
+    }
+
+    @Override
+    public ChannelScanner newScanner(Settings settings) throws ArgumentSyntaxException {
+        return this.newScanner();
+    }
+
+    protected ChannelScanner newScanner() {
+        return DriverContext.newInstance(scannerClass);
+    }
+
+    final void bindScanner(Class<? extends ChannelScanner> scannerClass) {
+        this.scannerClass = scannerClass;
+    }
+
+    public DeviceChannel getChannel(String id) {
+    	return channels.get(id);
+    }
+
+	final DeviceChannel getChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
+        String id = container.getChannel().getId();
+        DeviceChannel channel = channels.get(id);
+        try {
+            if (channel == null) {
+                channel = newChannel(container);
+                channel.doCreate(this);
+                channel.doConfigure(container);
+                
+                channels.put(id, channel);
+            }
+            else {
+	            channel.doConfigure(container);
+        	}
+        } catch (ArgumentSyntaxException e) {
+        	
+            channels.remove(id);
+            
+            throw e;
+        }
+        return channel;
     }
 
     final DeviceChannel newChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
@@ -127,21 +181,64 @@ public class ChannelContext extends Configurable implements ChannelOptions, Chan
         return DriverContext.newInstance(channelClass);
     }
 
-    final void bindScanner(Class<? extends ChannelScanner> scannerClass) {
-        this.scannerClass = scannerClass;
+    final void bindChannel(Class<? extends DeviceChannel> channelClass) {
+        this.channelClass = channelClass;
     }
 
-    public ChannelScanner newScanner(String settings) throws ArgumentSyntaxException {
-        return this.newScanner(Configurations.parseSettings(settings, scannerClass));
+    public List<DeviceChannel> getChannels() {
+        return (List<DeviceChannel>) channels.values();
     }
 
-    @Override
-    public ChannelScanner newScanner(Settings settings) throws ArgumentSyntaxException {
-        return this.newScanner();
+	final List<DeviceChannel> getChannels(List<? extends ChannelTaskContainer> containers) {
+        List<DeviceChannel> channels = new ArrayList<DeviceChannel>();
+        for (ChannelTaskContainer container : containers) {
+            try {
+				channels.add(getChannel(container));
+				
+			} catch (ArgumentSyntaxException e) {
+                logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
+                
+            	setChannelContainerFlag(container, Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
+			}
+        }
+        return channels;
     }
 
-    protected ChannelScanner newScanner() {
-        return DriverContext.newInstance(scannerClass);
+	final List<DeviceChannel> newChannels(List<? extends ChannelTaskContainer> containers) {
+        List<DeviceChannel> channels = new ArrayList<DeviceChannel>();
+        for (ChannelTaskContainer container : containers) {
+        	DeviceChannel channel;
+            try {
+                channel = newChannel(container);
+                channel.doCreate(this);
+                channel.doConfigure(container);
+                
+                channels.add(channel);
+                
+            } catch (ArgumentSyntaxException e) {
+                logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
+                
+            	setChannelContainerFlag(container, Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
+            }
+        }
+        return channels;
+    }
+
+    private void setChannelContainerFlag(ChannelTaskContainer container, Flag flag) {
+        if (container instanceof ChannelRecordContainer) {
+        	setChannelContainerFlag((ChannelRecordContainer) container, flag);
+        }
+        else if (container instanceof ChannelValueContainer) {
+        	setChannelContainerFlag((ChannelValueContainer) container, flag);
+        }
+    }
+
+    private void setChannelContainerFlag(ChannelRecordContainer container, Flag flag) {
+        container.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
+    }
+
+    private void setChannelContainerFlag(ChannelValueContainer container, Flag flag) {
+        container.setFlag(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
     }
 
 }

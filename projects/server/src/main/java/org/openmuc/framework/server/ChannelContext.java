@@ -20,178 +20,138 @@
  */
 package org.openmuc.framework.server;
 
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.data.Flag;
-import org.openmuc.framework.data.FutureValue;
-import org.openmuc.framework.data.Record;
-import org.openmuc.framework.data.Value;
-import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.dataaccess.ChannelState;
-import org.openmuc.framework.dataaccess.DataLoggerNotAvailableException;
-import org.openmuc.framework.dataaccess.DeviceState;
-import org.openmuc.framework.dataaccess.RecordListener;
+import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.server.spi.ServerMappingContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public abstract class ChannelContext extends Configurable {
+public class ChannelContext extends Configurable implements ChannelFactory {
 
-    Channel channel;
+    private static final Logger logger = LoggerFactory.getLogger(ChannelContext.class);
 
-    ServerContext context;
+    Class<? extends ServerChannel> channelClass;
 
-    <C extends ServerContext> void doCreate(C context, Channel channel) throws ArgumentSyntaxException {
-        this.channel = channel;
-        this.context = context;
-        this.onCreate(context);
-        this.onCreate();
+    final Map<String, ServerChannel> channels = new HashMap<String, ServerChannel>();
+
+    ChannelContext() {
+        channelClass = getChannelClass();
     }
 
-    protected <C extends ServerContext> void onCreate(C context) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    @SuppressWarnings("unchecked")
+	private Class<? extends ServerChannel> getChannelClass() {
+    	Class<?> serverClass = getClass();
+        while (serverClass.getSuperclass() != null) {
+            if (serverClass.getSuperclass().equals(Server.class)) {
+                break;
+            }
+            serverClass = serverClass.getSuperclass();
+        }
+        // This operation is safe. Because deviceClass is a direct sub-class, getGenericSuperclass() will
+        // always return the Type of this class. Because this class is parameterized, the cast is safe
+        ParameterizedType superClass = (ParameterizedType) serverClass.getGenericSuperclass();
+        return (Class<? extends ServerChannel>) superClass.getActualTypeArguments()[0];
     }
 
-    protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    public ServerChannel getChannel(String id) {
+    	return channels.get(id);
     }
 
-    protected void onDestroy() {
-        // Placeholder for the optional implementation
+	final ServerChannel getChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
+        String id = container.getChannel().getId();
+        ServerChannel channel = channels.get(id);
+        try {
+            if (channel == null) {
+                channel = newChannel(container);
+                channel.doCreate(this);
+                channel.doConfigure(container);
+                
+                channels.put(id, channel);
+            }
+            else {
+	            channel.doConfigure(container);
+        	}
+        } catch (ArgumentSyntaxException e) {
+        	
+            channels.remove(id);
+            
+            throw e;
+        }
+        return channel;
     }
 
-    public final ServerContext getServer() {
-        return context;
+    final ServerChannel newChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
+        return this.newChannel(container.getChannel().getAddress(), 
+                               container.getChannel().getSettings());
     }
 
-    public final String getId() {
-        return channel.getId();
-    }
-
-    public final String getDescription() {
-        return channel.getDescription();
-    }
-
-    public final String getUnit() {
-        return channel.getUnit();
-    }
-
-    public final ValueType getValueType() {
-        return channel.getValueType();
-    }
-
-    public final int getValueTypeLength() {
-        return channel.getValueTypeLength();
-    }
-
-    public final String getAddress() {
-        return channel.getAddress();
-    }
-
-    public final String getSettings() {
-        return channel.getSettings();
-    }
-
-    public final double getScalingFactor() {
-        return channel.getScalingFactor();
-    }
-
-    public final int getSamplingInterval() {
-        return channel.getSamplingInterval();
-    }
-
-    public final int getSamplingTimeOffset() {
-        return channel.getSamplingTimeOffset();
-    }
-
-    public final int getLoggingInterval() {
-        return channel.getLoggingInterval();
-    }
-
-    public final int getLoggingTimeOffset() {
-        return channel.getLoggingTimeOffset();
-    }
-
-    public final String getLoggingSettings() {
-        return channel.getLoggingSettings();
-    }
-
-    public final String getDriverId() {
-        return channel.getDriverId();
-    }
-
-    public final String getDeviceId() {
-        return channel.getDeviceId();
-    }
-
-    public final String getDeviceDescription() {
-        return channel.getDeviceDescription();
-    }
-
-    public final String getDeviceAddress() {
-        return channel.getDeviceAddress();
-    }
-
-    public final String getDeviceSettings() {
-        return channel.getDeviceSettings();
-    }
-
-    public final DeviceState getDeviceState() {
-        return channel.getDeviceState();
-    }
-
-    public final ChannelState getState() {
-        return channel.getChannelState();
-    }
-
-    public final boolean isConnected() {
-        return channel.isConnected();
-    }
-
-    public final void addListener(RecordListener listener) {
-        channel.addListener(listener);
-    }
-
-    public final void removeListener(RecordListener listener) {
-        channel.removeListener(listener);
-    }
-
-    public final Record read() {
-        return channel.read();
-    }
-
-    public final Record getRecord() {
-        return channel.getLatestRecord();
-    }
-
-    public final Record getRecord(long time) throws DataLoggerNotAvailableException, IOException {
-        return channel.getLoggedRecord(time);
-    }
-
-    public final List<Record> getRecords(long startTime) throws DataLoggerNotAvailableException, IOException {
-        return channel.getLoggedRecords(startTime);
-    }
-
-    public final List<Record> getRecords(long startTime, long endTime) throws DataLoggerNotAvailableException, IOException {
-        return channel.getLoggedRecords(startTime, endTime);
-    }
-
-    public final void setRecord(Record record) {
-        channel.setLatestRecord(record);
-    }
-
-    public final Flag write(Value value) {
-        return channel.write(value);
-    }
-
-    public final void writeFuture(List<FutureValue> values) {
-        channel.writeFuture(values);
+    public ServerChannel newChannel(String address, String settings) throws ArgumentSyntaxException {
+        return this.newChannel(Configurations.parseAddress(address, channelClass));
     }
 
     @Override
-    public String toString() {
-        return getId()+" ("+getValueType().toString()+"): "+getRecord().toString();
+    public ServerChannel newChannel(Address address) throws ArgumentSyntaxException {
+        return this.newChannel();
+    }
+
+    protected ServerChannel newChannel() {
+        try {
+            return channelClass.getDeclaredConstructor().newInstance();
+            
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            throw new IllegalArgumentException(MessageFormat.format("Unable to instance {0}: {1}", 
+            		channelClass.getSimpleName(), e.getMessage()));
+        }
+    }
+
+    final void bindChannel(Class<? extends ServerChannel> channelClass) {
+        this.channelClass = channelClass;
+    }
+
+    public List<ServerChannel> getChannels() {
+        return (List<ServerChannel>) channels.values();
+    }
+
+	final List<ServerChannel> getChannels(List<? extends ServerMappingContainer> containers) {
+        List<ServerChannel> channels = new ArrayList<ServerChannel>();
+        for (ServerMappingContainer container : containers) {
+            try {
+				channels.add(getChannel(container));
+				
+			} catch (ArgumentSyntaxException e) {
+                logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
+			}
+        }
+        return channels;
+    }
+
+	final List<ServerChannel> newChannels(List<? extends ServerMappingContainer> containers) {
+        List<ServerChannel> channels = new ArrayList<ServerChannel>();
+        for (ServerMappingContainer container : containers) {
+        	ServerChannel channel;
+            try {
+                channel = newChannel(container);
+                channel.doCreate(this);
+                channel.doConfigure(container);
+                
+                channels.add(channel);
+                
+            } catch (ArgumentSyntaxException e) {
+                logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
+            }
+        }
+        return channels;
     }
 
 }

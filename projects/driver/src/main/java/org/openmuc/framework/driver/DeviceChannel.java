@@ -25,7 +25,6 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.driver.spi.ChannelTaskContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 
@@ -51,22 +50,6 @@ public abstract class DeviceChannel extends ChannelContainerWrapper {
     }
 
     protected void onDestroy() {
-        // Placeholder for the optional implementation
-    }
-
-    protected void doConfigure(ChannelTaskContainer container) throws ArgumentSyntaxException {
-        if (!equals(container)) {
-            doConfigure(container.getChannel().getAddress(), container.getChannel().getSettings());
-            onConfigure();
-        }
-        setTaskContainer(container);
-    }
-
-    protected void doConfigure(String address, String settings) throws ArgumentSyntaxException {
-        configure(address, settings);
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 
@@ -105,7 +88,7 @@ public abstract class DeviceChannel extends ChannelContainerWrapper {
         return context;
     }
 
-    private Channel getChannel() {
+    private final Channel getChannel() {
     	return container.getChannel();
     }
 
