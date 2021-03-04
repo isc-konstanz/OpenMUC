@@ -23,7 +23,7 @@ package org.openmuc.framework.server.spi;
 
 import org.openmuc.framework.dataaccess.DataAccessService;
 
-public interface ServerComponent extends ServerService {
+public interface ServerActivator extends ServerService {
 
     public void activate(DataAccessService dataAccessService);
 

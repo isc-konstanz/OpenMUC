@@ -74,7 +74,7 @@ import org.openmuc.framework.dataaccess.LogicalDevice;
 import org.openmuc.framework.dataaccess.LogicalDeviceChangeListener;
 import org.openmuc.framework.dataaccess.ReadRecordContainer;
 import org.openmuc.framework.dataaccess.WriteValueContainer;
-import org.openmuc.framework.datalogger.spi.DataLoggerComponent;
+import org.openmuc.framework.datalogger.spi.DataLoggerActivator;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
@@ -85,7 +85,7 @@ import org.openmuc.framework.driver.spi.DriverActivator;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
-import org.openmuc.framework.server.spi.ServerComponent;
+import org.openmuc.framework.server.spi.ServerActivator;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 import org.openmuc.framework.server.spi.ServerService;
 import org.osgi.service.component.annotations.Activate;
@@ -947,8 +947,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     private void bindServerService(ServerService server) {
         logger.debug("Registering server: {}", server.getId());
 
-        if (server instanceof ServerComponent) {
-            ((ServerComponent) server).activate(this);
+        if (server instanceof ServerActivator) {
+            ((ServerActivator) server).activate(this);
         }
         synchronized (newServers) {
             newServers.add(server);
@@ -981,8 +981,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 newServers.remove(server);
             }
         }
-        if (server instanceof ServerComponent) {
-            ((ServerComponent) server).deactivate();
+        if (server instanceof ServerActivator) {
+            ((ServerActivator) server).deactivate();
         }
         logger.info("Unregistered server: {}", serverId);
     }
@@ -1021,8 +1021,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
         logger.debug("Registering data logger: {}", dataLogger.getId());
         
         synchronized (newDataLoggers) {
-            if (dataLogger instanceof DataLoggerComponent) {
-                ((DataLoggerComponent) dataLogger).activate(this);
+            if (dataLogger instanceof DataLoggerActivator) {
+                ((DataLoggerActivator) dataLogger).activate(this);
             }
             newDataLoggers.add(dataLogger);
             interrupt();
@@ -1048,8 +1048,8 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 newDataLoggers.remove(dataLogger);
             }
         }
-        if (dataLogger instanceof DataLoggerComponent) {
-            ((DataLoggerComponent) dataLogger).deactivate();
+        if (dataLogger instanceof DataLoggerActivator) {
+            ((DataLoggerActivator) dataLogger).deactivate();
         }
         logger.info("Unregistered data logger: {}", dataLoggerId);
     }

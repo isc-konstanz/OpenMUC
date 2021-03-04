@@ -23,7 +23,7 @@ package org.openmuc.framework.datalogger.spi;
 
 import org.openmuc.framework.dataaccess.DataAccessService;
 
-public interface DataLoggerComponent extends DataLoggerService {
+public interface DataLoggerActivator extends DataLoggerService {
 
     public void activate(DataAccessService dataAccessService);
 
