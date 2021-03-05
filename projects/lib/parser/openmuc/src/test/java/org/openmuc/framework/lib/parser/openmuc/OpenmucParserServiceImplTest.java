@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
@@ -32,8 +33,6 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 import org.openmuc.framework.parser.spi.ParserService;
 import org.openmuc.framework.parser.spi.SerializationException;
 
@@ -118,30 +117,5 @@ class OpenmucParserServiceImplTest {
 
         Record recordDes = parserService.deserialize(inputString.getBytes(), ValueType.DOUBLE);
         assertEquals("VALID", recordDes.getFlag().name());
-    }
-
-    private class LogRecordContainerImpl implements LogRecordContainer {
-        private final String channelId;
-        private final Record record;
-
-        public LogRecordContainerImpl(String channelId, Record record) {
-            this.channelId = channelId;
-            this.record = record;
-        }
-
-        @Override
-        public Channel getChannel() {
-            return null;
-        }
-
-        @Override
-        public String getChannelId() {
-        	return channelId;
-        }
-
-        @Override
-        public Record getRecord() {
-            return record;
-        }
     }
 }

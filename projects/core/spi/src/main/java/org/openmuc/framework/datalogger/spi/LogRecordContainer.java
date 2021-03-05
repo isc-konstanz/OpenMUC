@@ -22,13 +22,10 @@
 package org.openmuc.framework.datalogger.spi;
 
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.dataaccess.ChannelContainer;
 
-public interface LogRecordContainer extends ChannelContainer {
+public interface LogRecordContainer {
 
-    default String getChannelId() {
-        return getChannel().getId();
-    }
+    String getChannelId();
 
     Record getRecord();
 

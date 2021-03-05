@@ -281,8 +281,9 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                             toRemove.add(channel);
                         }
                         else if (!channel.config.isDisabled()) {
+                            String channelId = channel.getId();
                             Record latestRecord = channel.getLatestRecord();
-                            logContainers.add(new LogRecordContainerImpl(channel, latestRecord));
+                            logContainers.add(new LogRecordContainerImpl(channelId, latestRecord));
                         }
                     }
 
@@ -312,7 +313,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             if (currentAction.samplingCollections != null && !currentAction.samplingCollections.isEmpty()) {
 
                 for (ChannelCollection samplingCollection : currentAction.samplingCollections) {
-                    List<ReadRecordContainerImpl> selectedChannels = new ArrayList<>(
+                    List<ChannelRecordContainerImpl> selectedChannels = new ArrayList<>(
                             samplingCollection.channels.size());
                     for (ChannelImpl channel : samplingCollection.channels) {
                         selectedChannels.add(channel.createChannelRecordContainer());
@@ -524,13 +525,13 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
             while ((recordContainers = receivedRecordContainers.poll()) != null) {
                 for (ChannelRecordContainer container : recordContainers) {
-                    ReadRecordContainerImpl containerImpl = (ReadRecordContainerImpl) container;
+                    ChannelRecordContainerImpl containerImpl = (ChannelRecordContainerImpl) container;
 
                     if (containerImpl.getChannel().getChannelState() == ChannelState.LISTENING) {
                         containerImpl.getChannel().setNewRecord(containerImpl.getRecord());
                         if (containerImpl.getChannel().isLoggingEvent()) {
                             LogRecordContainer logRecordContainer = new LogRecordContainerImpl(
-                                    containerImpl.getChannel(), containerImpl.getRecord());
+                                    containerImpl.getChannel().getId(), containerImpl.getRecord());
                             logRecordContainers.add(logRecordContainer);
                         }
                     }
@@ -1368,27 +1369,27 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
     @Override
     public void read(List<ReadRecordContainer> readContainers) {
-        Map<Device, List<ReadRecordContainerImpl>> containersByDevice = new HashMap<>();
+        Map<Device, List<ChannelRecordContainerImpl>> containersByDevice = new HashMap<>();
 
         for (ReadRecordContainer container : readContainers) {
-            if (container instanceof ReadRecordContainerImpl == false) {
+            if (container instanceof ChannelRecordContainerImpl == false) {
                 throw new IllegalArgumentException(
                         "Only use ReadRecordContainer created by Channel.getReadContainer()");
             }
 
             ChannelImpl channel = (ChannelImpl) container.getChannel();
-            List<ReadRecordContainerImpl> containersOfDevice = containersByDevice
+            List<ChannelRecordContainerImpl> containersOfDevice = containersByDevice
                     .get(channel.config.deviceParent.device);
             if (containersOfDevice == null) {
                 containersOfDevice = new LinkedList<>();
                 containersByDevice.put(channel.config.deviceParent.device, containersOfDevice);
             }
-            containersOfDevice.add((ReadRecordContainerImpl) container);
+            containersOfDevice.add((ChannelRecordContainerImpl) container);
         }
         CountDownLatch readTasksFinishedSignal = new CountDownLatch(containersByDevice.size());
 
         synchronized (newReadTasks) {
-            for (Entry<Device, List<ReadRecordContainerImpl>> channelRecordContainers : containersByDevice
+            for (Entry<Device, List<ChannelRecordContainerImpl>> channelRecordContainers : containersByDevice
                     .entrySet()) {
                 ReadTask readTask = new ReadTask(this, channelRecordContainers.getKey(),
                         channelRecordContainers.getValue(), readTasksFinishedSignal);

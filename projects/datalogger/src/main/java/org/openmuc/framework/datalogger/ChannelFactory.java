@@ -18,36 +18,13 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.ascii.test;
+package org.openmuc.framework.datalogger;
 
-import org.openmuc.framework.data.Record;
-import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.Settings;
 
-public class LogRecordContainerTestImpl implements LogRecordContainer {
+public interface ChannelFactory {
 
-	private String channelId;
-	private Record record;
-
-	public LogRecordContainerTestImpl(String channelId, Record record) {
-		this.channelId = channelId;
-		this.record = record;
-	}
-
-	@Override
-	public Channel getChannel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-    public String getChannelId() {
-        return channelId;
-    }
-
-	@Override
-	public Record getRecord() {
-		return record;
-	}
+    DataChannel newChannel(Settings settings) throws ArgumentSyntaxException;
 
 }

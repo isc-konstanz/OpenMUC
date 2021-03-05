@@ -168,7 +168,7 @@ public final class Device {
 
     private void updateChannels(DeviceConfigImpl oldDeviceConfig, ChannelState channelState, Flag flag,
             long currentTime, List<LogChannel> logChannels) {
-        List<ReadRecordContainerImpl> listeningChannels = null;
+        List<ChannelRecordContainerImpl> listeningChannels = null;
         for (Entry<String, ChannelConfigImpl> newChannelConfigEntry : deviceConfig.channelConfigsById.entrySet()) {
             ChannelConfigImpl oldChannelConfig = oldDeviceConfig.channelConfigsById.get(newChannelConfigEntry.getKey());
             ChannelConfigImpl newChannelConfig = newChannelConfigEntry.getValue();
@@ -220,8 +220,8 @@ public final class Device {
         }
     }
 
-    private List<ReadRecordContainerImpl> initalizeListenChannels(ChannelState channelState, Flag flag,
-            long currentTime, List<LogChannel> logChannels, List<ReadRecordContainerImpl> listeningChannels,
+    private List<ChannelRecordContainerImpl> initalizeListenChannels(ChannelState channelState, Flag flag,
+            long currentTime, List<LogChannel> logChannels, List<ChannelRecordContainerImpl> listeningChannels,
             ChannelConfigImpl newChannelConfig) {
         if (newChannelConfig.state != ChannelState.DISABLED) {
 
@@ -294,7 +294,7 @@ public final class Device {
     private void setStatesForNewConnectedDevice(DeviceConfigImpl oldDeviceConfig, DeviceState DeviceState,
             ChannelState channelState, Flag flag, long currentTime, List<LogChannel> logChannels) {
         state = DeviceState;
-        List<ReadRecordContainerImpl> listeningChannels = null;
+        List<ChannelRecordContainerImpl> listeningChannels = null;
         for (Entry<String, ChannelConfigImpl> newChannelConfigEntry : deviceConfig.channelConfigsById.entrySet()) {
             ChannelConfigImpl oldChannelConfig = oldDeviceConfig.channelConfigsById.get(newChannelConfigEntry.getKey());
             ChannelConfigImpl newChannelConfig = newChannelConfigEntry.getValue();
@@ -541,7 +541,7 @@ public final class Device {
 
     private void setConnected(long currentTime) {
 
-        List<ReadRecordContainerImpl> listeningChannels = null;
+        List<ChannelRecordContainerImpl> listeningChannels = null;
         for (ChannelConfigImpl channelConfig : deviceConfig.channelConfigsById.values()) {
             if (channelConfig.state != ChannelState.DISABLED) {
                 if (channelConfig.isListening()) {

@@ -21,24 +21,24 @@
 package org.openmuc.framework.datalogger.ascii.utils;
 
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 
 public class LogRecordContainerAscii implements LogRecordContainer {
 
-    Channel channel;
+    String channelId;
     Record record;
 
-    public LogRecordContainerAscii(Channel channel, Record record) {
+    public LogRecordContainerAscii(String channelId, Record record) {
 
-        this.channel = channel;
+        this.channelId = channelId;
         this.record = record;
     }
 
-	@Override
-	public Channel getChannel() {
-		return channel;
-	}
+    @Override
+    public String getChannelId() {
+
+        return channelId;
+    }
 
     @Override
     public Record getRecord() {

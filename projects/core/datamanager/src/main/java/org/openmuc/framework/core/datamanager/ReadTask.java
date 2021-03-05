@@ -35,7 +35,7 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
     private static final Logger logger = LoggerFactory.getLogger(ReadTask.class);
 
     private final CountDownLatch readTaskFinishedSignal;
-    List<ReadRecordContainerImpl> channelRecordContainers;
+    List<ChannelRecordContainerImpl> channelRecordContainers;
 
     protected boolean unsupportedOperationExceptionThrown = false;
     protected boolean unknownDriverExceptionThrown = false;
@@ -43,7 +43,7 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
 
     boolean startedLate = false;
 
-    public ReadTask(DataManager dataManager, Device device, List<ReadRecordContainerImpl> selectedChannels,
+    public ReadTask(DataManager dataManager, Device device, List<ChannelRecordContainerImpl> selectedChannels,
             CountDownLatch readTaskFinishedSignal) {
         this.dataManager = dataManager;
         this.device = device;
@@ -64,7 +64,7 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
             logger.warn("Connection to device {} lost because {}. Trying to reconnect...", device.deviceConfig.getId(),
                     e.getMessage());
 
-            for (ReadRecordContainerImpl driverChannel : channelRecordContainers) {
+            for (ChannelRecordContainerImpl driverChannel : channelRecordContainers) {
                 driverChannel.setRecord(new Record(Flag.ACCESS_METHOD_NOT_SUPPORTED));
             }
             readTaskFinishedSignal.countDown();
@@ -103,12 +103,12 @@ public class ReadTask extends DeviceTask implements ConnectedTask {
         disabled = true;
         long now = System.currentTimeMillis();
         if (unsupportedOperationExceptionThrown) {
-            for (ReadRecordContainerImpl driverChannel : channelRecordContainers) {
+            for (ChannelRecordContainerImpl driverChannel : channelRecordContainers) {
                 driverChannel.setRecord(new Record(null, now, Flag.ACCESS_METHOD_NOT_SUPPORTED));
             }
         }
         else if (unknownDriverExceptionThrown) {
-            for (ReadRecordContainerImpl driverChannel : channelRecordContainers) {
+            for (ChannelRecordContainerImpl driverChannel : channelRecordContainers) {
                 driverChannel.setRecord(new Record(null, now, Flag.DRIVER_THREW_UNKNOWN_EXCEPTION));
             }
         }

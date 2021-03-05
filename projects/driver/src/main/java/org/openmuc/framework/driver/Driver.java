@@ -121,6 +121,7 @@ public abstract class Driver<D extends Device<? extends DeviceChannel>> extends 
     public final void deactivate() {
         try {
             doDeactivate();
+            doDestroy();
             
         } catch (Exception e) {
             logger.warn("Error deactivating driver {}: {}", getContext().getId(), e.getMessage());
@@ -132,6 +133,14 @@ public abstract class Driver<D extends Device<? extends DeviceChannel>> extends 
     }
 
     protected void onDeactivate() throws Exception {
+        // Placeholder for the optional implementation
+    }
+
+    void doDestroy() throws Exception {
+    	onDestroy();
+    }
+
+    protected void onDestroy() throws Exception {
         // Placeholder for the optional implementation
     }
 

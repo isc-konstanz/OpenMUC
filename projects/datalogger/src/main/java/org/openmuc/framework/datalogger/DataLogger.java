@@ -22,51 +22,53 @@
 package org.openmuc.framework.datalogger;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.data.TypeConversionException;
 import org.openmuc.framework.dataaccess.DataAccessService;
+import org.openmuc.framework.datalogger.spi.DataLoggerActivator;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
+public abstract class DataLogger<C extends DataChannel> extends ChannelContext implements DataLoggerActivator {
+
     private static final Logger logger = LoggerFactory.getLogger(DataLogger.class);
 
-    private final Map<String, ChannelHandler<C>> handlers = new HashMap<String, ChannelHandler<C>>();
-
-    private DataAccessService dataAccess = null;
-
-    @Override
-    public final DataLogger<C> getDataLogger() {
-        return this;
+    public DataLogger() {
+    	super();
+        try {
+	        doCreate();
+	        
+		} catch (Exception e) {
+            logger.warn("Error instancing data logger {}: {}", getId(), e.getMessage());
+		}
     }
 
-    public final DataLoggerContext getContext() {
-        return this;
+    void doCreate() throws Exception {
+    	onCreate();
+    }
+
+    protected void onCreate() throws Exception {
+        // Placeholder for the optional implementation
     }
 
     @Override
     public final void activate(DataAccessService dataAccess) {
-        this.dataAccess = dataAccess;
         try {
-            onActivate(dataAccess);
-            onActivate();
+            doActivate(dataAccess);
             
         } catch (Exception e) {
             logger.warn("Error activating data logger {}: {}", getId(), e.getMessage());
         }
     }
 
-    @Override
-    public final void deactivate() {
-        onDeactivate();
+    void doActivate(DataAccessService dataAccess) throws Exception {
+        onActivate(dataAccess);
+        onActivate();
     }
 
     protected void onActivate(DataAccessService dataAccess) throws Exception {
@@ -77,48 +79,51 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
         // Placeholder for the optional implementation
     }
 
-    protected void onDeactivate() {
+    @Override
+    public final void deactivate() {
+        try {
+            doDeactivate();
+            doDestroy();
+            
+        } catch (Exception e) {
+            logger.warn("Error deactivating data logger {}: {}", getId(), e.getMessage());
+        }
+    }
+
+    void doDeactivate() throws Exception {
+        onDeactivate();
+    }
+
+    protected void onDeactivate() throws Exception {
         // Placeholder for the optional implementation
     }
 
-    @Override
+    void doDestroy() throws Exception {
+        for (DataChannel channel : channels.values()) {
+            channel.onDestroy();
+        }
+        channels.clear();
+        onDestroy();
+    }
+
+    protected void onDestroy() throws Exception {
+        // Placeholder for the optional implementation
+    }
+
+	@Override
+    @SuppressWarnings("unchecked")
     public final void setChannelsToLog(List<LogChannel> logChannels) {
         // Will be called if OpenMUC receives new logging configurations
-        handlers.clear();
+        channels.clear();
         try {
             List<C> channels = new LinkedList<C>();
-            for (LogChannel configs : logChannels) {
-                String id = configs.getId();
+            for (LogChannel logChannel : logChannels) {
                 try {
-                    C channel = doCreateChannel(configs);
-                    
-                    ChannelHandler<C> handler;
-                    if (channel.isAveraging()) {
-                        handler = new ChannelHandlerAverage<C>(channel);
-                        try {
-                            channel.addListener((ChannelHandlerAverage<C>) handler);
-                            ((ChannelHandlerAverage<C>) handler).setListening(true);
-                            
-                        } catch (NullPointerException e) {
-                            logger.warn("Failed to start averaging listener channel: {}", id);
-                            // FIXME: Channel not instanced yet.
-                        }
-                    }
-                    else if (channel.getLoggingIntervalMax() > channel.getLoggingInterval()) {
-                        handler = new ChannelHandlerDynamic<C>(channel);
-                    }
-                    else {
-                        handler = new ChannelHandler<C>(channel);
-                    }
-                    handlers.put(id, handler);
-                    channels.add(channel);
-                    
-                    logger.debug("{} \"{}\" configured to log every {}s", 
-                            handler.getClass().getSimpleName(), id, configs.getLoggingInterval()/1000);
-                }
-                catch (ArgumentSyntaxException e) {
-                    logger.warn("Failed to configure channel \"{}\": {}", id, e.getMessage());
-                }
+    				channels.add((C) getChannel(logChannel));
+    				
+    			} catch (ArgumentSyntaxException | NullPointerException e) {
+                    logger.warn("Unable to configure channel \"{}\": {}", logChannel.getId(), e.getMessage());
+    			}
             }
             onConfigure(channels);
             
@@ -131,41 +136,33 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
         // Placeholder for the optional implementation
     }
 
-    @Override
+	@Override
+    @SuppressWarnings("unchecked")
     public final void log(List<LogRecordContainer> containers, long timestamp) {
-        if (containers == null || containers.isEmpty()) {
-            logger.trace("Requested Emoncms logger to log an empty container list");
-            return;
-        }
-        synchronized(handlers) {
-            List<C> channels = new LinkedList<C>();
-            for (LogRecordContainer container : containers) {
-                if (!handlers.containsKey(container.getChannelId())) {
-                    logger.trace("Failed to log record for unconfigured channel \"{}\"", container.getChannelId());
-                    continue;
-                }
-                try {
-                    ChannelHandler<C> handler = handlers.get(container.getChannelId());
-                    if (handler.update(container.getRecord())) {
-                        channels.add(handler.getChannel());
-                    }
-                } catch (TypeConversionException e) {
-                    logger.warn("Failed to prepare record to log to channel \"{}\": {}", container.getChannelId(), e.getMessage());
-                }
+        try {
+            synchronized(channels) {
+            	onWrite((List<C>) getChannels(containers), timestamp);
             }
-            try {
-                onWrite(channels, timestamp);
-                
-            } catch (IOException e) {
-                logger.error("Failed to log channels: {}", e.getMessage());
-            }
+        } catch (IOException e) {
+            logger.error("Failed to log channels: {}", e.getMessage());
         }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void logEvent(List<LogRecordContainer> containers, long timestamp) {
-        // TODO Auto-generated method stub
-        
+        try {
+            synchronized(channels) {
+            	onWriteEvent((List<C>) getChannels(containers), timestamp);
+            }
+        } catch (IOException e) {
+            logger.error("Failed to log channels: {}", e.getMessage());
+        }
+    }
+
+    protected void onWriteEvent(List<C> channels, long timestamp) throws IOException {
+        // Placeholder for the optional implementation
+        this.onWrite(channels, timestamp);
     }
 
     protected void onWrite(List<C> channels, long timestamp) throws IOException {
@@ -176,13 +173,14 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Record> getRecords(String id, long startTime, long endTime) throws IOException {
-        synchronized(handlers) {
-            if (!handlers.containsKey(id)) {
+        synchronized(channels) {
+            C channel = (C) getChannel(id);
+            if (channel == null) {
                 logger.warn("Failed to retrieve records for unconfigured channel \"{}\"", id);
                 return null;
             }
-            C channel = handlers.get(id).getChannel();
             
             return onRead(channel, startTime, endTime);
         }
@@ -191,24 +189,6 @@ public abstract class DataLogger<C extends Channel> extends DataLoggerContext {
     protected List<Record> onRead(C channel, long startTime, long endTime) throws IOException {
         // Placeholder for the optional implementation
         return channel.doRead(startTime, endTime);
-    }
-
-    final C doCreateChannel(LogChannel configs) throws ArgumentSyntaxException {
-        C channel = onCreateChannel(configs);
-        channel.doCreate(this, dataAccess.getChannel(configs.getId()));
-        channel.doConfigure(configs);
-        
-        return channel;
-    }
-
-    protected C onCreateChannel(LogChannel configs) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-        return onCreateChannel();
-    }
-
-    protected C onCreateChannel() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-        return super.newChannel();
     }
 
 }

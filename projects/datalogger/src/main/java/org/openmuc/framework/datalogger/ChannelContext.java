@@ -20,137 +20,131 @@
  */
 package org.openmuc.framework.datalogger;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.data.Record;
-import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.dataaccess.ChannelState;
-import org.openmuc.framework.dataaccess.DeviceState;
-import org.openmuc.framework.dataaccess.RecordListener;
+import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.data.TypeConversionException;
+import org.openmuc.framework.datalogger.spi.LogChannel;
+import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public abstract class ChannelContext extends Configurable {
+public class ChannelContext extends Configurable implements ChannelFactory {
 
-    Channel channel;
+    private static final Logger logger = LoggerFactory.getLogger(ChannelContext.class);
 
-    DataLoggerContext context;
+    Class<? extends DataChannel> channelClass;
 
-    <C extends DataLoggerContext> void doCreate(C context, Channel channel) throws ArgumentSyntaxException {
-        this.channel = channel;
-        this.context = context;
-        this.onCreate(context);
-        this.onCreate();
+    final Map<String, DataChannel> channels = new HashMap<String, DataChannel>();
+
+    ChannelContext() {
+        channelClass = getChannelClass();
     }
 
-    protected <C extends DataLoggerContext> void onCreate(C context) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    @SuppressWarnings("unchecked")
+    private Class<? extends DataChannel> getChannelClass() {
+        Class<?> loggerClass = getClass();
+        while (loggerClass.getSuperclass() != null) {
+            if (loggerClass.getSuperclass().equals(DataLogger.class)) {
+                break;
+            }
+            loggerClass = loggerClass.getSuperclass();
+        }
+        // This operation is safe. Because deviceClass is a direct sub-class, getGenericSuperclass() will
+        // always return the Type of this class. Because this class is parameterized, the cast is safe
+        ParameterizedType superClass = (ParameterizedType) loggerClass.getGenericSuperclass();
+        return (Class<? extends DataChannel>) superClass.getActualTypeArguments()[0];
     }
 
-    protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    public DataChannel getChannel(String id) {
+        return channels.get(id);
     }
 
-    protected void onDestroy() {
-        // Placeholder for the optional implementation
+    final DataChannel getChannel(LogChannel configs) throws ArgumentSyntaxException {
+        String id = configs.getId();
+        DataChannel channel = channels.get(id);
+        try {
+            if (channel == null) {
+                channel = newChannel(configs);
+                channel.doCreate(this);
+                channel.doConfigure(configs);
+                
+                channels.put(id, channel);
+            }
+            else {
+                channel.doConfigure(configs);
+            }
+        } catch (ArgumentSyntaxException e) {
+            
+            channels.remove(id);
+            
+            throw e;
+        }
+        return channel;
     }
 
-    public final DataLoggerContext getDataLogger() {
-        return context;
+    final DataChannel newChannel(LogChannel channel) throws ArgumentSyntaxException {
+        return this.newChannel(channel.getLoggingSettings());
     }
 
-    public String getId() {
-        return channel.getId();
+    public DataChannel newChannel(String settings) throws ArgumentSyntaxException {
+        return this.newChannel(Configurations.parseSettings(settings, channelClass));
     }
-
-    public String getDescription() {
-        return channel.getDescription();
-    }
-
-    public String getUnit() {
-        return channel.getUnit();
-    }
-
-    public ValueType getValueType() {
-        return channel.getValueType();
-    }
-
-    public int getValueTypeLength() {
-        return channel.getValueTypeLength();
-    }
-
-    public final String getAddress() {
-        return channel.getAddress();
-    }
-
-    public final String getSettings() {
-        return channel.getSettings();
-    }
-
-    public final double getScalingFactor() {
-        return channel.getScalingFactor();
-    }
-
-    public final int getSamplingInterval() {
-        return channel.getSamplingInterval();
-    }
-
-    public final int getSamplingTimeOffset() {
-        return channel.getSamplingTimeOffset();
-    }
-
-    public int getLoggingInterval() {
-        return channel.getLoggingInterval();
-    }
-
-    public int getLoggingTimeOffset() {
-        return channel.getLoggingTimeOffset();
-    }
-
-    public final String getDriverId() {
-        return channel.getDriverId();
-    }
-
-    public final String getDeviceId() {
-        return channel.getDeviceId();
-    }
-
-    public final String getDeviceDescription() {
-        return channel.getDeviceDescription();
-    }
-
-    public final String getDeviceAddress() {
-        return channel.getDeviceAddress();
-    }
-
-    public final String getDeviceSettings() {
-        return channel.getDeviceSettings();
-    }
-
-    public final DeviceState getDeviceState() {
-        return channel.getDeviceState();
-    }
-
-    public final ChannelState getState() {
-        return channel.getChannelState();
-    }
-
-    public final boolean isConnected() {
-        return channel.isConnected();
-    }
-
-    public final void addListener(RecordListener listener) {
-        channel.addListener(listener);
-    }
-
-    public final void removeListener(RecordListener listener) {
-        channel.removeListener(listener);
-    }
-
-    public abstract Record getRecord();
 
     @Override
-    public String toString() {
-        return getId()+" ("+getValueType().toString()+"): "+getRecord().toString();
+    public DataChannel newChannel(Settings settings) throws ArgumentSyntaxException {
+        return this.newChannel();
+    }
+
+    protected DataChannel newChannel() {
+        try {
+            return channelClass.getDeclaredConstructor().newInstance();
+            
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            throw new IllegalArgumentException(MessageFormat.format("Unable to instance {0}: {1}", 
+                    channelClass.getSimpleName(), e.getMessage()));
+        }
+    }
+
+    final void bindChannel(Class<? extends DataChannel> channelClass) {
+        this.channelClass = channelClass;
+    }
+
+    public List<DataChannel> getChannels() {
+        return (List<DataChannel>) channels.values();
+    }
+
+	final List<DataChannel> getChannels(List<? extends LogRecordContainer> containers) {
+        List<DataChannel> channels = new ArrayList<DataChannel>();
+        if (containers == null || containers.isEmpty()) {
+            logger.trace("Logger received empty container list");
+            return channels;
+        }
+        for (LogRecordContainer container : containers) {
+        	DataChannel channel = (DataChannel) getChannel(container.getChannelId());
+            if (channel == null) {
+                logger.trace("Failed to log record for unconfigured channel \"{}\"", container.getChannelId());
+                continue;
+            }
+            try {
+                if (channel.update(container.getRecord())) {
+                    channels.add(channel);
+                }
+            } catch (TypeConversionException e) {
+                logger.warn("Failed to prepare record to log to channel \"{}\": {}", container.getChannelId(), e.getMessage());
+            }
+        }
+        return channels;
     }
 
 }

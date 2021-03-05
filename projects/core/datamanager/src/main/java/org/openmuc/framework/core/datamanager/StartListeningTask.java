@@ -33,10 +33,10 @@ public final class StartListeningTask extends DeviceTask implements ConnectedTas
 
     private static final Logger logger = LoggerFactory.getLogger(StartListeningTask.class);
 
-    List<ReadRecordContainerImpl> selectedChannels;
+    List<ChannelRecordContainerImpl> selectedChannels;
 
     public StartListeningTask(DataManager dataManager, Device device,
-            List<ReadRecordContainerImpl> selectedChannels) {
+            List<ChannelRecordContainerImpl> selectedChannels) {
         this.dataManager = dataManager;
         this.device = device;
         this.selectedChannels = selectedChannels;
@@ -49,7 +49,7 @@ public final class StartListeningTask extends DeviceTask implements ConnectedTas
         try {
             device.connection.startListening((List<ChannelRecordContainer>) ((List<?>) selectedChannels), dataManager);
         } catch (UnsupportedOperationException e) {
-            for (ReadRecordContainerImpl chRecContainer : selectedChannels) {
+            for (ChannelRecordContainerImpl chRecContainer : selectedChannels) {
                 chRecContainer.getChannel().setFlag(Flag.ACCESS_METHOD_NOT_SUPPORTED);
             }
         } catch (ConnectionException e) {

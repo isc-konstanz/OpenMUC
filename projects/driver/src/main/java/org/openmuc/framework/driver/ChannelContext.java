@@ -195,7 +195,7 @@ public class ChannelContext extends Configurable implements ChannelOptions, Chan
             try {
 				channels.add(getChannel(container));
 				
-			} catch (ArgumentSyntaxException e) {
+			} catch (ArgumentSyntaxException | NullPointerException e) {
                 logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
                 
             	setChannelContainerFlag(container, Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
@@ -215,7 +215,7 @@ public class ChannelContext extends Configurable implements ChannelOptions, Chan
                 
                 channels.add(channel);
                 
-            } catch (ArgumentSyntaxException e) {
+            } catch (ArgumentSyntaxException | NullPointerException e) {
                 logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
                 
             	setChannelContainerFlag(container, Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);

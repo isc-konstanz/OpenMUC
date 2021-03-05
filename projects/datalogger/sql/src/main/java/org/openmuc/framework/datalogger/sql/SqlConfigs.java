@@ -8,14 +8,14 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.annotation.AddressSyntax;
 import org.openmuc.framework.config.annotation.Setting;
 import org.openmuc.framework.config.annotation.SettingsSyntax;
-import org.openmuc.framework.datalogger.Channel;
+import org.openmuc.framework.datalogger.DataChannel;
 import org.openmuc.framework.datalogger.sql.time.TimestampIndex;
 import org.openmuc.framework.datalogger.sql.time.TimestampSplit;
 import org.openmuc.framework.datalogger.sql.time.TimestampUnix;
 
 @AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
 @SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class SqlConfigs extends Channel {
+public class SqlConfigs extends DataChannel {
 
     protected String url;
 

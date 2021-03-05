@@ -26,18 +26,18 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.ReadRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 
-public final class ReadRecordContainerImpl extends ChannelContainerImpl implements ReadRecordContainer, ChannelRecordContainer {
+public final class ChannelRecordContainerImpl extends ChannelContainerImpl implements ReadRecordContainer, ChannelRecordContainer {
 
     private static final Record RECORD_DEFAULT = new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
 
     private Record record;
     private Object handle;
 
-    public ReadRecordContainerImpl(ChannelImpl channel) {
+    public ChannelRecordContainerImpl(ChannelImpl channel) {
         this(channel, RECORD_DEFAULT);
     }
 
-    private ReadRecordContainerImpl(ChannelImpl channel, Record record) {
+    private ChannelRecordContainerImpl(ChannelImpl channel, Record record) {
         super(channel);
         this.record = record;
         this.handle = channel.handle;
@@ -65,7 +65,7 @@ public final class ReadRecordContainerImpl extends ChannelContainerImpl implemen
 
     @Override
     public ChannelRecordContainer copy() {
-        return new ReadRecordContainerImpl(channel, getRecord());
+        return new ChannelRecordContainerImpl(channel, getRecord());
     }
 
 }

@@ -39,7 +39,7 @@ public abstract class Server<C extends ServerChannel> extends ChannelContext imp
 	        doCreate();
 	        
 		} catch (Exception e) {
-            logger.warn("Error instancing driver {}: {}", getId(), e.getMessage());
+            logger.warn("Error instancing server {}: {}", getId(), e.getMessage());
 		}
     }
 
@@ -78,6 +78,7 @@ public abstract class Server<C extends ServerChannel> extends ChannelContext imp
     public final void deactivate() {
         try {
             doDeactivate();
+            doDestroy();
             
         } catch (Exception e) {
             logger.warn("Error deactivating server {}: {}", getId(), e.getMessage());
@@ -89,6 +90,18 @@ public abstract class Server<C extends ServerChannel> extends ChannelContext imp
     }
 
     protected void onDeactivate() throws Exception {
+        // Placeholder for the optional implementation
+    }
+
+    void doDestroy() throws Exception {
+        for (ServerChannel channel : channels.values()) {
+            channel.onDestroy();
+        }
+        channels.clear();
+        onDestroy();
+    }
+
+    protected void onDestroy() throws Exception {
         // Placeholder for the optional implementation
     }
 

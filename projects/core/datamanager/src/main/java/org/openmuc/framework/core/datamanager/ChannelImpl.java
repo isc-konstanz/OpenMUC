@@ -375,8 +375,8 @@ public final class ChannelImpl implements Channel {
 
     }
 
-    ReadRecordContainerImpl createChannelRecordContainer() {
-        return new ReadRecordContainerImpl(this);
+    ChannelRecordContainerImpl createChannelRecordContainer() {
+        return new ChannelRecordContainerImpl(this);
     }
 
     void setFlag(Flag flag) {
@@ -526,8 +526,8 @@ public final class ChannelImpl implements Channel {
     public Record read() {
         CountDownLatch readTaskFinishedSignal = new CountDownLatch(1);
 
-        ReadRecordContainerImpl readValueContainer = new ReadRecordContainerImpl(this);
-        List<ReadRecordContainerImpl> readValueContainerList = Arrays.asList(readValueContainer);
+        ChannelRecordContainerImpl readValueContainer = new ChannelRecordContainerImpl(this);
+        List<ChannelRecordContainerImpl> readValueContainerList = Arrays.asList(readValueContainer);
 
         ReadTask readTask = new ReadTask(dataManager, config.deviceParent.device, readValueContainerList,
                 readTaskFinishedSignal);
@@ -558,7 +558,7 @@ public final class ChannelImpl implements Channel {
 
     @Override
     public ReadRecordContainer getReadContainer() {
-        return new ReadRecordContainerImpl(this);
+        return new ChannelRecordContainerImpl(this);
     }
 
 }

@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
@@ -135,7 +136,7 @@ public class LoggerUtilsTest {
 
         LogIntervalContainerGroup group = new LogIntervalContainerGroup();
 
-        LogRecordContainer container1 = new LogRecordContainerTestImpl(ch01,
+        LogRecordContainer container1 = new LogRecordContainerImpl(ch01,
                 new Record(new DoubleValue(i * 7 - 0.555), timeStamp));
 
         group.add(container1);

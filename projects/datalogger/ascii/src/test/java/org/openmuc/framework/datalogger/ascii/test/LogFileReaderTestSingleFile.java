@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
@@ -87,7 +88,7 @@ public class LogFileReaderTestSingleFile {
 
         for (int i = 0; i < ((60 * 60 * 2) * (1000d / loggingInterval)); i++) {
 
-            LogRecordContainer container1 = new LogRecordContainerTestImpl(Channel0Name,
+            LogRecordContainer container1 = new LogRecordContainerImpl(Channel0Name,
                     new Record(new DoubleValue(i), calendar.getTimeInMillis()));
 
             LogIntervalContainerGroup group = new LogIntervalContainerGroup();

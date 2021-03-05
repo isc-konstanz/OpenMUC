@@ -91,11 +91,10 @@ public class ChannelContext extends Configurable implements ChannelFactory {
     }
 
     final ServerChannel newChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
-        return this.newChannel(container.getChannel().getAddress(), 
-                               container.getChannel().getSettings());
+        return this.newChannel(container.getServerMapping().getServerAddress());
     }
 
-    public ServerChannel newChannel(String address, String settings) throws ArgumentSyntaxException {
+    public ServerChannel newChannel(String address) throws ArgumentSyntaxException {
         return this.newChannel(Configurations.parseAddress(address, channelClass));
     }
 
@@ -129,27 +128,9 @@ public class ChannelContext extends Configurable implements ChannelFactory {
             try {
 				channels.add(getChannel(container));
 				
-			} catch (ArgumentSyntaxException e) {
+			} catch (ArgumentSyntaxException | NullPointerException e) {
                 logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
 			}
-        }
-        return channels;
-    }
-
-	final List<ServerChannel> newChannels(List<? extends ServerMappingContainer> containers) {
-        List<ServerChannel> channels = new ArrayList<ServerChannel>();
-        for (ServerMappingContainer container : containers) {
-        	ServerChannel channel;
-            try {
-                channel = newChannel(container);
-                channel.doCreate(this);
-                channel.doConfigure(container);
-                
-                channels.add(channel);
-                
-            } catch (ArgumentSyntaxException e) {
-                logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
-            }
         }
         return channels;
     }

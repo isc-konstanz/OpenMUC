@@ -34,7 +34,7 @@ public final class SamplingTask extends DeviceTask {
 
     private static final Logger logger = LoggerFactory.getLogger(SamplingTask.class);
 
-    List<ReadRecordContainerImpl> channelRecordContainers;
+    List<ChannelRecordContainerImpl> channelRecordContainers;
     private boolean unsupportedOperationExceptionThrown = false;
     private boolean unknownDriverExceptionThrown = false;
     private volatile boolean disabled = false;
@@ -43,7 +43,7 @@ public final class SamplingTask extends DeviceTask {
     boolean startedLate = false;
     String samplingGroup;
 
-    public SamplingTask(DataManager dataManager, Device device, List<ReadRecordContainerImpl> selectedChannels,
+    public SamplingTask(DataManager dataManager, Device device, List<ChannelRecordContainerImpl> selectedChannels,
             String samplingGroup) {
         this.dataManager = dataManager;
         this.device = device;
@@ -58,17 +58,17 @@ public final class SamplingTask extends DeviceTask {
         }
         disabled = true;
         if (unsupportedOperationExceptionThrown) {
-            for (ReadRecordContainerImpl channelRecordContainer : channelRecordContainers) {
+            for (ChannelRecordContainerImpl channelRecordContainer : channelRecordContainers) {
                 channelRecordContainer.getChannel().setFlag(Flag.ACCESS_METHOD_NOT_SUPPORTED);
             }
         }
         else if (unknownDriverExceptionThrown) {
-            for (ReadRecordContainerImpl channelRecordContainer : channelRecordContainers) {
+            for (ChannelRecordContainerImpl channelRecordContainer : channelRecordContainers) {
                 channelRecordContainer.getChannel().setFlag(Flag.DRIVER_THREW_UNKNOWN_EXCEPTION);
             }
         }
         else {
-            for (ReadRecordContainerImpl channelRecordContainer : channelRecordContainers) {
+            for (ChannelRecordContainerImpl channelRecordContainer : channelRecordContainers) {
                 channelRecordContainer.getChannel().setNewRecord(channelRecordContainer.getRecord());
             }
         }
@@ -105,7 +105,7 @@ public final class SamplingTask extends DeviceTask {
             unknownDriverExceptionThrown = true;
         }
 
-        for (ReadRecordContainerImpl channelRecordContainer : channelRecordContainers) {
+        for (ChannelRecordContainerImpl channelRecordContainer : channelRecordContainers) {
             channelRecordContainer.getChannel().handle = channelRecordContainer.getChannelHandle();
         }
 
@@ -123,17 +123,17 @@ public final class SamplingTask extends DeviceTask {
 
         disabled = true;
         if (startedLate) {
-            for (ReadRecordContainerImpl driverChannel : channelRecordContainers) {
+            for (ChannelRecordContainerImpl driverChannel : channelRecordContainers) {
                 driverChannel.getChannel().setFlag(Flag.STARTED_LATE_AND_TIMED_OUT);
             }
         }
         else if (running) {
-            for (ReadRecordContainerImpl driverChannel : channelRecordContainers) {
+            for (ChannelRecordContainerImpl driverChannel : channelRecordContainers) {
                 driverChannel.getChannel().setFlag(Flag.TIMEOUT);
             }
         }
         else {
-            for (ReadRecordContainerImpl driverChannel : channelRecordContainers) {
+            for (ChannelRecordContainerImpl driverChannel : channelRecordContainers) {
                 driverChannel.getChannel().setFlag(Flag.DEVICE_OR_INTERFACE_BUSY);
             }
             device.removeTask(this);

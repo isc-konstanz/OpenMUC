@@ -35,7 +35,6 @@ import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.datalogger.spi.LogRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
@@ -163,17 +162,17 @@ public class AmqpDriverConnection implements Connection {
     }
 
     private class LogRecordContainerImpl implements LogRecordContainer {
-        private final Channel channel;
+        private final String channelId;
         private final Record record;
 
-        public LogRecordContainerImpl(Channel channel, Record record) {
-            this.channel = channel;
+        public LogRecordContainerImpl(String channelId, Record record) {
+            this.channelId = channelId;
             this.record = record;
         }
 
         @Override
-        public Channel getChannel() {
-            return channel;
+        public String getChannelId() {
+            return channelId;
         }
 
         @Override
@@ -187,7 +186,7 @@ public class AmqpDriverConnection implements Connection {
             throws UnsupportedOperationException, ConnectionException {
         for (ChannelValueContainer container : containers) {
             Record record = new Record(container.getValue(), System.currentTimeMillis());
-            LogRecordContainer logRecordContainer = new LogRecordContainerImpl(container.getChannel(), record);
+            LogRecordContainer logRecordContainer = new LogRecordContainerImpl(container.getChannelAddress(), record);
             if (parsers.containsKey(setting.parser)) {
                 byte[] message = new byte[0];
                 try {

@@ -31,6 +31,8 @@ public interface LogChannel {
 
     public String getAddress();
 
+    public String getSettings();
+
     public String getUnit();
 
     public ValueType getValueType();
