@@ -127,6 +127,26 @@ public abstract class ChannelWrapper extends Configurable {
         return average;
     }
 
+	public String getDriverId() {
+		return channel.getDriverId();
+	}
+
+	public String getDeviceId() {
+		return channel.getDeviceId();
+	}
+
+	public String getDeviceDescription() {
+		return channel.getDeviceDescription();
+	}
+
+	public String getDeviceAddress() {
+		return channel.getDeviceAddress();
+	}
+
+	public String getDeviceSettings() {
+		return channel.getDeviceSettings();
+	}
+
     public boolean equals(LogChannel channel) {
         return this.channel.getId() != null && channel != null &&
                 this.channel.getId().equals(channel.getId()) &&

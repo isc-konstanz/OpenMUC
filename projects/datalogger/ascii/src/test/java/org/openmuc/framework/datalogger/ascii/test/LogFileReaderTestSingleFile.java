@@ -56,7 +56,7 @@ public class LogFileReaderTestSingleFile {
     static String[] channelIds = { Channel0Name };
     static String dateFormat = "yyyyMMdd HH:mm:ss";
 
-    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "Comment", "W", ValueType.DOUBLE, 0.0,
+    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "", "Comment", "W", ValueType.DOUBLE, 0.0,
             0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
 
     @BeforeAll
@@ -79,7 +79,7 @@ public class LogFileReaderTestSingleFile {
 
         HashMap<String, LogChannel> logChannelList = new HashMap<>();
 
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(Channel0Name, "", "dummy description", "kW", ValueType.DOUBLE,
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(Channel0Name, "", "", "dummy description", "kW", ValueType.DOUBLE,
                 0.0, 0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
 
         logChannelList.put(Channel0Name, ch1);

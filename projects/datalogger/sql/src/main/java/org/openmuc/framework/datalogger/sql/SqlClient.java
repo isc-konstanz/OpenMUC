@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -223,8 +222,8 @@ public class SqlClient {
         try (Connection connection = source.getConnection()) {
             try (Transaction transaction = new Transaction(connection)) {
                 for (SqlChannel channel : channels) {
-                    if (channel.getFlag() != Flag.VALID) {
-                        logger.debug("Skipping logging of invalid record: {}", channel.getFlag());
+                    if (!channel.isValid()) {
+                        logger.debug("Skipping logging of invalid record: {}", channel.getRecord().getFlag());
                     }
                     else if (channel.isUnion()) {
                         logger.warn("Unable to write to table union for channel \"{}\"", channel.getId());

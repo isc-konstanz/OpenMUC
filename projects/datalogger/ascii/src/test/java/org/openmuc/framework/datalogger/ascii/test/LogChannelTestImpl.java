@@ -26,8 +26,9 @@ import org.openmuc.framework.datalogger.spi.LogChannel;
 public class LogChannelTestImpl implements LogChannel {
 
     private final String id;
-    private final String address;
     private final String description;
+    private final String address;
+    private final String settings;
     private final String unit;
     private final ValueType valueType;
     private final Double scalingFactor;
@@ -43,15 +44,16 @@ public class LogChannelTestImpl implements LogChannel {
     private final Boolean disabled;
     private Integer valueLength;
 
-    public LogChannelTestImpl(String id, String address, String description, String unit, 
+    public LogChannelTestImpl(String id, String address, String settings, String description, String unit, 
             ValueType valueType, Double scalingFactor, Double valueOffset, Boolean listening, 
             Integer samplingInterval, Integer samplingTimeOffset, String samplingGroup, 
             Integer loggingInterval, Integer loggingTimeOffset, String loggingSettings, 
             Boolean isEventLogging, Boolean disabled) {
 
         this.id = id;
-        this.address = address;
         this.description = description;
+        this.address = address;
+        this.settings = settings;
         this.unit = unit;
         this.valueType = valueType;
         this.scalingFactor = scalingFactor;
@@ -67,13 +69,13 @@ public class LogChannelTestImpl implements LogChannel {
         this.disabled = disabled;
     }
 
-    public LogChannelTestImpl(String id, String channelAddress, String description, String unit, 
+    public LogChannelTestImpl(String id, String address, String settings, String description, String unit, 
             ValueType valueType, Double scalingFactor, Double valueOffset, Boolean listening, 
             Integer samplingInterval, Integer samplingTimeOffset, String samplingGroup, 
             Integer loggingInterval, Integer loggingTimeOffset, String loggingSettings, 
             Boolean isEventLogging, Boolean disabled, int valueLength) {
 
-        this(id, description, channelAddress, unit, valueType, scalingFactor, valueOffset, listening, samplingInterval,
+        this(id, description, address, settings, unit, valueType, scalingFactor, valueOffset, listening, samplingInterval,
                 samplingTimeOffset, samplingGroup, loggingInterval, loggingTimeOffset, loggingSettings, isEventLogging, disabled);
         this.valueLength = valueLength;
     }
@@ -88,6 +90,12 @@ public class LogChannelTestImpl implements LogChannel {
     public String getAddress() {
 
         return address;
+    }
+
+    @Override
+    public String getSettings() {
+
+        return settings;
     }
 
     @Override
@@ -178,4 +186,30 @@ public class LogChannelTestImpl implements LogChannel {
 
         return disabled;
     }
+
+	@Override
+	public String getDriverId() {
+		return null;
+	}
+
+	@Override
+	public String getDeviceId() {
+		return null;
+	}
+
+	@Override
+	public String getDeviceDescription() {
+		return null;
+	}
+
+	@Override
+	public String getDeviceAddress() {
+		return null;
+	}
+
+	@Override
+	public String getDeviceSettings() {
+		return null;
+	}
+
 }

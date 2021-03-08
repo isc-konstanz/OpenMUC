@@ -238,16 +238,6 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     }
 
     @Override
-    public void setLoggingEvent(Boolean loggingEvent) {
-        this.loggingEvent = loggingEvent;
-    }
-
-    @Override
-    public Boolean isLoggingEvent() {
-        return this.loggingEvent;
-    }
-
-    @Override
     public Integer getLoggingTimeOffset() {
         return loggingTimeOffset;
     }
@@ -269,6 +259,41 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     public void setLoggingSettings(String settings) {
         loggingSettings = settings;
     }
+
+    @Override
+    public void setLoggingEvent(Boolean loggingEvent) {
+        this.loggingEvent = loggingEvent;
+    }
+
+    @Override
+    public Boolean isLoggingEvent() {
+        return this.loggingEvent;
+    }
+
+	@Override
+	public String getDriverId() {
+		return this.deviceParent.getDriver().getId();
+	}
+
+	@Override
+	public String getDeviceId() {
+		return this.deviceParent.getId();
+	}
+
+	@Override
+	public String getDeviceDescription() {
+		return this.deviceParent.getDescription();
+	}
+
+	@Override
+	public String getDeviceAddress() {
+		return this.deviceParent.getAddress();
+	}
+
+	@Override
+	public String getDeviceSettings() {
+		return this.deviceParent.getSettings();
+	}
 
     @Override
     public Boolean isDisabled() {

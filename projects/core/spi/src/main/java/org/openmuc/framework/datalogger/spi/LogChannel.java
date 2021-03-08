@@ -59,6 +59,16 @@ public interface LogChannel {
 
     public Boolean isLoggingEvent();
 
+    String getDriverId();
+
+    String getDeviceId();
+
+    String getDeviceDescription();
+
+    String getDeviceAddress();
+
+    String getDeviceSettings();
+
     public Boolean isDisabled();
 
 }

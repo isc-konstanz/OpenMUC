@@ -57,7 +57,7 @@ public class LogFileReaderTestMultipleFiles {
     private static String dateFormat = "yyyyMMdd HH:mm:ss";
     // private static String ext = ".dat";
 
-    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "Comment", "W", ValueType.DOUBLE, 0.0,
+    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "", "Comment", "W", ValueType.DOUBLE, 0.0,
             0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
 
     @BeforeAll
@@ -95,7 +95,7 @@ public class LogFileReaderTestMultipleFiles {
 
         HashMap<String, LogChannel> logChannelList = new HashMap<>();
 
-        LogChannelTestImpl ch0 = new LogChannelTestImpl("power", "", "dummy description", "kW", ValueType.DOUBLE, 0.0,
+        LogChannelTestImpl ch0 = new LogChannelTestImpl("power", "", "", "dummy description", "kW", ValueType.DOUBLE, 0.0,
                 0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
 
         logChannelList.put(Channel0Name, ch0);

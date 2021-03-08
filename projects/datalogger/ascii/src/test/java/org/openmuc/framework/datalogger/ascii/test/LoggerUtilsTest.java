@@ -63,7 +63,7 @@ public class LoggerUtilsTest {
         TestUtils.createTestFolder();
         TestUtils.deleteExistingFile(loggingInterval, loggingTimeOffset, calendar);
 
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.DOUBLE, 0.0,
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "", "dummy description", dummy, ValueType.DOUBLE, 0.0,
                 0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
 
         logChannelList.put(ch01, ch1);
@@ -124,7 +124,7 @@ public class LoggerUtilsTest {
         lfw.log(group, loggingInterval, loggingTimeOffset, calendar, logChannelList);
         AsciiLogger.setLastLoggedLineTimeStamp(loggingInterval, loggingTimeOffset, calendar.getTimeInMillis());
 
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.DOUBLE, 0.0,
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "", "dummy description", dummy, ValueType.DOUBLE, 0.0,
                 0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
     }
 

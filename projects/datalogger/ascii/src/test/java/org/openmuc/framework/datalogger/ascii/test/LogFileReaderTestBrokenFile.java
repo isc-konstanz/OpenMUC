@@ -39,7 +39,7 @@ public class LogFileReaderTestBrokenFile {
     static int loggingTimeOffset = 0; // ms
     private static final String Channel0Name = "power";
 
-    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "Comment", "W", ValueType.DOUBLE, 0.0,
+    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "", "Comment", "W", ValueType.DOUBLE, 0.0,
             0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
 
     @Test

@@ -115,23 +115,23 @@ public class LogFileWriterTest {
             file2.delete();
         }
 
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.FLOAT, 0.0, 0.0,
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "", "dummy description", dummy, ValueType.FLOAT, 0.0, 0.0,
                 false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
-        LogChannelTestImpl ch2 = new LogChannelTestImpl(ch02, "", "dummy description", dummy, ValueType.DOUBLE, 0.0,
+        LogChannelTestImpl ch2 = new LogChannelTestImpl(ch02, "", "", "dummy description", dummy, ValueType.DOUBLE, 0.0,
                 0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
-        LogChannelTestImpl ch3 = new LogChannelTestImpl(ch03, "", "dummy description", dummy, ValueType.BOOLEAN, 0.0,
+        LogChannelTestImpl ch3 = new LogChannelTestImpl(ch03, "", "", "dummy description", dummy, ValueType.BOOLEAN, 0.0,
                 0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
-        LogChannelTestImpl ch4 = new LogChannelTestImpl(ch04, "", "dummy description", dummy, ValueType.SHORT, 0.0, 0.0,
+        LogChannelTestImpl ch4 = new LogChannelTestImpl(ch04, "", "", "dummy description", dummy, ValueType.SHORT, 0.0, 0.0,
                 false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
-        LogChannelTestImpl ch5 = new LogChannelTestImpl(ch05, "", "dummy description", dummy, ValueType.INTEGER, 0.0,
+        LogChannelTestImpl ch5 = new LogChannelTestImpl(ch05, "", "", "dummy description", dummy, ValueType.INTEGER, 0.0,
                 0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
-        LogChannelTestImpl ch6 = new LogChannelTestImpl(ch06, "", "dummy description", dummy, ValueType.LONG, 0.0, 0.0,
+        LogChannelTestImpl ch6 = new LogChannelTestImpl(ch06, "", "", "dummy description", dummy, ValueType.LONG, 0.0, 0.0,
                 false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
-        LogChannelTestImpl ch7 = new LogChannelTestImpl(ch07, "", "dummy description", dummy, ValueType.BYTE, 0.0, 0.0,
+        LogChannelTestImpl ch7 = new LogChannelTestImpl(ch07, "", "", "dummy description", dummy, ValueType.BYTE, 0.0, 0.0,
                 false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
-        LogChannelTestImpl ch8 = new LogChannelTestImpl(ch08, "", "dummy description", dummy, ValueType.STRING, 0.0,
+        LogChannelTestImpl ch8 = new LogChannelTestImpl(ch08, "", "", "dummy description", dummy, ValueType.STRING, 0.0,
                 0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false, valueLength);
-        LogChannelTestImpl ch9 = new LogChannelTestImpl(ch09, "", "dummy description", dummy, ValueType.BYTE_ARRAY, 0.0,
+        LogChannelTestImpl ch9 = new LogChannelTestImpl(ch09, "", "", "dummy description", dummy, ValueType.BYTE_ARRAY, 0.0,
                 0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false, valueLengthByteArray);
 
         logChannelList.put(ch01, ch1);
@@ -222,7 +222,7 @@ public class LogFileWriterTest {
         lfw.log(group, loggingInterval, loggingTimeOffset, calendar, logChannelList);
         AsciiLogger.setLastLoggedLineTimeStamp(loggingInterval, loggingTimeOffset, calendar.getTimeInMillis());
 
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.FLOAT, 0.0, 0.0,
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "", "dummy description", dummy, ValueType.FLOAT, 0.0, 0.0,
                 false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
         LogFileReader lfr = new LogFileReader(TestUtils.TESTFOLDERPATH, ch1);
 
