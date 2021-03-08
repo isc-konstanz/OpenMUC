@@ -1,0 +1,36 @@
+
+def projectName = "OpenMUC Data Logger - SQL"
+def projectDescription = "SQL data logger for the OpenMUC framework."
+
+def c3poVersion =  '0.9.5.4'
+
+configurations.create('embed')
+
+dependencies {
+  implementation project(':openmuc-datalogger')
+  implementation group: 'com.mchange', name: 'c3p0',                 version: c3poVersion
+  embed          group: 'com.mchange', name: 'c3p0',                 version: c3poVersion
+}
+
+def embed = configurations.embed.findAll {
+  !it.getName().contains("protobuf")
+}
+
+jar {
+  into('libs') {
+    from embed
+  }
+  manifest {
+    attributes('Bundle-Name':        projectName,
+               'Bundle-Description': projectDescription,
+               'Bundle-ClassPath': '.,' + embed.collect { 'libs/'+it.getName() }.join(','),
+               'Import-Package':    '!com.mchange.*,' +
+                                    '!org.jboss.*,' +
+                                    '!org.apache.log*,' +
+                                    '!com.typesafe.*,' +
+                                    '!javax.swing.*,' +
+                                    'com.mysql.cj.jdbc,' +
+                                    '*' + jarDefaultImportPackageVersion,
+               'Export-Package':    '')
+  }
+}
