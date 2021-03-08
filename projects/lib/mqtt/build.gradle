@@ -2,41 +2,42 @@ def projectName = "OpenMUC Library - MQTT Service"
 def projectDescription = "MQTT service for the OpenMUC framework"
 
 
-def hivemqVersion = '1.1.4'
+def hivemqVersion = '1.2.1'
+
+configurations.create('embed')
 
 dependencies {
     implementation project(':openmuc-core-spi')
     implementation project(':openmuc-lib-ssl')
     implementation project(':openmuc-lib-filePersistence')
     implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: hivemqVersion
+    embed group: 'com.hivemq', name: 'hivemq-mqtt-client', version: hivemqVersion
 
-
-    implementation group: 'com.google.dagger', name: 'dagger', version: '2.20'
-    implementation 'javax.inject:javax.inject:1'
-
-    testCompile 'org.junit.jupiter:junit-jupiter:5.5.2'
-    testCompile 'org.mockito:mockito-junit-jupiter:3.3.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.3.3'
 }
 
 jar {
-    manifest {
-        name = projectName
-        instruction 'Export-Package', 'dagger.internal;version="2.20";uses:="dagger,javax.inject"', 'dagger;version="2.20";uses:="dagger,javax.inject"', 'javax.inject;version="1",*'
+    def bundles = '.'
+    configurations.embed.each {bundles += ',lib/' + it.name}
+    bnd('Bundle-Name': projectName,
+            'Bundle-ClassPath': bundles,
+            'Export-Package': 'org.openmuc.framework.lib.*',
+            'Import-Package': 'org.openmuc.*,org.slf4j.*,org.osgi.*,javax.*,sun.misc.*'
+    )
+
+    into('lib') {
+        from configurations.embed
     }
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name projectName
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
                 description projectDescription
             }
         }
     }
-}
-
-test {
-    useJUnitPlatform()
-    testLogging.showStandardStreams = true
 }

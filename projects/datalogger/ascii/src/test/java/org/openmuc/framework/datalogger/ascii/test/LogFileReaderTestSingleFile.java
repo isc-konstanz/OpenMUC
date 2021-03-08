@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -29,7 +29,6 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
@@ -39,7 +38,7 @@ import org.openmuc.framework.datalogger.ascii.LogFileReader;
 import org.openmuc.framework.datalogger.ascii.LogFileWriter;
 import org.openmuc.framework.datalogger.ascii.LogIntervalContainerGroup;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 
 public class LogFileReaderTestSingleFile {
 
@@ -87,8 +86,7 @@ public class LogFileReaderTestSingleFile {
         Calendar calendar = TestUtils.stringToDate(dateFormat, fileDate0 + " 01:00:00");
 
         for (int i = 0; i < ((60 * 60 * 2) * (1000d / loggingInterval)); i++) {
-
-            LogRecordContainer container1 = new LogRecordContainerImpl(Channel0Name,
+            LoggingRecord container1 = new LoggingRecord(Channel0Name,
                     new Record(new DoubleValue(i), calendar.getTimeInMillis()));
 
             LogIntervalContainerGroup group = new LogIntervalContainerGroup();

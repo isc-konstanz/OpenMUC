@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -75,6 +75,8 @@ public interface Channel {
      */
     String getSettings();
 
+    String getLoggingSettings();
+
     /**
      * Returns the unit of this channel. Returns the empty string if not configured. The unit is used for informational
      * purposes only. Neither the framework nor any driver does value conversions based on the configured unit.
@@ -128,6 +130,14 @@ public interface Channel {
      */
     int getSamplingTimeOffset();
 
+    /**
+     * Returns the parent's device's configured sampling timeout in milliseconds. Returns the default of 0 if not
+     * configured.
+     *
+     * @return the parent's device's configured sampling timeout in milliseconds.
+     */
+    int getSamplingTimeout();
+    
     /**
      * Returns the channel's configured logging interval in milliseconds. Returns -1 if not configured.
      *

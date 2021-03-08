@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 
 /**
  * The ParserService provides methods to serialize and deserialize OpenMUC records.
@@ -37,23 +37,23 @@ public interface ParserService {
      * this service.
      *
      * @param openMucRecord
-     *            instance of a {@link org.openmuc.framework.datalogger.spi.LogRecordContainer}
+     *            logging record for serializing
      * @return serialized record as byte array
      * @throws SerializationException
      *             when something goes wrong while serializing
      */
-    byte[] serialize(LogRecordContainer openMucRecord) throws SerializationException;
+    byte[] serialize(LoggingRecord openMucRecord) throws SerializationException;
 
     /**
      * Serializes a list of LogRecordContainers.
      *
      * @param openMucRecords
-     *            List of instances of a {@link org.openmuc.framework.datalogger.spi.LogRecordContainer}
+     *            list of logging records for serializing
      * @return serialized records as byte array
      * @throws SerializationException
      *             when something goes wrong while serializing
      */
-    byte[] serialize(List<LogRecordContainer> openMucRecords) throws SerializationException;
+    byte[] serialize(List<LoggingRecord> openMucRecords) throws SerializationException;
 
     /**
      * Deserializes a given JSON-String as byte array to {@link org.openmuc.framework.data.Record}. The format of the

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -45,6 +45,7 @@ public class SnmpChannel implements Channel {
     private ValueType valueType;
     private int samplingInterval;
     private int samplingTimeOffset;
+    private int samplingTimeout;
     private String deviceAddress;
     private String settings;
 
@@ -77,6 +78,11 @@ public class SnmpChannel implements Channel {
     }
 
     @Override
+    public String getLoggingSettings() {
+        return "";
+    }
+
+    @Override
     public String getUnit() {
         return unit;
     }
@@ -97,20 +103,22 @@ public class SnmpChannel implements Channel {
     }
 
     @Override
+    public int getSamplingTimeout() {
+        return samplingTimeout;
+    }
+
+    @Override
     public int getLoggingInterval() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public int getLoggingTimeOffset() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public String getDriverName() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -121,110 +129,88 @@ public class SnmpChannel implements Channel {
 
     @Override
     public String getDeviceName() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public String getDeviceDescription() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public ChannelState getChannelState() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public DeviceState getDeviceState() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void addListener(RecordListener listener) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void removeListener(RecordListener listener) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public boolean isConnected() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public Record getLatestRecord() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setLatestRecord(Record record) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public Flag write(Value value) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void writeFuture(List<FutureValue> values) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public WriteValueContainer getWriteContainer() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Record read() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public ReadRecordContainer getReadContainer() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Record getLoggedRecord(long time) throws DataLoggerNotAvailableException, IOException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public List<Record> getLoggedRecords(long startTime) throws DataLoggerNotAvailableException, IOException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public List<Record> getLoggedRecords(long startTime, long endTime)
             throws DataLoggerNotAvailableException, IOException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public double getScalingFactor() {
-        // TODO Auto-generated method stub
         return 0;
     }
 

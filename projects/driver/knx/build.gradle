@@ -1,4 +1,3 @@
-
 def projectName = "OpenMUC Driver - KNX"
 def projectDescription = "KNX driver for the OpenMUC framework."
 
@@ -8,35 +7,29 @@ def calimerovers = '2.3'
 def jrxtxversion = '1.0.1'
 
 dependencies {
-  implementation project(':openmuc-core-spi')
-  implementation group: 'org.openmuc', name: 'jrxtx', version: jrxtxversion
+    implementation project(':openmuc-core-spi')
+    implementation group: 'org.openmuc', name: 'jrxtx', version: jrxtxversion
 
-  implementation group: 'com.github.calimero', name: 'calimero-core', version: calimerovers
-  embed  group: 'com.github.calimero', name: 'calimero-core', version: calimerovers
+    implementation group: 'com.github.calimero', name: 'calimero-core', version: calimerovers
+    embed group: 'com.github.calimero', name: 'calimero-core', version: calimerovers
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Bundle-ClassPath', '.,lib/calimero-core-' + calimerovers + '.jar'
-    instruction 'Import-Package', '!tuwien.auto.calimero*,*' + jarDefaultImportPackageVersion
-    instruction 'Export-Package', ''
-  }
-}
+    bnd('Bundle-Name': projectName, 'Bundle-ClassPath': '.,lib/calimero-core-' + calimerovers + '.jar',
+            'Import-Package': '!tuwien.auto.calimero*,*' + jarDefaultImportPackageVersion)
 
-jar {
-  into('lib') {
-    from configurations.embed
-  }
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description projectDescription
-      }
+    into('lib') {
+        from configurations.embed
     }
-  }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description projectDescription
+            }
+        }
+    }
 }

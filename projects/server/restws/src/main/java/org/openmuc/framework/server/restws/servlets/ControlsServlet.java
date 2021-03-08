@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -26,8 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openmuc.framework.lib.json.FromJson;
-import org.openmuc.framework.lib.json.ToJson;
+import org.openmuc.framework.lib.rest1.FromJson;
+import org.openmuc.framework.lib.rest1.ToJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

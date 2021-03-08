@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -44,7 +44,9 @@ import org.w3c.dom.NodeList;
 
 public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     private static final Pattern timePattern = Pattern.compile("^([0-9]+)(ms|s|m|h)?$");
-
+    ChannelImpl channel;
+    DeviceConfigImpl deviceParent;
+    ChannelState state;
     private String id;
     private String channelAddress = null;
     private String description = null;
@@ -61,17 +63,221 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     private Boolean loggingEvent = null;
     private Integer loggingInterval = null;
     private Integer loggingTimeOffset = null;
+    private String loggingSettings = null;
     private Boolean disabled = null;
     private List<ServerMapping> serverMappings = null;
-
-    ChannelImpl channel;
-    DeviceConfigImpl deviceParent;
-
-    ChannelState state;
+    private String reader;
 
     ChannelConfigImpl(String id, DeviceConfigImpl deviceParent) {
         this.id = id;
         this.deviceParent = deviceParent;
+    }
+
+    static void addChannelFromDomNode(Node channelConfigNode, DeviceConfig parentConfig) throws ParseException {
+
+        String id = ChannelConfigImpl.getAttributeValue(channelConfigNode, "id");
+        if (id == null) {
+            throw new ParseException("channel has no id attribute");
+        }
+
+        ChannelConfigImpl config;
+
+        try {
+            config = (ChannelConfigImpl) parentConfig.addChannel(id);
+        } catch (Exception e) {
+            throw new ParseException(e);
+        }
+
+        NodeList channelChildren = channelConfigNode.getChildNodes();
+
+        try {
+            for (int i = 0; i < channelChildren.getLength(); i++) {
+                Node childNode = channelChildren.item(i);
+                String childName = childNode.getNodeName();
+
+                if (childName.equals("#text")) {
+                    continue;
+                }
+                else if (childName.equals("description")) {
+                    config.setDescription(childNode.getTextContent());
+                }
+                else if (childName.equals("channelAddress")) {
+                    config.setChannelAddress(childNode.getTextContent());
+                }
+                else if (childName.equals("loggingSettings")) {
+                    config.setLoggingSettings(childNode.getTextContent());
+                    config.setReader(getAttributeValue(childNode, "reader"));
+                }
+                else if (childName.equals("serverMapping")) {
+                    NamedNodeMap attributes = childNode.getAttributes();
+                    Node nameAttribute = attributes.getNamedItem("id");
+
+                    if (nameAttribute != null) {
+                        config.addServerMapping(
+                                new ServerMapping(nameAttribute.getTextContent(), childNode.getTextContent()));
+                    }
+                    else {
+                        throw new ParseException("No id attribute specified for serverMapping.");
+                    }
+                }
+                else if (childName.equals("unit")) {
+                    config.setUnit(childNode.getTextContent());
+                }
+                else if (childName.equals("valueType")) {
+                    String valueTypeString = childNode.getTextContent().toUpperCase();
+
+                    try {
+                        config.valueType = ValueType.valueOf(valueTypeString);
+                    } catch (IllegalArgumentException e) {
+                        throw new ParseException("found unknown channel value type:" + valueTypeString);
+                    }
+
+                    if (config.valueType == ValueType.BYTE_ARRAY || config.valueType == ValueType.STRING) {
+                        String valueTypeLengthString = getAttributeValue(childNode, "length");
+                        if (valueTypeLengthString == null) {
+                            throw new ParseException(
+                                    "length of " + config.valueType.toString() + " value type was not specified");
+                        }
+                        config.valueTypeLength = timeStringToMillis(valueTypeLengthString);
+                    }
+
+                }
+                else if (childName.equals("scalingFactor")) {
+                    config.setScalingFactor(Double.parseDouble(childNode.getTextContent()));
+                }
+                else if (childName.equals("valueOffset")) {
+                    config.setValueOffset(Double.parseDouble(childNode.getTextContent()));
+                }
+                else if (childName.equals("listening")) {
+                    config.setListening(Boolean.parseBoolean(childNode.getTextContent()));
+                }
+                else if (childName.equals("samplingInterval")) {
+                    config.setSamplingInterval(timeStringToMillis(childNode.getTextContent()));
+                }
+                else if (childName.equals("samplingTimeOffset")) {
+                    config.setSamplingTimeOffset(timeStringToMillis(childNode.getTextContent()));
+                }
+                else if (childName.equals("samplingGroup")) {
+                    config.setSamplingGroup(childNode.getTextContent());
+                }
+                else if (childName.equals("settings")) {
+                    config.setSettings(childNode.getTextContent());
+                }
+                else if (childName.equals("loggingInterval")) {
+                    config.setLoggingInterval(timeStringToMillis(childNode.getTextContent()));
+                }
+                else if (childName.equals("loggingTimeOffset")) {
+                    config.setLoggingTimeOffset(timeStringToMillis(childNode.getTextContent()));
+                }
+                else if (childName.equals("loggingEvent")) {
+                    config.setLoggingEvent(Boolean.parseBoolean(childNode.getTextContent()));
+
+                }
+                else if (childName.equals("disabled")) {
+                    config.setDisabled(Boolean.parseBoolean(childNode.getTextContent()));
+                }
+                else {
+                    throw new ParseException("found unknown tag:" + childName);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(e);
+        } catch (IllegalStateException e) {
+            throw new ParseException(e);
+        }
+    }
+
+    static String getAttributeValue(Node element, String attributeName) {
+        NamedNodeMap attributes = element.getAttributes();
+
+        Node nameAttribute = attributes.getNamedItem(attributeName);
+
+        if (nameAttribute == null) {
+            return null;
+        }
+        return nameAttribute.getTextContent();
+    }
+
+    static String millisToTimeString(final int timeInMillis) {
+        if (timeInMillis <= 0) {
+            return "0";
+        }
+        if ((timeInMillis % 1000) != 0) {
+            return timeToString("ms", timeInMillis);
+        }
+
+        int timeInS = timeInMillis / 1000;
+        if ((timeInS % 60) == 0) {
+            int timeInM = timeInS / 60;
+            if ((timeInM % 60) == 0) {
+                int timeInH = timeInM / 60;
+                return timeToString("h", timeInH);
+            }
+            return timeToString("m", timeInM);
+        }
+        return timeToString("s", timeInS);
+    }
+
+    private static String timeToString(String timeUnit, int time) {
+        return MessageFormat.format("{0,number,#}{1}", time, timeUnit);
+    }
+
+    static Integer timeStringToMillis(String timeString) throws ParseException {
+        if (timeString == null || timeString.isEmpty()) {
+            return null;
+        }
+
+        Matcher timeMatcher = timePattern.matcher(timeString);
+        if (!timeMatcher.matches()) {
+            throw new ParseException(MessageFormat.format("Unknown time string: ''{0}''.", timeString));
+        }
+
+        String timeNumStr = timeMatcher.group(1);
+        Long timeNum = parseTimeNumFrom(timeNumStr);
+
+        String timeUnit = timeMatcher.group(2);
+        final TimeUnit milliseconds = TimeUnit.MILLISECONDS;
+
+        if (timeUnit == null) {
+            return timeNum.intValue();
+        }
+
+        switch (timeUnit) {
+        case "s":
+            return (int) milliseconds.convert(timeNum, TimeUnit.SECONDS);
+
+        case "m":
+            return (int) milliseconds.convert(timeNum, TimeUnit.MINUTES);
+
+        case "h":
+            return (int) milliseconds.convert(timeNum, TimeUnit.HOURS);
+
+        case "ms":
+            return timeNum.intValue();
+        default:
+            // can not reach this case: string pattern does not allow this.
+            throw new ParseException("Unknown time unit: " + timeUnit);
+        }
+
+    }
+
+    private static Long parseTimeNumFrom(String timeNumStr) throws ParseException {
+        try {
+            return Long.parseLong(timeNumStr);
+        } catch (NumberFormatException e) {
+            throw new ParseException(e);
+        }
+    }
+
+    static void checkIdSyntax(String id) {
+        if (id.matches("[a-zA-Z0-9_-]+")) {
+            return;
+        }
+
+        String msg = MessageFormat.format(
+                "Invalid ID: \"{0}\". An ID may not be the empty string and must contain only ASCII letters, digits, hyphens and underscores.",
+                id);
+        throw new IllegalArgumentException(msg);
     }
 
     @Override
@@ -247,6 +453,26 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     }
 
     @Override
+    public String getLoggingSettings() {
+        return loggingSettings;
+    }
+
+    @Override
+    public void setLoggingSettings(String loggingSettings) {
+        this.loggingSettings = loggingSettings;
+    }
+
+    @Override
+    public String getReader() {
+        return reader;
+    }
+
+    @Override
+    public void setReader(String reader) {
+        this.reader = reader;
+    }
+
+    @Override
     public Integer getLoggingTimeOffset() {
         return loggingTimeOffset;
     }
@@ -293,115 +519,6 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     @Override
     public DeviceConfig getDevice() {
         return deviceParent;
-    }
-
-    static void addChannelFromDomNode(Node channelConfigNode, DeviceConfig parentConfig) throws ParseException {
-
-        String id = ChannelConfigImpl.getAttributeValue(channelConfigNode, "id");
-        if (id == null) {
-            throw new ParseException("channel has no id attribute");
-        }
-
-        ChannelConfigImpl config;
-
-        try {
-            config = (ChannelConfigImpl) parentConfig.addChannel(id);
-        } catch (Exception e) {
-            throw new ParseException(e);
-        }
-
-        NodeList channelChildren = channelConfigNode.getChildNodes();
-
-        try {
-            for (int i = 0; i < channelChildren.getLength(); i++) {
-                Node childNode = channelChildren.item(i);
-                String childName = childNode.getNodeName();
-
-                if (childName.equals("#text")) {
-                    continue;
-                }
-                else if (childName.equals("description")) {
-                    config.setDescription(childNode.getTextContent());
-                }
-                else if (childName.equals("channelAddress")) {
-                    config.setChannelAddress(childNode.getTextContent());
-                }
-                else if (childName.equals("serverMapping")) {
-                    NamedNodeMap attributes = childNode.getAttributes();
-                    Node nameAttribute = attributes.getNamedItem("id");
-
-                    if (nameAttribute != null) {
-                        config.addServerMapping(
-                                new ServerMapping(nameAttribute.getTextContent(), childNode.getTextContent()));
-                    }
-                    else {
-                        throw new ParseException("No id attribute specified for serverMapping.");
-                    }
-                }
-                else if (childName.equals("unit")) {
-                    config.setUnit(childNode.getTextContent());
-                }
-                else if (childName.equals("valueType")) {
-                    String valueTypeString = childNode.getTextContent().toUpperCase();
-
-                    try {
-                        config.valueType = ValueType.valueOf(valueTypeString);
-                    } catch (IllegalArgumentException e) {
-                        throw new ParseException("found unknown channel value type:" + valueTypeString);
-                    }
-
-                    if (config.valueType == ValueType.BYTE_ARRAY || config.valueType == ValueType.STRING) {
-                        String valueTypeLengthString = getAttributeValue(childNode, "length");
-                        if (valueTypeLengthString == null) {
-                            throw new ParseException(
-                                    "length of " + config.valueType.toString() + " value type was not specified");
-                        }
-                        config.valueTypeLength = timeStringToMillis(valueTypeLengthString);
-                    }
-
-                }
-                else if (childName.equals("scalingFactor")) {
-                    config.setScalingFactor(Double.parseDouble(childNode.getTextContent()));
-                }
-                else if (childName.equals("valueOffset")) {
-                    config.setValueOffset(Double.parseDouble(childNode.getTextContent()));
-                }
-                else if (childName.equals("listening")) {
-                    config.setListening(Boolean.parseBoolean(childNode.getTextContent()));
-                }
-                else if (childName.equals("samplingInterval")) {
-                    config.setSamplingInterval(timeStringToMillis(childNode.getTextContent()));
-                }
-                else if (childName.equals("samplingTimeOffset")) {
-                    config.setSamplingTimeOffset(timeStringToMillis(childNode.getTextContent()));
-                }
-                else if (childName.equals("samplingGroup")) {
-                    config.setSamplingGroup(childNode.getTextContent());
-                }
-                else if (childName.equals("settings")) {
-                    config.setSettings(childNode.getTextContent());
-                }
-                else if (childName.equals("loggingInterval")) {
-                    config.setLoggingInterval(timeStringToMillis(childNode.getTextContent()));
-                }
-                else if (childName.equals("loggingTimeOffset")) {
-                    config.setLoggingTimeOffset(timeStringToMillis(childNode.getTextContent()));
-                }
-                else if (childName.equals("loggingEvent")) {
-                    config.setLoggingEvent(Boolean.parseBoolean(childNode.getTextContent()));
-                }
-                else if (childName.equals("disabled")) {
-                    config.setDisabled(Boolean.parseBoolean(childNode.getTextContent()));
-                }
-                else {
-                    throw new ParseException("found unknown tag:" + childName);
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            throw new ParseException(e);
-        } catch (IllegalStateException e) {
-            throw new ParseException(e);
-        }
     }
 
     Element getDomElement(Document document) {
@@ -538,6 +655,8 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         configClone.loggingTimeOffset = loggingTimeOffset;
         configClone.disabled = disabled;
         configClone.loggingEvent = loggingEvent;
+        configClone.loggingSettings = loggingSettings;
+        configClone.reader = reader;
 
         return configClone;
     }
@@ -665,6 +784,20 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             configClone.loggingEvent = loggingEvent;
         }
 
+        if (loggingSettings == null) {
+            configClone.loggingSettings = ChannelConfig.LOGGING_SETTINGS_DEFAULT;
+        }
+        else {
+            configClone.loggingSettings = loggingSettings;
+        }
+
+        if (reader == null) {
+            configClone.reader = ChannelConfig.LOGGING_READER_DEFAULT;
+        }
+        else {
+            configClone.reader = reader;
+        }
+
         if (loggingTimeOffset == null) {
             configClone.loggingTimeOffset = ChannelConfig.LOGGING_TIME_OFFSET_DEFAULT;
         }
@@ -685,99 +818,6 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         }
 
         return configClone;
-    }
-
-    static String getAttributeValue(Node element, String attributeName) {
-        NamedNodeMap attributes = element.getAttributes();
-
-        Node nameAttribute = attributes.getNamedItem(attributeName);
-
-        if (nameAttribute == null) {
-            return null;
-        }
-        return nameAttribute.getTextContent();
-    }
-
-    static String millisToTimeString(final int timeInMillis) {
-        if (timeInMillis <= 0) {
-            return "0";
-        }
-        if ((timeInMillis % 1000) != 0) {
-            return timeToString("ms", timeInMillis);
-        }
-
-        int timeInS = timeInMillis / 1000;
-        if ((timeInS % 60) == 0) {
-            int timeInM = timeInS / 60;
-            if ((timeInM % 60) == 0) {
-                int timeInH = timeInM / 60;
-                return timeToString("h", timeInH);
-            }
-            return timeToString("m", timeInM);
-        }
-        return timeToString("s", timeInS);
-    }
-
-    private static String timeToString(String timeUnit, int time) {
-        return MessageFormat.format("{0,number,#}{1}", time, timeUnit);
-    }
-
-    static Integer timeStringToMillis(String timeString) throws ParseException {
-        if (timeString == null || timeString.isEmpty()) {
-            return null;
-        }
-
-        Matcher timeMatcher = timePattern.matcher(timeString);
-        if (!timeMatcher.matches()) {
-            throw new ParseException(MessageFormat.format("Unknown time string: ''{0}''.", timeString));
-        }
-
-        String timeNumStr = timeMatcher.group(1);
-        Long timeNum = parseTimeNumFrom(timeNumStr);
-
-        String timeUnit = timeMatcher.group(2);
-        final TimeUnit milliseconds = TimeUnit.MILLISECONDS;
-
-        if (timeUnit == null) {
-            return timeNum.intValue();
-        }
-
-        switch (timeUnit) {
-        case "s":
-            return (int) milliseconds.convert(timeNum, TimeUnit.SECONDS);
-
-        case "m":
-            return (int) milliseconds.convert(timeNum, TimeUnit.MINUTES);
-
-        case "h":
-            return (int) milliseconds.convert(timeNum, TimeUnit.HOURS);
-
-        case "ms":
-            return timeNum.intValue();
-        default:
-            // can not reach this case: string pattern does not allow this.
-            throw new ParseException("Unknown time unit: " + timeUnit);
-        }
-
-    }
-
-    private static Long parseTimeNumFrom(String timeNumStr) throws ParseException {
-        try {
-            return Long.parseLong(timeNumStr);
-        } catch (NumberFormatException e) {
-            throw new ParseException(e);
-        }
-    }
-
-    static void checkIdSyntax(String id) {
-        if (id.matches("[a-zA-Z0-9_-]+")) {
-            return;
-        }
-
-        String msg = MessageFormat.format(
-                "Invalid ID: \"{0}\". An ID may not be the empty string and must contain only ASCII letters, digits, hyphens and underscores.",
-                id);
-        throw new IllegalArgumentException(msg);
     }
 
     public boolean isSampling() {

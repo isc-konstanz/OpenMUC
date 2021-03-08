@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -254,17 +254,13 @@ public class DriverConnection implements Connection {
                 try {
                     mBusConnection.selectComponent(secondaryAddress);
                     sleep(delay);
-                } catch (SerialPortTimeoutException e) {
-                    for (ChannelRecordContainer container : containers) {
-                        container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
-                    }
-                    return null;
                 } catch (IOException e) {
                     for (ChannelRecordContainer container : containers) {
-                        container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
+                        container.setRecord(new Record(Flag.DRIVER_ERROR_UNSPECIFIED));
                     }
+                    connectionInterface.close();
                     logger.error(e.getMessage());
-                    return null;
+                    throw new ConnectionException(e);
                 }
             }
 
@@ -288,26 +284,26 @@ public class DriverConnection implements Connection {
 
             } catch (IOException e) {
                 for (ChannelRecordContainer container : containers) {
-                    container.setRecord(new Record(Flag.DRIVER_ERROR_TIMEOUT));
+                    container.setRecord(new Record(Flag.DRIVER_ERROR_UNSPECIFIED));
                 }
+                connectionInterface.close();
                 logger.error(e.getMessage());
-                return null;
+                throw new ConnectionException(e);
             }
 
             long timestamp = System.currentTimeMillis();
 
             String[] dibvibs = new String[dataRecords.size()];
 
-            int i = 0;
-            i = setDibVibs(dataRecords, dibvibs, i);
+            setDibVibs(dataRecords, dibvibs);
 
-            boolean selectForReadoutSet = setRecords(containers, mBusConnection, timestamp, dataRecords, dibvibs, i);
+            boolean selectForReadoutSet = setRecords(containers, mBusConnection, timestamp, dataRecords, dibvibs);
 
             if (selectForReadoutSet) {
                 try {
                     mBusConnection.resetReadout(mBusAddress);
                     sleep(delay);
-                } catch (SerialPortTimeoutException e) {
+                } catch (IOException e) {
                     try {
                         mBusConnection.linkReset(mBusAddress);
                         sleep(delay);
@@ -315,13 +311,10 @@ public class DriverConnection implements Connection {
                         for (ChannelRecordContainer container : containers) {
                             container.setRecord(new Record(Flag.CONNECTION_EXCEPTION));
                         }
-                        logger.error(e.getMessage());
+                        connectionInterface.close();
+                        logger.error("{}\n{}", e.getMessage(), e1.getMessage());
+                        throw new ConnectionException(e);
                     }
-                } catch (IOException e) {
-                    for (ChannelRecordContainer container : containers) {
-                        container.setRecord(new Record(Flag.CONNECTION_EXCEPTION));
-                    }
-                    logger.error(e.getMessage());
                 }
             }
             return null;
@@ -329,17 +322,17 @@ public class DriverConnection implements Connection {
 
     }
 
-    private int setDibVibs(List<DataRecord> dataRecords, String[] dibvibs, int i) {
+    private void setDibVibs(List<DataRecord> dataRecords, String[] dibvibs) {
+        int i = 0;
         for (DataRecord dataRecord : dataRecords) {
             String dibHex = Helper.bytesToHex(dataRecord.getDib());
             String vibHex = Helper.bytesToHex(dataRecord.getVib());
             dibvibs[i++] = MessageFormat.format("{0}:{1}", dibHex, vibHex);
         }
-        return i;
     }
 
     private boolean setRecords(List<ChannelRecordContainer> containers, MBusConnection mBusConnection, long timestamp,
-            List<DataRecord> dataRecords, String[] dibvibs, int i) throws ConnectionException {
+            List<DataRecord> dataRecords, String[] dibvibs) throws ConnectionException {
         boolean selectForReadoutSet = false;
 
         for (ChannelRecordContainer container : containers) {
@@ -434,15 +427,15 @@ public class DriverConnection implements Connection {
             case NONE:
                 container.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_VALUE_TYPE_CONVERSION_EXCEPTION));
                 if (logger.isWarnEnabled()) {
-                    logger.warn("Received data record with <dib>:<vib> = " + container.getChannelAddress()
-                            + " has value type NONE.");
+                    logger.warn("Received data record with <dib>:<vib> = {}  has value type NONE.",
+                            container.getChannelAddress());
                 }
                 break;
             }
         } catch (IllegalStateException e) {
             container.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_VALUE_TYPE_CONVERSION_EXCEPTION));
-            logger.error("Received data record with <dib>:<vib> = " + container.getChannelAddress()
-                    + " has wrong value type. ", e);
+            logger.error("Received data record with <dib>:<vib> = {} has wrong value type. ErrorMsg: {}",
+                    container.getChannelAddress(), e.getMessage());
         }
     }
 

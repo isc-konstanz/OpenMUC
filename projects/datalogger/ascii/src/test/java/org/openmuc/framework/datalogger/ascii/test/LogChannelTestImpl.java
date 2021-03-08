@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -39,8 +39,8 @@ public class LogChannelTestImpl implements LogChannel {
     private final Integer loggingInterval;
     private final Integer loggingTimeOffset;
     private final Boolean disabled;
-    private Integer valueLength;
     private final Boolean isEventLogging;
+    private Integer valueLength;
 
     public LogChannelTestImpl(String id, String channelAddress, String description, String unit, ValueType valueType,
             Double scalingFactor, Double valueOffset, Boolean listening, Integer samplingInterval,
@@ -72,6 +72,11 @@ public class LogChannelTestImpl implements LogChannel {
         this(id, description, channelAddress, unit, valueType, scalingFactor, valueOffset, listening, samplingInterval,
                 samplingTimeOffset, samplingGroup, loggingInterval, loggingTimeOffset, disabled, isEventLogging);
         this.valueLength = valueLength;
+    }
+
+    @Override
+    public String getLoggingSettings() {
+        return "default";
     }
 
     @Override
@@ -168,4 +173,5 @@ public class LogChannelTestImpl implements LogChannel {
     public Boolean isLoggingEvent() {
         return isEventLogging;
     }
+
 }

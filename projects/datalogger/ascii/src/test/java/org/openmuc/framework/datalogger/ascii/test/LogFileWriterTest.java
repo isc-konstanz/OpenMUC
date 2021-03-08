@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -30,7 +30,6 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -49,23 +48,19 @@ import org.openmuc.framework.datalogger.ascii.LogFileWriter;
 import org.openmuc.framework.datalogger.ascii.LogIntervalContainerGroup;
 import org.openmuc.framework.datalogger.ascii.utils.Const;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 
 public class LogFileWriterTest {
 
     // t1 = start timestamp of requestet interval
     // t2 = end timestamp of requestet interval
 
-    LogFileWriter lfw = new LogFileWriter(TestUtils.TESTFOLDERPATH, true);
-
     private static int loggingInterval = 10000; // ms;
     private static int loggingTimeOffset = 0; // ms;
     private static String ext = ".dat";
-
     private static String dateFormat = "yyyyMMdd HH:mm:s";
     private static String fileDate1 = "20880808";
     private static String fileDate2 = "20880809";
-
     private static String ch01 = "FLOAT";
     private static String ch02 = "DOUBLE";
     private static String ch03 = "BOOLEAN";
@@ -78,17 +73,15 @@ public class LogFileWriterTest {
     private static String dummy = "dummy";
     // private static String[] channelIds = new String[] { ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09 };
     private static String time = " 23:55:00";
-
     private static String testStringValueCorrect = "qwertzuiop+asdfghjkl#<yxcvbnm,.-^1234567890 !$%&/()=?QWERTZUIOP*ASDFGHJKL'>YXCVBNM;:_";
     private static String testStringValueIncorrect = "qwertzuiop+asdfghjkl#<yxcvbnm,.-^1234567890 " + Const.SEPARATOR
             + "!$%&/()=?QWERTZUIOP*SDFGHJKL'>YXCVBNM;:_";
     private static byte[] testByteArray = { 1, 2, 3, 4, -5, -9, 0 };
-
     private static int valueLength = 100;
     private static int valueLengthByteArray = testByteArray.length;
-
     private static HashMap<String, LogChannel> logChannelList = new HashMap<>();
     private static Calendar calendar = TestUtils.stringToDate(dateFormat, fileDate1 + time);
+    LogFileWriter lfw = new LogFileWriter(TestUtils.TESTFOLDERPATH, true);
 
     @BeforeAll
     public static void setup() {
@@ -152,7 +145,7 @@ public class LogFileWriterTest {
 
         // writes 24 records for 2 channels from 12 o'clock till 12 o'clock of the other day
         AsciiLogger.setLastLoggedLineTimeStamp(loggingInterval, loggingTimeOffset, 0); // Set to 0, for deleting
-                                                                                       // timestamp of previous test
+        // timestamp of previous test
 
         for (int i = 0; i < ((60 * 10) * (1000d / loggingInterval)); ++i) {
 
@@ -183,6 +176,34 @@ public class LogFileWriterTest {
         TestUtils.deleteTestFolder();
     }
 
+    private static LogIntervalContainerGroup getGroup(long timeStamp, int i, boolean boolValue, byte byteValue,
+            String testString) {
+
+        LogIntervalContainerGroup group = new LogIntervalContainerGroup();
+
+        LoggingRecord container1 = new LoggingRecord(ch01, new Record(new FloatValue(i * -7 - 0.555F), timeStamp));
+        LoggingRecord container2 = new LoggingRecord(ch02, new Record(new DoubleValue(i * +7 - 0.555), timeStamp));
+        LoggingRecord container3 = new LoggingRecord(ch03, new Record(new BooleanValue(boolValue), timeStamp));
+        LoggingRecord container4 = new LoggingRecord(ch04, new Record(new ShortValue((short) i), timeStamp));
+        LoggingRecord container5 = new LoggingRecord(ch05, new Record(new IntValue(i), timeStamp));
+        LoggingRecord container6 = new LoggingRecord(ch06, new Record(new LongValue(i * 1000000), timeStamp));
+        LoggingRecord container7 = new LoggingRecord(ch07, new Record(new ByteValue(byteValue), timeStamp));
+        LoggingRecord container8 = new LoggingRecord(ch08, new Record(new StringValue(testString), timeStamp));
+        LoggingRecord container9 = new LoggingRecord(ch09, new Record(new ByteArrayValue(testByteArray), timeStamp));
+
+        group.add(container1);
+        group.add(container2);
+        group.add(container3);
+        group.add(container4);
+        group.add(container5);
+        group.add(container6);
+        group.add(container7);
+        group.add(container8);
+        group.add(container9);
+
+        return group;
+    }
+
     @Test
     public void tc300_check_if_new_file_is_created_on_day_change() {
 
@@ -205,50 +226,6 @@ public class LogFileWriterTest {
         System.out.println(" " + file1.getAbsolutePath());
         System.out.println(" " + file2.getAbsolutePath());
         System.out.println(" Two files created = " + assertT);
-
-        assertTrue(assertT);
-    }
-
-    @Test
-    public void tc301_check_file_fill_up_at_logging() {
-
-        System.out.println("### Begin test tc301_check_file_fill_up_at_logging");
-
-        int valuesToWrite = 5;
-
-        calendar.add(Calendar.MILLISECOND, loggingInterval * valuesToWrite - 10);
-
-        LogIntervalContainerGroup group = getGroup(calendar.getTimeInMillis(), 3, true, (byte) 0x11, "nope");
-        lfw.log(group, loggingInterval, loggingTimeOffset, calendar, logChannelList);
-        AsciiLogger.setLastLoggedLineTimeStamp(loggingInterval, loggingTimeOffset, calendar.getTimeInMillis());
-
-        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.FLOAT, 0.0, 0.0,
-                false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
-        LogFileReader lfr = new LogFileReader(TestUtils.TESTFOLDERPATH, ch1);
-
-        List<Record> recordList = lfr
-                .getValues(calendar.getTimeInMillis() - loggingInterval * 5, calendar.getTimeInMillis())
-                .get(ch01);
-        int receivedRecords = recordList.size();
-
-        int numErrorFlags = 0;
-        for (Record record : recordList) {
-            if (record.getFlag().equals(Flag.DATA_LOGGING_NOT_ACTIVE)) {
-                ++numErrorFlags;
-            }
-        }
-
-        Boolean assertT;
-        if (receivedRecords == valuesToWrite && numErrorFlags == valuesToWrite - 1) {
-            assertT = true;
-        }
-        else {
-            assertT = false;
-        }
-        System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName());
-        System.out.println(" records = " + receivedRecords + " (" + valuesToWrite + " expected)");
-        System.out
-                .println(" records with error flag 32 = " + numErrorFlags + " (" + (valuesToWrite - 1) + " expected)");
 
         assertTrue(assertT);
     }
@@ -340,40 +317,48 @@ public class LogFileWriterTest {
     // }
     // }
 
-    private static LogIntervalContainerGroup getGroup(long timeStamp, int i, boolean boolValue, byte byteValue,
-            String testString) {
+    @Test
+    public void tc301_check_file_fill_up_at_logging() {
 
-        LogIntervalContainerGroup group = new LogIntervalContainerGroup();
+        System.out.println("### Begin test tc301_check_file_fill_up_at_logging");
 
-        LogRecordContainer container1 = new LogRecordContainerImpl(ch01,
-                new Record(new FloatValue(i * -7 - 0.555F), timeStamp));
-        LogRecordContainer container2 = new LogRecordContainerImpl(ch02,
-                new Record(new DoubleValue(i * +7 - 0.555), timeStamp));
-        LogRecordContainer container3 = new LogRecordContainerImpl(ch03,
-                new Record(new BooleanValue(boolValue), timeStamp));
-        LogRecordContainer container4 = new LogRecordContainerImpl(ch04,
-                new Record(new ShortValue((short) i), timeStamp));
-        LogRecordContainer container5 = new LogRecordContainerImpl(ch05, new Record(new IntValue(i), timeStamp));
-        LogRecordContainer container6 = new LogRecordContainerImpl(ch06,
-                new Record(new LongValue(i * 1000000), timeStamp));
-        LogRecordContainer container7 = new LogRecordContainerImpl(ch07,
-                new Record(new ByteValue(byteValue), timeStamp));
-        LogRecordContainer container8 = new LogRecordContainerImpl(ch08,
-                new Record(new StringValue(testString), timeStamp));
-        LogRecordContainer container9 = new LogRecordContainerImpl(ch09,
-                new Record(new ByteArrayValue(testByteArray), timeStamp));
+        int valuesToWrite = 5;
 
-        group.add(container1);
-        group.add(container2);
-        group.add(container3);
-        group.add(container4);
-        group.add(container5);
-        group.add(container6);
-        group.add(container7);
-        group.add(container8);
-        group.add(container9);
+        calendar.add(Calendar.MILLISECOND, loggingInterval * valuesToWrite - 10);
 
-        return group;
+        LogIntervalContainerGroup group = getGroup(calendar.getTimeInMillis(), 3, true, (byte) 0x11, "nope");
+        lfw.log(group, loggingInterval, loggingTimeOffset, calendar, logChannelList);
+        AsciiLogger.setLastLoggedLineTimeStamp(loggingInterval, loggingTimeOffset, calendar.getTimeInMillis());
+
+        LogChannelTestImpl ch1 = new LogChannelTestImpl(ch01, "", "dummy description", dummy, ValueType.FLOAT, 0.0, 0.0,
+                false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
+        LogFileReader lfr = new LogFileReader(TestUtils.TESTFOLDERPATH, ch1);
+
+        List<Record> recordList = lfr
+                .getValues(calendar.getTimeInMillis() - loggingInterval * 5, calendar.getTimeInMillis())
+                .get(ch01);
+        int receivedRecords = recordList.size();
+
+        int numErrorFlags = 0;
+        for (Record record : recordList) {
+            if (record.getFlag().equals(Flag.DATA_LOGGING_NOT_ACTIVE)) {
+                ++numErrorFlags;
+            }
+        }
+
+        Boolean assertT;
+        if (receivedRecords == valuesToWrite && numErrorFlags == valuesToWrite - 1) {
+            assertT = true;
+        }
+        else {
+            assertT = false;
+        }
+        System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName());
+        System.out.println(" records = " + receivedRecords + " (" + valuesToWrite + " expected)");
+        System.out
+                .println(" records with error flag 32 = " + numErrorFlags + " (" + (valuesToWrite - 1) + " expected)");
+
+        assertTrue(assertT);
     }
 
 }

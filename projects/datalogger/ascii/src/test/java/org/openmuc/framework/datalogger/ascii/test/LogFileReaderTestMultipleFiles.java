@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -30,7 +30,6 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
@@ -39,20 +38,20 @@ import org.openmuc.framework.datalogger.ascii.LogFileReader;
 import org.openmuc.framework.datalogger.ascii.LogFileWriter;
 import org.openmuc.framework.datalogger.ascii.LogIntervalContainerGroup;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 
 public class LogFileReaderTestMultipleFiles {
 
     // t1 = start timestamp of requestet interval
     // t2 = end timestamp of requestet interval
 
+    private static final String Channel0Name = "power";
+    private static final String EXT = ".dat";
+    static int loggingTimeOffset = 0; // ms
     private static String fileDate0 = "20770707";
     private static String fileDate1 = "20770708";
     private static String fileDate2 = "20770709";
     private static int loggingInterval = 60000; // ms;
-    static int loggingTimeOffset = 0; // ms
-    private static final String Channel0Name = "power";
-    private static final String EXT = ".dat";
     // private static String[] channelIds = new String[] { Channel0Name };
     private static String dateFormat = "yyyyMMdd HH:mm:ss";
     // private static String ext = ".dat";
@@ -105,8 +104,7 @@ public class LogFileReaderTestMultipleFiles {
         int hour = 3600;
 
         for (int i = 0; i < ((hour * 24 + hour * 2) * (1000d / loggingInterval)); i++) {
-
-            LogRecordContainer container1 = new LogRecordContainerImpl(Channel0Name,
+            LoggingRecord container1 = new LoggingRecord(Channel0Name,
                     new Record(new DoubleValue(1), calendar.getTimeInMillis()));
 
             LogIntervalContainerGroup group = new LogIntervalContainerGroup();

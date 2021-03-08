@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -21,78 +21,46 @@
 
 package org.openmuc.framework.datalogger.amqp;
 
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
+
+import javax.management.openmbean.InvalidKeyException;
 
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
-import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.openmuc.framework.lib.amqp.AmqpConnection;
 import org.openmuc.framework.lib.amqp.AmqpSettings;
 import org.openmuc.framework.lib.amqp.AmqpWriter;
+import org.openmuc.framework.lib.osgi.config.DictionaryPreprocessor;
+import org.openmuc.framework.lib.osgi.config.PropertyHandler;
+import org.openmuc.framework.lib.osgi.config.ServicePropertyException;
 import org.openmuc.framework.parser.spi.ParserService;
 import org.openmuc.framework.parser.spi.SerializationException;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-@Component
-public class AmqpLogger implements DataLoggerService {
+public class AmqpLogger implements DataLoggerService, ManagedService {
 
     private static final Logger logger = LoggerFactory.getLogger(AmqpLogger.class);
     private final HashMap<String, LogChannel> channelsToLog = new HashMap<>();
     private final HashMap<String, ParserService> parsers = new HashMap<>();
-    private AmqpConnection connection;
+    private final PropertyHandler propertyHandler;
+    private final Settings settings;
     private AmqpWriter writer;
-    private Settings settings;
+    private AmqpConnection connection;
 
-    @Activate
-    protected void activate(ComponentContext context) throws Exception {
-        logger.info("Activating Amqp logger");
-        connect();
-        String filter = '(' + Constants.OBJECTCLASS + '=' + ParserService.class.getName() + ')';
-        BundleContext bundleContext = context.getBundleContext();
-        try {
-            bundleContext.addServiceListener(event -> {
-                ServiceReference<?> serviceReference = event.getServiceReference();
-                String parserId = (String) serviceReference.getProperty("parserID");
-                ParserService parserService = (ParserService) bundleContext.getService(serviceReference);
-                String parserServiceName = parserService.getClass().getName();
-
-                if (event.getType() == ServiceEvent.UNREGISTERING) {
-                    logger.info("{} unregistering, removing Parser", parserServiceName);
-                    parsers.remove(parserId);
-                }
-                else {
-                    logger.info("{} changed, updating Parser", parserServiceName);
-                    parsers.put(parserId, parserService);
-                }
-            }, filter);
-        } catch (InvalidSyntaxException e) {
-            logger.error("Service listener can't be added to framework", e);
-        }
-    }
-
-    @Deactivate
-    protected void deactivate(ComponentContext context) throws IOException, TimeoutException {
-        logger.info("Deactivating Amqp logger");
-        if (connection != null) {
-            connection.disconnect();
-        }
+    public AmqpLogger() {
+        String pid = AmqpLogger.class.getName();
+        settings = new Settings();
+        propertyHandler = new PropertyHandler(settings, pid);
     }
 
     @Override
@@ -111,30 +79,82 @@ public class AmqpLogger implements DataLoggerService {
     }
 
     @Override
-    public synchronized void log(List<LogRecordContainer> containers, long timestamp) {
-        for (LogRecordContainer container : containers) {
-            if (channelsToLog.containsKey(container.getChannelId())) {
-                byte[] message;
-                if (parsers.containsKey(settings.getParser())) {
-                    try {
-                        message = parsers.get(settings.getParser()).serialize(container);
-                    } catch (SerializationException e) {
-                        logger.error(e.getMessage());
-                        return;
-                    }
-                }
-                else {
-                    Gson gson = new Gson();
-                    message = gson.toJson(container.getRecord()).getBytes();
-                }
-                writer.write(settings.getFramework() + settings.getSeparator() + container.getChannelId(), message);
+    public synchronized void log(List<LoggingRecord> containers, long timestamp) {
+        if (writer == null) {
+            logger.warn("AMQP connection is not established");
+            return;
+        }
+
+        for (LoggingRecord loggingRecord : containers) {
+            String channelId = loggingRecord.getChannelId();
+            if (channelsToLog.containsKey(channelId)) {
+                executeLog(loggingRecord);
             }
         }
     }
 
+    private void executeLog(LoggingRecord loggingRecord) {
+        String channelId = loggingRecord.getChannelId();
+        byte[] message;
+
+        if (parsers.containsKey(propertyHandler.getString(Settings.PARSER))) {
+            message = parseMessage(loggingRecord);
+        }
+        else {
+            Gson gson = new Gson();
+            message = gson.toJson(loggingRecord.getRecord()).getBytes();
+        }
+
+        if (message == null) {
+            return;
+        }
+
+        writer.write(getQueueName(channelId), message);
+    }
+
+    private byte[] parseMessage(LoggingRecord loggingRecord) {
+        try {
+            return parsers.get(propertyHandler.getString(Settings.PARSER)).serialize(loggingRecord);
+        } catch (SerializationException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
+    private String getQueueName(String channelId) {
+        LogChannel logChannelMeta = channelsToLog.get(channelId);
+        String logSettings = logChannelMeta.getLoggingSettings();
+
+        if (logSettings == null || logSettings.isEmpty()) {
+            return propertyHandler.getString(Settings.FRAMEWORK) + channelId;
+        }
+        else {
+            return parseDefinedQueue(logSettings);
+        }
+    }
+
+    private String parseDefinedQueue(String logSettings) {
+        String amqpLoggerSegment = Arrays.stream(logSettings.split(";"))
+                .filter(seg -> seg.contains("amqplogger"))
+                .map(seg -> seg.replace(':', ','))
+                .findFirst()
+                .orElseThrow(() -> new InvalidKeyException());
+
+        return Arrays.stream(amqpLoggerSegment.split(","))
+                .filter(part -> part.contains("queue"))
+                .map(queue -> queue.split("=")[1])
+                .findFirst()
+                .orElseThrow(() -> new InvalidKeyException());
+    }
+
     @Override
-    public void logEvent(List<LogRecordContainer> containers, long timestamp) {
-        log(containers, timestamp);
+    public void logEvent(List<LoggingRecord> loggingRecords, long timestamp) {
+        log(loggingRecords, timestamp);
+    }
+
+    @Override
+    public boolean logSettingsRequired() {
+        return true;
     }
 
     @Override
@@ -142,16 +162,77 @@ public class AmqpLogger implements DataLoggerService {
         throw new UnsupportedOperationException();
     }
 
-    private void connect() throws ConnectionException {
-        settings = new Settings();
+    @Override
+    public void updated(Dictionary<String, ?> propertyDict) throws ConfigurationException {
+        DictionaryPreprocessor dict = new DictionaryPreprocessor(propertyDict);
+        if (!dict.wasIntermediateOsgiInitCall()) {
+            tryProcessConfig(dict);
+        }
+    }
 
-        AmqpSettings amqpSettings = new AmqpSettings(settings.getHost(), settings.getPort(), settings.getVirtualHost(),
-                settings.getUsername(), settings.getPassword(), settings.isSsl(), settings.getExchange());
+    private void tryProcessConfig(DictionaryPreprocessor newConfig) {
+        try {
+            propertyHandler.processConfig(newConfig);
+            if (propertyHandler.configChanged()) {
+                applyConfigChanges();
+            }
+        } catch (ServicePropertyException e) {
+            logger.error("update properties failed", e);
+            shutdown();
+        }
+    }
+
+    private void applyConfigChanges() {
+        logger.info("Configuration changed - new configuration {}", propertyHandler.toString());
+        if (writer != null) {
+            // FIXME could be improved by checking if MqttSettings have changed.
+            // If not then there is no need for reconnect.
+            shutdown();
+        }
+        connect();
+    }
+
+    private void connect() {
+        logger.info("Start connection to amqp backend...");
+        AmqpSettings amqpSettings = createAmqpSettings();
         try {
             connection = new AmqpConnection(amqpSettings);
+            writer = new AmqpWriter(connection);
+            logger.info("Connection established successfully!");
         } catch (Exception e) {
-            throw new ConnectionException(e);
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            logger.error("Check your configuration!");
         }
-        writer = new AmqpWriter(connection);
     }
+
+    private AmqpSettings createAmqpSettings() {
+        // @formatter:off
+        AmqpSettings amqpSettings = new AmqpSettings(
+                propertyHandler.getString(Settings.HOST),
+                propertyHandler.getInt(Settings.PORT),
+                propertyHandler.getString(Settings.VIRTUAL_HOST),
+                propertyHandler.getString(Settings.USERNAME),
+                propertyHandler.getString(Settings.PASSWORD),
+                propertyHandler.getBoolean(Settings.SSL),
+                propertyHandler.getString(Settings.EXCHANGE));
+        // @formatter:on
+        return amqpSettings;
+    }
+
+    public void addParser(String parserId, ParserService parserService) {
+        parsers.put(parserId, parserService);
+    }
+
+    public void removeParser(String parserId) {
+        parsers.remove(parserId);
+    }
+
+    public void shutdown() {
+        logger.info("closing AMQP connection");
+        if (connection != null) {
+            connection.disconnect();
+        }
+    }
+
 }

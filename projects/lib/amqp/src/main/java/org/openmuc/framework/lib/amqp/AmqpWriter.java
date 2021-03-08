@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -46,7 +46,7 @@ public class AmqpWriter {
     public AmqpWriter(AmqpConnection connection) {
         this.connection = connection;
 
-        ((Recoverable) connection.getRabbitMqChannel()).addRecoveryListener(new RecoveryListener() {
+        connection.addRecoveryListener(new RecoveryListener() {
             @Override
             public void handleRecovery(Recoverable recoverable) {
                 while (!messageBuffer.isEmpty()) {

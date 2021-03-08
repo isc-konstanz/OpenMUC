@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -31,8 +31,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.lib.json.Const;
-import org.openmuc.framework.lib.json.FromJson;
+import org.openmuc.framework.lib.rest1.Const;
+import org.openmuc.framework.lib.rest1.FromJson;
 
 public class TestJsonHelper_fromJson {
 

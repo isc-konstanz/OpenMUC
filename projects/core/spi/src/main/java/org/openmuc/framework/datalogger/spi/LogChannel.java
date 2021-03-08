@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,36 +25,38 @@ import org.openmuc.framework.data.ValueType;
 
 public interface LogChannel {
 
-    public String getId();
+    String getLoggingSettings();
 
-    public String getDescription();
+    String getId();
 
-    public String getChannelAddress();
+    String getDescription();
 
-    public String getUnit();
+    String getChannelAddress();
 
-    public ValueType getValueType();
+    String getUnit();
 
-    public Integer getValueTypeLength();
+    ValueType getValueType();
 
-    public Double getScalingFactor();
+    Integer getValueTypeLength();
 
-    public Double getValueOffset();
+    Double getScalingFactor();
 
-    public Boolean isListening();
+    Double getValueOffset();
 
-    public Integer getSamplingInterval();
+    Boolean isListening();
 
-    public Integer getSamplingTimeOffset();
+    Integer getSamplingInterval();
 
-    public String getSamplingGroup();
+    Integer getSamplingTimeOffset();
 
-    public Integer getLoggingInterval();
+    String getSamplingGroup();
 
-    public Integer getLoggingTimeOffset();
+    Integer getLoggingInterval();
 
-    public Boolean isDisabled();
+    Integer getLoggingTimeOffset();
 
-    public Boolean isLoggingEvent();
+    Boolean isDisabled();
+
+    Boolean isLoggingEvent();
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -22,125 +22,159 @@
 package org.openmuc.framework.datalogger.mqtt;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.datalogger.mqtt.dto.MqttLogChannel;
+import org.openmuc.framework.datalogger.mqtt.dto.MqttLogMsg;
+import org.openmuc.framework.datalogger.mqtt.util.MqttLogMsgBuilder;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.openmuc.framework.lib.mqtt.MqttConnection;
 import org.openmuc.framework.lib.mqtt.MqttSettings;
 import org.openmuc.framework.lib.mqtt.MqttWriter;
+import org.openmuc.framework.lib.osgi.config.DictionaryPreprocessor;
+import org.openmuc.framework.lib.osgi.config.PropertyHandler;
+import org.openmuc.framework.lib.osgi.config.ServicePropertyException;
 import org.openmuc.framework.parser.spi.ParserService;
-import org.openmuc.framework.parser.spi.SerializationException;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component
-public class MqttLogger implements DataLoggerService {
+public class MqttLogger implements DataLoggerService, ManagedService {
+
     private static final Logger logger = LoggerFactory.getLogger(MqttLogger.class);
-    private static final List<String> LOGGED_CHANNELS = new LinkedList<>();
-    private static final HashMap<String, ParserService> PARSERS = new HashMap<>();
+    private final HashMap<String, MqttLogChannel> channelsToLog = new HashMap<>();
+    private final HashMap<String, ParserService> availableParsers = new HashMap<>();
+    private final PropertyHandler propertyHandler;
     private String parser;
-    private boolean logMultiple;
-    private MqttWriter writer;
+    private boolean isLogMultiple;
+    private MqttWriter mqttWriter;
 
-    @Activate
-    public void activate(ComponentContext context) {
-        logger.info("Activating MQTT logger");
-        getSettings();
-        connect();
-        listenForParser(context.getBundleContext());
-    }
+    private static final String LOGGER_ID = "mqttlogger";
 
-    @Deactivate
-    public void deactivate(ComponentContext context) {
-        logger.info("Deactivating MQTT logger");
-        writer.getConnection().disconnect();
+    public MqttLogger() {
+        String pid = MqttLogger.class.getName();
+        MqttLoggerSettings settings = new MqttLoggerSettings();
+        propertyHandler = new PropertyHandler(settings, pid);
     }
 
     @Override
     public String getId() {
-        return "mqttlogger";
+        return LOGGER_ID;
     }
 
     @Override
-    public void setChannelsToLog(List<LogChannel> channels) {
-        LOGGED_CHANNELS.clear();
-
-        for (LogChannel channel : channels) {
-            LOGGED_CHANNELS.add(channel.getId());
-        }
-    }
-
-    @Override
-    public void log(List<LogRecordContainer> containers, long timestamp) {
-        List<LogRecordContainer> loggedContainers = new ArrayList<>();
-
-        for (LogRecordContainer container : containers) {
-            if (LOGGED_CHANNELS.contains(container.getChannelId())) {
-                if (logMultiple && container.getRecord().getValue() != null) {
-                    loggedContainers.add(container);
-                    continue;
-                }
-                parse(Collections.singletonList(container));
+    public void setChannelsToLog(List<LogChannel> logChannels) {
+        // FIXME Datamanger should only pass logChannels which should be logged by MQTT Logger
+        // right now all channels are passed to the data logger and dataloger has to
+        // decide/parse which channels it hast to log
+        channelsToLog.clear();
+        for (LogChannel logChannel : logChannels) {
+            if (logChannel.getLoggingSettings().contains(LOGGER_ID)) {
+                MqttLogChannel mqttLogChannel = new MqttLogChannel(logChannel);
+                channelsToLog.put(logChannel.getId(), mqttLogChannel);
             }
         }
-        if (logMultiple && !loggedContainers.isEmpty()) {
-            parse(loggedContainers);
-        }
-    }
-
-    @Override
-    public void logEvent(List<LogRecordContainer> containers, long timestamp) {
-        log(containers, timestamp);
+        printChannelsConsideredByMqttLogger(logChannels);
     }
 
     /**
-     * Parses a message with {@link ParserService} and publishes it
-     *
-     * @param containers
-     *            List of {@link LogRecordContainer}
+     * mainly for debugging purposes
      */
-    private void parse(List<LogRecordContainer> containers) {
-        byte[] message;
-        if (PARSERS.containsKey(parser)) {
-            try {
-                if (logMultiple) {
-                    message = PARSERS.get(parser).serialize(containers);
-                }
-                else {
-                    message = PARSERS.get(parser).serialize(containers.get(0));
-                }
-                writer.write(message);
-                if (logger.isTraceEnabled()) {
-                    logger.trace(new String(message));
-                }
-            } catch (SerializationException e) {
-                logger.error(e.getMessage());
+    private void printChannelsConsideredByMqttLogger(List<LogChannel> logChannels) {
+        StringBuilder mqttLogChannelsSb = new StringBuilder();
+        mqttLogChannelsSb.append("channels configured for mqttlogging:\n");
+        channelsToLog.keySet().stream().forEach(channelId -> mqttLogChannelsSb.append(channelId).append("\n"));
+
+        StringBuilder nonMqttLogChannelsSb = new StringBuilder();
+        nonMqttLogChannelsSb.append("channels not configured for mqttlogger:\n");
+        for (LogChannel logChannel : logChannels) {
+            if (!logChannel.getLoggingSettings().contains(LOGGER_ID)) {
+                nonMqttLogChannelsSb.append(logChannel.getId()).append("\n");
             }
-            // joern: is a retrying a useful solution here?
-            // catch (IOException e) {
-            // logger.error("Couldn't write message to file buffer, retrying");
-            // parse(containers);
-            // }
         }
-        else {
-            logger.error("No parser available!");
+
+        logger.debug(mqttLogChannelsSb.toString());
+        logger.debug(nonMqttLogChannelsSb.toString());
+    }
+
+    @Override
+    public void logEvent(List<LoggingRecord> containers, long timestamp) {
+        log(containers, timestamp);
+    }
+
+    @Override
+    public boolean logSettingsRequired() {
+        return true;
+    }
+
+    @Override
+    public void log(List<LoggingRecord> loggingRecordList, long timestamp) {
+
+        if (!isMqttWriterAvailable() || !isParserAvailable()) {
+            logger.error("skipped logging values. isMqttWriterAvailable = {}, isParserAvailable = {}",
+                    isMqttWriterAvailable(), isParserAvailable());
+            return;
         }
+
+        // logger.info("============================");
+        // loggingRecordList.stream().map(LoggingRecord::getChannelId).forEach(id -> logger.info(id));
+
+        // FIXME refactor OpenMUC core - actually the datamanager should only call logger.log()
+        // with channels configured for this logger. If this is the case the containsKey check could be ignored
+        // The filter serves as WORKAROUND to process only channels which were configured for mqtt logger
+        List<LoggingRecord> logRecordsForMqttLogger = loggingRecordList.stream()
+                .filter(record -> channelsToLog.containsKey(record.getChannelId()))
+                .collect(Collectors.toList());
+
+        // channelsToLog.values().stream().map(channel -> channel.topic).distinct().count();
+
+        // Concept of the MqttLogMsgBuilder:
+        // 1. cleaner code
+        // 2. better testability: MqttLogMsgBuilder can be easily created in a test and the output of
+        // MqttLogMsgBuilder.build() can be verified. It takes the input from logger.log() method, processes it
+        // and creates ready to use messages for the mqttWriter
+        MqttLogMsgBuilder logMsgBuilder = new MqttLogMsgBuilder(channelsToLog, availableParsers.get(parser));
+        List<MqttLogMsg> logMessages = logMsgBuilder.buildLogMsg(logRecordsForMqttLogger, isLogMultiple);
+        for (MqttLogMsg msg : logMessages) {
+            logTraceMqttMessage(msg);
+            mqttWriter.write(msg.topic, msg.message);
+        }
+
+        // FIXME joern: is a retrying a useful solution here?
+        // catch (IOException e) {
+        // logger.error("Couldn't write message to file buffer, retrying");
+        // parse(records);
+        // }
+    }
+
+    private void logTraceMqttMessage(MqttLogMsg msg) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}\n{}: {}", msg.channelId, msg.topic, new String(msg.message));
+        }
+    }
+
+    private boolean isParserAvailable() {
+        if (availableParsers.containsKey(parser)) {
+            return true;
+        }
+        logger.warn("Parser with parserId {} is not available.", parser);
+        return false;
+    }
+
+    private boolean isMqttWriterAvailable() {
+        // FIXME "writer" could be null if datamanager calls log() before mqttlogger has read its configuration.
+        // write can be also null if configurations changes during runtime causing a disconnect)
+        if (mqttWriter == null) {
+            logger.warn("MqttLogger not connected to a broker yet. (MqttWriter is null)");
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -149,54 +183,117 @@ public class MqttLogger implements DataLoggerService {
     }
 
     /**
-     * Reads settings from system.properties
+     * Connect to MQTT broker
      */
-    void getSettings() {
-        String packageName = MqttLogger.class.getPackage().getName().toLowerCase();
-        String host = System.getProperty(packageName + ".host");
-        int port = Integer.parseInt(System.getProperty(packageName + ".port"));
-        boolean ssl = Boolean.parseBoolean(System.getProperty(packageName + ".ssl"));
-        String username = System.getProperty(packageName + ".username");
-        String password = System.getProperty(packageName + ".password");
-        String topic = System.getProperty(packageName + ".topic");
-        parser = System.getProperty(packageName + ".parser");
-        logMultiple = Boolean.parseBoolean(System.getProperty(packageName + ".multiple"));
-        int maxFileCount = Integer.parseInt(System.getProperty(packageName + ".maxFileCount"));
-        long maxFileSize = Long.parseLong(System.getProperty(packageName + ".maxFileSize")) * 1024;
-        long maxBufferSize = Long.parseLong(System.getProperty(packageName + ".maxBufferSize")) * 1024;
-
-        MqttSettings settings = new MqttSettings(host, port, username, password, ssl, maxBufferSize, maxFileSize,
-                maxFileCount, topic);
+    private void connect() {
+        logger.info("Connecting to MQTT Broker");
+        MqttSettings settings = createMqttSettings();
         MqttConnection connection = new MqttConnection(settings);
-        writer = new MqttWriter(connection);
+        mqttWriter = new MqttWriter(connection, LOGGER_ID);
+        mqttWriter.getConnection().connect();
     }
 
-    /**
-     * Connects to MQTT broker
-     */
-    void connect() {
-        writer.getConnection().connect();
+    private MqttSettings createMqttSettings() {
+        // @formatter:off
+        MqttSettings settings = new MqttSettings(
+                propertyHandler.getString(MqttLoggerSettings.HOST),
+                propertyHandler.getInt(MqttLoggerSettings.PORT),
+                propertyHandler.getString(MqttLoggerSettings.USERNAME),
+                propertyHandler.getString(MqttLoggerSettings.PASSWORD),
+                propertyHandler.getBoolean(MqttLoggerSettings.SSL),
+                propertyHandler.getInt(MqttLoggerSettings.MAX_BUFFER_SIZE),
+                propertyHandler.getInt(MqttLoggerSettings.MAX_FILE_SIZE),
+                propertyHandler.getInt(MqttLoggerSettings.MAX_FILE_COUNT),
+                propertyHandler.getInt(MqttLoggerSettings.CONNECTION_RETRY_INTERVAL),
+                propertyHandler.getInt(MqttLoggerSettings.CONNECTION_ALIVE_INTERVAL),
+                propertyHandler.getString(MqttLoggerSettings.PERSISTENCE_DIRECTORY),
+                propertyHandler.getString(MqttLoggerSettings.LAST_WILL_TOPIC),
+                propertyHandler.getString(MqttLoggerSettings.LAST_WILL_PAYLOAD).getBytes(),
+                propertyHandler.getBoolean(MqttLoggerSettings.LAST_WILL_ALWAYS),
+                propertyHandler.getString(MqttLoggerSettings.FIRST_WILL_TOPIC),
+                propertyHandler.getString(MqttLoggerSettings.FIRST_WILL_PAYLOAD).getBytes());
+        // @formatter:on
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("MqttSettings for MqttConnection \n" + settings.toString());
+        }
+        return settings;
     }
 
-    private void listenForParser(BundleContext context) {
-        String filter = '(' + Constants.OBJECTCLASS + '=' + ParserService.class.getName() + ')';
-        try {
-            context.addServiceListener(event -> {
-                ServiceReference<?> serviceReference = event.getServiceReference();
-                String parserId = (String) serviceReference.getProperty("parserID");
-                ParserService parser = (ParserService) context.getService(serviceReference);
-
-                if (event.getType() == ServiceEvent.UNREGISTERING) {
-                    logger.info("{} unregistering, removing Parser", parser.getClass().getName());
-                    PARSERS.remove(parserId);
-                }
-                else {
-                    logger.info("{} changed, updating Parser", parser.getClass().getName());
-                    PARSERS.put(parserId, parser);
-                }
-            }, filter);
-        } catch (InvalidSyntaxException e) {
-            logger.error("Service listener can't be added to framework", e);
+    @Override
+    public void updated(Dictionary<String, ?> propertyDict) {
+        DictionaryPreprocessor dict = new DictionaryPreprocessor(propertyDict);
+        if (!dict.wasIntermediateOsgiInitCall()) {
+            tryProcessConfig(dict);
         }
     }
+
+    private void tryProcessConfig(DictionaryPreprocessor newConfig) {
+        // FIXME clean code
+        try {
+            propertyHandler.processConfig(newConfig);
+
+            // FIXME consider all cases (running connection, default properties, new properties, closed connection)
+            if (!propertyHandler.configChanged() && propertyHandler.isDefaultConfig()) {
+                // tells us:
+                // 1. if we get till here then updated(dict) was processed without errors and
+                // 2. the values from cfg file are identical to the default values
+                logger.info("new properties: changed={}, isDefault={}", propertyHandler.configChanged(),
+                        propertyHandler.isDefaultConfig());
+                applyConfigChanges();
+            }
+
+            if (propertyHandler.configChanged()) {
+                logger.info("properties changed: {}", propertyHandler.toString());
+                applyConfigChanges();
+            }
+            else {
+                // FIXME there should be a more elegant way rather den null check.
+                // Also the initial object MqttWriter object should be initialised somewhere
+                if (mqttWriter == null) {
+                    // if mqttWriter is null and propertyHandler.configChanged returns false then:
+                    // we got a valid config since
+                    // - it passed wasIntermediateOsgiInitCall() check and
+                    // - propertyHandler.processConfig() check
+                    // so we can connect... seems not be very intuitive... refactor
+                    connect();
+                }
+            }
+        } catch (ServicePropertyException e) {
+            logger.error("update properties failed", e);
+            shutdown();
+        }
+    }
+
+    private void applyConfigChanges() {
+        logger.info("Configuration changed - new configuration {}", propertyHandler.toString());
+        parser = propertyHandler.getString(MqttLoggerSettings.PARSER);
+        isLogMultiple = propertyHandler.getBoolean(MqttLoggerSettings.MULTIPLE);
+        if (mqttWriter != null) {
+            // FIXME could be improved by checking if MqttSettings have changed.
+            // If not then there is no need for reconnect.
+            shutdown();
+        }
+        connect();
+    }
+
+    public void shutdown() {
+        logger.info("closing MQTT connection");
+        if (mqttWriter != null) {
+            if (mqttWriter.isConnected()) {
+                mqttWriter.getConnection().disconnect();
+            }
+            mqttWriter = null;
+        }
+    }
+
+    public void addParser(String parserId, ParserService parserService) {
+        logger.info("put parserID {} to PARSERS", parserId);
+        availableParsers.put(parserId, parserService);
+    }
+
+    public void removeParser(String parserId) {
+        availableParsers.remove(parserId);
+    }
+
 }
