@@ -1,7 +1,7 @@
 def projectName = "OpenMUC Driver - OPC UA"
 def projectDescription = "OPC UA driver for the OpenMUC framework."
 
-def miloVersion = '0.4.2'
+def miloVersion = '0.4.3'
 
 configurations.create('embed')
 
@@ -20,7 +20,7 @@ dependencies {
 }
 
 def embed = configurations.embed.findAll {
-  it.getName().matches("(stack|sdk|strict|netty|bc).*")
+    it.getName().matches("(stack|sdk|strict|netty|bc).*")
 }
 
 jar {

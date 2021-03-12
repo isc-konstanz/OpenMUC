@@ -42,7 +42,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -54,6 +53,7 @@ import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
+import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
 import org.openmuc.framework.server.Server;
 import org.openmuc.framework.server.spi.ServerService;
 import org.osgi.service.component.annotations.Component;
@@ -61,8 +61,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(service = ServerService.class)
-public class UaServer extends Server<UaChannel> {
-    private static final Logger logger = LoggerFactory.getLogger(UaServer.class);
+public class OpcServer extends Server<OpcChannel> {
+    private static final Logger logger = LoggerFactory.getLogger(OpcServer.class);
 
     private static final String ID = "opcua";
 
@@ -101,7 +101,8 @@ public class UaServer extends Server<UaChannel> {
         DefaultTrustListManager trustListManager = new DefaultTrustListManager(pkiDir);
         logger.debug("OPC UA pki dir: {}", pkiDir.getAbsolutePath());
 
-        DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(trustListManager);
+        DefaultServerCertificateValidator certificateValidator = 
+                new DefaultServerCertificateValidator(trustListManager);
 
         KeyPair httpsKeyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
@@ -157,13 +158,13 @@ public class UaServer extends Server<UaChannel> {
     }
 
     @Override
-    protected void onConfigure(List<UaChannel> channels) {
+    protected void onConfigure(List<OpcChannel> channels) {
         if (namespace != null) {
             namespace.shutdown();
         }
         namespace = new ChannelNamespace(server);
         
-        for (UaChannel channel : channels) {
+        for (OpcChannel channel : channels) {
             try {
                 namespace.addChannelNode(channel);
                 

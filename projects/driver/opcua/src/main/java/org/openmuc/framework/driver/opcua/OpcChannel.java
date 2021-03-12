@@ -37,7 +37,7 @@ import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.DeviceChannel;
 
-public class UaChannel extends DeviceChannel {
+public class OpcChannel extends DeviceChannel {
 
     @Address(id = "id",
              name = "Identifier",
@@ -59,7 +59,7 @@ public class UaChannel extends DeviceChannel {
         return nodeId;
     }
 
-    public UaChannel(int namespaceDefault) {
+    public OpcChannel(int namespaceDefault) {
         namespaceIndex = namespaceDefault;
     }
 

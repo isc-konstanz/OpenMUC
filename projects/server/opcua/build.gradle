@@ -1,7 +1,7 @@
 def projectName = "OpenMUC Server - OPC UA"
 def projectDescription = "OPC UA server for the OpenMUC framework."
 
-def miloVersion = '0.3.6'
+def miloVersion = '0.4.3'
 
 configurations.create('embed')
 
@@ -16,7 +16,7 @@ dependencies {
 }
 
 def embed = configurations.embed.findAll {
-  it.getName().matches("(stack|sdk|netty|bc).*")
+    it.getName().matches("(stack|sdk|netty|bc).*")
 }
 
 jar {

@@ -25,7 +25,7 @@ import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
 @Component(service = DriverService.class)
-public class UaDriver extends Driver<UaConnection> {
+public class OpcDriver extends Driver<OpcConnection> {
 
     public static final String ID = "opcua";
     public static final String NAME = "OPC UA";

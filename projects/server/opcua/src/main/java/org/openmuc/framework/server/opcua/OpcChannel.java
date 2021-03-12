@@ -46,7 +46,7 @@ import org.openmuc.framework.data.Value;
 import org.openmuc.framework.server.ServerChannel;
 
 @AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
-public class UaChannel extends ServerChannel implements AttributeDelegate {
+public class OpcChannel extends ServerChannel implements AttributeDelegate {
 
     @Address(mandatory = false)
     private String folder = null;

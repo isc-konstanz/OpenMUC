@@ -50,8 +50,8 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UaConnection extends Device<UaChannel> {
-    private static final Logger logger = LoggerFactory.getLogger(UaConnection.class);
+public class OpcConnection extends Device<OpcChannel> {
+    private static final Logger logger = LoggerFactory.getLogger(OpcConnection.class);
 
     private OpcUaClient client;
 
@@ -122,17 +122,17 @@ public class UaConnection extends Device<UaChannel> {
 
     @Override
     protected DeviceChannel newChannel() {
-        return new UaChannel(namespaceIndex);
+        return new OpcChannel(namespaceIndex);
     }
 
     @Override
-    protected void onRead(List<UaChannel> channels, String samplingGroup) 
+    protected void onRead(List<OpcChannel> channels, String samplingGroup) 
             throws ConnectionException {
         try {
             List<NodeId> nodeIds = channels.stream().map(c -> c.getNodeId()).collect(Collectors.toList());
             List<DataValue> values = client.readValues(0.0, TimestampsToReturn.Both, nodeIds).get();
             
-            for (UaChannel channel : channels) {
+            for (OpcChannel channel : channels) {
                 try {
                     int index = nodeIds.indexOf(channel.getNodeId());
                     channel.setRecord(channel.decode(values.get(index)));
@@ -143,7 +143,7 @@ public class UaConnection extends Device<UaChannel> {
                 }
             }
         } catch (InterruptedException e) {
-            for (UaChannel channel : channels) {
+            for (OpcChannel channel : channels) {
                 channel.setRecord(new Record(new DoubleValue(Double.NaN), System.currentTimeMillis(), 
                             Flag.DRIVER_ERROR_TIMEOUT));
             }
@@ -154,10 +154,10 @@ public class UaConnection extends Device<UaChannel> {
     }
 
     @Override
-    protected void onWrite(List<UaChannel> channels)
+    protected void onWrite(List<OpcChannel> channels)
             throws ConnectionException {
         try {
-            for (UaChannel channel : channels) {
+            for (OpcChannel channel : channels) {
                 DataValue value = channel.encode();
                 try {
                     StatusCode status = client.writeValue(channel.getNodeId(), value).get();
