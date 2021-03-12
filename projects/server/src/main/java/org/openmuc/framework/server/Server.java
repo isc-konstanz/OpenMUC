@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -18,7 +18,6 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.openmuc.framework.server;
 
 import java.util.List;
@@ -108,6 +107,12 @@ public abstract class Server<C extends ServerChannel> extends ChannelContext imp
     @Override
     @SuppressWarnings("unchecked")
     public final void serverMappings(List<ServerMappingContainer> mappings) {
+        // Will only be called when OpenMUC receives new server mappings
+		// TODO: Don't clear channels, but destroy and remove redundant
+		for (ServerChannel channel : channels.values()) {
+			channel.onDestroy();
+		}
+		channels.clear();
         onConfigure((List<C>) getChannels(mappings));
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -34,7 +34,7 @@ import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.data.TypeConversionException;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,16 +42,16 @@ public class ChannelContext extends Configurable implements ChannelFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ChannelContext.class);
 
-    Class<? extends DataChannel> channelClass;
+    Class<? extends LoggingChannel> channelClass;
 
-    final Map<String, DataChannel> channels = new HashMap<String, DataChannel>();
+    final Map<String, LoggingChannel> channels = new HashMap<String, LoggingChannel>();
 
     ChannelContext() {
         channelClass = getChannelClass();
     }
 
     @SuppressWarnings("unchecked")
-    private Class<? extends DataChannel> getChannelClass() {
+    private Class<? extends LoggingChannel> getChannelClass() {
         Class<?> loggerClass = getClass();
         while (loggerClass.getSuperclass() != null) {
             if (loggerClass.getSuperclass().equals(DataLogger.class)) {
@@ -62,16 +62,16 @@ public class ChannelContext extends Configurable implements ChannelFactory {
         // This operation is safe. Because deviceClass is a direct sub-class, getGenericSuperclass() will
         // always return the Type of this class. Because this class is parameterized, the cast is safe
         ParameterizedType superClass = (ParameterizedType) loggerClass.getGenericSuperclass();
-        return (Class<? extends DataChannel>) superClass.getActualTypeArguments()[0];
+        return (Class<? extends LoggingChannel>) superClass.getActualTypeArguments()[0];
     }
 
-    public DataChannel getChannel(String id) {
+    public LoggingChannel getChannel(String id) {
         return channels.get(id);
     }
 
-    final DataChannel getChannel(LogChannel configs) throws ArgumentSyntaxException {
+    final LoggingChannel getChannel(LogChannel configs) throws ArgumentSyntaxException {
         String id = configs.getId();
-        DataChannel channel = channels.get(id);
+        LoggingChannel channel = channels.get(id);
         try {
             if (channel == null) {
                 channel = newChannel(configs);
@@ -92,20 +92,20 @@ public class ChannelContext extends Configurable implements ChannelFactory {
         return channel;
     }
 
-    final DataChannel newChannel(LogChannel channel) throws ArgumentSyntaxException {
+    final LoggingChannel newChannel(LogChannel channel) throws ArgumentSyntaxException {
         return this.newChannel(channel.getLoggingSettings());
     }
 
-    public DataChannel newChannel(String settings) throws ArgumentSyntaxException {
+    public LoggingChannel newChannel(String settings) throws ArgumentSyntaxException {
         return this.newChannel(Configurations.parseSettings(settings, channelClass));
     }
 
     @Override
-    public DataChannel newChannel(Settings settings) throws ArgumentSyntaxException {
+    public LoggingChannel newChannel(Settings settings) throws ArgumentSyntaxException {
         return this.newChannel();
     }
 
-    protected DataChannel newChannel() {
+    protected LoggingChannel newChannel() {
         try {
             return channelClass.getDeclaredConstructor().newInstance();
             
@@ -116,22 +116,22 @@ public class ChannelContext extends Configurable implements ChannelFactory {
         }
     }
 
-    final void bindChannel(Class<? extends DataChannel> channelClass) {
+    final void bindChannel(Class<? extends LoggingChannel> channelClass) {
         this.channelClass = channelClass;
     }
 
-    public List<DataChannel> getChannels() {
-        return (List<DataChannel>) channels.values();
+    public List<LoggingChannel> getChannels() {
+        return (List<LoggingChannel>) channels.values();
     }
 
-	final List<DataChannel> getChannels(List<? extends LogRecordContainer> containers) {
-        List<DataChannel> channels = new ArrayList<DataChannel>();
+	final List<LoggingChannel> getChannels(List<? extends LoggingRecord> containers) {
+        List<LoggingChannel> channels = new ArrayList<LoggingChannel>();
         if (containers == null || containers.isEmpty()) {
             logger.trace("Logger received empty container list");
             return channels;
         }
-        for (LogRecordContainer container : containers) {
-        	DataChannel channel = (DataChannel) getChannel(container.getChannelId());
+        for (LoggingRecord container : containers) {
+        	LoggingChannel channel = (LoggingChannel) getChannel(container.getChannelId());
             if (channel == null) {
                 logger.trace("Failed to log record for unconfigured channel \"{}\"", container.getChannelId());
                 continue;

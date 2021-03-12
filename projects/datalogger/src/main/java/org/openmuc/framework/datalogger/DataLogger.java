@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -30,11 +30,11 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.DataAccessService;
 import org.openmuc.framework.datalogger.spi.DataLoggerActivator;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DataLogger<C extends DataChannel> extends ChannelContext implements DataLoggerActivator {
+public abstract class DataLogger<C extends LoggingChannel> extends ChannelContext implements DataLoggerActivator {
 
     private static final Logger logger = LoggerFactory.getLogger(DataLogger.class);
 
@@ -99,7 +99,7 @@ public abstract class DataLogger<C extends DataChannel> extends ChannelContext i
     }
 
     void doDestroy() throws Exception {
-        for (DataChannel channel : channels.values()) {
+        for (LoggingChannel channel : channels.values()) {
             channel.onDestroy();
         }
         channels.clear();
@@ -113,7 +113,11 @@ public abstract class DataLogger<C extends DataChannel> extends ChannelContext i
 	@Override
     @SuppressWarnings("unchecked")
     public final void setChannelsToLog(List<LogChannel> logChannels) {
-        // Will be called if OpenMUC receives new logging configurations
+        // Will only be called when OpenMUC receives new logging configurations
+		// TODO: Don't clear channels, but destroy and remove redundant
+		for (LoggingChannel channel : channels.values()) {
+			channel.onDestroy();
+		}
         channels.clear();
         try {
             List<C> channels = new LinkedList<C>();
@@ -138,7 +142,7 @@ public abstract class DataLogger<C extends DataChannel> extends ChannelContext i
 
 	@Override
     @SuppressWarnings("unchecked")
-    public final void log(List<LogRecordContainer> containers, long timestamp) {
+    public final void log(List<LoggingRecord> containers, long timestamp) {
         try {
             synchronized(channels) {
             	onWrite((List<C>) getChannels(containers), timestamp);
@@ -150,7 +154,7 @@ public abstract class DataLogger<C extends DataChannel> extends ChannelContext i
 
     @Override
     @SuppressWarnings("unchecked")
-    public void logEvent(List<LogRecordContainer> containers, long timestamp) {
+    public void logEvent(List<LoggingRecord> containers, long timestamp) {
         try {
             synchronized(channels) {
             	onWriteEvent((List<C>) getChannels(containers), timestamp);

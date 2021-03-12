@@ -1,24 +1,20 @@
-
 def projectName = "OpenMUC Core - SPI"
 
 dependencies {
-  api project(':openmuc-core-api') 
+    api project(':openmuc-core-api')
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Export-Package', 'org.openmuc.framework.*.spi.*'
-  }
+    bnd('Bundle-Name': projectName, 'Export-Package': 'org.openmuc.framework.*')
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description "The core SPI of the OpenMUC framework."
-      }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = "The core SPI of the OpenMUC framework."
+            }
+        }
     }
-  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -22,7 +22,10 @@
 package org.openmuc.framework.lib.amqp;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +39,14 @@ import com.rabbitmq.client.GetResponse;
 public class AmqpReader {
     private final Logger logger = LoggerFactory.getLogger(AmqpReader.class);
     private final AmqpConnection connection;
+    private final List<Listener> listeners = new ArrayList<>();
 
     /**
      * @param connection
      *            an instance of {@link AmqpConnection}
      */
     public AmqpReader(AmqpConnection connection) {
+        connection.addReader(this);
         this.connection = connection;
     }
 
@@ -89,6 +94,7 @@ public class AmqpReader {
      *            received messages are sent to this listener
      */
     public void listen(Collection<String> queues, AmqpMessageListener listener) {
+        listeners.add(new Listener(queues, listener));
         for (String queue : queues) {
             DeliverCallback deliverCallback = (consumerTag, message) -> {
                 listener.newMessage(queue, message.getBody());
@@ -100,7 +106,9 @@ public class AmqpReader {
             try {
                 connection.declareQueue(queue);
             } catch (IOException e) {
+                e.printStackTrace();
                 logger.error("Declaring queue failed: {}", e.getMessage());
+                e.printStackTrace();
                 continue;
             }
 
@@ -110,6 +118,24 @@ public class AmqpReader {
             } catch (IOException e) {
                 logger.error("Could not subscribe for messages: {}", e.getMessage());
             }
+        }
+    }
+
+    void resubscribe() {
+        List<Listener> listenersCopy = new ArrayList<>(listeners);
+        listeners.clear();
+        for (Listener listener : listenersCopy) {
+            listen(listener.queues, listener.listener);
+        }
+    }
+
+    private static class Listener {
+        private final Collection<String> queues;
+        private final AmqpMessageListener listener;
+
+        private Listener(Collection<String> queues, AmqpMessageListener listener) {
+            this.queues = queues;
+            this.listener = listener;
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -41,7 +41,6 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 import com.beanit.iec61850bean.BasicDataAttribute;
 import com.beanit.iec61850bean.ClientSap;
 import com.beanit.iec61850bean.SclParseException;
-import com.beanit.iec61850bean.SclParser;
 import com.beanit.iec61850bean.ServerEventListener;
 import com.beanit.iec61850bean.ServerModel;
 import com.beanit.iec61850bean.ServerSap;
@@ -49,7 +48,7 @@ import com.beanit.iec61850bean.ServiceError;
 
 public class Iec61850DriverTest extends Thread implements ServerEventListener {
 
-    int port = 54321;
+    int port = TestHelper.getAvailablePort();
     String host = "127.0.0.1";
     ClientSap clientSap = new ClientSap();
     ServerSap serverSap = null;
@@ -66,7 +65,9 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
 
         // ---------------------------------------------------
         // -----------------start test server------------------
-        serverSap = runServer("src/test/resources/testOpenmuc.icd", port, serverSap, serversServerModel);
+        serverSap = TestHelper.runServer("src/test/resources/testOpenmuc.icd", port, serverSap, serversServerModel,
+                this);
+        start();
         System.out.println("IED Server is running");
         clientSap.setApTitleCalled(new int[] { 1, 1, 999, 1 });
     }
@@ -74,7 +75,7 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     @Test
     public void testConnectEmptySettings() throws ArgumentSyntaxException, ConnectionException {
         // test with valid syntax on the test server
-        String testDeviceAdress = "127.0.0.1:54321";
+        String testDeviceAdress = host + ":" + port;
         String testSettings = "";
         Iec61850Driver testIec61850Driver = new Iec61850Driver();
         Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
@@ -85,7 +86,7 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     @Test
     public void testConnectValidSettings1() throws Exception {
         // Test 1
-        String testDeviceAdress = "127.0.0.1:54321";
+        String testDeviceAdress = host + ":" + port;
         String testSettings = "-a 12 -lt 1 -rt 1";
         Iec61850Driver testIec61850Driver = new Iec61850Driver();
         Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
@@ -96,7 +97,7 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     @Test
     public void testConnectValidSettings2() throws Exception {
         // Test 1
-        String testDeviceAdress = "127.0.0.1:54321";
+        String testDeviceAdress = host + ":" + port;
         String testSettings = "-a 12 -lt -rt ";
         Iec61850Driver testIec61850Driver = new Iec61850Driver();
         Connection testIec61850Connection = testIec61850Driver.connect(testDeviceAdress, testSettings);
@@ -107,7 +108,7 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     @Test
     public void testConnectInvalidSettings1() throws Exception {
         // Test 1
-        String testDeviceAdress = "127.0.0.1:54321";
+        String testDeviceAdress = host + ":" + port;
         String testSettings = "-a -lt 1 -rt 1";
         String exceptionMsg = "No authentication parameter was specified after the -a parameter";
         expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
@@ -117,7 +118,7 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     @Test
     public void testConnectInvalidSettings2() throws Exception {
         // Test 1
-        String testDeviceAdress = "127.0.0.1:54321";
+        String testDeviceAdress = host + ":" + port;
         String testSettings = "-a 12";
         String exceptionMsg = "Less than 4 or more than 6 arguments in the settings are not allowed.";
         expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
@@ -126,7 +127,7 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     @Test
     public void testConnectInvalidSettings3() throws Exception {
         // Test 1
-        String testDeviceAdress = "127.0.0.1:54321";
+        String testDeviceAdress = host + ":" + port;
         String testSettings = "-b 12 -lt 1 -rt 1";
         String exceptionMsg = "Unexpected argument: -b";
         expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
@@ -135,7 +136,7 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     @Test
     public void testConnectInvalidAddress1() throws Exception {
         // Test 1
-        String testDeviceAdress = "127.0.0.1:54321:foo";
+        String testDeviceAdress = host + ":" + port + ":foo";
         String testSettings = "-a 12 -lt 1 -rt 1";
         String exceptionMsg = "Invalid device address syntax.";
         expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
@@ -144,7 +145,7 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     @Test
     public void testConnectInvalidAddress2() throws Exception {
         // Test 1
-        String testDeviceAdress = "a127.0.0.1:54321";
+        String testDeviceAdress = "a" + host + ":" + port;
         String testSettings = "-a 12 -lt 1 -rt 1";
         String exceptionMsg = "Unknown host: a127.0.0.1";
         expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ConnectionException());
@@ -153,7 +154,7 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     @Test
     public void testConnectInvalidAddress3() throws Exception {
         // Test 1
-        String testDeviceAdress = "127.0.0.1:foo";
+        String testDeviceAdress = host + ":foo";
         String testSettings = "-a 12 -lt 1 -rt 1";
         String exceptionMsg = "The specified port is not an integer";
         expectExeption(testDeviceAdress, testSettings, exceptionMsg, new ArgumentSyntaxException());
@@ -163,17 +164,6 @@ public class Iec61850DriverTest extends Thread implements ServerEventListener {
     public void closeServerSap() {
         serverSap.stop();
         System.out.println("IED Server stopped");
-    }
-
-    private ServerSap runServer(String sclFilePath, int port, ServerSap serverSap, ServerModel serversServerModel)
-            throws SclParseException, IOException {
-
-        serverSap = new ServerSap(port, 0, null, SclParser.parse(sclFilePath).get(0), null);
-        serverSap.setPort(port);
-        serverSap.startListening(this);
-        serversServerModel = serverSap.getModelCopy();
-        start();
-        return serverSap;
     }
 
     @Override

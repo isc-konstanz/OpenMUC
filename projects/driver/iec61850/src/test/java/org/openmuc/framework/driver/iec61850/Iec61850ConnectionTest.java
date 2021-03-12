@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -61,7 +61,7 @@ import com.beanit.iec61850bean.ServiceError;
 
 public class Iec61850ConnectionTest extends Thread implements ClientEventListener, ServerEventListener {
 
-    int port = 54321;
+    int port = TestHelper.getAvailablePort();
     String host = "127.0.0.1";
     ClientSap clientSap = new ClientSap();
     ServerSap serverSap = null;
@@ -75,11 +75,11 @@ public class Iec61850ConnectionTest extends Thread implements ClientEventListene
 
         // ---------------------------------------------------
         // ----------------- Start test server------------------
-        serverSap = runServer("src/test/resources/testOpenmuc.icd", port, serverSap, serversServerModel);
+        serverSap = TestHelper.runServer("src/test/resources/testOpenmuc.icd", port, serverSap, serversServerModel,
+                this);
+        start();
         System.out.println("IED Server is running");
-
         clientSap.setApTitleCalled(new int[] { 1, 1, 999, 1 });
-
     }
 
     @Test
@@ -196,17 +196,6 @@ public class Iec61850ConnectionTest extends Thread implements ClientEventListene
         clientAssociation.disconnect();
         serverSap.stop();
 
-    }
-
-    private ServerSap runServer(String sclFilePath, int port, ServerSap serverSap, ServerModel serversServerModel)
-            throws SclParseException, IOException {
-
-        serverSap = new ServerSap(port, 0, null, SclParser.parse(sclFilePath).get(0), null);
-        serverSap.setPort(port);
-        serverSap.startListening(this);
-        serversServerModel = serverSap.getModelCopy();
-        start();
-        return serverSap;
     }
 
     private void getAllBdas(ServerModel serverModel, ClientAssociation clientAssociation)

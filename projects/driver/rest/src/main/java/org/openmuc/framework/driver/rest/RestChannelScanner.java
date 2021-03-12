@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,8 +28,8 @@ import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.driver.ChannelScanner;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.json.FromJson;
-import org.openmuc.framework.lib.json.rest.objects.RestChannel;
+import org.openmuc.framework.lib.rest1.FromJson;
+import org.openmuc.framework.lib.rest1.rest.objects.RestChannel;
 
 public class RestChannelScanner extends ChannelScanner {
 

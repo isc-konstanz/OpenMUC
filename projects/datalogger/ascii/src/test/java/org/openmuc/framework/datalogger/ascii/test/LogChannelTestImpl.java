@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,7 +28,6 @@ public class LogChannelTestImpl implements LogChannel {
     private final String id;
     private final String description;
     private final String address;
-    private final String settings;
     private final String unit;
     private final ValueType valueType;
     private final Double scalingFactor;
@@ -39,21 +38,20 @@ public class LogChannelTestImpl implements LogChannel {
     private final String samplingGroup;
     private final Integer loggingInterval;
     private final Integer loggingTimeOffset;
-    private final String loggingSettings;
     private final Boolean isEventLogging;
     private final Boolean disabled;
+
     private Integer valueLength;
 
-    public LogChannelTestImpl(String id, String address, String settings, String description, String unit, 
+    public LogChannelTestImpl(String id, String address, String description, String unit, 
             ValueType valueType, Double scalingFactor, Double valueOffset, Boolean listening, 
             Integer samplingInterval, Integer samplingTimeOffset, String samplingGroup, 
-            Integer loggingInterval, Integer loggingTimeOffset, String loggingSettings, 
-            Boolean isEventLogging, Boolean disabled) {
+            Integer loggingInterval, Integer loggingTimeOffset, Boolean isEventLogging, 
+            Boolean disabled) {
 
         this.id = id;
         this.description = description;
         this.address = address;
-        this.settings = settings;
         this.unit = unit;
         this.valueType = valueType;
         this.scalingFactor = scalingFactor;
@@ -64,19 +62,18 @@ public class LogChannelTestImpl implements LogChannel {
         this.samplingGroup = samplingGroup;
         this.loggingInterval = loggingInterval;
         this.loggingTimeOffset = loggingTimeOffset;
-        this.loggingSettings = loggingSettings;
         this.isEventLogging = isEventLogging;
         this.disabled = disabled;
     }
 
-    public LogChannelTestImpl(String id, String address, String settings, String description, String unit, 
+    public LogChannelTestImpl(String id, String address, String description, String unit, 
             ValueType valueType, Double scalingFactor, Double valueOffset, Boolean listening, 
             Integer samplingInterval, Integer samplingTimeOffset, String samplingGroup, 
-            Integer loggingInterval, Integer loggingTimeOffset, String loggingSettings, 
-            Boolean isEventLogging, Boolean disabled, int valueLength) {
+            Integer loggingInterval, Integer loggingTimeOffset, Boolean isEventLogging, 
+            Boolean disabled, int valueLength) {
 
-        this(id, description, address, settings, unit, valueType, scalingFactor, valueOffset, listening, samplingInterval,
-                samplingTimeOffset, samplingGroup, loggingInterval, loggingTimeOffset, loggingSettings, isEventLogging, disabled);
+        this(id, description, address, unit, valueType, scalingFactor, valueOffset, listening, samplingInterval,
+                samplingTimeOffset, samplingGroup, loggingInterval, loggingTimeOffset, isEventLogging, disabled);
         this.valueLength = valueLength;
     }
 
@@ -95,7 +92,7 @@ public class LogChannelTestImpl implements LogChannel {
     @Override
     public String getSettings() {
 
-        return settings;
+        return "default";
     }
 
     @Override
@@ -172,8 +169,7 @@ public class LogChannelTestImpl implements LogChannel {
 
     @Override
     public String getLoggingSettings() {
-
-        return loggingSettings;
+        return "default";
     }
 
     @Override
@@ -186,30 +182,5 @@ public class LogChannelTestImpl implements LogChannel {
 
         return disabled;
     }
-
-	@Override
-	public String getDriverId() {
-		return null;
-	}
-
-	@Override
-	public String getDeviceId() {
-		return null;
-	}
-
-	@Override
-	public String getDeviceDescription() {
-		return null;
-	}
-
-	@Override
-	public String getDeviceAddress() {
-		return null;
-	}
-
-	@Override
-	public String getDeviceSettings() {
-		return null;
-	}
 
 }

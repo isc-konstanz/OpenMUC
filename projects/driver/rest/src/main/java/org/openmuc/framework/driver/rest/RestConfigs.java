@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,53 +28,53 @@ import org.openmuc.framework.driver.Device;
 public abstract class RestConfigs extends Device<RestChannel> {
 
     @Address(id = "prefix",
-            name = "Prefix",
-            description = "The URL prefix, which specifies the protocol used to access the remote OpenMUC",
-            valueSelection = "http:http,https:https",
-            valueDefault = "https",
-            mandatory = false)
+             name = "Prefix",
+             description = "The URL prefix, which specifies the protocol used to access the remote OpenMUC",
+             valueSelection = "http:http,https:https",
+             valueDefault = "https",
+             mandatory = false)
     protected String prefix = "https";
 
     @Address(id = "host",
-            name = "Host name",
-            description = "The host name of the remote OpenMUC, e.g. 127.0.0.1")
+             name = "Host name",
+             description = "The host name of the remote OpenMUC, e.g. 127.0.0.1")
     protected String host;
 
     @Address(id = "port",
-            name = "Port",
-            description = "The port of the remote OpenMUC, e.g. 8888",
-            mandatory = false)
+             name = "Port",
+             description = "The port of the remote OpenMUC, e.g. 8888",
+             mandatory = false)
     protected int port = 8888;
 
     @Setting(id = "username",
-            name = "Username",
-            description = "The username of the remote OpenMUC")
+             name = "Username",
+             description = "The username of the remote OpenMUC")
     protected String username;
 
     @Setting(id = "password",
-            name = "Password",
-            description = "The password of the remote OpenMUC")
+             name = "Password",
+             description = "The password of the remote OpenMUC")
     protected String password;
 
     @Setting(id = "checkTimestamp",
-            name = "Check timestamp",
-            description = "Flags the driver that it should check the remote timestamp, before reading the complete record",
-            valueDefault = "false",
-            mandatory = false)
+             name = "Check timestamp",
+             description = "Flags the driver that it should check the remote timestamp, before reading the complete record",
+             valueDefault = "false",
+             mandatory = false)
     protected boolean checkTimestamp = false;
 
     @Setting(id = "bulk",
-            name = "Bulk reading",
-            description = "Flags the driver that it should read all available channels at once, instead of requesting them one by one",
-            valueDefault = "false",
-            mandatory = false)
+             name = "Bulk reading",
+             description = "Flags the driver that it should read all available channels at once, instead of requesting them one by one",
+             valueDefault = "false",
+             mandatory = false)
     protected boolean bulkReading = false;
 
     @Setting(id = "timeout",
-            name = "Timeout",
-            description = "The timeout, after which the HTTP(S) call will be canceled.",
-            valueDefault = "10000",
-            mandatory = false)
+             name = "Timeout",
+             description = "The timeout, after which the HTTP(S) call will be canceled.",
+             valueDefault = "10000",
+             mandatory = false)
     protected int timeout = 10000;
 
     protected String url;

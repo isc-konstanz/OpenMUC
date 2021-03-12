@@ -1,13 +1,8 @@
-
-def openmucPath = rootDir.getPath()
-def openmucVersion = cfgVersion
-
 repositories {
-  flatDir {
-    dirs openmucPath + '/build/libs-all'
-  }
-  mavenLocal()
   mavenCentral()
+  flatDir {
+    dirs rootDir.getPath() + "/build/libs-all/"
+  }
 }
 
 configurations.create("osgibundles")
@@ -16,6 +11,8 @@ configurations.osgibundles.transitive = false;
 configurations.osgimain.transitive = false;
 
 dependencies {
+  def openmucVersion = "0.19.0"
+
   osgimain group:    "org.apache.felix",      name: "org.apache.felix.main",                 version: "6.0.3"
 
   //------------------------------------------------------------------------------------------------------
@@ -29,7 +26,6 @@ dependencies {
   osgibundles group: "org.openmuc.framework", name: "openmuc-core-api",                      version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-core-spi",                      version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-core-datamanager",              version: openmucVersion
-
   osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger-ascii",              version: openmucVersion
 
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-spi",                     version: openmucVersion
@@ -42,12 +38,17 @@ dependencies {
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-mediaviewer",             version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-webui-simpledemovisualisation", version: openmucVersion
 
+  osgibundles group: "org.openmuc.framework", name: "openmuc-lib-osgi",                      version: openmucVersion
+  osgibundles group: "org.openmuc.framework", name: "openmuc-lib-ssl",                       version: openmucVersion
+  osgibundles group: "org.openmuc.framework", name: "openmuc-lib-rest1",                     version: openmucVersion
+
   osgibundles group: "org.openmuc.framework", name: "openmuc-server-restws",                 version: openmucVersion
 
   osgibundles group: "org.openmuc.framework", name: "openmuc-app-simpledemo",                version: openmucVersion
 
   osgibundles group: "org.openmuc.framework", name: "openmuc-driver",                        version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv",                    version: openmucVersion
+  osgibundles group: "org.openmuc.framework", name: "openmuc-driver-aggregator",             version: openmucVersion
 
   //------------------------------------------------------------------------------------------------------
   // The official JDBC driver for MySQL.
@@ -60,18 +61,20 @@ dependencies {
   //------------------------------------------------------------------------------------------------------
   osgibundles group: "org.apache.felix",     name: "org.apache.felix.gogo.runtime",          version: "1.1.2"
   osgibundles group: "org.apache.felix",     name: "org.apache.felix.gogo.command",          version: "1.0.2"
+  //osgibundles group: "org.apache.felix",     name: "org.apache.felix.gogo.shell",          version: "1.1.4"
   osgibundles group: "org.apache.felix",     name: "org.apache.felix.gogo.jline",            version: "1.1.2"
   osgibundles group: "org.jline",            name: "jline",                                  version: "3.14.1"
   osgibundles group: "org.apache.felix",     name: "org.apache.felix.useradmin",             version: "1.0.4"
   osgibundles group: "org.apache.felix",     name: "org.apache.felix.useradmin.filestore",   version: "1.0.2"
 
   //------------------------------------------------------------------------------------------------------
-  // Adds a telnet server so that the Felix Gogo Shell can be accessed
-  // using telnet clients. By default this server only listens on
-  // localhost port 6666. Therefor you can on only access it from the
-  // same host on which felix is running.
+  // Adds a telnet server so that the Felix Gogo Shell can be accessed using telnet clients. By default 
+  // this server only listens on localhost port 6666. Therefor you can on only access it from the same host 
+  // on which felix is running.
+  // NOTE: org.apache.felix.shell.remote does not work with org.apache.felix.gogo.jline use 
+  // org.apache.felix.gogo.shell instead
   //------------------------------------------------------------------------------------------------------
-  osgibundles group: "org.apache.felix",     name: "org.apache.felix.shell.remote",          version: "1.2.0"
+  //osgibundles group: "org.apache.felix",     name: "org.apache.felix.shell.remote",          version: "1.2.0"
 
   //------------------------------------------------------------------------------------------------------
   // message logging libraries, SLF4J is a light-weight logging API,
@@ -105,13 +108,14 @@ dependencies {
   osgibundles group: "org.apache.felix",     name: "org.apache.felix.eventadmin",            version: "1.5.0"
   osgibundles group: "org.apache.felix",     name: "org.apache.felix.configadmin",           version: "1.9.16"
   osgibundles group: "org.apache.felix",     name: "org.apache.felix.metatype",              version: "1.2.2"
+  osgibundles group: 'org.apache.felix',     name: 'org.apache.felix.fileinstall',           version: '3.6.8'
 
   //------------------------------------------------------------------------------------------------------
   // Adds a web console for felix bundle management
   // http://localhost:8888/system/console/httpservice
   // https://localhost:8889/system/console/httpservice
   //------------------------------------------------------------------------------------------------------
-  osgibundles group: "org.apache.felix",     name: "org.apache.felix.webconsole",           version: "4.5.2"
+  osgibundles group: "org.apache.felix",     name: "org.apache.felix.webconsole",           version: "4.5.4"
   osgibundles group: "commons-io",           name: "commons-io",                            version: "2.6"
   osgibundles group: "commons-fileupload",   name: "commons-fileupload",                    version: "1.4"
   osgibundles group: "commons-codec",        name: "commons-codec",                         version: "1.14"
@@ -119,23 +123,33 @@ dependencies {
   //------------------------------------------------------------------------------------------------------
   // Adds Google dependencies, needed by REST, MySQL or OPC UA bundles
   //------------------------------------------------------------------------------------------------------
-  osgibundles group: 'com.google.code.gson', name: 'gson',                                  version: '2.8.5'
+//  osgibundles group: 'com.google.code.gson', name: 'gson',                                  version: '2.8.5'
   osgibundles group: 'com.google.guava',     name: 'guava',                                 version: '26.0-jre'
   osgibundles group: 'com.google.protobuf',  name: 'protobuf-java',                         version: '3.11.1'
+  
+  //------------------------------------------------------------------------------------------------------
+  // Plugins for the apache felix web console 
+  //------------------------------------------------------------------------------------------------------
+//  osgibundles group: 'org.apache.felix',   name: 'org.apache.felix.webconsole.plugins.memoryusage',   version: '1.0.10'
+//  osgibundles group: 'org.apache.felix',   name: 'org.apache.felix.webconsole.plugins.obr',           version: '1.0.4'
+//  osgibundles group: 'org.apache.felix',   name: 'org.apache.felix.webconsole.plugins.packageadmin',  version: '1.0.4'
+//  osgibundles group: 'org.apache.felix',   name: 'org.apache.felix.webconsole.plugins.event',         version: '1.1.8'
+//  osgibundles group: 'org.apache.felix',   name: 'org.apache.felix.webconsole.plugins.ds',            version: '2.1.0'
+//  osgibundles group: 'org.apache.felix',   name: 'org.apache.felix.inventory',                        version: '1.0.6'
 }
 
-task loadBundles(type: Sync) {
+task syncBundles(type: Sync) {
   from configurations.osgibundles;
-  into openmucPath + "/framework/bundle"
+  into rootDir.getPath() + "/framework/bundle"
 }
 
-task loadFelixMain(type: Copy) {
+task copyFelixMain(type: Copy) {
   from configurations.osgimain;
-  into openmucPath + "/framework/felix"
+  into rootDir.getPath() + "/framework/felix"
   rename (/org.apache.felix.main-.*jar/, "felix.jar")
 }
 
 task updateBundles {
-  dependsOn loadBundles
-  dependsOn loadFelixMain
+    dependsOn syncBundles
+    dependsOn copyFelixMain
 }

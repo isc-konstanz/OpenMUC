@@ -6,20 +6,14 @@ dependencies {
 }
 
 jar {
-    manifest {
-        name = projectName
-    }
+    bnd('Bundle-Name': projectName, 'Export-Package': 'org.openmuc.framework.lib.*')
 }
 
-test {
-    useJUnitPlatform()
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name projectName
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
                 description projectDescription
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -126,26 +126,6 @@ public abstract class ChannelWrapper extends Configurable {
     public final boolean isAveraging() {
         return average;
     }
-
-	public String getDriverId() {
-		return channel.getDriverId();
-	}
-
-	public String getDeviceId() {
-		return channel.getDeviceId();
-	}
-
-	public String getDeviceDescription() {
-		return channel.getDeviceDescription();
-	}
-
-	public String getDeviceAddress() {
-		return channel.getDeviceAddress();
-	}
-
-	public String getDeviceSettings() {
-		return channel.getDeviceSettings();
-	}
 
     public boolean equals(LogChannel channel) {
         return this.channel.getId() != null && channel != null &&

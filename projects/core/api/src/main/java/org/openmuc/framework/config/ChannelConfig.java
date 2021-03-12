@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -27,22 +27,23 @@ import org.openmuc.framework.data.ValueType;
 
 public interface ChannelConfig {
 
-    static final Boolean DISABLED_DEFAULT = false;
-    static final String DESCRIPTION_DEFAULT = "";
-    static final String ADDRESS_DEFAULT = "";
-    static final String UNIT_DEFAULT = "";
-    static final ValueType VALUE_TYPE_DEFAULT = ValueType.DOUBLE;
-    static final int BYTE_ARRAY_SIZE_DEFAULT = 10;
-    static final int STRING_SIZE_DEFAULT = 10;
-    static final boolean LISTENING_DEFAULT = false;
-    static final int SAMPLING_INTERVAL_DEFAULT = -1;
-    static final int SAMPLING_TIME_OFFSET_DEFAULT = 0;
-    static final String SAMPLING_GROUP_DEFAULT = "";
-    static final String SETTINGS_DEFAULT = "";
-    static final int LOGGING_INTERVAL_DEFAULT = -1;
-    static final int LOGGING_TIME_OFFSET_DEFAULT = 0;
-    static final boolean LOGGING_EVENT_DEFAULT = false;
-    static final String LOGGING_SETTINGS_DEFAULT = "";
+    Boolean DISABLED_DEFAULT = false;
+    String DESCRIPTION_DEFAULT = "";
+    String ADDRESS_DEFAULT = "";
+    String SETTINGS_DEFAULT = "";
+    String UNIT_DEFAULT = "";
+    ValueType VALUE_TYPE_DEFAULT = ValueType.DOUBLE;
+    int BYTE_ARRAY_SIZE_DEFAULT = 10;
+    int STRING_SIZE_DEFAULT = 10;
+    boolean LISTENING_DEFAULT = false;
+    int SAMPLING_INTERVAL_DEFAULT = -1;
+    int SAMPLING_TIME_OFFSET_DEFAULT = 0;
+    String SAMPLING_GROUP_DEFAULT = "";
+    int LOGGING_INTERVAL_DEFAULT = -1;
+    int LOGGING_TIME_OFFSET_DEFAULT = 0;
+    boolean LOGGING_EVENT_DEFAULT = false;
+    String LOGGING_SETTINGS_DEFAULT = "";
+    String LOGGING_READER_DEFAULT = "";
 
     String getId();
 
@@ -55,6 +56,10 @@ public interface ChannelConfig {
     String getAddress();
 
     void setAddress(String address);
+
+    String getSettings();
+
+    void setSettings(String settings);
 
     String getUnit();
 
@@ -92,10 +97,6 @@ public interface ChannelConfig {
 
     void setSamplingGroup(String group);
 
-    String getSettings();
-
-    void setSettings(String settings);
-
     Integer getLoggingInterval();
 
     void setLoggingInterval(Integer interval);
@@ -111,6 +112,10 @@ public interface ChannelConfig {
     Boolean isLoggingEvent();
 
     void setLoggingEvent(Boolean loggingEvent);
+
+    String getReader();
+
+    void setReader(String reader);
 
     Boolean isDisabled();
 

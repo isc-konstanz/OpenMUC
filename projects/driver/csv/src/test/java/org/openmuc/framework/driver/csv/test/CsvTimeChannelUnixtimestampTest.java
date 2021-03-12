@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -36,7 +36,7 @@ public class CsvTimeChannelUnixtimestampTest {
 
     static List<String> data;
     static long[] timestamps;
-    static double value;
+    static String value;
     private static final long OFFSET = 1436306400000l;
 
     @BeforeClass
@@ -62,14 +62,14 @@ public class CsvTimeChannelUnixtimestampTest {
         CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET);
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
         // interval size is 5 seconds, driver returns new value once the new interval is reached
         value = channel.readValue(OFFSET + 4999);
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
         value = channel.readValue(OFFSET + 5000);
-        Assert.assertTrue(String.valueOf(value).equals("5.0"));
+        Assert.assertTrue(value.equals("5.0"));
 
     }
 
@@ -79,10 +79,10 @@ public class CsvTimeChannelUnixtimestampTest {
         CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET + 6000l);
-        Assert.assertTrue(String.valueOf(value).equals("5.0"));
+        Assert.assertTrue(value.equals("5.0"));
 
         value = channel.readValue(OFFSET + 14000l);
-        Assert.assertTrue(String.valueOf(value).equals("10.0"));
+        Assert.assertTrue(value.equals("10.0"));
     }
 
     @Test
@@ -91,10 +91,10 @@ public class CsvTimeChannelUnixtimestampTest {
         CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET);
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
         value = channel.readValue(OFFSET + 5000l);
-        Assert.assertTrue(String.valueOf(value).equals("5.0"));
+        Assert.assertTrue(value.equals("5.0"));
     }
 
     @Test
@@ -103,10 +103,10 @@ public class CsvTimeChannelUnixtimestampTest {
         CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET + 20000);
-        Assert.assertTrue(String.valueOf(value).equals("20.0"));
+        Assert.assertTrue(value.equals("20.0"));
 
         value = channel.readValue(OFFSET + 25000);
-        Assert.assertTrue(String.valueOf(value).equals("20.0"));
+        Assert.assertTrue(value.equals("20.0"));
 
         // timestamp before the last one, but rewind is false so timestamp is not considered and old value is returned
         try {
@@ -123,13 +123,13 @@ public class CsvTimeChannelUnixtimestampTest {
         CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, true);
 
         value = channel.readValue(OFFSET + 20000);
-        Assert.assertTrue(String.valueOf(value).equals("20.0"));
+        Assert.assertTrue(value.equals("20.0"));
 
         value = channel.readValue(OFFSET + 25000);
-        Assert.assertTrue(String.valueOf(value).equals("20.0"));
+        Assert.assertTrue(value.equals("20.0"));
 
         value = channel.readValue(OFFSET);
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class CsvTimeChannelUnixtimestampTest {
         }
 
         value = channel.readValue(OFFSET);
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
     }
 
@@ -155,7 +155,7 @@ public class CsvTimeChannelUnixtimestampTest {
         CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, false);
 
         value = channel.readValue(OFFSET);
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
         // sampling jumped back before first timestamp of file
         try {
@@ -172,7 +172,7 @@ public class CsvTimeChannelUnixtimestampTest {
         CsvChannelUnixtimestamp channel = CsvTestFactory.newChannelUnixtimestamp(data, timestamps, true);
 
         value = channel.readValue(OFFSET);
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
         // sampling jumped back before first timestamp of file
         try {

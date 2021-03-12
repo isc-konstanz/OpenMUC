@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -57,6 +57,12 @@ public abstract class Device<C extends DeviceChannel> extends ChannelContext imp
     protected void onDestroy() {
         // Placeholder for the optional implementation
     }
+
+//    TODO: Implement initial configuration of all available channels of this device
+//    @Override
+//    public final void connectChannels(List<ConnectionChannel> channels) {
+//        
+//    }
 
     final void doConfigure(String address, String settings) throws ArgumentSyntaxException {
         configure(address, settings);

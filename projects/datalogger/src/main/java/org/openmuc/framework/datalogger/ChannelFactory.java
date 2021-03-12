@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,6 +25,6 @@ import org.openmuc.framework.config.Settings;
 
 public interface ChannelFactory {
 
-    DataChannel newChannel(Settings settings) throws ArgumentSyntaxException;
+    LoggingChannel newChannel(Settings settings) throws ArgumentSyntaxException;
 
 }

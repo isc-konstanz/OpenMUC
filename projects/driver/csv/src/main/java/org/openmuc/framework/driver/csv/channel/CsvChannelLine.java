@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -38,7 +38,7 @@ public class CsvChannelLine extends CsvChannel {
     }
 
     @Override
-    public double readValue(long sampleTime) {
+    public String readValue(long sampleTime) {
 
         lastIndexRead++;
         if (lastIndexRead > maxIndex) {
@@ -51,8 +51,7 @@ public class CsvChannelLine extends CsvChannel {
             }
         }
 
-        double value = Double.parseDouble(data.get(lastIndexRead));
-        return value;
+        return data.get(lastIndexRead);
     }
 
 }

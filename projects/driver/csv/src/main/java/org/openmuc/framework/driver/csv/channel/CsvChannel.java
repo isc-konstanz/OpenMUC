@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -26,8 +26,10 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.annotation.Address;
 import org.openmuc.framework.data.DoubleValue;
+import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.driver.DeviceChannel;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
@@ -70,9 +72,16 @@ public abstract class CsvChannel extends DeviceChannel {
     @Override
     public Record onRead(long samplingTime) throws ConnectionException {
         try {
-            double value = readValue(samplingTime);
-            return new Record(new DoubleValue(value), samplingTime, Flag.VALID);
-        
+            String valueAsString = readValue(samplingTime);
+
+            if (getValueType().equals(ValueType.STRING)) {
+                return new Record(new StringValue(valueAsString), samplingTime, Flag.VALID);
+            }
+            else {
+                // In all other cases try parsing as double
+                double value = Double.parseDouble(valueAsString);
+                return new Record(new DoubleValue(value), samplingTime, Flag.VALID);
+            }
         } catch (NoValueReceivedYetException e) {
             logger.warn("NoValueReceivedYetException: {}", e.getMessage());
             return new Record(new DoubleValue(Double.NaN), samplingTime, Flag.NO_VALUE_RECEIVED_YET);
@@ -87,6 +96,6 @@ public abstract class CsvChannel extends DeviceChannel {
         }
     }
 
-    protected abstract double readValue(long sampleTime) throws CsvException;
+    protected abstract String readValue(long sampleTime) throws CsvException;
 
 }

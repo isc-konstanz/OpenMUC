@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -35,7 +35,7 @@ import javax.net.ssl.X509TrustManager;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.driver.annotation.Factory;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.json.FromJson;
+import org.openmuc.framework.lib.rest1.FromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,17 +131,17 @@ public class RestRemote extends RestConfigs {
         logger.debug("Received json string: {}", jsonStr);
         
         // TODO: Move helper objects to library project and rename to JsonChannel
-        List<org.openmuc.framework.lib.json.rest.objects.RestChannel> records = json.getRestChannelList();
+        List<org.openmuc.framework.lib.rest1.rest.objects.RestChannel> records = json.getRestChannelList();
         for (RestChannel channel : channels) {
             readChannel(channel, records);
         }
     }
 
     private void readChannel(RestChannel channel,
-            List<org.openmuc.framework.lib.json.rest.objects.RestChannel> records) throws ConnectionException {
+            List<org.openmuc.framework.lib.rest1.rest.objects.RestChannel> records) throws ConnectionException {
     	
         // TODO: Move helper objects to library project and rename to JsonChannel
-        for (org.openmuc.framework.lib.json.rest.objects.RestChannel record : records) {
+        for (org.openmuc.framework.lib.rest1.rest.objects.RestChannel record : records) {
             if (channel.equals(record)) {
                 channel.setRecord(record.getRecord());
                 return;

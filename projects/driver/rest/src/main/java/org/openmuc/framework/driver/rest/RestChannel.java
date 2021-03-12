@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -29,10 +29,10 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.DeviceChannel;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.json.Const;
-import org.openmuc.framework.lib.json.FromJson;
-import org.openmuc.framework.lib.json.ToJson;
-import org.openmuc.framework.lib.json.rest.objects.RestRecord;
+import org.openmuc.framework.lib.rest1.Const;
+import org.openmuc.framework.lib.rest1.FromJson;
+import org.openmuc.framework.lib.rest1.ToJson;
+import org.openmuc.framework.lib.rest1.rest.objects.RestRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +42,8 @@ public class RestChannel extends DeviceChannel {
     private static final Logger logger = LoggerFactory.getLogger(RestRemote.class);
 
     @Address(id = "id",
-            name = "Channel ID",
-            description = "The ID of the remote OpenMUC channel")
+             name = "Channel ID",
+             description = "The ID of the remote OpenMUC channel")
     private String id;
     private String uri;
 
@@ -111,7 +111,7 @@ public class RestChannel extends DeviceChannel {
         setFlag(flag);
     }
 
-    public boolean equals(org.openmuc.framework.lib.json.rest.objects.RestChannel channel) {
+    public boolean equals(org.openmuc.framework.lib.rest1.rest.objects.RestChannel channel) {
         return id.equals(channel.getId());
     }
 

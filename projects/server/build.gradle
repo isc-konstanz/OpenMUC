@@ -1,24 +1,23 @@
-
 def projectName = "OpenMUC Core - Server"
+def projectDescription = "The core server component of the OpenMUC framework."
 
 dependencies {
-  api project(':openmuc-core-spi')
+    api project(':openmuc-core-spi')
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Export-Package', 'org.openmuc.framework.server.*'
-  }
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Export-Package': 'org.openmuc.framework.server.*')
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description "The core server component of the OpenMUC framework."
-      }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description projectDescription
+            }
+        }
     }
-  }
 }

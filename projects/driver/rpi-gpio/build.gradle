@@ -1,31 +1,28 @@
-
 def projectName = "OpenMUC Driver - Raspberry Pi GPIO"
 def projectDescription = "Raspberry Pi GPIO driver for the OpenMUC framework."
 
 def pi4jVersion = '1.2'
 
 dependencies {
-  implementation project(':openmuc-driver')
+    implementation project(':openmuc-driver')
 
-  implementation group: 'com.pi4j', name: 'pi4j-core', version: pi4jVersion
-  implementation group: 'com.pi4j', name: 'pi4j-device', version: pi4jVersion
-  implementation group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jVersion
+    implementation group: 'com.pi4j', name: 'pi4j-core', version: pi4jVersion
+    implementation group: 'com.pi4j', name: 'pi4j-device', version: pi4jVersion
+    implementation group: 'com.pi4j', name: 'pi4j-gpio-extension', version: pi4jVersion
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Export-Package', ''
-  }
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description projectDescription
-      }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description projectDescription
+            }
+        }
     }
-  }
 }

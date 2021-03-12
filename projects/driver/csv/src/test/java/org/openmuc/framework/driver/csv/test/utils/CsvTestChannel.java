@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -109,6 +109,12 @@ public class CsvTestChannel implements Channel {
 
     @Override
     public int getSamplingTimeOffset() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int getSamplingTimeout() {
         // TODO Auto-generated method stub
         return 0;
     }

@@ -8,17 +8,14 @@ dependencies {
 }
 
 jar {
-    manifest {
-        name = projectName
-        instruction 'Export-Package', ''
-    }
+    bnd('Bundle-Name': projectName)
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name projectName
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
                 description "AMQP driver for the OpenMUC framework."
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,50 +25,40 @@ import org.openmuc.framework.data.ValueType;
 
 public interface LogChannel {
 
-    public String getId();
+    String getId();
 
-    public String getDescription();
+    String getDescription();
 
-    public String getAddress();
+    String getAddress();
 
-    public String getSettings();
+    String getSettings();
 
-    public String getUnit();
+    String getUnit();
 
-    public ValueType getValueType();
+    ValueType getValueType();
 
-    public Integer getValueTypeLength();
+    Integer getValueTypeLength();
 
-    public Double getValueOffset();
+    Double getValueOffset();
 
-    public Double getScalingFactor();
+    Double getScalingFactor();
 
-    public Boolean isListening();
+    Boolean isListening();
 
-    public Integer getSamplingInterval();
+    Integer getSamplingInterval();
 
-    public Integer getSamplingTimeOffset();
+    Integer getSamplingTimeOffset();
 
-    public String getSamplingGroup();
+    String getSamplingGroup();
 
-    public Integer getLoggingInterval();
+    Integer getLoggingInterval();
 
-    public Integer getLoggingTimeOffset();
+    Integer getLoggingTimeOffset();
 
-    public String getLoggingSettings();
+    String getLoggingSettings();
 
-    public Boolean isLoggingEvent();
+    Boolean isLoggingEvent();
 
-    String getDriverId();
-
-    String getDeviceId();
-
-    String getDeviceDescription();
-
-    String getDeviceAddress();
-
-    String getDeviceSettings();
-
-    public Boolean isDisabled();
+    Boolean isDisabled();
 
 }

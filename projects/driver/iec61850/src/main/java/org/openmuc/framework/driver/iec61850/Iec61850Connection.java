@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -190,9 +190,16 @@ public final class Iec61850Connection implements Connection {
 
         for (FcModelNode fcModelNode : fcNodesToBeRequested) {
             try {
-                clientAssociation.setDataValues(fcModelNode);
+                if (fcModelNode.getFc().toString().equals("CO")) {
+                    logger.info("writing CO model node");
+                    fcModelNode = (FcModelNode) fcModelNode.getParent().getParent();
+                    clientAssociation.operate(fcModelNode);
+                }
+                else {
+                    clientAssociation.setDataValues(fcModelNode);
+                }
             } catch (ServiceError e) {
-                logger.debug("Error writing to channel: service error calling setDataValues on {}: {}",
+                logger.error("Error writing to channel: service error calling setDataValues on {}: {}",
                         fcModelNode.getReference(), e);
                 for (BasicDataAttribute bda : fcModelNode.getBasicDataAttributes()) {
                     for (ChannelValueContainer valueContainer : containers) {

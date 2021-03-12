@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -52,10 +52,9 @@ public class CsvChannelUnixtimestamp extends CsvChannelTime {
     }
 
     @Override
-    public double readValue(long samplingTime) throws CsvException {
+    public String readValue(long samplingTime) throws CsvException {
         lastIndexRead = searchNextIndex(samplingTime);
-        double value = Double.parseDouble(data.get(lastIndexRead));
-        return value;
+        return data.get(lastIndexRead);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -31,6 +31,7 @@ import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -173,9 +174,11 @@ public class Authentication implements AuthenticationService {
             newUser = (User) userAdmin.getRole(user);
         }
 
-        newUser.getProperties().put("name", user);
-        newUser.getProperties().put("password", hash);
-        newUser.getProperties().put("group", group);
+        @SuppressWarnings("unchecked")
+        Dictionary<String, String> properties = newUser.getProperties();
+        properties.put("name", user);
+        properties.put("password", hash);
+        properties.put("group", group);
 
         grp.addMember(newUser);
     }
