@@ -1,10 +1,13 @@
 ::BATCH file for windows
-
-set BATDIR=%~dp0
+@echo off
+set RUNDIR=%~dp0..
+set ROOTDIR=%~dp0..\..
 set CURRENTDIR=%cd%
 
-call %BATDIR%..\..\gradlew.bat -b %BATDIR%..\conf\bundles.conf.gradle updateBundles --warning-mode all
+call %ROOTDIR%\gradlew.bat -p %ROOTDIR% framework --warning-mode all
 
-cd %BATDIR%..\
+cd %RUNDIR%\
 java -jar felix\felix.jar
+
 cd %CURRENTDIR%
+@echo on
