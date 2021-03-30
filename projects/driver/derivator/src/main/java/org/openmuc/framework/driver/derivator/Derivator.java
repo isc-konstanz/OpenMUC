@@ -94,12 +94,16 @@ public class Derivator implements DriverService, Connection {
             return derivatorChannel.derive();
             
         } catch (ArgumentSyntaxException e) {
-            logger.info("Unable to perform derivation for channel {}. {}", container.getChannel().getId(), e.getMessage());
+            logger.warn("Unable to configure derivation for channel {}. {}", container.getChannel().getId(), e.getMessage());
             return new Record(Flag.DRIVER_ERROR_CHANNEL_ADDRESS_SYNTAX_INVALID);
-            
-        } catch (Exception e) {
-            logger.warn("Unable to perform derivation for channel {}. {}", container.getChannel().getId(), e.getMessage());
+        
+        } catch (DerivationException e) {
+            logger.debug("Unable to perform derivation for channel {}. {}", container.getChannel().getId(), e.getMessage());
             return new Record(Flag.DRIVER_ERROR_READ_FAILURE);
+        
+        } catch (Exception e) {
+            logger.error("Unable to perform derivation for channel {}.", container.getChannel().getId(), e);
+            return new Record(Flag.DRIVER_THREW_UNKNOWN_EXCEPTION);
         }
     }
 

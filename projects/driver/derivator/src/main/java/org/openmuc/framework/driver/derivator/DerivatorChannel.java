@@ -63,8 +63,8 @@ public class DerivatorChannel {
         	lastRecord = newRecord;
             return new Record(Flag.NO_VALUE_RECEIVED_YET);
         }
-        if (newRecord.getFlag() != Flag.VALID) {
-            throw new DerivationException("Unable to derive for invalid record: " + newRecord.getFlag());
+        if (newRecord.getFlag() != Flag.VALID || newRecord.getTimestamp() == null || newRecord.getValue() == null) {
+            throw new DerivationException("Unable to derive for invalid record: " + newRecord);
         }
         if (newRecord.getTimestamp() <= lastRecord.getTimestamp()) {
             throw new DerivationException("Unable to derive for invalid record with decreasing time");
