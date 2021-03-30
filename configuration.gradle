@@ -32,6 +32,7 @@ project.ext {
                 it.getPath() == ":openmuc-driver-aggregator" ||
                 it.getPath() == ":openmuc-driver-amqp" ||
                 it.getPath() == ":openmuc-driver-csv" ||
+                it.getPath() == ":openmuc-driver-derivator" ||
                 it.getPath() == ":openmuc-driver-dlms" ||
                 it.getPath() == ":openmuc-driver-ehz" ||
                 it.getPath() == ":openmuc-driver-iec60870" ||
