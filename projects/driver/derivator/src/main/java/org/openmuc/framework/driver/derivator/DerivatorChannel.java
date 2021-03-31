@@ -63,6 +63,10 @@ public class DerivatorChannel {
         	lastRecord = newRecord;
             return new Record(Flag.NO_VALUE_RECEIVED_YET);
         }
+        if (lastRecord.getFlag() != Flag.VALID || lastRecord.getTimestamp() == null || lastRecord.getValue() == null) {
+        	lastRecord = newRecord;
+            return new Record(Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE);
+        }
         if (newRecord.getFlag() != Flag.VALID || newRecord.getTimestamp() == null || newRecord.getValue() == null) {
             throw new DerivationException("Unable to derive for invalid record: " + newRecord);
         }
