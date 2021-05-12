@@ -23,7 +23,7 @@ package org.openmuc.framework.server.restws;
 import org.openmuc.framework.authentication.AuthenticationService;
 import org.openmuc.framework.config.ConfigService;
 import org.openmuc.framework.dataaccess.DataAccessService;
-import org.openmuc.framework.lib.rest1.Const;
+import org.openmuc.framework.lib.rest.Const;
 import org.openmuc.framework.server.restws.servlets.ChannelResourceServlet;
 import org.openmuc.framework.server.restws.servlets.ConnectServlet;
 import org.openmuc.framework.server.restws.servlets.DeviceResourceServlet;

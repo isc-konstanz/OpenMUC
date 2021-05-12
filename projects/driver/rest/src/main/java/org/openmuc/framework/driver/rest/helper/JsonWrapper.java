@@ -30,10 +30,10 @@ import java.util.List;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.lib.rest1.Const;
-import org.openmuc.framework.lib.rest1.FromJson;
-import org.openmuc.framework.lib.rest1.ToJson;
-import org.openmuc.framework.lib.rest1.rest.objects.RestChannel;
+import org.openmuc.framework.lib.rest.Const;
+import org.openmuc.framework.lib.rest.FromJson;
+import org.openmuc.framework.lib.rest.ToJson;
+import org.openmuc.framework.lib.rest.objects.RestChannel;
 
 import com.google.gson.JsonElement;
 

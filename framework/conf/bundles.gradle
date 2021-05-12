@@ -40,7 +40,7 @@ dependencies {
 
   osgibundles group: "org.openmuc.framework", name: "openmuc-lib-osgi",                      version: openmucVersion
   osgibundles group: "org.openmuc.framework", name: "openmuc-lib-ssl",                       version: openmucVersion
-  osgibundles group: "org.openmuc.framework", name: "openmuc-lib-rest1",                     version: openmucVersion
+  osgibundles group: "org.openmuc.framework", name: "openmuc-lib-rest",                      version: openmucVersion
 
   osgibundles group: "org.openmuc.framework", name: "openmuc-server-restws",                 version: openmucVersion
 

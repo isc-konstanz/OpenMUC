@@ -32,10 +32,10 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.DriverChannel;
 import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.rest1.Const;
-import org.openmuc.framework.lib.rest1.FromJson;
-import org.openmuc.framework.lib.rest1.ToJson;
-import org.openmuc.framework.lib.rest1.rest.objects.RestRecord;
+import org.openmuc.framework.lib.rest.Const;
+import org.openmuc.framework.lib.rest.FromJson;
+import org.openmuc.framework.lib.rest.ToJson;
+import org.openmuc.framework.lib.rest.objects.RestRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +114,7 @@ public class RestChannel extends DriverChannel {
         setFlag(flag);
     }
 
-    public boolean equals(org.openmuc.framework.lib.rest1.rest.objects.RestChannel channel) {
+    public boolean equals(org.openmuc.framework.lib.rest.objects.RestChannel channel) {
         return id.equals(channel.getId());
     }
 

@@ -39,7 +39,7 @@ import org.openmuc.framework.driver.annotation.Disconnect;
 import org.openmuc.framework.driver.annotation.Read;
 import org.openmuc.framework.driver.annotation.Write;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.rest1.FromJson;
+import org.openmuc.framework.lib.rest.FromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,17 +136,17 @@ public class RestRemote extends RestConfigs {
         logger.debug("Received json string: {}", jsonStr);
         
         // TODO: Move helper objects to library project and rename to JsonChannel
-        List<org.openmuc.framework.lib.rest1.rest.objects.RestChannel> records = json.getRestChannelList();
+        List<org.openmuc.framework.lib.rest.objects.RestChannel> records = json.getRestChannelList();
         for (RestChannel channel : channels) {
             readChannel(channel, records);
         }
     }
 
     private void readChannel(RestChannel channel,
-            List<org.openmuc.framework.lib.rest1.rest.objects.RestChannel> records) throws ConnectionException {
+            List<org.openmuc.framework.lib.rest.objects.RestChannel> records) throws ConnectionException {
     	
         // TODO: Move helper objects to library project and rename to JsonChannel
-        for (org.openmuc.framework.lib.rest1.rest.objects.RestChannel record : records) {
+        for (org.openmuc.framework.lib.rest.objects.RestChannel record : records) {
             if (channel.equals(record)) {
                 channel.setRecord(record.getRecord());
                 return;

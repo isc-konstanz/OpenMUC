@@ -46,12 +46,12 @@ import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
 import org.openmuc.framework.dataaccess.DeviceState;
-import org.openmuc.framework.lib.rest1.Const;
-import org.openmuc.framework.lib.rest1.FromJson;
-import org.openmuc.framework.lib.rest1.ToJson;
-import org.openmuc.framework.lib.rest1.exceptions.MissingJsonObjectException;
-import org.openmuc.framework.lib.rest1.exceptions.RestConfigIsNotCorrectException;
-import org.openmuc.framework.lib.rest1.rest.objects.RestDeviceWrapper;
+import org.openmuc.framework.lib.rest.Const;
+import org.openmuc.framework.lib.rest.FromJson;
+import org.openmuc.framework.lib.rest.ToJson;
+import org.openmuc.framework.lib.rest.exceptions.MissingJsonObjectException;
+import org.openmuc.framework.lib.rest.exceptions.RestConfigIsNotCorrectException;
+import org.openmuc.framework.lib.rest.objects.RestDeviceWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

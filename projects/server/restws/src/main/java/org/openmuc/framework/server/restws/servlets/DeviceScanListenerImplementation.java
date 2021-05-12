@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.DeviceScanListener;
-import org.openmuc.framework.lib.rest1.rest.objects.RestScanProgressInfo;
+import org.openmuc.framework.lib.rest.objects.RestScanProgressInfo;
 
 class DeviceScanListenerImplementation implements DeviceScanListener {
     private final RestScanProgressInfo restScanProgressInfo = new RestScanProgressInfo();

@@ -31,8 +31,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.lib.rest1.Const;
-import org.openmuc.framework.lib.rest1.FromJson;
+import org.openmuc.framework.lib.rest.Const;
+import org.openmuc.framework.lib.rest.FromJson;
 
 public class TestJsonHelper_fromJson {
 
