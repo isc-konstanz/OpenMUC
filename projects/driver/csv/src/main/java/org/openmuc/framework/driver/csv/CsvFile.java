@@ -33,7 +33,6 @@ import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.driver.DriverChannelFactory;
 import org.openmuc.framework.driver.DriverDevice;
-import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.annotation.Connect;
 import org.openmuc.framework.driver.annotation.Device;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;

@@ -20,15 +20,15 @@
  */
 package org.openmuc.framework.datalogger;
 
-import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
-
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurable;
+import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.spi.LogChannel;
+import org.openmuc.framework.driver.annotation.Configure;
 
-public abstract class ChannelWrapper extends Configurable {
+public abstract class ChannelWrapper extends Reflectable {
 
     LogChannel channel;
 
@@ -46,23 +46,40 @@ public abstract class ChannelWrapper extends Configurable {
     protected ChannelWrapper() {
     }
 
-    void doConfigure(LogChannel channel) throws ArgumentSyntaxException {
+    void invokeConfigure(LoggingChannelContext context, LogChannel channel) 
+            throws ArgumentSyntaxException {
+        
         if (!equals(channel)) {
-            doConfigure(channel.getLoggingSettings());
-            onConfigure();
+            Settings settings = Configurations.parseSettings(channel.getLoggingSettings(), getClass());
+            configure(settings);
+            
+            this.settings = channel.getLoggingSettings();
+            this.channel = channel;
+            
+            if (intervalMax < 0) {
+                throw new ArgumentSyntaxException("Invalid maximum logging interval for channel: " + getId());
+            }
+            else {
+                this.intervalMax = Math.max(getLoggingInterval(), intervalMax);
+            }
+    		if (isAveraging()) {
+    	        switch (getValueType()) {
+    			case BOOLEAN:
+    			case BYTE:
+    			case BYTE_ARRAY:
+    			case STRING:
+    	            throw new ArgumentSyntaxException("Invalid value type \"" + getValueType() + "\" to calculate average of channel: " + getId());
+    			default:
+    				break;
+    	        }
+    		}
+            invokeMethod(Configure.class, this, context, settings);
+            invokeMethod(Configure.class, this, context);
+            invokeMethod(Configure.class, this);
+            return;
         }
         this.settings = channel.getLoggingSettings();
         this.channel = channel;
-        
-        onConfigure();
-    }
-
-    protected void doConfigure(String settings) throws ArgumentSyntaxException {
-        configure(SETTING, settings);
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
     }
 
     public final String getId() {
@@ -110,7 +127,7 @@ public abstract class ChannelWrapper extends Configurable {
     }
 
     boolean isLoggingDynamic() {
-    	return intervalMax > getLoggingInterval();
+        return intervalMax > getLoggingInterval();
     }
 
     public final double getLoggingTolerance() {

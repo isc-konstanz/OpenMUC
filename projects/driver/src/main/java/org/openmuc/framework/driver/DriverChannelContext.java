@@ -139,7 +139,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return scanSettings;
     }
 
-    DriverChannelScanner newScanner(String settingsStr) throws RuntimeException, ArgumentSyntaxException {
+    final DriverChannelScanner newScanner(String settingsStr) throws RuntimeException, ArgumentSyntaxException {
         DriverChannelScanner scanner;
         
         Settings settings = Configurations.parseSettings(settingsStr, scannerClass);
@@ -159,7 +159,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
     }
 
     @SuppressWarnings("unchecked")
-    <C extends DriverChannel> DriverChannel newChannel(ChannelTaskContainer container) 
+    final <C extends DriverChannel> DriverChannel newChannel(ChannelTaskContainer container) 
             throws RuntimeException, ArgumentSyntaxException {
         
         Address address = Configurations.parseAddress(container.getChannelAddress(), channelClass);
@@ -172,13 +172,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         else {
             channel = (C) newInstance(channelClass);
         }
-        channel.invokeConfigure(this, container);
-        
         return channel;
-    }
-
-    public DriverChannel getChannel(String id) {
-        return channels.get(id);
     }
 
     final <C extends DriverChannel> DriverChannel getChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
@@ -189,9 +183,8 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
                 channel = newChannel(container);
                 channels.put(id, channel);
             }
-            else {
-                channel.invokeConfigure(this, container);
-            }
+            channel.invokeConfigure(this, container);
+            
         } catch (ArgumentSyntaxException e) {
             channels.remove(id);
             
@@ -200,7 +193,11 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return channel;
     }
 
-    public List<DriverChannel> getChannels() {
+    public final DriverChannel getChannel(String id) {
+        return channels.get(id);
+    }
+
+    public final List<DriverChannel> getChannels() {
         return (List<DriverChannel>) channels.values();
     }
 
@@ -227,6 +224,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
             C channel;
             try {
                 channel = (C) newChannel(container);
+                channel.invokeConfigure(this, container);
                 channels.add(channel);
                 
             } catch (ArgumentSyntaxException | NullPointerException e) {

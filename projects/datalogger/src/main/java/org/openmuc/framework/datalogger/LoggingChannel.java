@@ -25,7 +25,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.data.*;
+import org.openmuc.framework.data.DoubleValue;
+import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.data.FloatValue;
+import org.openmuc.framework.data.IntValue;
+import org.openmuc.framework.data.LongValue;
+import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.ShortValue;
+import org.openmuc.framework.datalogger.spi.LogChannel;
+import org.openmuc.framework.driver.annotation.Read;
+import org.openmuc.framework.driver.annotation.Write;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,61 +48,21 @@ public class LoggingChannel extends ChannelWrapper {
 
     final List<Record> records = new ArrayList<Record>();
 
-    final void doCreate(LoggingChannelContext context) throws ArgumentSyntaxException {
+    void invokeConfigure(LoggingChannelContext context, LogChannel container) 
+    		throws ArgumentSyntaxException {
+    	super.invokeConfigure(context, container);
         this.context = context;
-        this.onCreate(context);
-        this.onCreate();
     }
 
-    protected void onCreate(LoggingChannelContext context) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    final void invokeWrite(long timestamp) throws IOException {
+    	invokeMethod(Write.class, this, getRecord(), timestamp);
+    	invokeMethod(Write.class, this, getRecord());
     }
 
-    protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onDestroy() {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-        if (intervalMax < 0) {
-            throw new ArgumentSyntaxException("Invalid maximum logging interval for channel: " + getId());
-        }
-        else {
-            this.intervalMax = Math.max(getLoggingInterval(), intervalMax);
-        }
-		if (isAveraging()) {
-	        switch (getValueType()) {
-			case BOOLEAN:
-			case BYTE:
-			case BYTE_ARRAY:
-			case STRING:
-	            throw new ArgumentSyntaxException("Invalid value type \"" + getValueType() + "\" to calculate average of channel: " + getId());
-			default:
-				break;
-	        }
-		}
-    }
-
-    final List<Record> doRead(long startTime, long endTime) throws IOException {
-        return onRead(startTime, endTime);
-    }
-
-    protected List<Record> onRead(long startTime, long endTime) throws IOException {
-        // Placeholder for the optional implementation
-        throw new UnsupportedOperationException();
-    }
-
-    final void doWrite(long timestamp) throws IOException {
-        onWrite(getRecord(), timestamp);
-    }
-
-    protected void onWrite(Record record, long timestamp) throws IOException {
-        // Placeholder for the optional implementation
-        throw new UnsupportedOperationException();
+    @SuppressWarnings("unchecked")
+	final List<Record> invokeRead(long startTime, long endTime) throws IOException {
+    	List<Record> records = (List<Record>) invokeReturn(Read.class, this, startTime, endTime);
+        return records;
     }
 
     boolean isUpdate(Record record) {

@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver;
+package org.openmuc.framework.datalogger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;

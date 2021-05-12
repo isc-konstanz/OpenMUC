@@ -114,7 +114,7 @@ public class DriverInfo {
     }
 
     public DriverInfo setName(String name) {
-    	if (name == null) {
+    	if (name == null || name.isEmpty()) {
             String id = getId();
             name = id.substring(0, 1).toUpperCase() + 
                    id.substring(1, id.length());

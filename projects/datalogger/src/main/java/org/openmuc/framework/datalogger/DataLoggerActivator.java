@@ -30,171 +30,91 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LoggingRecord;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Deactivate;
+import org.openmuc.framework.driver.annotation.Configure;
+import org.openmuc.framework.driver.annotation.Read;
+import org.openmuc.framework.driver.annotation.Write;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DataLoggerActivator<C extends LoggingChannel> extends LoggingChannelContext implements DataLoggerService {
+public abstract class DataLoggerActivator extends LoggingChannelContext implements DataLoggerService {
 
     private static final Logger logger = LoggerFactory.getLogger(DataLoggerActivator.class);
 
+    private final String id;
+
     public DataLoggerActivator() {
     	super();
-        try {
-	        doCreate();
-	        
-		} catch (Exception e) {
-            logger.warn("Error instancing data logger {}: {}", getId(), e.getMessage());
-		}
+    	this.id = getLoggerAnnotation().id();
     }
 
-    void doCreate() throws Exception {
-    	onCreate();
-    }
-
-    protected void onCreate() throws Exception {
-        // Placeholder for the optional implementation
-    }
-
-    @Activate
-    public final void activate(ComponentContext componentContext) {
-        try {
-            doActivate(componentContext);
-            
-        } catch (Exception e) {
-            logger.warn("Error activating data logger {}: {}", getId(), e.getMessage());
-        }
-    }
-
-    void doActivate(ComponentContext componentContext) throws Exception {
-        onActivate(componentContext);
-        onActivate();
-    }
-
-    protected void onActivate(ComponentContext componentContext) throws Exception {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onActivate() throws Exception {
-        // Placeholder for the optional implementation
-    }
-
-    @Deactivate
-    public final void deactivate() {
-        try {
-            doDeactivate();
-            doDestroy();
-            
-        } catch (Exception e) {
-            logger.warn("Error deactivating data logger {}: {}", getId(), e.getMessage());
-        }
-    }
-
-    void doDeactivate() throws Exception {
-        onDeactivate();
-    }
-
-    protected void onDeactivate() throws Exception {
-        // Placeholder for the optional implementation
-    }
-
-    void doDestroy() throws Exception {
-        for (LoggingChannel channel : channels.values()) {
-            channel.onDestroy();
-        }
-        channels.clear();
-        onDestroy();
-    }
-
-    protected void onDestroy() throws Exception {
-        // Placeholder for the optional implementation
+    @Override
+    public final String getId() {
+    	return id;
     }
 
 	@Override
-    @SuppressWarnings("unchecked")
     public final void setChannelsToLog(List<LogChannel> logChannels) {
         // Will only be called when OpenMUC receives new logging configurations
-		// TODO: Don't clear channels, but destroy and remove redundant
-		for (LoggingChannel channel : channels.values()) {
-			channel.onDestroy();
-		}
+		// TODO: Don't clear channels, but remove redundant
         channels.clear();
         try {
-            List<C> channels = new LinkedList<C>();
+            List<LoggingChannel> channels = new LinkedList<LoggingChannel>();
             for (LogChannel logChannel : logChannels) {
                 try {
-    				channels.add((C) getChannel(logChannel));
+    				channels.add(getChannel(logChannel));
     				
     			} catch (ArgumentSyntaxException | NullPointerException e) {
                     logger.warn("Unable to configure channel \"{}\": {}", logChannel.getId(), e.getMessage());
     			}
             }
-            onConfigure(channels);
-            
+            invokeMethod(Configure.class, this, channels);
+            invokeMethod(Configure.class, this);
+    	    
         } catch (Exception e) {
-            logger.error("Error while configuring channels:", e);
+            logger.error("Error while configuring logger:", e);
         }
-    }
-
-    protected void onConfigure(List<C> channels) throws IOException {
-        // Placeholder for the optional implementation
     }
 
 	@Override
-    @SuppressWarnings("unchecked")
     public final void log(List<LoggingRecord> containers, long timestamp) {
         try {
-            synchronized(channels) {
-            	onWrite((List<C>) getChannels(containers), timestamp);
+            if (hasMethod(Write.class, this)) {
+                invokeMethod(Write.class, this, getChannels(containers), timestamp);
+            }
+            else if (hasMethod(Write.class, channelClass)) {
+                
+                for (LoggingChannel loggingChannel : getChannels(containers)) {
+                    loggingChannel.invokeWrite(timestamp);
+                }
             }
         } catch (IOException e) {
             logger.error("Failed to log channels: {}", e.getMessage());
         }
+        throw new UnsupportedOperationException("Logging values unsupported for " + getClass().getSimpleName());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void logEvent(List<LoggingRecord> containers, long timestamp) {
-        try {
-            synchronized(channels) {
-            	onWriteEvent((List<C>) getChannels(containers), timestamp);
-            }
-        } catch (IOException e) {
-            logger.error("Failed to log channels: {}", e.getMessage());
-        }
-    }
-
-    protected void onWriteEvent(List<C> channels, long timestamp) throws IOException {
-        // Placeholder for the optional implementation
-        this.onWrite(channels, timestamp);
-    }
-
-    protected void onWrite(List<C> channels, long timestamp) throws IOException {
-        // Placeholder for the optional implementation
-        for (C channel : channels) {
-            channel.doWrite(timestamp);
-        }
+    	this.log(containers, timestamp);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<Record> getRecords(String id, long startTime, long endTime) throws IOException {
         synchronized(channels) {
-            C channel = (C) getChannel(id);
-            if (channel == null) {
+        	LoggingChannel loggingChannel = getChannel(id);
+            if (loggingChannel == null) {
                 logger.warn("Failed to retrieve records for unconfigured channel \"{}\"", id);
                 return null;
             }
-            
-            return onRead(channel, startTime, endTime);
+            if (hasMethod(Read.class, this)) {
+            	return (List<Record>) invokeReturn(Read.class, loggingChannel, startTime, endTime);
+            }
+            else if (hasMethod(Read.class, channelClass)) {
+                return loggingChannel.invokeRead(startTime, endTime);
+            }
         }
-    }
-
-    protected List<Record> onRead(C channel, long startTime, long endTime) throws IOException {
-        // Placeholder for the optional implementation
-        return channel.doRead(startTime, endTime);
+        throw new UnsupportedOperationException("Reading values unsupported for " + getClass().getSimpleName());
     }
 
 }

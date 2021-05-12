@@ -20,25 +20,23 @@
  */
 package org.openmuc.framework.datalogger;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.text.MessageFormat;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.data.TypeConversionException;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LoggingRecord;
+import org.openmuc.framework.driver.annotation.DataLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoggingChannelContext extends Configurable implements LoggingChannelFactory {
+public class LoggingChannelContext extends Reflectable {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingChannelContext.class);
 
@@ -50,23 +48,43 @@ public class LoggingChannelContext extends Configurable implements LoggingChanne
         channelClass = getChannelClass();
     }
 
-    @SuppressWarnings("unchecked")
-    private Class<? extends LoggingChannel> getChannelClass() {
-        Class<?> loggerClass = getClass();
-        while (loggerClass.getSuperclass() != null) {
-            if (loggerClass.getSuperclass().equals(DataLoggerActivator.class)) {
-                break;
-            }
-            loggerClass = loggerClass.getSuperclass();
+    DataLogger getLoggerAnnotation() {
+    	DataLogger device = getClass().getAnnotation(DataLogger.class);
+        if (device == null) {
+            throw new RuntimeException("Implementation invalid without annotation");
         }
-        // This operation is safe. Because deviceClass is a direct sub-class, getGenericSuperclass() will
-        // always return the Type of this class. Because this class is parameterized, the cast is safe
-        ParameterizedType superClass = (ParameterizedType) loggerClass.getGenericSuperclass();
-        return (Class<? extends LoggingChannel>) superClass.getActualTypeArguments()[0];
+        return device;
     }
 
-    public LoggingChannel getChannel(String id) {
-        return channels.get(id);
+    @SuppressWarnings("unchecked")
+    Class<? extends LoggingChannel> getChannelClass() {
+        if (this instanceof LoggingChannelFactory) {
+            try {
+                Method method = getClass().getMethod("newChannel", Settings.class);
+                return (Class<? extends LoggingChannel>) method.getReturnType();
+                
+            } catch (NoSuchMethodException | SecurityException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        DataLogger logger = getLoggerAnnotation();
+        return logger.channel();
+    }
+
+    @SuppressWarnings("unchecked")
+    final <C extends LoggingChannel> LoggingChannel newChannel(LogChannel configs) 
+            throws RuntimeException, ArgumentSyntaxException {
+        
+        Settings settings = Configurations.parseSettings(configs.getLoggingSettings(), channelClass);
+        
+        C channel;
+        if (this instanceof LoggingChannelFactory) {
+            channel = (C) ((LoggingChannelFactory) this).newChannel(settings);
+        }
+        else {
+            channel = (C) newInstance(channelClass);
+        }
+        return channel;
     }
 
     final LoggingChannel getChannel(LogChannel configs) throws ArgumentSyntaxException {
@@ -75,14 +93,10 @@ public class LoggingChannelContext extends Configurable implements LoggingChanne
         try {
             if (channel == null) {
                 channel = newChannel(configs);
-                channel.doCreate(this);
-                channel.doConfigure(configs);
-                
                 channels.put(id, channel);
             }
-            else {
-                channel.doConfigure(configs);
-            }
+            channel.invokeConfigure(this, configs);
+            
         } catch (ArgumentSyntaxException e) {
             
             channels.remove(id);
@@ -92,32 +106,8 @@ public class LoggingChannelContext extends Configurable implements LoggingChanne
         return channel;
     }
 
-    final LoggingChannel newChannel(LogChannel channel) throws ArgumentSyntaxException {
-        return this.newChannel(channel.getLoggingSettings());
-    }
-
-    public LoggingChannel newChannel(String settings) throws ArgumentSyntaxException {
-        return this.newChannel(Configurations.parseSettings(settings, channelClass));
-    }
-
-    @Override
-    public LoggingChannel newChannel(Settings settings) throws ArgumentSyntaxException {
-        return this.newChannel();
-    }
-
-    protected LoggingChannel newChannel() {
-        try {
-            return channelClass.getDeclaredConstructor().newInstance();
-            
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new IllegalArgumentException(MessageFormat.format("Unable to instance {0}: {1}", 
-                    channelClass.getSimpleName(), e.getMessage()));
-        }
-    }
-
-    final void bindChannel(Class<? extends LoggingChannel> channelClass) {
-        this.channelClass = channelClass;
+    public LoggingChannel getChannel(String id) {
+        return channels.get(id);
     }
 
     public List<LoggingChannel> getChannels() {
@@ -131,7 +121,7 @@ public class LoggingChannelContext extends Configurable implements LoggingChanne
             return channels;
         }
         for (LoggingRecord container : containers) {
-        	LoggingChannel channel = (LoggingChannel) getChannel(container.getChannelId());
+        	LoggingChannel channel = getChannel(container.getChannelId());
             if (channel == null) {
                 logger.trace("Failed to log record for unconfigured channel \"{}\"", container.getChannelId());
                 continue;
