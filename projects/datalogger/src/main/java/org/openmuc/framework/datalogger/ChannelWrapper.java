@@ -22,6 +22,7 @@ package org.openmuc.framework.datalogger;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Reflectable;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.ValueType;

@@ -23,6 +23,7 @@ package org.openmuc.framework.server;
 import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Reflectable;
 import org.openmuc.framework.server.annotation.Configure;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 

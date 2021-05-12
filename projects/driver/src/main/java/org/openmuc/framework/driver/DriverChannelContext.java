@@ -32,6 +32,7 @@ import java.util.Map;
 import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Reflectable;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.ChannelOptions;
 import org.openmuc.framework.config.option.Options;

@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger;
+package org.openmuc.framework.config;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.openmuc.framework.config.Configurable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +35,7 @@ public abstract class Reflectable extends Configurable {
 
     private static final Logger logger = LoggerFactory.getLogger(Reflectable.class);
 
-    static <A extends Annotation> List<Method> getMethods(Class<A> annot, Class<?> type) throws RuntimeException {
+    public static <A extends Annotation> List<Method> getMethods(Class<A> annot, Class<?> type) throws RuntimeException {
         List<Method> methods = new ArrayList<Method>();
         while(type.getSuperclass() != null) {
             methods.addAll(Arrays.asList(type.getDeclaredMethods()));
@@ -47,15 +46,15 @@ public abstract class Reflectable extends Configurable {
         return methods;
     }
 
-    <A extends Annotation> boolean hasMethod(Class<A> annot, Class<?> type) throws RuntimeException {
+    protected <A extends Annotation> boolean hasMethod(Class<A> annot, Class<?> type) throws RuntimeException {
     	return getMethods(annot, type).size() > 0;
     }
 
-    <A extends Annotation> boolean hasMethod(Class<A> annot, Object obj) throws RuntimeException {
+    protected <A extends Annotation> boolean hasMethod(Class<A> annot, Object obj) throws RuntimeException {
     	return hasMethod(annot, obj.getClass());
     }
 
-    <A extends Annotation> void invokeMethod(Class<A> annot, Object obj, Object... args) 
+    protected <A extends Annotation> void invokeMethod(Class<A> annot, Object obj, Object... args) 
             throws RuntimeException {
         List<Method> methods = getMethods(annot, obj.getClass());
         if (methods.size() < 1) {
@@ -78,7 +77,7 @@ public abstract class Reflectable extends Configurable {
         }
     }
 
-    <A extends Annotation> Object invokeReturn(Class<A> annot, Object obj, Object... args) 
+    protected <A extends Annotation> Object invokeReturn(Class<A> annot, Object obj, Object... args) 
             throws RuntimeException {
         List<Method> methods = getMethods(annot, obj.getClass());
         if (methods.size() > 1) {
@@ -93,7 +92,7 @@ public abstract class Reflectable extends Configurable {
         }
     }
 
-    static <C extends Configurable> C newInstance(Class<C> configurable) throws RuntimeException {
+    public static <C extends Configurable> C newInstance(Class<C> configurable) throws RuntimeException {
         try {
             return (C) configurable.getDeclaredConstructor().newInstance();
             

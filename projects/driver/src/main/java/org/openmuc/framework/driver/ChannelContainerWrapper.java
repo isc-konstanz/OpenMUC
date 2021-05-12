@@ -23,6 +23,7 @@ package org.openmuc.framework.driver;
 import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Reflectable;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;

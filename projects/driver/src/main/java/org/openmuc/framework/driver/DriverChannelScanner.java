@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
+import org.openmuc.framework.config.Reflectable;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.driver.annotation.Configure;
