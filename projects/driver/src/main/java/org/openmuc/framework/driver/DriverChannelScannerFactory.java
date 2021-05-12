@@ -20,12 +20,11 @@
  */
 package org.openmuc.framework.driver;
 
-import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Settings;
 
-public interface ChannelFactory {
+public interface DriverChannelScannerFactory {
 
-    DeviceChannel newChannel(Address address, Settings settings) throws ArgumentSyntaxException;
+	DriverChannelScanner newScanner(Settings settings) throws ArgumentSyntaxException;
 
 }

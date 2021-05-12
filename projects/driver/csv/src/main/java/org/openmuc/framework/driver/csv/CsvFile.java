@@ -20,52 +20,60 @@
  */
 package org.openmuc.framework.driver.csv;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.driver.Device;
-import org.openmuc.framework.driver.annotation.Factory;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.driver.DriverChannelFactory;
+import org.openmuc.framework.driver.DriverDevice;
+import org.openmuc.framework.driver.annotation.Configure;
+import org.openmuc.framework.driver.annotation.Connect;
+import org.openmuc.framework.driver.annotation.Device;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.channel.CsvChannelHHMMSS;
 import org.openmuc.framework.driver.csv.channel.CsvChannelLine;
 import org.openmuc.framework.driver.csv.channel.CsvChannelUnixtimestamp;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
-@Factory(scanner = ColumnScanner.class)
-public class CsvFile extends Device<CsvChannel> {
+@Device(scanner = ColumnScanner.class)
+public class CsvFile extends DriverDevice implements DriverChannelFactory {
 
     public static final String SAMPLING_MODE = "samplingmode";
 
-    @Address(id = "filePath",
-             name = "CSV file path",
-             description = "The systems path to the CSV file.<br><br>" + 
+    @Option(type = ADDRESS,
+    		name = "CSV file path",
+            description = "The systems path to the CSV file.<br><br>" + 
                           "<b>Example:</b> /home/usr/bin/openmuc/csv/meter.csv"
     )
     private String filePath;
 
-    @Setting(id = SAMPLING_MODE,
-             name = "Sampling mode",
-             description = "The sampling mode configures the drivers method to read the CSV file:<br><br>" + 
-                           "<b>Modes:</b>" + 
-                           "<ol>" + 
-                               "<li><b>Unix timestamp</b>: Find the line closest to the sampling timestamp in the <em>unixtimestamp</em> column.</li>" + 
-                               "<li><b>Closest time</b>: Find the line closest to the sampling times hours, minutes and seconds in the <em>hhmmss</em> column.</li>" + 
-                               "<li><b>Line by line</b>: Read the file line by line.</li>" + 
-                           "</ol>",
-             valueSelection = "unixtimestamp:Unix timestamp,hhmmss:Closest time,line:Line by line",
-             valueDefault = "line"
+    @Option(id = SAMPLING_MODE,
+    		type = SETTING,
+    		name = "Sampling mode",
+            description = "The sampling mode configures the drivers method to read the CSV file:<br><br>" + 
+                          "<b>Modes:</b>" + 
+                          "<ol>" + 
+                              "<li><b>Unix timestamp</b>: Find the line closest to the sampling timestamp in the <em>unixtimestamp</em> column.</li>" + 
+                              "<li><b>Closest time</b>: Find the line closest to the sampling times hours, minutes and seconds in the <em>hhmmss</em> column.</li>" + 
+                              "<li><b>Line by line</b>: Read the file line by line.</li>" + 
+                          "</ol>",
+            valueSelection = "unixtimestamp:Unix timestamp,hhmmss:Closest time,line:Line by line",
+            valueDefault = "line"
     )
     private SamplingMode samplingMode;
 
-    @Setting(id = "rewind",
-             name = "Rewind",
-             description = "Start from the beginning of the file again, when the end was reached.",
-             valueDefault = "false",
-             mandatory = false
+    @Option(type = SETTING,
+            name = "Rewind",
+            description = "Start from the beginning of the file again, when the end was reached.",
+            valueDefault = "false",
+            mandatory = false
     )
     private boolean rewind = false;
 
@@ -80,8 +88,8 @@ public class CsvFile extends Device<CsvChannel> {
         return new ArrayList<String>(data.keySet());
     }
 
-    @Override
-    protected void onConnect() throws ArgumentSyntaxException, ConnectionException {
+    @Connect
+    public void connect() throws ArgumentSyntaxException, ConnectionException {
         data = CsvFileReader.readCsvFile(filePath);
         switch (samplingMode) {
         case UNIXTIMESTAMP:
@@ -100,16 +108,16 @@ public class CsvFile extends Device<CsvChannel> {
     }
 
     @Override
-    public CsvChannel newChannel(String column, String settings) throws ArgumentSyntaxException {
+    public CsvChannel newChannel(Address address, Settings settings) throws ArgumentSyntaxException {
         switch (samplingMode) {
         case UNIXTIMESTAMP:
-            return new CsvChannelUnixtimestamp(column, data, rewind);
+            return new CsvChannelUnixtimestamp(address.toString(), data, rewind);
 
         case HHMMSS:
-            return new CsvChannelHHMMSS(column, data, rewind);
+            return new CsvChannelHHMMSS(address.toString(), data, rewind);
 
         case LINE:
-            return new CsvChannelLine(column, data, rewind);
+            return new CsvChannelLine(address.toString(), data, rewind);
 
         default:
             throw new ArgumentSyntaxException("Invalid sampling mode " + samplingMode);

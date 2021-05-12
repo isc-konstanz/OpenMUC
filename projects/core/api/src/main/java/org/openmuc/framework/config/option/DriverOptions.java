@@ -168,7 +168,7 @@ public class DriverOptions extends DriverInfo {
             }
             this.id = nameAttribute.getTextContent();
             
-            Map<String, Option> optionsById = new HashMap<String, Option>();
+            Map<String, OptionValue> optionsById = new HashMap<String, OptionValue>();
             
             NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {

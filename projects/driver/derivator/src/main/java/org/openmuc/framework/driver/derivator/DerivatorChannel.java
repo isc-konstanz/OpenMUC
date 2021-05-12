@@ -74,6 +74,7 @@ public class DerivatorChannel {
             throw new DerivationException("Unable to derive for invalid record with decreasing time");
         }
         if (newRecord.getValue().asDouble() < lastRecord.getValue().asDouble()) {
+        	lastRecord = newRecord;
             throw new DerivationException("Unable to derive for invalid record with decreasing value");
         }
         double deltaTime = (newRecord.getTimestamp() - lastRecord.getTimestamp())/(double) getDerivativeTime();

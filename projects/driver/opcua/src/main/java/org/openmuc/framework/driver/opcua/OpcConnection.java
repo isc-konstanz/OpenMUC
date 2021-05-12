@@ -21,6 +21,8 @@
 package org.openmuc.framework.driver.opcua;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,37 +41,46 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.driver.Device;
-import org.openmuc.framework.driver.DeviceChannel;
+import org.openmuc.framework.driver.DriverDevice;
+import org.openmuc.framework.driver.annotation.Connect;
+import org.openmuc.framework.driver.annotation.Device;
+import org.openmuc.framework.driver.annotation.Disconnect;
+import org.openmuc.framework.driver.annotation.Read;
+import org.openmuc.framework.driver.annotation.Write;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcConnection extends Device<OpcChannel> {
+@Device(channel = OpcChannel.class)
+public class OpcConnection extends DriverDevice {
     private static final Logger logger = LoggerFactory.getLogger(OpcConnection.class);
 
     private OpcUaClient client;
 
-    @Address(id = "address",
-             name = "Server address",
-             description = "The address to the OPC server, e.g. 192.168.178.48:4840/opc.")
+    @Option(type = ADDRESS,
+            name = "Server address",
+            description = "The address to the OPC server, e.g. 192.168.178.48:4840/opc.")
     protected String address;
 
-    @Setting(id = "ns", 
-             name="Namespace default", 
-             description="The default namespace string to address on the server",
-             mandatory = false)
+    @Option(type = SETTING, 
+    		id = "ns", 
+            name="Namespace default", 
+            description="The default namespace string to address on the server",
+            mandatory = false)
     private String namespaceUri = null;
 
     private int namespaceIndex = 0;
 
-    @Override
-    protected void onConnect() throws ConnectionException {
+    public int getNamespaceIndex() {
+    	return namespaceIndex;
+    }
+
+    @Connect
+    public void connect() throws ConnectionException {
         try {
             Path securityTempDir = Paths.get(System.getProperty("java.io.tmpdir"), "security");
             Files.createDirectories(securityTempDir);
@@ -115,18 +126,13 @@ public class OpcConnection extends Device<OpcChannel> {
         }
     }
 
-    @Override
-    protected void onDisconnect() {
+    @Disconnect
+    public void close() {
         client.disconnect();
     }
 
-    @Override
-    protected DeviceChannel newChannel() {
-        return new OpcChannel(namespaceIndex);
-    }
-
-    @Override
-    protected void onRead(List<OpcChannel> channels, String samplingGroup) 
+    @Read
+    public void read(List<OpcChannel> channels, String samplingGroup) 
             throws ConnectionException {
         try {
             List<NodeId> nodeIds = channels.stream().map(c -> c.getNodeId()).collect(Collectors.toList());
@@ -153,8 +159,8 @@ public class OpcConnection extends Device<OpcChannel> {
         }
     }
 
-    @Override
-    protected void onWrite(List<OpcChannel> channels)
+    @Write
+    public void write(List<OpcChannel> channels)
             throws ConnectionException {
         try {
             for (OpcChannel channel : channels) {

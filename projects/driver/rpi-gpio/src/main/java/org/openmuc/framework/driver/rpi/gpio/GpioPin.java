@@ -23,12 +23,11 @@ package org.openmuc.framework.driver.rpi.gpio;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openmuc.framework.config.annotation.AddressSyntax;
-import org.openmuc.framework.config.annotation.SettingsSyntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
+import org.openmuc.framework.driver.annotation.Listen;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
@@ -40,8 +39,6 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
-@AddressSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
-@SettingsSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
 public abstract class GpioPin extends GpioConfigs {
     protected static final Logger logger = LoggerFactory.getLogger(GpioPin.class);
 
@@ -55,8 +52,8 @@ public abstract class GpioPin extends GpioConfigs {
     	return pin;
     }
 
-    @Override
-    protected void onStartListening(List<GpioChannel> channels, RecordsReceivedListener listener)
+    @Listen
+    public void listen(List<GpioChannel> channels, RecordsReceivedListener listener)
             throws UnsupportedOperationException, ConnectionException {
         pin.addListener(new GpioListener(channels, listener, pin));
     }

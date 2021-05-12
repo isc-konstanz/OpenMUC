@@ -20,14 +20,18 @@
  */
 package org.openmuc.framework.driver.csv;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import java.io.File;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.driver.DeviceScanner;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.driver.DriverDeviceScanner;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,16 +39,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Scanner to look for CSV files.
  */
-public class CsvScanner extends DeviceScanner {
+public class CsvScanner extends DriverDeviceScanner {
     private static final Logger logger = LoggerFactory.getLogger(CsvScanner.class);
 
     private static final String DEFAULT_DEVICE_SETTINGS = CsvFile.SAMPLING_MODE + "="
             + SamplingMode.LINE.toString();
 
-    @Setting(id = "path",
-             name = "CSV files directory path",
-             description = "The systems path to the folder, containing the CSV files.<br><br>" + 
-                           "<b>Example:</b> /home/usr/bin/openmuc/csv/"
+    @Option(type = SETTING,
+    		name = "CSV files directory path",
+            description = "The systems path to the folder, containing the CSV files.<br><br>" + 
+                          "<b>Example:</b> /home/usr/bin/openmuc/csv/"
     )
     private String path;
 
@@ -56,17 +60,21 @@ public class CsvScanner extends DeviceScanner {
     }
 
     public CsvScanner(String settings) throws ArgumentSyntaxException {
-        super.configureSettings(settings);
-        this.onConfigure();
+        super.configure(Configurations.parseSettings(settings, getClass()));
+        this.configureFiles();
+    }
+
+    @Configure
+    public void configureFiles() throws ArgumentSyntaxException {
+        File dir = new File(path);
+        if (!dir.isDirectory()) {
+            throw new ArgumentSyntaxException("<path> argument must point to a directory.");
+        }
+        files = dir.listFiles();
     }
 
     @Override
-    protected void onConfigure() throws ArgumentSyntaxException {
-        files = listFiles();
-    }
-
-    @Override
-    protected void onScan(DriverDeviceScanListener listener) 
+	public void scan(DriverDeviceScanListener listener) 
             throws ArgumentSyntaxException, ScanException, ScanInterruptedException {
         logger.info("Scan for CSV files in directory: {}", path);
         
@@ -101,16 +109,8 @@ public class CsvScanner extends DeviceScanner {
     }
 
     @Override
-    protected void onScanInterrupt() throws UnsupportedOperationException {
+	public void interrupt() throws UnsupportedOperationException {
         interrupt = true;
-    }
-
-    private File[] listFiles() throws ArgumentSyntaxException {
-        File dir = new File(path);
-        if (!dir.isDirectory()) {
-            throw new ArgumentSyntaxException("<path> argument must point to a directory.");
-        }
-        return dir.listFiles();
     }
 
 }

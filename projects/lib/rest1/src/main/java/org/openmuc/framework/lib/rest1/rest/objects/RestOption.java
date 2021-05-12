@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.openmuc.framework.config.option.Option;
+import org.openmuc.framework.config.option.OptionValue;
 import org.openmuc.framework.config.option.Options;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
@@ -100,7 +100,7 @@ public class RestOption {
     public static List<RestOption> getOptions(Options options) {
 
         List<RestOption> restOptions = new LinkedList<RestOption>();
-        for (Option option : options) {
+        for (OptionValue option : options) {
             RestOption restOption = new RestOption();
             restOption.setId(option.getId());
             restOption.setName(option.getName());

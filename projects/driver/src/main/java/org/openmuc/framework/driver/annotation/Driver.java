@@ -27,15 +27,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.openmuc.framework.driver.Scanner;
+import org.openmuc.framework.driver.DriverDevice;
+import org.openmuc.framework.driver.DriverDeviceScanner;
 
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Factory {
+public @interface Driver {
 
-    Class<? extends Scanner> scanner() 
-            default Scanner.class;
+	String id();
+	String name()        default "";
+	String description() default "";
+
+    Class<? extends DriverDevice> device() 
+            default DriverDevice.class;
+
+    Class<? extends DriverDeviceScanner> scanner() 
+            default DriverDeviceScanner.class;
 
 }

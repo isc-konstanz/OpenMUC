@@ -35,7 +35,7 @@ import org.openmuc.framework.data.ValueType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class Option {
+public class OptionValue {
 
     public static final boolean MANDATORY_DEFAULT = false;
     public static final ValueType TYPE_DEFAULT = ValueType.DOUBLE;
@@ -49,7 +49,7 @@ public class Option {
     private Value valueDefault = null;
     private OptionSelection valueSelection = null;
 
-    Option(String id, String name, ValueType type, 
+    OptionValue(String id, String name, ValueType type, 
             boolean mandatory, String description, 
             Value valueDefault, OptionSelection valueSelection) {
         
@@ -62,11 +62,11 @@ public class Option {
         this.valueSelection = valueSelection;
     }
 
-    Option(String id) {
+    OptionValue(String id) {
         this(new String[] { id });
     }
 
-    Option(String[] ids) {
+    OptionValue(String[] ids) {
         this.ids = ids;
     }
 
@@ -126,9 +126,9 @@ public class Option {
         this.valueSelection = valueSelection;
     }
 
-    static Option getFromDomNode(String id, Node node) throws ParseException {
+    static OptionValue getFromDomNode(String id, Node node) throws ParseException {
         
-        Option option = new Option(id);
+        OptionValue option = new OptionValue(id);
         Node valueDefaultNode = null;
         Node valueSelectionNode = null;
         
@@ -211,7 +211,7 @@ public class Option {
                     }
                     else {
                         try {
-                            arr = Option.hexToBytes(valueDefault.asString().substring(2).trim());
+                            arr = OptionValue.hexToBytes(valueDefault.asString().substring(2).trim());
                         } catch (IllegalArgumentException e) {
                             throw new ParseException(e);
                         }

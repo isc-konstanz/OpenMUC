@@ -18,27 +18,13 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config.annotation;
+package org.openmuc.framework.driver;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.Settings;
 
-@Documented
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface AddressSyntax {
+public interface DriverDeviceScannerFactory {
 
-    public static final String SEPARATOR_DEFAULT = ";";
-    public static final String ASSIGNMENT_OPERATOR_DEFAULT = "=";
-    public static final boolean KEY_VAL_PAIRS_DEFAULT = false;
-
-    String separator() default SEPARATOR_DEFAULT;
-    String assignmentOperator() default ASSIGNMENT_OPERATOR_DEFAULT;
-    boolean keyValuePairs() default KEY_VAL_PAIRS_DEFAULT;
+	DriverDeviceScanner newScanner(Settings settings) throws ArgumentSyntaxException;
 
 }

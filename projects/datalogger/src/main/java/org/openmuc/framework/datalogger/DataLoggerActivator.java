@@ -27,18 +27,20 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.dataaccess.DataAccessService;
-import org.openmuc.framework.datalogger.spi.DataLoggerActivator;
+import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LoggingRecord;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DataLogger<C extends LoggingChannel> extends ChannelContext implements DataLoggerActivator {
+public abstract class DataLoggerActivator<C extends LoggingChannel> extends LoggingChannelContext implements DataLoggerService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataLogger.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataLoggerActivator.class);
 
-    public DataLogger() {
+    public DataLoggerActivator() {
     	super();
         try {
 	        doCreate();
@@ -56,22 +58,22 @@ public abstract class DataLogger<C extends LoggingChannel> extends ChannelContex
         // Placeholder for the optional implementation
     }
 
-    @Override
-    public final void activate(DataAccessService dataAccess) {
+    @Activate
+    public final void activate(ComponentContext componentContext) {
         try {
-            doActivate(dataAccess);
+            doActivate(componentContext);
             
         } catch (Exception e) {
             logger.warn("Error activating data logger {}: {}", getId(), e.getMessage());
         }
     }
 
-    void doActivate(DataAccessService dataAccess) throws Exception {
-        onActivate(dataAccess);
+    void doActivate(ComponentContext componentContext) throws Exception {
+        onActivate(componentContext);
         onActivate();
     }
 
-    protected void onActivate(DataAccessService dataAccess) throws Exception {
+    protected void onActivate(ComponentContext componentContext) throws Exception {
         // Placeholder for the optional implementation
     }
 
@@ -79,7 +81,7 @@ public abstract class DataLogger<C extends LoggingChannel> extends ChannelContex
         // Placeholder for the optional implementation
     }
 
-    @Override
+    @Deactivate
     public final void deactivate() {
         try {
             doDeactivate();

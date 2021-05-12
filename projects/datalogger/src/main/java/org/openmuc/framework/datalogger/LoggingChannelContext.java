@@ -38,15 +38,15 @@ import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ChannelContext extends Configurable implements ChannelFactory {
+public class LoggingChannelContext extends Configurable implements LoggingChannelFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChannelContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoggingChannelContext.class);
 
     Class<? extends LoggingChannel> channelClass;
 
     final Map<String, LoggingChannel> channels = new HashMap<String, LoggingChannel>();
 
-    ChannelContext() {
+    LoggingChannelContext() {
         channelClass = getChannelClass();
     }
 
@@ -54,7 +54,7 @@ public class ChannelContext extends Configurable implements ChannelFactory {
     private Class<? extends LoggingChannel> getChannelClass() {
         Class<?> loggerClass = getClass();
         while (loggerClass.getSuperclass() != null) {
-            if (loggerClass.getSuperclass().equals(DataLogger.class)) {
+            if (loggerClass.getSuperclass().equals(DataLoggerActivator.class)) {
                 break;
             }
             loggerClass = loggerClass.getSuperclass();

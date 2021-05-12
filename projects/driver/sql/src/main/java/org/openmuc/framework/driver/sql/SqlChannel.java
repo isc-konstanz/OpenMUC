@@ -20,15 +20,16 @@
  */
 package org.openmuc.framework.driver.sql;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.AddressSyntax;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.config.annotation.SettingsSyntax;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -41,52 +42,47 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.DeviceChannel;
-import org.openmuc.framework.driver.ChannelContext;
+import org.openmuc.framework.driver.DriverChannel;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
-@SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class SqlChannel extends DeviceChannel {
+@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = { ADDRESS, SETTING })
+public class SqlChannel extends DriverChannel {
     private static final Logger logger = LoggerFactory.getLogger(SqlChannel.class);
 
-    @Address(id = "table",
+    @Option(type = ADDRESS,
             name = "Table name",
             description = "Tablename to read columns from.<br>" +
                           "Will override the configured table name of the connection.",
             mandatory = false)
     protected String table = null;
 
-    @Address(id = "key",
+    @Option(type = ADDRESS,
             name = "Key",
             description = "The unique key identifying the series.<br>" +
                     "<i>Only necessary for unnormalized tables.</i>",
             mandatory = false)
     protected String key = null;
 
-    @Setting(id = "keyColumn",
+    @Option(type = ADDRESS,
             name = "Key column",
             description = "The column name of the table containing the unique key identifying the series.<br>" +
                           "<i>Only necessary for unnormalized tables</i>.",
             mandatory = false)
     protected String keyColumn = "key";
 
-    @Setting(id = "dataColumn",
+    @Option(type = ADDRESS,
             name = "Data column",
             description = "The column name of the table containing the value data.",
             mandatory = false)
     protected String dataColumn = "data";
 
-    @Override
-    protected void onCreate(ChannelContext context) {
+    @Configure
+    public void setTable(SqlClient client) {
         if (table == null) {
-            table = ((SqlClient) context).getTable();
+            table = client.getTable();
         }
-    }
-
-    @Override
-    protected void onConfigure() {
         if (table == null) {
             table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
         }

@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.DoubleValue;
-import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.driver.DeviceChannel;
+import org.openmuc.framework.driver.DriverChannel;
+import org.openmuc.framework.driver.annotation.Read;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
@@ -38,12 +39,17 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class CsvChannel extends DeviceChannel {
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+
+public abstract class CsvChannel extends DriverChannel {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvChannel.class);
 
-    @Address(id = "column",
-            name = "Column header",
+    public static final String COLUMN = "column";
+
+    @Option(id = COLUMN,
+    		type = ADDRESS,
+    		name = "Column header",
             description = "The title of the header, defining the column."
     )
     private String column;
@@ -69,8 +75,8 @@ public abstract class CsvChannel extends DeviceChannel {
         return column;
     }
 
-    @Override
-    public Record onRead(long samplingTime) throws ConnectionException {
+    @Read
+    public Record read(long samplingTime) throws ConnectionException {
         try {
             String valueAsString = readValue(samplingTime);
 

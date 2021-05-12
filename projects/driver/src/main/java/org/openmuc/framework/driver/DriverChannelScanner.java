@@ -26,42 +26,39 @@ import java.util.List;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
-public abstract class ChannelScanner extends Scanner {
+public abstract class DriverChannelScanner extends Reflectable {
 
-	ChannelContext context;
+	DriverChannelContext context;
 
-    public ChannelContext getContext() {
+    protected DriverChannelScanner() {
+    }
+
+    void invokeConfigure(DriverChannelContext context, Settings settings) throws ArgumentSyntaxException {
+        this.configure(settings);
+        this.context = context;
+        
+        invokeMethod(Configure.class, this, context, settings);
+        invokeMethod(Configure.class, this, context);
+        invokeMethod(Configure.class, this);
+    }
+
+    public DriverChannelContext getContext() {
     	return context;
     }
 
-    protected ChannelScanner() {
-    }
-
-    final void doCreate(ChannelContext context) throws ArgumentSyntaxException, ConnectionException {
-    	this.context = context;
-        this.onCreate(context);
-        this.onCreate();
-    }
-
-    protected void onCreate(ChannelContext context) throws ArgumentSyntaxException, ConnectionException {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onCreate() throws ArgumentSyntaxException, ConnectionException {
-        // Placeholder for the optional implementation
-    }
-
-    protected List<ChannelScanInfo> doScan() 
+    public List<ChannelScanInfo> scan() 
             throws ArgumentSyntaxException, ScanException, ConnectionException {
         
         List<ChannelScanInfo> channels = new ArrayList<>();
-        this.onScan(channels);
+        this.scan(channels);
         return channels;
     }
 
-    protected abstract void onScan(List<ChannelScanInfo> channelScanInfos) 
+    protected abstract void scan(List<ChannelScanInfo> channelScanInfos) 
             throws ArgumentSyntaxException, ScanException, ConnectionException;
 
 }

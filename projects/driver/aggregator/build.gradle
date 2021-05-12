@@ -7,7 +7,8 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Import-Package': '*' + jarDefaultImportPackageVersion)
 }
 
 publishing {

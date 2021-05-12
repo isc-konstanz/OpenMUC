@@ -23,41 +23,33 @@ package org.openmuc.framework.driver;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 
-public abstract class DeviceScanner extends Scanner {
+public abstract class DriverDeviceScanner extends Reflectable {
 
-    DeviceContext context;
+    DriverDeviceContext context;
 
-    public DeviceContext getContext() {
-    	return context;
+    public DriverDeviceContext getContext() {
+        return context;
     }
 
-    protected DeviceScanner() {
+    protected DriverDeviceScanner() {
     }
 
-    final void doCreate(DeviceContext context) throws ArgumentSyntaxException {
-    	this.context = context;
-    	this.onCreate(context);
-        this.onCreate();
+    void invokeConfigure(DriverDeviceContext context, Settings settings) throws ArgumentSyntaxException {
+    	this.configure(settings);
+        this.context = context;
+    	
+        invokeMethod(Configure.class, this, context, settings);
+        invokeMethod(Configure.class, this, context);
+        invokeMethod(Configure.class, this);
     }
 
-    protected void onCreate(DeviceContext context) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    final void doScan(DriverDeviceScanListener listener) 
-            throws ArgumentSyntaxException, ScanException, ScanInterruptedException {
-        onScan(listener);
-    }
-
-    protected abstract void onScan(DriverDeviceScanListener listener) 
+    public abstract void scan(DriverDeviceScanListener listener) 
             throws ArgumentSyntaxException, ScanException, ScanInterruptedException;
 
-    protected abstract void onScanInterrupt() throws UnsupportedOperationException;
+    public abstract void interrupt() throws UnsupportedOperationException;
 
 }

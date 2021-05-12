@@ -20,6 +20,9 @@
  */
 package org.openmuc.framework.server.opcua;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
@@ -30,8 +33,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.AddressSyntax;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -45,14 +48,14 @@ import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.server.ServerChannel;
 
-@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
+@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = {ADDRESS, SETTING})
 public class OpcChannel extends ServerChannel implements AttributeDelegate {
 
-    @Address(mandatory = false)
+    @Option(mandatory = false)
     private String folder = null;
 
-    @Address(id="ns",
-             mandatory = false)
+    @Option(id="ns",
+            mandatory = false)
     private int namespaceIndex = 0;
 
     public String getFolder() {

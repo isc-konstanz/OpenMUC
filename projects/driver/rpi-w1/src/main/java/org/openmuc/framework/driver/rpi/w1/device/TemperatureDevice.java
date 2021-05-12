@@ -28,6 +28,8 @@ import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
+import org.openmuc.framework.driver.annotation.Read;
+import org.openmuc.framework.driver.annotation.Write;
 import org.openmuc.framework.driver.rpi.w1.W1Channel;
 import org.openmuc.framework.driver.rpi.w1.W1Device;
 import org.openmuc.framework.driver.rpi.w1.W1Type;
@@ -53,8 +55,8 @@ public class TemperatureDevice extends W1Device {
         this.maximum = maximum.isNaN() ? 127 : maximum;
     }
 
-    @Override
-    public void onRead(List<W1Channel> channels, String samplingGroup) throws ConnectionException {
+    @Read
+    public void read(List<W1Channel> channels, String samplingGroup) throws ConnectionException {
         long samplingTime = System.currentTimeMillis();
         
         for (W1Channel channel : channels) {
@@ -90,8 +92,8 @@ public class TemperatureDevice extends W1Device {
         }
     }
 
-	@Override
-	protected void onWrite(List<W1Channel> channels) throws UnsupportedOperationException, ConnectionException {
+	@Write
+	protected void write(List<W1Channel> channels) throws UnsupportedOperationException, ConnectionException {
 		throw new UnsupportedOperationException("Unable to write to 1-Wire temperature sensors");
 	}
 

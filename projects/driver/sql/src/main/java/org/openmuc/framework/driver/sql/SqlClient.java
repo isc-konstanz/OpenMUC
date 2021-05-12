@@ -20,6 +20,9 @@
  */
 package org.openmuc.framework.driver.sql;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,12 +34,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.AddressSyntax;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.config.annotation.SettingsSyntax;
-import org.openmuc.framework.driver.Device;
-import org.openmuc.framework.driver.annotation.Factory;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.driver.DriverChannelScannerFactory;
+import org.openmuc.framework.driver.DriverDevice;
+import org.openmuc.framework.driver.annotation.Configure;
+import org.openmuc.framework.driver.annotation.Connect;
+import org.openmuc.framework.driver.annotation.Device;
+import org.openmuc.framework.driver.annotation.Disconnect;
+import org.openmuc.framework.driver.annotation.Read;
+import org.openmuc.framework.driver.annotation.Write;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.sql.table.ColumnScanner;
 import org.openmuc.framework.driver.sql.table.TimestampTable;
@@ -49,15 +57,14 @@ import org.slf4j.LoggerFactory;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
-@SettingsSyntax(separator = ";", assignmentOperator = "=")
-@Factory(scanner = ColumnScanner.class)
-public class SqlClient extends Device<SqlChannel> {
+@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = { ADDRESS, SETTING })
+@Device(channel = SqlChannel.class)
+public class SqlClient extends DriverDevice implements DriverChannelScannerFactory {
     private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);
 
     protected String url;
 
-    @Address(id = "host",
+    @Option(type = ADDRESS,
             name = "Host name",
             description = "The host name of the SQL server to connect to.<br><br>" +
                           "<b>Example:</b>" +
@@ -68,19 +75,19 @@ public class SqlClient extends Device<SqlChannel> {
                           "</ol>")
     protected String host;
 
-    @Address(id = "port",
+    @Option(id = "port",
             name = "Port",
             description = "The port of the SQL server to connect to.",
             valueDefault = "3306",
             mandatory = false)
     protected int port = 3306;
 
-    @Address(id = "database",
+    @Option(id = "database",
             name = "Database name",
             description = "Name of the database to connect to.")
     protected String database;
 
-    @Address(id = "table",
+    @Option(id = "table",
             name = "Table name",
             description = "Tablename to read columns from.",
             mandatory = false)
@@ -88,61 +95,61 @@ public class SqlClient extends Device<SqlChannel> {
 
     private final List<String> tables = new ArrayList<String>();
 
-    @Setting(id = "union",
-            name = "Table union",
+    @Option(type = SETTING,
+    		name = "Table union",
             description = "Enable the union of all found tables in the database, before queries.",
             valueDefault = "false",
             mandatory = false)
     protected boolean union = false;
 
-    @Setting(id = "driver",
-            name = "Database driver",
+    @Option(type = SETTING,
+    		name = "Database driver",
             mandatory = false)
     protected String driver = SqlDriver.DB_DRIVER;
 
-    @Setting(id = "type",
-            name = "Database type",
+    @Option(type = SETTING,
+    		name = "Database type",
             mandatory = false)
     protected String type = SqlDriver.DB_TYPE;
 
-    @Setting(id = "user",
-            name = "Username",
+    @Option(type = SETTING,
+    		name = "Username",
             description = "Username to authorize the connection to the database.",
             mandatory = false)
     protected String user = SqlDriver.DB_USER;
 
-    @Setting(id = "password",
-            name = "Password",
+    @Option(type = SETTING,
+    		name = "Password",
             description = "Password to authenticate the connection to the database.",
             mandatory = false)
     protected String password = SqlDriver.DB_PWD;
 
-    @Setting(id = "timeResolution",
-            name = "Time resolution",
+    @Option(type = SETTING,
+    		name = "Time resolution",
             description = "The time resolution of stored time series.",
             valueSelection = "1:Milliseconds,1000:Seconds,60000:Minutes,3600000:Hours",
             valueDefault = "1000",
             mandatory = false)
     protected int timeResolution = 1000;
 
-    @Setting(id = "timeFormat",
-            name = "Time format",
+    @Option(type = SETTING,
+    		name = "Time format",
             description = "The format of the stored time index.",
             valueDefault = "yyyy-MM-dd HH:mm:ss",
             mandatory = false)
     protected String timeFormat = "yyyy-MM-dd HH:mm:ss";
 
-    @Setting(id = "indexType",
-             name = "Index type",
-             description = "The type of the index.",
-             valueSelection = "TIMESTAMP:Timestamp,TIMESTAMP_UNIX:Unix timestamp,TIMESTAMP_SPLIT:Split timestamp.",
-             valueDefault = "TIMESTAMP_UNIX",
-             mandatory = false
+    @Option(type = SETTING,
+    		name = "Index type",
+            description = "The type of the index.",
+            valueSelection = "TIMESTAMP:Timestamp,TIMESTAMP_UNIX:Unix timestamp,TIMESTAMP_SPLIT:Split timestamp.",
+            valueDefault = "TIMESTAMP_UNIX",
+            mandatory = false
     )
     protected IndexType indexType = IndexType.TIMESTAMP_UNIX;
 
-    @Setting(id = "indexColumn",
-            name = "Index column",
+    @Option(type = SETTING,
+    		name = "Index column",
             description = "The column name of the table primary key.",
             valueDefault = "time",
             mandatory = false)
@@ -205,8 +212,12 @@ public class SqlClient extends Device<SqlChannel> {
     }
 
     @Override
-    protected void onConfigure() throws ArgumentSyntaxException {
-        super.onConfigure();
+    public ColumnScanner newScanner(Settings settings) {
+        return new ColumnScanner(source, type + "://" + host + ":" + port + "/" + database);
+    }
+
+    @Configure
+    protected void configure() throws ArgumentSyntaxException {
         if (database == null || database.isEmpty()) {
             throw new ArgumentSyntaxException("Database name needs to be configured");
         }
@@ -237,8 +248,8 @@ public class SqlClient extends Device<SqlChannel> {
         }
     }
 
-    @Override
-    protected void onConnect() throws ArgumentSyntaxException, ConnectionException {
+    @Connect
+    protected void connect() throws ArgumentSyntaxException, ConnectionException {
         logger.info("Initializing SQL connection \"{}\"", url);
         try {
             if (source != null) {
@@ -257,19 +268,14 @@ public class SqlClient extends Device<SqlChannel> {
         }
     }
 
-    @Override
-    protected ColumnScanner newScanner() {
-        return new ColumnScanner(source, type + "://" + host + ":" + port + "/" + database);
-    }
-
-    @Override
-    public void onDisconnect() {
+    @Disconnect
+    public void close() {
         source.close();
         source = null;
     }
 
-    @Override
-    public void onRead(List<SqlChannel> channels, String samplingGroup) throws  ConnectionException {
+    @Read
+    public void read(List<SqlChannel> channels, String samplingGroup) throws  ConnectionException {
         try (Connection connection = source.getConnection()) {
             if (union) {
                 readTables();
@@ -326,8 +332,8 @@ public class SqlClient extends Device<SqlChannel> {
         return tables.values();
     }
 
-    @Override
-    public void onWrite(List<SqlChannel> channels) throws ConnectionException {
+    @Write
+    public void write(List<SqlChannel> channels) throws ConnectionException {
         try (Connection connection = source.getConnection()) {
             try (Transaction transaction = new Transaction(connection)) {
                 for (SqlTable table : groupChannels(channels)) {

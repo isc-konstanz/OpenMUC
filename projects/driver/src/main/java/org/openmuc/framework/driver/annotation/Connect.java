@@ -18,23 +18,17 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver;
+package org.openmuc.framework.driver.annotation;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public abstract class Scanner extends Configurable {
-
-    Scanner() {
-    }
-
-    final void doConfigure(String settings) throws ArgumentSyntaxException {
-    	this.configureSettings(settings);
-        this.onConfigure();
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public abstract @interface Connect {
+	// Marker annotation
 }

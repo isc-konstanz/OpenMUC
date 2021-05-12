@@ -20,6 +20,9 @@
  */
 package org.openmuc.framework.config.option;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import java.io.IOException;
 
 import org.openmuc.framework.config.Configurable;
@@ -87,8 +90,8 @@ public interface DeviceOptions extends DeviceInfo {
             return address;
         }
 
-        DeviceOptions setAddress(Class<? extends Configurable> address) {
-            setAddressOptions(Options.parseAddress(address));
+        DeviceOptions setAddress(Class<? extends Configurable> configurable) {
+            setAddressOptions(Options.parse(ADDRESS, configurable));
             return this;
         }
 
@@ -102,8 +105,8 @@ public interface DeviceOptions extends DeviceInfo {
             return settings;
         }
 
-        DeviceOptions setSettings(Class<? extends Configurable> settings) {
-            setSettingsOptions(Options.parseSettings(settings));
+        DeviceOptions setSettings(Class<? extends Configurable> configurable) {
+            setSettingsOptions(Options.parse(SETTING, configurable));
             return this;
         }
 
@@ -117,8 +120,8 @@ public interface DeviceOptions extends DeviceInfo {
             return scanSettings;
         }
 
-        DeviceOptions setScanSettings(Class<? extends Configurable> scanSettings) {
-            setScanSettingsOptions(Options.parseSettings(scanSettings));
+        DeviceOptions setScanSettings(Class<? extends Configurable> configurable) {
+            setSettingsOptions(Options.parse(SETTING, configurable));
             return this;
         }
 

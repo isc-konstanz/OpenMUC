@@ -20,11 +20,13 @@
  */
 package org.openmuc.framework.driver.opcua;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -35,23 +37,26 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.DeviceChannel;
+import org.openmuc.framework.driver.DriverChannel;
+import org.openmuc.framework.driver.annotation.Configure;
 
-public class OpcChannel extends DeviceChannel {
+public class OpcChannel extends DriverChannel {
 
-    @Address(id = "id",
-             name = "Identifier",
-             description = "The identifier string for a node in the address space of an OPC UA server.")
+    @Option(id = "id",
+            type = ADDRESS,
+            name = "Identifier",
+            description = "The identifier string for a node in the address space of an OPC UA server.")
     private String identifier;
 
-    @Setting(id="ns",
+    @Option(id="ns",
+            type = SETTING,
             name = "Namespace index",
             description = "The namespace index formatted as a base 10 number. The index an OPC UA server uses "
                         + "for a namespace URI. The namespace URI identifies the naming authority defining the "
                         + "identifiers of NodeIds, e.g. the OPC Foundation, other standard bodies and consortia, "
                         + "the underlying system, the local server.",
             mandatory = false)
-    private int namespaceIndex = 0;
+    private int namespaceIndex = -1;
 
     private NodeId nodeId;
 
@@ -59,12 +64,11 @@ public class OpcChannel extends DeviceChannel {
         return nodeId;
     }
 
-    public OpcChannel(int namespaceDefault) {
-        namespaceIndex = namespaceDefault;
-    }
-
-    @Override
-    protected void onConfigure() {
+    @Configure
+    public void setNamespace(OpcConnection connection) {
+    	if (namespaceIndex < 0) {
+    		namespaceIndex = connection.getNamespaceIndex();
+    	}
         nodeId = new NodeId(namespaceIndex, identifier);
     }
 

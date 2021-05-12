@@ -20,12 +20,15 @@
  */
 package org.openmuc.framework.config;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openmuc.framework.config.option.Option;
+import org.openmuc.framework.config.option.OptionValue;
 import org.openmuc.framework.config.option.Options;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.OptionType;
 import org.openmuc.framework.data.Value;
 
 public abstract class Configurations {
@@ -36,6 +39,17 @@ public abstract class Configurations {
     private final String assignment;
     private final Boolean keyValue;
 
+    public static Configurations parse(OptionType type, String configuration, Class<? extends Configurable> configurable) 
+    		throws ArgumentSyntaxException {
+    	switch (type) {
+		case ADDRESS:
+			return parseAddress(configuration, configurable);
+		case SETTING:
+		default:
+			return parseSettings(configuration, configurable);
+    	}
+    }
+
     public static Address parseAddress(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
         return new Address(configuration, configurable);
     }
@@ -44,12 +58,20 @@ public abstract class Configurations {
         return new Settings(configuration, configurable);
     }
 
-    protected Configurations(String separator, String assignment, boolean keyValue) throws ArgumentSyntaxException {
-        super();
-        
-        this.separator = separator;
-        this.assignment = assignment;
-        this.keyValue = keyValue;
+    protected Configurations(OptionType type, OptionSyntax syntax) {
+    	super();
+        if (syntax == null) {
+            separator = OptionSyntax.SEPARATOR_DEFAULT;
+            assignment = OptionSyntax.ASSIGNMENT_DEFAULT;
+            keyValue = Arrays.stream(
+            		OptionSyntax.KEY_VAL_PAIRS_DEFAULT).anyMatch(type::equals);
+        }
+        else {
+            separator = syntax.separator();
+            assignment = syntax.assignment();
+            keyValue = Arrays.stream(
+            		syntax.keyValuePairs()).anyMatch(type::equals);
+        }
     }
 
     protected void parse(String parameterStr, Options options) throws ArgumentSyntaxException {
@@ -58,7 +80,7 @@ public abstract class Configurations {
             
             if (parameterArr.length >= options.getMandatoryCount()) {
                 if (options.hasKeyValuePairs()) {
-                    for (Option option : options) {
+                    for (OptionValue option : options) {
                         String key = option.getId();
                         Value value = null;
                         
@@ -104,7 +126,7 @@ public abstract class Configurations {
                     int optionalOptCount = 0;
                     
                     int i = 0;
-                    for (Option option : options) {
+                    for (OptionValue option : options) {
                         Value value = null;
                         
                         if (i >= parameterArr.length) {
@@ -142,12 +164,12 @@ public abstract class Configurations {
         }
     }
 
-    public boolean contains(String key) {
-        return configurations.containsKey(key);
-    }
-
     public Value get(String key) {
         return configurations.get(key);
+    }
+
+    public boolean contains(String key) {
+        return configurations.containsKey(key);
     }
 
     @Override

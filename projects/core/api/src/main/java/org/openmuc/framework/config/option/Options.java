@@ -35,10 +35,9 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.ParseException;
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.AddressSyntax;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.config.annotation.SettingsSyntax;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.OptionType;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -56,49 +55,46 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class Options extends ArrayList<Option> {
+public class Options extends ArrayList<OptionValue> {
     private static final long serialVersionUID = -8478314560466205212L;
 
     private static final Logger logger = LoggerFactory.getLogger(Options.class);
 
-    private String separator = SettingsSyntax.SEPARATOR_DEFAULT;
-    private String assignment = SettingsSyntax.ASSIGNMENT_OPERATOR_DEFAULT;
-    private boolean keyValue = SettingsSyntax.KEY_VAL_PAIRS_DEFAULT;
+    private final OptionType type;
+
     private Locale locale = Locale.ENGLISH;
+    private String separator;
+    private String assignment;
+    private boolean keyValue;
 
     private int mandatoryCount = 0;
 
-    private Options() {
+    private Options(OptionType type) {
+        this.type = type;
     }
 
-    private Options(SettingsSyntax syntax) {
+    private Options(OptionType type, OptionSyntax syntax) {
+        this(type);
         if (syntax == null) {
-            separator = SettingsSyntax.SEPARATOR_DEFAULT;
-            assignment = SettingsSyntax.ASSIGNMENT_OPERATOR_DEFAULT;
-            keyValue = SettingsSyntax.KEY_VAL_PAIRS_DEFAULT;
+            separator = OptionSyntax.SEPARATOR_DEFAULT;
+            assignment = OptionSyntax.ASSIGNMENT_DEFAULT;
+            keyValue = Arrays.stream(
+                    OptionSyntax.KEY_VAL_PAIRS_DEFAULT).anyMatch(type::equals);
         }
         else {
             separator = syntax.separator();
-            assignment = syntax.assignmentOperator();
-            keyValue = syntax.keyValuePairs();
+            assignment = syntax.assignment();
+            keyValue = Arrays.stream(
+                    syntax.keyValuePairs()).anyMatch(type::equals);
         }
     }
 
-    private Options(AddressSyntax syntax) {
-        if (syntax == null) {
-            separator = AddressSyntax.SEPARATOR_DEFAULT;
-            assignment = AddressSyntax.ASSIGNMENT_OPERATOR_DEFAULT;
-            keyValue = AddressSyntax.KEY_VAL_PAIRS_DEFAULT;
-        }
-        else {
-            separator = syntax.separator();
-            assignment = syntax.assignmentOperator();
-            keyValue = syntax.keyValuePairs();
-        }
+    public OptionType getType() {
+        return type;
     }
 
     @Override
-    public boolean add(Option option) {
+    public boolean add(OptionValue option) {
         if (option.isMandatory()) mandatoryCount++;
         return super.add(option);
     }
@@ -164,7 +160,7 @@ public class Options extends ArrayList<Option> {
         if (size() > 0) {
             sb.append("Synopsis: ");
             boolean first = true;
-            for (Option option : this) {
+            for (OptionValue option : this) {
                 boolean mandatory = option.isMandatory();
                 String key = option.getId();
                 String value = null;
@@ -208,7 +204,7 @@ public class Options extends ArrayList<Option> {
         return sb.toString();
     }
 
-    public static Options parseAddress(Class<? extends Configurable> configs) {
+    public static Options parse(OptionType type, Class<? extends Configurable> configs) {
         //Class<C> configs = (Class<C>) MethodHandles.lookup().lookupClass();
         try {
             List<Field> fields = new LinkedList<Field>();
@@ -217,36 +213,36 @@ public class Options extends ArrayList<Option> {
                 fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
                 clazz = clazz.getSuperclass();
             }
-            AddressSyntax syntax = configs.getAnnotation(AddressSyntax.class);
-            Options options = new Options(syntax);
+            OptionSyntax syntax = configs.getAnnotation(OptionSyntax.class);
+            Options options = new Options(type, syntax);
             
             for (Field field : fields) {
-                Address annotation = field.getAnnotation(Address.class);
-                if (annotation == null) {
+                Option annotation = field.getAnnotation(Option.class);
+                if (annotation == null || 
+                        annotation.type() != type) {
+                    
                     continue;
                 }
                 String[] ids = annotation.id();
-                if (Arrays.stream(ids).anyMatch(s -> s.isEmpty() || s.equals(Address.DEFAULT))) {
-                    String id = annotation.value();
-                    
-                    if (id.isEmpty() || id.equals(Address.DEFAULT)) {
-                        id = field.getName();
-                    }
-                    ids = new String[] { id };
+                if (Arrays.stream(ids).anyMatch(s -> s.isEmpty() || s.equals(Option.DEFAULT))) {
+                    ids = annotation.value();
                 }
-                Option option = parseOption(ids, field.getType());
+                if (Arrays.stream(ids).anyMatch(s -> s.isEmpty() || s.equals(Option.DEFAULT))) {
+                    ids = new String[] { field.getName() };
+                }
+                OptionValue option = parseOption(ids, field.getType());
                 
-                if (!annotation.name().equals(Address.DEFAULT)) {
+                if (!annotation.name().equals(Option.DEFAULT)) {
                     option.setName(annotation.name());
                 }
-                if (!annotation.description().equals(Address.DEFAULT)) {
+                if (!annotation.description().equals(Option.DEFAULT)) {
                     option.setDescription(annotation.description());
                 }
                 
-                if (!annotation.valueDefault().equals(Address.DEFAULT)) {
+                if (!annotation.valueDefault().equals(Option.DEFAULT)) {
                     option.setValueDefault(parseValue(option.getType(), annotation.valueDefault()));
                 }
-                if (!annotation.valueSelection().equals(Address.DEFAULT)) {
+                if (!annotation.valueSelection().equals(Option.DEFAULT)) {
                     option.setValueSelection(new OptionSelection(option.getType(), annotation.valueSelection()));
                 }
                 option.setMandatory(annotation.mandatory());
@@ -260,60 +256,8 @@ public class Options extends ArrayList<Option> {
         return null;
     }
 
-    public static Options parseSettings(Class<? extends Configurable> configs) {
-        //Class<C> configs = (Class<C>) MethodHandles.lookup().lookupClass();
-        try {
-            List<Field> fields = new LinkedList<Field>();
-            Class<?> clazz = configs;
-            while(clazz.getSuperclass() != null) {
-                fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-                clazz = clazz.getSuperclass();
-            }
-            SettingsSyntax syntax = configs.getAnnotation(SettingsSyntax.class);
-            Options options = new Options(syntax);
-            
-            for (Field field : fields) {
-                Setting annotation = field.getAnnotation(Setting.class);
-                if (annotation == null) {
-                    continue;
-                }
-                String[] ids = annotation.id();
-                if (Arrays.stream(ids).anyMatch(s -> s.isEmpty() || s.equals(Setting.DEFAULT))) {
-                    String id = annotation.value();
-                    
-                    if (id.isEmpty() || id.equals(Setting.DEFAULT)) {
-                        id = field.getName();
-                    }
-                    ids = new String[] { id };
-                }
-                Option option = parseOption(ids, field.getType());
-                
-                if (!annotation.name().equals(Setting.DEFAULT)) {
-                    option.setName(annotation.name());
-                }
-                if (!annotation.description().equals(Setting.DEFAULT)) {
-                    option.setDescription(annotation.description());
-                }
-                
-                if (!annotation.valueDefault().equals(Setting.DEFAULT)) {
-                    option.setValueDefault(parseValue(option.getType(), annotation.valueDefault()));
-                }
-                if (!annotation.valueSelection().equals(Setting.DEFAULT)) {
-                    option.setValueSelection(new OptionSelection(option.getType(), annotation.valueSelection()));
-                }
-                option.setMandatory(annotation.mandatory());
-                options.add(option);
-            }
-            return options;
-            
-        } catch (Exception e) {
-            logger.warn("Error parsing {} settings: {}", configs.getSimpleName(), e.getMessage());
-        }
-        return null;
-    }
-
-    static Option parseOption(String[] ids, Class<?> type) {
-        Option option = new Option(ids);
+    static OptionValue parseOption(String[] ids, Class<?> type) {
+        OptionValue option = new OptionValue(ids);
         
         if (type.isAssignableFrom(boolean.class) || type.isAssignableFrom(Boolean.class)) {
             option.setType(ValueType.BOOLEAN);
@@ -376,7 +320,7 @@ public class Options extends ArrayList<Option> {
             }
             else {
                 try {
-                    arr = Option.hexToBytes(valueStr.substring(2).trim());
+                    arr = OptionValue.hexToBytes(valueStr.substring(2).trim());
                 } catch (IllegalArgumentException e) {
                     throw new ArgumentSyntaxException("Unable to parse value as byte array: " + valueStr);
                 }
@@ -407,10 +351,15 @@ public class Options extends ArrayList<Option> {
         return null;
     }
 
-    public static Options fromDomNode(Node node, Map<String, Option> options) throws ParseException {
-        
-        Options collection = new Options();
-        
+    public static Options fromDomNode(Node node, Map<String, OptionValue> optionValues) throws ParseException {
+        Options options;
+        String nodeName = node.getNodeName();
+        if (nodeName.toLowerCase().contains("address")) {
+            options = new Options(OptionType.ADDRESS);
+        }
+        else {
+            options = new Options(OptionType.SETTING);
+        }
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node childNode = childNodes.item(i);
@@ -430,10 +379,10 @@ public class Options extends ArrayList<Option> {
                     else if (syntaxNodeName.equals("keyValue")) {
                         String keyValString = syntaxNode.getTextContent().trim().toLowerCase();
                         if (keyValString.equals("true")) {
-                            collection.setKeyValuePairs(true);
+                            options.setKeyValuePairs(true);
                         }
                         else if (keyValString.equals("false")) {
-                            collection.setKeyValuePairs(false);
+                            options.setKeyValuePairs(false);
                         }
                         else {
                             throw new ParseException("Syntax \"keyValue\" contains neither \"true\" nor \"false\"");
@@ -442,11 +391,11 @@ public class Options extends ArrayList<Option> {
                         NamedNodeMap attributes = syntaxNode.getAttributes();
                         Node nameAttribute = attributes.getNamedItem("assignment");
                         if (nameAttribute != null) {
-                            collection.setAssignmentOperator(nameAttribute.getTextContent());
+                            options.setAssignmentOperator(nameAttribute.getTextContent());
                         }
                     }
                     else if (syntaxNodeName.equals("separator")) {
-                        collection.setSeparator(syntaxNode.getTextContent());
+                        options.setSeparator(syntaxNode.getTextContent());
                     }
                     else {
                         throw new ParseException("Unknown tag found:" + syntaxNodeName);
@@ -461,24 +410,24 @@ public class Options extends ArrayList<Option> {
                 }
                 String id = nameAttribute.getTextContent().trim();
                 
-                Option option;
-                if (options != null && options.containsKey(id) && !childNode.hasChildNodes()) {
-                    option = options.get(id);
+                OptionValue option;
+                if (optionValues != null && optionValues.containsKey(id) && !childNode.hasChildNodes()) {
+                    option = optionValues.get(id);
                 }
                 else {
-                    option = Option.getFromDomNode(id, childNode);
-                    if (options != null) {
-                        options.put(id, option);
+                    option = OptionValue.getFromDomNode(id, childNode);
+                    if (optionValues != null) {
+                        optionValues.put(id, option);
                     }
                 }
-                collection.add(option);
+                options.add(option);
             }
             else {
                 throw new ParseException("Unknown tag found:" + childNodeName);
             }
         }
         
-        return collection;
+        return options;
     }
 
     public static Options fromDomNode(Node node) throws ParseException {

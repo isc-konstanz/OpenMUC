@@ -36,15 +36,15 @@ import org.openmuc.framework.server.spi.ServerMappingContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ChannelContext extends Configurable implements ChannelFactory {
+public class ServerChannelContext extends Configurable implements ServerChannelFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChannelContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServerChannelContext.class);
 
     Class<? extends ServerChannel> channelClass;
 
     final Map<String, ServerChannel> channels = new HashMap<String, ServerChannel>();
 
-    ChannelContext() {
+    ServerChannelContext() {
         channelClass = getChannelClass();
     }
 

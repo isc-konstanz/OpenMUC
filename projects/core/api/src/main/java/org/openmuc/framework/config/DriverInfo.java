@@ -20,6 +20,8 @@
  */
 package org.openmuc.framework.config;
 
+import java.text.MessageFormat;
+
 public class DriverInfo {
 
     protected String id;
@@ -35,8 +37,8 @@ public class DriverInfo {
     protected DriverInfo(DeviceInfo device, String id, String name, String description) {
         this(device);
         this.id = id;
-        this.name = name;
-        this.description = description;
+        this.setName(name);
+        this.setDescription(description);
     }
 
     /**
@@ -112,6 +114,11 @@ public class DriverInfo {
     }
 
     public DriverInfo setName(String name) {
+    	if (name == null) {
+            String id = getId();
+            name = id.substring(0, 1).toUpperCase() + 
+                   id.substring(1, id.length());
+    	}
         this.name = name;
         return this;
     }
@@ -121,6 +128,9 @@ public class DriverInfo {
     }
 
     public DriverInfo setDescription(String description) {
+    	if (description == null || description.isEmpty()) {
+    		description = MessageFormat.format("Driver implementation for the {0} protocol", getName());
+    	}
         this.description = description;
         return this;
     }

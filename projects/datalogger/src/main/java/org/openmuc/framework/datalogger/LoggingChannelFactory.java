@@ -18,15 +18,13 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver;
+package org.openmuc.framework.datalogger;
 
-import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Settings;
-import org.openmuc.framework.driver.spi.ConnectionException;
 
-public interface DeviceFactory {
+public interface LoggingChannelFactory {
 
-    Device<?> newDevice(Address address, Settings settings) throws ArgumentSyntaxException, ConnectionException;
+    LoggingChannel newChannel(Settings settings) throws ArgumentSyntaxException;
 
 }

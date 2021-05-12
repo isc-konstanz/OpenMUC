@@ -20,43 +20,49 @@
  */
 package org.openmuc.framework.driver.rpi.gpio;
 
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.driver.DeviceChannel;
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
-public class GpioChannel extends DeviceChannel {
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.driver.DriverChannel;
 
-    @Setting(id = "inverted",
-             name = "Inverted state logic",
-             description = "Use an inverted pin state logic.",
-             valueDefault = "false",
-             mandatory = false
+@OptionSyntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
+public class GpioChannel extends DriverChannel {
+
+    @Option(type = SETTING,
+            name = "Inverted state logic",
+            description = "Use an inverted pin state logic.",
+            valueDefault = "false",
+            mandatory = false
     )
     private boolean inverted = false;
 
-    @Setting(id = "impulses",
-             name = "imp./unit",
-             description = "he amount of impulses corresponding to one unit.<br><br>" +
-                           "<i>This setting is only applicable for edge counting input pins</i>",
-             valueDefault = "1",
-             mandatory = false
+    @Option(type = SETTING,
+            name = "imp./unit",
+            description = "he amount of impulses corresponding to one unit.<br><br>" +
+                          "<i>This setting is only applicable for edge counting input pins</i>",
+            valueDefault = "1",
+            mandatory = false
     )
     private int impulses = 1;
 
-    @Setting(id = "countInterval",
-             name = "Count pulses per interval",
-             description = "Count the amount of pulses during a sampling interval, instead of a global counter.<br><br>" +
-                           "<i>This setting is only applicable for edge counting input pins</i>",
-             valueDefault = "false",
-             mandatory = false
+    @Option(type = SETTING,
+            id = "countInterval",
+            name = "Count pulses per interval",
+            description = "Count the amount of pulses during a sampling interval, instead of a global counter.<br><br>" +
+                          "<i>This setting is only applicable for edge counting input pins</i>",
+            valueDefault = "false",
+            mandatory = false
     )
     private boolean intervalCount = false;
 
-    @Setting(id = "derivativeTime",
-             name = "Time derivative",
-             description = "Calculate the time derivative of counted pulses by the time unit.<br><br>" +
-                           "<i>This setting is only applicable for edge counting input pins</i>",
-             valueSelection = "1:Millisecond,1000:Second,60000:Minute,3600000:Hour",
-             mandatory = false
+    @Option(type = SETTING,
+            name = "Time derivative",
+            description = "Calculate the time derivative of counted pulses by the time unit.<br><br>" +
+                          "<i>This setting is only applicable for edge counting input pins</i>",
+            valueSelection = "1:Millisecond,1000:Second,60000:Minute,3600000:Hour",
+            mandatory = false
     )
     private Integer derivativeTime = null;
 

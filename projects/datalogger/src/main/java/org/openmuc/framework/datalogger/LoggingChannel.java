@@ -33,19 +33,19 @@ public class LoggingChannel extends ChannelWrapper {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingChannel.class);
 
-    ChannelContext context;
+    LoggingChannelContext context;
 
     Record record = new Record(Flag.DATA_LOGGING_NOT_ACTIVE);
 
     final List<Record> records = new ArrayList<Record>();
 
-    final void doCreate(ChannelContext context) throws ArgumentSyntaxException {
+    final void doCreate(LoggingChannelContext context) throws ArgumentSyntaxException {
         this.context = context;
         this.onCreate(context);
         this.onCreate();
     }
 
-    protected void onCreate(ChannelContext context) throws ArgumentSyntaxException {
+    protected void onCreate(LoggingChannelContext context) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 

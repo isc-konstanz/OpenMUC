@@ -24,6 +24,8 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+
 public abstract class ChannelContainerWrapper extends Configurable {
 
     ServerMappingContainer container;
@@ -40,7 +42,7 @@ public abstract class ChannelContainerWrapper extends Configurable {
     }
 
     protected void doConfigure(String address) throws ArgumentSyntaxException {
-        configureAddress(address);
+        configure(ADDRESS, address);
     }
 
     protected void onConfigure() throws ArgumentSyntaxException {

@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config.annotation;
+package org.openmuc.framework.driver.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -27,20 +27,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.openmuc.framework.driver.DriverChannelScanner;
+import org.openmuc.framework.driver.DriverChannel;
+
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
-public @interface Address {
+@Target(ElementType.TYPE)
+public @interface Device {
 
-    public final static String DEFAULT = "org.openmuc.framework.config.annotation.Address.DEFAULT";
+    Class<? extends DriverChannel> value() 
+            default DriverChannel.class;
 
-    String value() default DEFAULT;
-    String[] id() default DEFAULT;
-    String name() default DEFAULT;
-    String description() default DEFAULT;
-    String valueDefault() default DEFAULT;
-    String valueSelection() default DEFAULT;
-    boolean mandatory() default true;
-    double scale() default 1;
+    Class<? extends DriverChannel> channel() 
+            default DriverChannel.class;
+
+    Class<? extends DriverChannelScanner> scanner() 
+            default DriverChannelScanner.class;
+
 }

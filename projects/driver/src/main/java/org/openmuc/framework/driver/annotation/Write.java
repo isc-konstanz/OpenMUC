@@ -18,29 +18,17 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config.annotation;
+package org.openmuc.framework.driver.annotation;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
-public @interface Setting {
-
-    public final static String DEFAULT = "org.openmuc.framework.config.annotation.Setting.DEFAULT";
-
-    String value() default DEFAULT;
-    String[] id() default DEFAULT;
-    String name() default DEFAULT;
-    String description() default DEFAULT;
-    String valueDefault() default DEFAULT;
-    String valueSelection() default DEFAULT;
-    boolean mandatory() default true;
-    double scale() default 1;
+@Target(ElementType.METHOD)
+public abstract @interface Write {
+	// Marker annotation
 }

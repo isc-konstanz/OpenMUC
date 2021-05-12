@@ -18,13 +18,17 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger;
+package org.openmuc.framework.driver.annotation;
 
-import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Settings;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface ChannelFactory {
-
-    LoggingChannel newChannel(Settings settings) throws ArgumentSyntaxException;
-
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public abstract @interface Listen {
+	// Marker annotation
 }

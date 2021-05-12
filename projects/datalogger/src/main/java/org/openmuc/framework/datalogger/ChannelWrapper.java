@@ -20,9 +20,11 @@
  */
 package org.openmuc.framework.datalogger;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 
@@ -32,13 +34,13 @@ public abstract class ChannelWrapper extends Configurable {
 
     String settings = "";
 
-    @Setting(id={"intervalMax", "loggingMaxInterval"}, mandatory = false)
+    @Option(id={"intervalMax", "loggingMaxInterval"}, mandatory = false)
     int intervalMax = 0;
 
-    @Setting(id= {"tolerance", "loggingTolerance"}, mandatory = false)
+    @Option(id= {"tolerance", "loggingTolerance"}, mandatory = false)
     double tolerance = 0;
 
-    @Setting(mandatory = false)
+    @Option(mandatory = false)
     boolean average = false;
 
     protected ChannelWrapper() {
@@ -56,7 +58,7 @@ public abstract class ChannelWrapper extends Configurable {
     }
 
     protected void doConfigure(String settings) throws ArgumentSyntaxException {
-        configureSettings(settings);
+        configure(SETTING, settings);
     }
 
     protected void onConfigure() throws ArgumentSyntaxException {

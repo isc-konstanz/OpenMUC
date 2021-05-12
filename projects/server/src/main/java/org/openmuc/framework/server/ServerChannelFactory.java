@@ -18,15 +18,13 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.openmuc.framework.server;
 
-package org.openmuc.framework.datalogger.spi;
+import org.openmuc.framework.config.Address;
+import org.openmuc.framework.config.ArgumentSyntaxException;
 
-import org.openmuc.framework.dataaccess.DataAccessService;
+public interface ServerChannelFactory {
 
-public interface DataLoggerActivator extends DataLoggerService {
-
-    public void activate(DataAccessService dataAccessService);
-
-    public void deactivate();
+    ServerChannel newChannel(Address address) throws ArgumentSyntaxException;
 
 }

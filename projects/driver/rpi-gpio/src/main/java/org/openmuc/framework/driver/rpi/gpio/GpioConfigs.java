@@ -20,54 +20,60 @@
  */
 package org.openmuc.framework.driver.rpi.gpio;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.AddressSyntax;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.config.annotation.SettingsSyntax;
-import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.driver.DriverDevice;
+import org.openmuc.framework.driver.annotation.Device;
 
 import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 
-@AddressSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
-@SettingsSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
-public class GpioConfigs extends Device<GpioChannel> {
+@OptionSyntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
+@Device(channel = GpioChannel.class)
+public class GpioConfigs extends DriverDevice {
 
     public static final String PIN = "pin";
     public static final String MODE = "mode";
 
-    @Address(id = PIN,
+    @Option(id = PIN,
+            type = ADDRESS,
              name = "Pin",
              description = "The pin number, according to the <a href='http://pi4j.com/pin-numbering-scheme.html'>WiringPi Pin Numbering Scheme</a>."
     )
     private int pin;
 
-    @Setting(id = MODE,
+    @Option(id = MODE,
+            type = SETTING,
              name = "I/O mode",
              valueSelection = "DIGITAL_INPUT:Input,DIGITAL_OUTPUT:Output"
     )
     private PinMode mode;
 
-    @Setting(id = "defaultState",
-             name = "Default state",
+    @Option(type = SETTING,
+            name = "Default state",
              description = "The default state of the configured pin, immediately set at startup of the driver.",
              valueDefault = "false",
              mandatory = false
     )
     private boolean defaultState = false;
 
-    @Setting(id = "shutdownState",
-             name = "Shutdown state",
+    @Option(type = SETTING,
+            name = "Shutdown state",
              description = "The default state of the configured pin, set at shutdown of the driver.",
              valueDefault = "false",
              mandatory = false
     )
     private boolean shutdownState = false;
 
-    @Setting(id = "pullResistance",
-             name = "Pull resistance",
+    @Option(type = SETTING,
+            name = "Pull resistance",
              description = "The pull resistance of the configured pin, immediately set at startup of the driver.",
              valueSelection = "PULL_UP:Pull-up,PULL_DOWN:Pull-down,OFF:Off",
              valueDefault = "PULL_DOWN",
@@ -75,8 +81,8 @@ public class GpioConfigs extends Device<GpioChannel> {
     )
     private PinPullResistance pullResistance = PinPullResistance.PULL_DOWN;
 
-    @Setting(id = "shutdownPullResistance",
-             name = "Shutdown pull resistance",
+    @Option(type = SETTING,
+            name = "Shutdown pull resistance",
              description = "The default pull resistance of the configured pin, set at shutdown of the driver.",
              valueSelection = "PULL_UP:Pull-up,PULL_DOWN:Pull-down,OFF:Off",
              valueDefault = "PULL_DOWN",
@@ -84,8 +90,8 @@ public class GpioConfigs extends Device<GpioChannel> {
     )
     private PinPullResistance shutdownPullResistance = PinPullResistance.PULL_DOWN;
 
-    @Setting(id = "counter",
-             name = "Edge counter",
+    @Option(type = SETTING,
+            name = "Edge counter",
              description = "Enable the counting of detected edges.<br><br>" + 
                             "<i>This setting is only applicable for input pins</i>",
              valueDefault = "false",
@@ -93,8 +99,8 @@ public class GpioConfigs extends Device<GpioChannel> {
     )
     private boolean counter = false;
 
-    @Setting(id = "bounceTime",
-             name = "Bounce avoidance time",
+    @Option(type = SETTING,
+            name = "Bounce avoidance time",
              description = "The amount of miliseconds waited, until a new edge detection will be accepted as a received impulse, to avoid bouncing.<br><br>" +
                            "<i>This setting is only applicable for edge counting input pins</i>",
              valueDefault = "60",
@@ -105,9 +111,9 @@ public class GpioConfigs extends Device<GpioChannel> {
     protected GpioConfigs() {
     }
 
-    protected GpioConfigs(String address, String settings) throws ArgumentSyntaxException {
-        this.configureAddress(address);
-        this.configureSettings(settings);
+    protected GpioConfigs(Address address, Settings settings) throws ArgumentSyntaxException {
+        this.configure(address);
+        this.configure(settings);
     }
 
     public int getPin() {

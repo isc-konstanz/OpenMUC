@@ -18,21 +18,27 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config;
+package org.openmuc.framework.config.option.annotation;
 
-import org.openmuc.framework.config.option.Options;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
-import org.openmuc.framework.config.option.annotation.OptionType;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class Address extends Configurations {
+@Documented
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface OptionSyntax {
 
-    protected Address(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
-        this(configurable.getAnnotation(OptionSyntax.class));
-        parse(configuration, Options.parse(OptionType.ADDRESS, configurable));
-    }
+    static final String SEPARATOR_DEFAULT = ";";
+    static final String ASSIGNMENT_DEFAULT = "=";
+    static final OptionType[] KEY_VAL_PAIRS_DEFAULT = { OptionType.SETTING };
 
-    private Address(OptionSyntax syntax) throws ArgumentSyntaxException {
-        super(OptionType.ADDRESS, syntax);
-    }
+    String separator() default SEPARATOR_DEFAULT;
+    String assignment() default ASSIGNMENT_DEFAULT;
+    OptionType[] keyValuePairs() default OptionType.SETTING;
 
 }

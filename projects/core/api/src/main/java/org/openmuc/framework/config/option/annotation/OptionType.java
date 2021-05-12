@@ -18,13 +18,10 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.server;
 
-import org.openmuc.framework.config.Address;
-import org.openmuc.framework.config.ArgumentSyntaxException;
+package org.openmuc.framework.config.option.annotation;
 
-public interface ChannelFactory {
-
-    ServerChannel newChannel(Address address) throws ArgumentSyntaxException;
-
+public enum OptionType {
+    ADDRESS,
+    SETTING;
 }

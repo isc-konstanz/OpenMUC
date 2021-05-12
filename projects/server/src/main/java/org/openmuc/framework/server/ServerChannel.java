@@ -35,18 +35,18 @@ import org.openmuc.framework.dataaccess.RecordListener;
 
 public class ServerChannel extends ChannelContainerWrapper {
 
-    ChannelContext context;
+    ServerChannelContext context;
 
     protected ServerChannel() {
     }
 
-    final void doCreate(ChannelContext context) throws ArgumentSyntaxException {
+    final void doCreate(ServerChannelContext context) throws ArgumentSyntaxException {
         this.context = context;
         this.onCreate(context);
         this.onCreate();
     }
 
-    protected void onCreate(ChannelContext context) throws ArgumentSyntaxException {
+    protected void onCreate(ServerChannelContext context) throws ArgumentSyntaxException {
         // Placeholder for the optional implementation
     }
 
@@ -58,7 +58,7 @@ public class ServerChannel extends ChannelContainerWrapper {
         // Placeholder for the optional implementation
     }
 
-    public final ChannelContext getContext() {
+    public final ServerChannelContext getContext() {
         return context;
     }
 

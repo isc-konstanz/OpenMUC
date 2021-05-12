@@ -26,24 +26,25 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.driver.ChannelContext;
-import org.openmuc.framework.driver.ChannelScanner;
+import org.openmuc.framework.driver.DriverChannelScanner;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ColumnScanner extends ChannelScanner {
+public class ColumnScanner extends DriverChannelScanner {
 
     private static final Logger logger = LoggerFactory.getLogger(ColumnScanner.class);
 
     private CsvFile file;
 
-    protected void onCreate(ChannelContext device) throws ArgumentSyntaxException, ConnectionException {
-        file = (CsvFile) device;
+    @Configure
+    public void configure(CsvFile file) throws ArgumentSyntaxException, ConnectionException {
+        this.file = file;
     }
 
     @Override
-    protected void onScan(List<ChannelScanInfo> channels) throws ArgumentSyntaxException, ScanException, ConnectionException {
+    public void scan(List<ChannelScanInfo> channels) throws ArgumentSyntaxException, ScanException, ConnectionException {
         logger.info("Scan for columns in CSV file");
         
         for (String channelId : file.getColumns()) {

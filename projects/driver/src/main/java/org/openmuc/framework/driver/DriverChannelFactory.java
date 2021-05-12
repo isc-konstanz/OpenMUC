@@ -18,15 +18,14 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.openmuc.framework.driver;
 
-package org.openmuc.framework.driver.spi;
+import org.openmuc.framework.config.Address;
+import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.Settings;
 
-import org.openmuc.framework.dataaccess.DataAccessService;
+public interface DriverChannelFactory {
 
-public interface DriverActivator extends DriverService {
-
-    void activate(DataAccessService dataAccessService);
-
-    void deactivate();
+	DriverChannel newChannel(Address address, Settings settings) throws ArgumentSyntaxException;
 
 }

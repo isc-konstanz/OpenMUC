@@ -20,14 +20,19 @@
  */
 package org.openmuc.framework.driver.rpi.gpio;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.Driver;
-import org.openmuc.framework.driver.annotation.Factory;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.driver.DriverActivator;
+import org.openmuc.framework.driver.DriverDeviceFactory;
+import org.openmuc.framework.driver.annotation.Disconnect;
+import org.openmuc.framework.driver.annotation.Driver;
 import org.openmuc.framework.driver.rpi.gpio.count.EdgeCounter;
-import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +44,11 @@ import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.wiringpi.GpioUtil;
 
 @Component(service = DriverService.class)
-@Factory(scanner = GpioScanner.class)
-public class GpioDriver extends Driver<GpioPin> {
+@Driver(id = GpioDriver.ID,
+        name = GpioDriver.NAME, description = GpioDriver.DESCRIPTION,
+        device = GpioPin.class, scanner = GpioScanner.class)
+public class GpioDriver extends DriverActivator implements DriverDeviceFactory {
+
     private static final Logger logger = LoggerFactory.getLogger(GpioDriver.class);
 
     public static final String ID = "rpi-gpio";
@@ -52,23 +60,8 @@ public class GpioDriver extends Driver<GpioPin> {
 
     private GpioController gpio;
 
-    @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public String getDescription() {
-        return DESCRIPTION;
-    }
-
-    @Override
-    public void onActivate() {
+    @Activate
+    public void activate() {
         // Check if privileged access is required on the running system and enable non-
         // privileged GPIO access if not.
         if (!GpioUtil.isPrivilegedAccessRequired()) {
@@ -80,15 +73,15 @@ public class GpioDriver extends Driver<GpioPin> {
         gpio = GpioFactory.getInstance();
     }
 
-    @Override
-    public void onDeactivate() {
+    @Deactivate
+    public void deactivate() {
         // Stop all GPIO activity/threads by shutting down the GPIO controller
         // (this method will forcefully shutdown all GPIO monitoring threads and scheduled tasks)
         gpio.shutdown();
     }
 
     @Override
-    public GpioPin newDevice(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
+    public GpioPin newDevice(Address address, Settings settings) throws ArgumentSyntaxException, ConnectionException {
         try {
             GpioConfigs configs = new GpioConfigs(address, settings);
             GpioPin connection;
@@ -129,9 +122,9 @@ public class GpioDriver extends Driver<GpioPin> {
         }
     }
 
-    @Override
-    public void onDisconnect(Connection connection) {
-        gpio.unprovisionPin(((GpioPin) connection).getGpioPin());
+    @Disconnect
+    public void disconnect(GpioPin pin) {
+        this.gpio.unprovisionPin(pin.getGpioPin());
     }
 
 }

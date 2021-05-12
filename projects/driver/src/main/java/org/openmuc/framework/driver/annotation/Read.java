@@ -18,15 +18,17 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.openmuc.framework.driver.annotation;
 
-package org.openmuc.framework.server.spi;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.openmuc.framework.dataaccess.DataAccessService;
-
-public interface ServerActivator extends ServerService {
-
-    public void activate(DataAccessService dataAccessService);
-
-    public void deactivate();
-
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public abstract @interface Read {
+	// Marker annotation
 }

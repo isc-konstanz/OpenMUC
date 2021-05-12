@@ -22,13 +22,15 @@ package org.openmuc.framework.server;
 
 import java.util.List;
 
-import org.openmuc.framework.dataaccess.DataAccessService;
-import org.openmuc.framework.server.spi.ServerActivator;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
+import org.openmuc.framework.server.spi.ServerService;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Server<C extends ServerChannel> extends ChannelContext implements ServerActivator {
+public abstract class Server<C extends ServerChannel> extends ServerChannelContext implements ServerService {
 
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
@@ -50,22 +52,22 @@ public abstract class Server<C extends ServerChannel> extends ChannelContext imp
         // Placeholder for the optional implementation
     }
 
-    @Override
-    public final void activate(DataAccessService dataAccess) {
+    @Activate
+    public final void activate(ComponentContext componentContext) {
         try {
-            doActivate(dataAccess);
+            doActivate(componentContext);
             
         } catch (Exception e) {
             logger.warn("Error activating server {}: {}", getId(), e.getMessage());
         }
     }
 
-    void doActivate(DataAccessService dataAccess) throws Exception {
-        onActivate(dataAccess);
+    void doActivate(ComponentContext componentContext) throws Exception {
+        onActivate(componentContext);
         onActivate();
     }
 
-    protected void onActivate(DataAccessService dataAccess) throws Exception {
+    protected void onActivate(ComponentContext componentContext) throws Exception {
         // Placeholder for the optional implementation
     }
 
@@ -73,7 +75,7 @@ public abstract class Server<C extends ServerChannel> extends ChannelContext imp
         // Placeholder for the optional implementation
     }
 
-    @Override
+    @Deactivate
     public final void deactivate() {
         try {
             doDeactivate();

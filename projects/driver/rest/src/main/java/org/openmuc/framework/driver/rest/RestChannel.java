@@ -20,14 +20,17 @@
  */
 package org.openmuc.framework.driver.rest;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.driver.DeviceChannel;
+import org.openmuc.framework.driver.DriverChannel;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.lib.rest1.Const;
 import org.openmuc.framework.lib.rest1.FromJson;
@@ -38,19 +41,19 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
-public class RestChannel extends DeviceChannel {
+public class RestChannel extends DriverChannel {
     private static final Logger logger = LoggerFactory.getLogger(RestRemote.class);
 
-    @Address(id = "id",
-             name = "Channel ID",
-             description = "The ID of the remote OpenMUC channel")
+    @Option(type = ADDRESS,
+            name = "Channel ID",
+            description = "The ID of the remote OpenMUC channel")
     private String id;
     private String uri;
 
     private Record record = new Record(Flag.NO_VALUE_RECEIVED_YET);
 
-    @Override
-    protected void onConfigure() throws ArgumentSyntaxException {
+    @Configure
+    public void configure() throws ArgumentSyntaxException {
         try {
             uri = URLEncoder.encode(id, RestDriver.CHARSET.toString());
             

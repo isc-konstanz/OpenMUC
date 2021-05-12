@@ -20,104 +20,116 @@
  */
 package org.openmuc.framework.driver.dlms.settings;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+
 import java.net.InetAddress;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.AddressSyntax;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
 
-@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
+@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = ADDRESS)
 public class DeviceAddress extends Configurable {
 
-    @Address(id = "t",
-             name = "Connection type",
-             description = "The connection type used. Currently, the DLMS/COSEM driver supports serial communication and TCP/IP.",
-             valueSelection = "serial:Serial,tcp:TCP/IP"
+    @Option(id = "t",
+    		type = ADDRESS,
+    		name = "Connection type",
+            description = "The connection type used. Currently, the DLMS/COSEM driver supports serial communication and TCP/IP.",
+            valueSelection = "serial:Serial,tcp:TCP/IP"
     )
     private String connectionType = null;
 
-    @Address(id = "sp",
-             name = "Serial Port",
-             description = "<b>Example:</b>" +
-                           "<ol>" +
-                               "<li>sp=ttyS0</li>" +
-                               "<li>sp=COM1</li>" +
-                           "</ol>" +
-                           "<br>" +
-                           "<i>Only used for Serial connection types</i>",
-             mandatory = false
+    @Option(id = "sp",
+    		type = ADDRESS,
+    		name = "Serial Port",
+            description = "<b>Example:</b>" +
+                          "<ol>" +
+                              "<li>sp=ttyS0</li>" +
+                              "<li>sp=COM1</li>" +
+                          "</ol>" +
+                          "<br>" +
+                          "<i>Only used for Serial connection types</i>",
+            mandatory = false
     )
     private String serialPort = "";
 
-    @Address(id = "bd",
-             name = "Baud rate",
-             description = "<i>Only used for Serial connection types</i>",
-             valueDefault = "9600",
-             mandatory = false
+    @Option(id = "bd",
+    		type = ADDRESS,
+    		name = "Baud rate",
+            description = "<i>Only used for Serial connection types</i>",
+            valueDefault = "9600",
+            mandatory = false
     )
     private int baudrate = 9600;
 
-    @Address(id = "h",
-             name = "Host name",
-             description = "<b>Example:</b>" +
-                           "<ol>" +
-                               "<li>h=127.0.0.1</li>" +
-                               "<li>h=192.168.178.88</li>" +
-                           "</ol>" +
-                           "<br>" +
-                           "<i>Only used for TCP/IP connection types</i>",
-             mandatory = false
+    @Option(id = "h",
+    		type = ADDRESS,
+    		name = "Host name",
+            description = "<b>Example:</b>" +
+                          "<ol>" +
+                              "<li>h=127.0.0.1</li>" +
+                              "<li>h=192.168.178.88</li>" +
+                          "</ol>" +
+                          "<br>" +
+                          "<i>Only used for TCP/IP connection types</i>",
+            mandatory = false
     )
     private InetAddress hostAddress = null;
 
-    @Address(id = "p",
-             name = "Port",
-             description = "<i>Only used for TCP/IP connection types</i>",
-             valueDefault = "4059",
-             mandatory = false
+    @Option(id = "p",
+    		type = ADDRESS,
+    		name = "Port",
+            description = "<i>Only used for TCP/IP connection types</i>",
+            valueDefault = "4059",
+            mandatory = false
     )
     private int port = 4059;
 
-    @Address(id = "hdlc",
-             name = "HDLC",
-             description = "Use HDLC (<a href='https://en.wikipedia.org/wiki/High-Level_Data_Link_Control'>High-Level Data Link Control</a>",
-             valueDefault = "false",
-             mandatory = false
+    @Option(id = "hdlc",
+    		type = ADDRESS,
+    		name = "HDLC",
+            description = "Use HDLC (<a href='https://en.wikipedia.org/wiki/High-Level_Data_Link_Control'>High-Level Data Link Control</a>",
+            valueDefault = "false",
+            mandatory = false
     )
     private boolean useHdlc = false;
 
-    @Address(id = "d",
-             name = "Baud rate change delay",
-             description = "The baud rate change delay in milliseconds",
-             valueDefault = "0",
-             mandatory = false
+    @Option(id = "d",
+    		type = ADDRESS,
+    		name = "Baud rate change delay",
+            description = "The baud rate change delay in milliseconds",
+            valueDefault = "0",
+            mandatory = false
     )
     private long baudRateChangeDelay = 0;
 
-    @Address(id = "eh",
-             name = "Handshake",
-             description = "Use initial handshake to negotiate baud rate",
-             valueDefault = "false",
-             mandatory = false
+    @Option(id = "eh",
+    		type = ADDRESS,
+    		name = "Handshake",
+            description = "Use initial handshake to negotiate baud rate",
+            valueDefault = "false",
+            mandatory = false
     )
     private boolean enableBaudRateHandshake = false;
 
-    @Address(id = "iec",
-             name = "IEC 21 address",
-             mandatory = false
+    @Option(id = "iec",
+    		type = ADDRESS,
+    		name = "IEC 21 address",
+            mandatory = false
     )
     private String iec21Address = "";
 
-    @Address(id = "pd",
-             name = "Physical Device Address",
-             valueDefault = "0",
-             mandatory = false
+    @Option(id = "pd",
+    		type = ADDRESS,
+    		name = "Physical Device Address",
+            valueDefault = "0",
+            mandatory = false
     )
     private int physicalDeviceAddress = 0;
 
     public DeviceAddress(String address) throws ArgumentSyntaxException {
-        configureAddress(address);
+        configure(ADDRESS, address);
     }
 
     public String getConnectionType() {

@@ -20,90 +20,104 @@
  */
 package org.openmuc.framework.driver.dlms.settings;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.config.annotation.SettingsSyntax;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
 
-@SettingsSyntax(separator = ";", assignmentOperator = "=")
+@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = SETTING)
 public class DeviceSettings extends Configurable {
 
-    @Setting(id = "ld",
-             name = "Logical Device Address",
-             valueDefault = "1",
-             mandatory = false
+    @Option(id = "ld",
+            type = SETTING,
+            name = "Logical Device Address",
+            valueDefault = "1",
+            mandatory = false
     )
     private int logicalDeviceAddress = 1;
 
-    @Setting(id = "cid",
+    @Option(id = "cid",
+    		type = SETTING,
             name = "Client ID",
             valueDefault = "16",
             mandatory = false
     )
     private int clientId = 16;
 
-    @Setting(id = "sn",
+    @Option(id = "sn",
+    		type = SETTING,
             name = "SN referencing",
             valueDefault = "false",
             mandatory = false
     )
     private boolean useSn = false;
 
-    @Setting(id = "emech",
+    @Option(id = "emech",
+    		type = SETTING,
             name = "Encryption Mechanism",
             valueDefault = "-1",
             mandatory = false
     )
     private int encryptionMechanism = -1;
 
-    @Setting(id = "amech",
+    @Option(id = "amech",
+    		type = SETTING,
             name = "Authentication Mechanism",
             valueDefault = "0",
             mandatory = false
     )
     private int authenticationMechanism = 0;
 
-    @Setting(id = "ekey",
+    @Option(id = "ekey",
+    		type = SETTING,
             name = "Encryption Key",
             mandatory = false
     )
     private byte[] encryptionKey = {};
 
-    @Setting(id = "akey",
+    @Option(id = "akey",
+    		type = SETTING,
             name = "Authentication Key",
             mandatory = false
     )
     private byte[] authenticationKey = {};
 
-    @Setting(id = "pass",
+    @Option(id = "pass",
+    		type = SETTING,
             name = "Password",
             description = "Authorization password to access the smart meter device",
             mandatory = false
     )
     private String paswd = "";
 
-    @Setting(id = "cl",
+    @Option(id = "cl",
+    		type = SETTING,
             name = "Challenge Length",
             valueDefault = "16",
             mandatory = false
     )
     private int challengeLength = 16;
 
-    @Setting(id = "rt",
+    @Option(id = "rt",
+    		type = SETTING,
             name = "Response Timeout",
             valueDefault = "20000",
             mandatory = false
     )
     private int responseTimeout = 20000;
 
-    @Setting(id = "mid",
+    @Option(id = "mid",
+    		type = SETTING,
             name = "Manufacturer Id",
             valueDefault = "MMM",
             mandatory = false
     )
     private String manufacturerId = "MMM";
 
-    @Setting(id = "did",
+    @Option(id = "did",
+    		type = SETTING,
             name = "Device Id",
             valueDefault = "1",
             mandatory = false
@@ -111,7 +125,7 @@ public class DeviceSettings extends Configurable {
     private long deviceId = 1;
 
     public DeviceSettings(String settings) throws ArgumentSyntaxException {
-        configureSettings(settings);
+        configure(SETTING, settings);
     }
 
     public int getLogicalDeviceAddress() {
