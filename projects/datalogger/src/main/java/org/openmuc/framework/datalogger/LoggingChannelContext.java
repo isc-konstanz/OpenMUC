@@ -30,9 +30,9 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.data.TypeConversionException;
+import org.openmuc.framework.datalogger.annotation.DataLogger;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LoggingRecord;
-import org.openmuc.framework.driver.annotation.DataLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,11 +49,11 @@ public class LoggingChannelContext extends Reflectable {
     }
 
     DataLogger getLoggerAnnotation() {
-    	DataLogger device = getClass().getAnnotation(DataLogger.class);
-        if (device == null) {
+    	DataLogger logger = getClass().getAnnotation(DataLogger.class);
+        if (logger == null) {
             throw new RuntimeException("Implementation invalid without annotation");
         }
-        return device;
+        return logger;
     }
 
     @SuppressWarnings("unchecked")

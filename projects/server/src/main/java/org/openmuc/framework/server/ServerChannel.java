@@ -32,6 +32,7 @@ import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DataLoggerNotAvailableException;
 import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.dataaccess.RecordListener;
+import org.openmuc.framework.server.spi.ServerMappingContainer;
 
 public class ServerChannel extends ChannelContainerWrapper {
 
@@ -40,22 +41,10 @@ public class ServerChannel extends ChannelContainerWrapper {
     protected ServerChannel() {
     }
 
-    final void doCreate(ServerChannelContext context) throws ArgumentSyntaxException {
+    void invokeConfigure(ServerChannelContext context, ServerMappingContainer container) 
+    		throws ArgumentSyntaxException {
+    	super.invokeConfigure(context, container);
         this.context = context;
-        this.onCreate(context);
-        this.onCreate();
-    }
-
-    protected void onCreate(ServerChannelContext context) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onDestroy() {
-        // Placeholder for the optional implementation
     }
 
     public final ServerChannelContext getContext() {

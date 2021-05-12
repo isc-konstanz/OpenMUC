@@ -25,8 +25,8 @@ import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.datalogger.annotation.Configure;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.driver.annotation.Configure;
 
 public abstract class ChannelWrapper extends Reflectable {
 

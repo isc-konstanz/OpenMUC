@@ -20,9 +20,7 @@
  */
 package org.openmuc.framework.server;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.text.MessageFormat;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,13 +28,14 @@ import java.util.Map;
 
 import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.server.annotation.Server;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ServerChannelContext extends Configurable implements ServerChannelFactory {
+public class ServerChannelContext extends Reflectable {
 
     private static final Logger logger = LoggerFactory.getLogger(ServerChannelContext.class);
 
@@ -48,41 +47,57 @@ public class ServerChannelContext extends Configurable implements ServerChannelF
         channelClass = getChannelClass();
     }
 
-    @SuppressWarnings("unchecked")
-	private Class<? extends ServerChannel> getChannelClass() {
-    	Class<?> serverClass = getClass();
-        while (serverClass.getSuperclass() != null) {
-            if (serverClass.getSuperclass().equals(Server.class)) {
-                break;
-            }
-            serverClass = serverClass.getSuperclass();
+    Server getServerAnnotation() {
+        Server server = getClass().getAnnotation(Server.class);
+        if (server == null) {
+            throw new RuntimeException("Implementation invalid without annotation");
         }
-        // This operation is safe. Because deviceClass is a direct sub-class, getGenericSuperclass() will
-        // always return the Type of this class. Because this class is parameterized, the cast is safe
-        ParameterizedType superClass = (ParameterizedType) serverClass.getGenericSuperclass();
-        return (Class<? extends ServerChannel>) superClass.getActualTypeArguments()[0];
+        return server;
     }
 
-    public ServerChannel getChannel(String id) {
-    	return channels.get(id);
+    @SuppressWarnings("unchecked")
+    Class<? extends ServerChannel> getChannelClass() {
+        if (this instanceof ServerChannelFactory) {
+            try {
+                Method method = getClass().getMethod("newChannel", Settings.class);
+                return (Class<? extends ServerChannel>) method.getReturnType();
+                
+            } catch (NoSuchMethodException | SecurityException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Server server = getServerAnnotation();
+        return server.channel();
     }
 
-	final ServerChannel getChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
+    @SuppressWarnings("unchecked")
+    final <C extends ServerChannel> ServerChannel newChannel(ServerMappingContainer container) 
+            throws RuntimeException, ArgumentSyntaxException {
+        
+        Address address = Configurations.parseAddress(container.getServerMapping().getServerAddress(), channelClass);
+        
+        C channel;
+        if (this instanceof ServerChannelFactory) {
+            channel = (C) ((ServerChannelFactory) this).newChannel(address);
+        }
+        else {
+            channel = (C) newInstance(channelClass);
+        }
+        return channel;
+    }
+
+    final ServerChannel getChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
         String id = container.getChannel().getId();
         ServerChannel channel = channels.get(id);
         try {
             if (channel == null) {
                 channel = newChannel(container);
-                channel.doCreate(this);
-                channel.doConfigure(container);
-                
                 channels.put(id, channel);
             }
-            else {
-	            channel.doConfigure(container);
-        	}
+            channel.invokeConfigure(this, container);
+            
         } catch (ArgumentSyntaxException e) {
-        	
+            
             channels.remove(id);
             
             throw e;
@@ -90,47 +105,23 @@ public class ServerChannelContext extends Configurable implements ServerChannelF
         return channel;
     }
 
-    final ServerChannel newChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
-        return this.newChannel(container.getServerMapping().getServerAddress());
-    }
-
-    public ServerChannel newChannel(String address) throws ArgumentSyntaxException {
-        return this.newChannel(Configurations.parseAddress(address, channelClass));
-    }
-
-    @Override
-    public ServerChannel newChannel(Address address) throws ArgumentSyntaxException {
-        return this.newChannel();
-    }
-
-    protected ServerChannel newChannel() {
-        try {
-            return channelClass.getDeclaredConstructor().newInstance();
-            
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new IllegalArgumentException(MessageFormat.format("Unable to instance {0}: {1}", 
-            		channelClass.getSimpleName(), e.getMessage()));
-        }
-    }
-
-    final void bindChannel(Class<? extends ServerChannel> channelClass) {
-        this.channelClass = channelClass;
+    public ServerChannel getChannel(String id) {
+        return channels.get(id);
     }
 
     public List<ServerChannel> getChannels() {
         return (List<ServerChannel>) channels.values();
     }
 
-	final List<ServerChannel> getChannels(List<? extends ServerMappingContainer> containers) {
+    final List<ServerChannel> getChannels(List<ServerMappingContainer> containers) {
         List<ServerChannel> channels = new ArrayList<ServerChannel>();
         for (ServerMappingContainer container : containers) {
             try {
-				channels.add(getChannel(container));
-				
-			} catch (ArgumentSyntaxException | NullPointerException e) {
+                channels.add(getChannel(container));
+                
+            } catch (ArgumentSyntaxException | NullPointerException e) {
                 logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
-			}
+            }
         }
         return channels;
     }

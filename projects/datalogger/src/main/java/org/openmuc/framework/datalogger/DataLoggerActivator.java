@@ -27,12 +27,12 @@ import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.datalogger.annotation.Configure;
+import org.openmuc.framework.datalogger.annotation.Read;
+import org.openmuc.framework.datalogger.annotation.Write;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.spi.LoggingRecord;
-import org.openmuc.framework.driver.annotation.Configure;
-import org.openmuc.framework.driver.annotation.Read;
-import org.openmuc.framework.driver.annotation.Write;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,7 +21,6 @@
 package org.openmuc.framework.server.opcua;
 
 import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
-import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
@@ -48,7 +47,7 @@ import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.server.ServerChannel;
 
-@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = {ADDRESS, SETTING})
+@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = ADDRESS)
 public class OpcChannel extends ServerChannel implements AttributeDelegate {
 
     @Option(mandatory = false)

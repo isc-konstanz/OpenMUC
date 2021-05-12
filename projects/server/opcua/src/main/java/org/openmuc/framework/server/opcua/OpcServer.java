@@ -54,17 +54,22 @@ import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
-import org.openmuc.framework.server.Server;
+import org.openmuc.framework.server.ServerActivator;
+import org.openmuc.framework.server.annotation.Configure;
+import org.openmuc.framework.server.annotation.Server;
 import org.openmuc.framework.server.spi.ServerService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(service = ServerService.class)
-public class OpcServer extends Server<OpcChannel> {
+@Server(id = OpcServer.ID)
+public class OpcServer extends ServerActivator<OpcChannel> {
     private static final Logger logger = LoggerFactory.getLogger(OpcServer.class);
 
-    private static final String ID = "opcua";
+    public static final String ID = "opcua";
 
     private static final int TCP_BIND_PORT = 4840;
     private static final int HTTPS_BIND_PORT = 4843;
@@ -77,13 +82,8 @@ public class OpcServer extends Server<OpcChannel> {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public void onActivate() throws Exception {
+    @Activate
+    public void activate() throws Exception {
         logger.info("Activating OPC UA Server");
 
         File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
@@ -151,14 +151,14 @@ public class OpcServer extends Server<OpcChannel> {
         server.startup();
     }
 
-    @Override
-    public void onDeactivate() {
+    @Deactivate
+    public void deactivate() {
         logger.info("Deactivating OPC UA Server");
         server.shutdown();
     }
 
-    @Override
-    protected void onConfigure(List<OpcChannel> channels) {
+    @Configure
+    protected void configure(List<OpcChannel> channels) {
         if (namespace != null) {
             namespace.shutdown();
         }

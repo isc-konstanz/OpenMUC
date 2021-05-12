@@ -32,9 +32,9 @@ import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
+import org.openmuc.framework.datalogger.annotation.Read;
+import org.openmuc.framework.datalogger.annotation.Write;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.driver.annotation.Read;
-import org.openmuc.framework.driver.annotation.Write;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +48,9 @@ public class LoggingChannel extends ChannelWrapper {
 
     final List<Record> records = new ArrayList<Record>();
 
-    void invokeConfigure(LoggingChannelContext context, LogChannel container) 
+    void invokeConfigure(LoggingChannelContext context, LogChannel channel) 
     		throws ArgumentSyntaxException {
-    	super.invokeConfigure(context, container);
+    	super.invokeConfigure(context, channel);
         this.context = context;
     }
 

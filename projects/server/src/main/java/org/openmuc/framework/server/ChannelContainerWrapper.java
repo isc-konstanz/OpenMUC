@@ -20,33 +20,34 @@
  */
 package org.openmuc.framework.server;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurable;
+import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.server.annotation.Configure;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 
-import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
-
-public abstract class ChannelContainerWrapper extends Configurable {
+public abstract class ChannelContainerWrapper extends Reflectable {
 
     ServerMappingContainer container;
 
     protected ChannelContainerWrapper() {
     }
 
-    protected void doConfigure(ServerMappingContainer container) throws ArgumentSyntaxException {
+    void invokeConfigure(ServerChannelContext context, ServerMappingContainer container) 
+            throws ArgumentSyntaxException {
+        
         if (!equals(container)) {
-            doConfigure(container.getServerMapping().getServerAddress());
-            onConfigure();
+            Address address = Configurations.parseAddress(container.getServerMapping().getServerAddress(), getClass());
+            configure(address);
+            
+            setMappingContainer(container);
+            
+            invokeMethod(Configure.class, this, context, address);
+            invokeMethod(Configure.class, this, context);
+            invokeMethod(Configure.class, this);
+            return;
         }
         setMappingContainer(container);
-    }
-
-    protected void doConfigure(String address) throws ArgumentSyntaxException {
-        configure(ADDRESS, address);
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
     }
 
     public final ServerMappingContainer getMappingContainer() {
