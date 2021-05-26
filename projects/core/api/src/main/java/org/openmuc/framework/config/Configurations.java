@@ -168,6 +168,105 @@ public abstract class Configurations {
         return configurations.get(key);
     }
 
+    public String getString(String key) {
+        return getString(key, null);
+    }
+
+    public String getString(String key, String defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asString();
+    }
+
+    public Double getDouble(String key) {
+        return getDouble(key, null);
+    }
+
+    public Double getDouble(String key, Double defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asDouble();
+    }
+
+    public Float getFloat(String key) {
+        return getFloat(key, null);
+    }
+
+    public Float getFloat(String key, Float defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asFloat();
+    }
+
+    public Long getLong(String key) {
+        return getLong(key, null);
+    }
+
+    public Long getLong(String key, Long defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asLong();
+    }
+
+    public Integer getInteger(String key) {
+        return getInteger(key, null);
+    }
+
+    public Integer getInteger(String key, Integer defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asInt();
+    }
+
+    public Short getShort(String key) {
+        return getShort(key, null);
+    }
+
+    public Short getShort(String key, Short defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asShort();
+    }
+
+    public Boolean getBoolean(String key) {
+        return getBoolean(key, null);
+    }
+
+    public Boolean getBoolean(String key, Boolean defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asBoolean();
+    }
+
+    public Byte getByte(String key) {
+        return getByte(key, null);
+    }
+
+    public Byte getByte(String key, Byte defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asByte();
+    }
+
+    public byte[] getByteArray(String key) {
+        return getByteArray(key, null);
+    }
+
+    public byte[] getByteArray(String key, byte[] defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asByteArray();
+    }
+
     public boolean contains(String key) {
         return configurations.containsKey(key);
     }
