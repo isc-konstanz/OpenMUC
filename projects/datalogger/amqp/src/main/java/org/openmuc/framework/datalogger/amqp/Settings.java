@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -21,100 +21,34 @@
 
 package org.openmuc.framework.datalogger.amqp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openmuc.framework.lib.osgi.config.GenericSettings;
+import org.openmuc.framework.lib.osgi.config.ServiceProperty;
 
-class Settings {
+public class Settings extends GenericSettings {
 
-    private static Logger logger = LoggerFactory.getLogger(Settings.class);
-    private static final String PACKAGE_NAME = Settings.class.getPackage().getName().toLowerCase();
+    public static final String VIRTUAL_HOST = "virtualHost";
+    public static final String SSL = "ssl";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+    public static final String FRAMEWORK = "framework";
+    public static final String PARSER = "parser";
+    public static final String EXCHANGE = "exchange";
+    public static final String PORT = "port";
+    public static final String HOST = "host";
 
-    private final int port;
-    private final String host;
-    private final String username;
-    private final String password;
-    private final String virtualHost;
-    private final String framework;
-    private final String exchange;
-    private final String parser;
-    private final String separator;
-    private final boolean ssl;
+    public Settings() {
+        super();
+        properties.put(PORT, new ServiceProperty(PORT, "port for AMQP communication", null, true));
+        properties.put(HOST, new ServiceProperty(HOST, "URL of AMQP broker", "localhost", true));
+        properties.put(SSL, new ServiceProperty(SSL, "usage of ssl true/false", "false", true));
+        properties.put(USERNAME, new ServiceProperty(USERNAME, "name of your AMQP account", null, true));
+        properties.put(PASSWORD, new ServiceProperty(PASSWORD, "password of your AMQP account", null, true));
+        properties.put(PARSER,
+                new ServiceProperty(PARSER, "identifier of needed parser implementation", "openmuc", true));
+        properties.put(VIRTUAL_HOST, new ServiceProperty(VIRTUAL_HOST, "used virtual amqp host", null, false));
+        properties.put(FRAMEWORK, new ServiceProperty(FRAMEWORK, "framework identifier", null, false));
+        properties.put(EXCHANGE, new ServiceProperty(EXCHANGE, "used amqp exchange", null, false));
 
-    Settings() {
-        port = getIntProperty(".port", 5672);
-        host = getStringProperty(".host", "127.0.0.1");
-        username = getStringProperty(".username", "guest");
-        password = getStringProperty(".password", "guest");
-        virtualHost = getStringProperty(".vhost", "/");
-        framework = getStringProperty(".framework", "openmuc");
-        exchange = getStringProperty(".exchange", "");
-        parser = getStringProperty(".parser", "openmuc");
-        separator = getStringProperty(".separator", ".");
-        ssl = getBooleanProperty(".ssl", false);
-    }
-
-    private String getStringProperty(String propertyName, String defaultValue) {
-        String property = "";
-        try {
-            property = System.getProperty(PACKAGE_NAME + propertyName);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            logger.error("Property key {}{} is'n set. Using default value: {}", PACKAGE_NAME, propertyName,
-                    defaultValue);
-        }
-        if (property == null) {
-            property = defaultValue;
-        }
-        return property;
-    }
-
-    private int getIntProperty(String propertyName, int defaultValue) {
-        String property = getStringProperty(propertyName, Integer.toString(defaultValue));
-        return Integer.parseInt(property);
-    }
-
-    private boolean getBooleanProperty(String propertyName, boolean defaultValue) {
-        String property = getStringProperty(propertyName, Boolean.toString(defaultValue));
-        return Boolean.parseBoolean(property);
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getVirtualHost() {
-        return virtualHost;
-    }
-
-    public String getFramework() {
-        return framework;
-    }
-
-    public String getExchange() {
-        return exchange;
-    }
-
-    public String getParser() {
-        return parser;
-    }
-
-    public String getSeparator() {
-        return separator;
-    }
-
-    public boolean isSsl() {
-        return ssl;
     }
 
 }

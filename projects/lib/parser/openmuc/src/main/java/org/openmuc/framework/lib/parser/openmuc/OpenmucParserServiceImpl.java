@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -18,6 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 package org.openmuc.framework.lib.parser.openmuc;
 
 import java.lang.reflect.Type;
@@ -37,7 +38,7 @@ import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.openmuc.framework.parser.spi.ParserService;
 import org.openmuc.framework.parser.spi.SerializationException;
 import org.slf4j.Logger;
@@ -74,23 +75,26 @@ public class OpenmucParserServiceImpl implements ParserService {
     }
 
     @Override
-    public byte[] serialize(LogRecordContainer openMucRecord) {
+    public byte[] serialize(LoggingRecord openMucRecord) {
         String serializedString = gson.toJson(openMucRecord.getRecord());
 
         return serializedString.getBytes();
     }
 
     @Override
-    public byte[] serialize(List<LogRecordContainer> openMucRecords) throws SerializationException {
-        throw new SerializationException("This parser cannot serialize multiple records at once");
+    public byte[] serialize(List<LoggingRecord> openMucRecords) throws SerializationException {
+        StringBuilder sb = new StringBuilder();
+        for (LoggingRecord openMucRecord : openMucRecords) {
+            sb.append(new String(serialize(openMucRecord)));
+            sb.append('\n');
+        }
+        return sb.toString().getBytes();
     }
 
     @Override
-    public Record deserialize(byte[] byteArray, ValueType valueType) {
+    public synchronized Record deserialize(byte[] byteArray, ValueType valueType) {
         this.valueType = valueType;
-        String inputJson = new String(byteArray);
-
-        return gson.fromJson(inputJson, Record.class);
+        return gson.fromJson(new String(byteArray), Record.class);
 
     }
 
@@ -106,14 +110,14 @@ public class OpenmucParserServiceImpl implements ParserService {
 
         @Override
         public JsonElement serialize(Record record, Type typeOfSrc, JsonSerializationContext context) {
-
             JsonObject obj = new JsonObject();
-            obj.addProperty("timestamp", record.getTimestamp());
-            obj.addProperty("flag", record.getFlag().toString());
             Value value = record.getValue();
 
-            String valueString = "value";
-            if (value != null || record.getFlag() == Flag.VALID) {
+            if (value != null && record.getFlag() == Flag.VALID) {
+                String valueString = "value";
+                obj.addProperty("timestamp", record.getTimestamp());
+                obj.addProperty("flag", record.getFlag().toString());
+
                 switch (value.getValueType()) {
                 case BOOLEAN:
                     obj.addProperty(valueString, record.getValue().asBoolean());

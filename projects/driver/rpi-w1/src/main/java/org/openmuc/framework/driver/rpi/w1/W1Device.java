@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,35 +20,36 @@
  */
 package org.openmuc.framework.driver.rpi.w1;
 
-import java.util.List;
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.config.annotation.SettingsSyntax;
-import org.openmuc.framework.driver.Device;
-import org.openmuc.framework.driver.spi.ConnectionException;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.driver.DriverDevice;
+import org.openmuc.framework.driver.annotation.Device;
 
-@SettingsSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
-public abstract class W1Device extends Device<W1Channel> {
+@OptionSyntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
+@Device(channel = W1Channel.class)
+public abstract class W1Device extends DriverDevice {
 
-    @Address(id = "id",
-             name = "Identifier",
-             description = "The device ID, retrievable through scanning."
+    @Option(type = ADDRESS,
+            name = "Identifier",
+            description = "The device ID, retrievable through scanning."
     )
     protected String id;
 
-    @Setting(id = "type",
-             name = "Type",
-             description = "The type of the 1-Wire device, e.g. a temperature or humidity sensor.",
-             valueSelection = "SENSOR_TEMPERATURE:Temperature sensor"
+    @Option(type = SETTING,
+            name = "Type",
+            description = "The type of the 1-Wire device, e.g. a temperature or humidity sensor.",
+            valueSelection = "SENSOR_TEMPERATURE:Temperature sensor"
     )
     protected W1Type type;
 
-    @Setting(id = "maximum",
-             name = "Maximum sensor value",
-             description = "The maximum value the sensor can read.<br>" +
-                           "Used e.g. in error detection of temperature sensors.",
-             mandatory = false
+    @Option(type = SETTING,
+            name = "Maximum sensor value",
+            description = "The maximum value the sensor can read.<br>" +
+                          "Used e.g. in error detection of temperature sensors.",
+            mandatory = false
     )
     protected Double maximum = Double.NaN;
 
@@ -63,9 +64,5 @@ public abstract class W1Device extends Device<W1Channel> {
     public Double getMaximum() {
         return maximum;
     }
-
-    @Override
-    public abstract void onRead(List<W1Channel> channels, String samplingGroup) 
-            throws ConnectionException;
 
 }

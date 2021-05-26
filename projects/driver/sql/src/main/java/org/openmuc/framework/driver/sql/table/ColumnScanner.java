@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,6 +20,8 @@
  */
 package org.openmuc.framework.driver.sql.table;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -30,10 +32,10 @@ import java.util.List;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.driver.ChannelContext;
-import org.openmuc.framework.driver.ChannelScanner;
+import org.openmuc.framework.driver.DriverChannelScanner;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.sql.SqlClient;
 import org.slf4j.Logger;
@@ -41,10 +43,10 @@ import org.slf4j.LoggerFactory;
 
 import com.mchange.v2.c3p0.PooledDataSource;
 
-public class ColumnScanner extends ChannelScanner {
+public class ColumnScanner extends DriverChannelScanner {
     private static final Logger logger = LoggerFactory.getLogger(ColumnScanner.class);
 
-    @Setting(id = "table",
+    @Option(type = SETTING,
             name = "Table name",
             description = "Tablename to scan columns.",
             mandatory = false)
@@ -59,15 +61,23 @@ public class ColumnScanner extends ChannelScanner {
         this.database = database;
     }
 
-    @Override
-    protected void onCreate(ChannelContext context) {
+    @Configure
+    public void setTable(SqlClient client) {
         if (table == null) {
-            table = ((SqlClient) context).getTable();
+            table = client.getTable();
         }
     }
 
+    public String getTable() {
+    	return table;
+    }
+
+    public String getDatabase() {
+    	return database;
+    }
+
     @Override
-    public void onScan(List<ChannelScanInfo> channels) throws ArgumentSyntaxException, ScanException, ConnectionException {
+    public void scan(List<ChannelScanInfo> channels) throws ArgumentSyntaxException, ScanException, ConnectionException {
         logger.info("Scan for columns in {}.{}", database, table);
         
         try (Connection connection = source.getConnection()) {

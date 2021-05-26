@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,58 +20,63 @@
  */
 package org.openmuc.framework.driver.rest;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import org.apache.commons.codec.binary.Base64;
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.driver.DriverDevice;
+import org.openmuc.framework.driver.annotation.Configure;
 
-public abstract class RestConfigs extends Device<RestChannel> {
+@OptionSyntax(separator = ";", assignment = ":", keyValuePairs = SETTING)
+public abstract class RestConfigs extends DriverDevice {
 
-    @Address(id = "prefix",
-            name = "Prefix",
+    @Option(type = ADDRESS,
+    		name = "Prefix",
             description = "The URL prefix, which specifies the protocol used to access the remote OpenMUC",
             valueSelection = "http:http,https:https",
             valueDefault = "https",
             mandatory = false)
     protected String prefix = "https";
 
-    @Address(id = "host",
-            name = "Host name",
+    @Option(type = ADDRESS,
+    		name = "Host name",
             description = "The host name of the remote OpenMUC, e.g. 127.0.0.1")
     protected String host;
 
-    @Address(id = "port",
-            name = "Port",
+    @Option(type = ADDRESS,
+    		name = "Port",
             description = "The port of the remote OpenMUC, e.g. 8888",
             mandatory = false)
     protected int port = 8888;
 
-    @Setting(id = "username",
-            name = "Username",
+    @Option(type = SETTING,
+    		name = "Username",
             description = "The username of the remote OpenMUC")
     protected String username;
 
-    @Setting(id = "password",
-            name = "Password",
+    @Option(type = SETTING,
+    		name = "Password",
             description = "The password of the remote OpenMUC")
     protected String password;
 
-    @Setting(id = "checkTimestamp",
-            name = "Check timestamp",
+    @Option(type = SETTING,
+    		name = "Check timestamp",
             description = "Flags the driver that it should check the remote timestamp, before reading the complete record",
             valueDefault = "false",
             mandatory = false)
     protected boolean checkTimestamp = false;
 
-    @Setting(id = "bulk",
-            name = "Bulk reading",
+    @Option(type = SETTING,
+    		name = "Bulk reading",
             description = "Flags the driver that it should read all available channels at once, instead of requesting them one by one",
             valueDefault = "false",
             mandatory = false)
     protected boolean bulkReading = false;
 
-    @Setting(id = "timeout",
-            name = "Timeout",
+    @Option(type = SETTING,
+    		name = "Timeout",
             description = "The timeout, after which the HTTP(S) call will be canceled.",
             valueDefault = "10000",
             mandatory = false)
@@ -80,8 +85,8 @@ public abstract class RestConfigs extends Device<RestChannel> {
     protected String url;
     protected String authorization;
 
-    @Override
-    protected void onConfigure() {
+    @Configure
+    public void configure() {
     	while (host.startsWith("/")) {
     		host = host.substring(1);
     	}

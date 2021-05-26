@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -39,7 +39,7 @@ public class CsvTimeChannelHourTest {
 
     static List<String> data;
     static long[] timestamps;
-    static double value;
+    static String value;
 
     @BeforeClass
     public static void initTestClass() {
@@ -62,10 +62,10 @@ public class CsvTimeChannelHourTest {
         CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, false);
 
         value = channel.readValue(createTimestamp(100006));
-        Assert.assertTrue(String.valueOf(value).equals("5.0"));
+        Assert.assertTrue(value.equals("5.0"));
 
         value = channel.readValue(createTimestamp(100014));
-        Assert.assertTrue(String.valueOf(value).equals("10.0"));
+        Assert.assertTrue(value.equals("10.0"));
     }
 
     @Test
@@ -74,10 +74,10 @@ public class CsvTimeChannelHourTest {
         CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, false);
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
         value = channel.readValue(createTimestamp(100005));
-        Assert.assertTrue(String.valueOf(value).equals("5.0"));
+        Assert.assertTrue(value.equals("5.0"));
     }
 
     @Test
@@ -86,10 +86,10 @@ public class CsvTimeChannelHourTest {
         CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, false);
 
         value = channel.readValue(createTimestamp(100020));
-        Assert.assertTrue(String.valueOf(value).equals("20.0"));
+        Assert.assertTrue(value.equals("20.0"));
 
         value = channel.readValue(createTimestamp(100025));
-        Assert.assertTrue(String.valueOf(value).equals("20.0"));
+        Assert.assertTrue(value.equals("20.0"));
 
         // timestamp before the last one, but rewind is false so timestamp is not considered and old value is returned
         try {
@@ -106,13 +106,13 @@ public class CsvTimeChannelHourTest {
         CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, true);
 
         value = channel.readValue(createTimestamp(100020));
-        Assert.assertTrue(String.valueOf(value).equals("20.0"));
+        Assert.assertTrue(value.equals("20.0"));
 
         value = channel.readValue(createTimestamp(100025));
-        Assert.assertTrue(String.valueOf(value).equals("20.0"));
+        Assert.assertTrue(value.equals("20.0"));
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class CsvTimeChannelHourTest {
         }
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
     }
 
@@ -138,7 +138,7 @@ public class CsvTimeChannelHourTest {
         CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, false);
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
         // sampling jumed back before first timestamp of file
         try {
@@ -155,7 +155,7 @@ public class CsvTimeChannelHourTest {
         CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, true);
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(String.valueOf(value).equals("0.0"));
+        Assert.assertTrue(value.equals("0.0"));
 
         // sampling jumed back before first timestamp of file
         try {

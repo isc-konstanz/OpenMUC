@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,19 +20,16 @@
  */
 package org.openmuc.framework.driver;
 
-import java.lang.reflect.InvocationTargetException;
-import java.text.MessageFormat;
-
-import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.option.DriverOptions;
+import org.openmuc.framework.driver.annotation.Driver;
 
 public class DriverContext extends DriverOptions {
 
-    <D extends Device<?>> DriverContext(Driver<D> driver) {
-        super(driver, 
-              driver.getId(),
-              driver.getName(),
-              driver.getDescription());
+    <D extends DriverDevice> DriverContext(DriverDeviceContext device, Driver driver) {
+        super(device, 
+              driver.id(),
+              driver.name(),
+              driver.description());
     }
 
     @Override
@@ -47,23 +44,12 @@ public class DriverContext extends DriverOptions {
         return this;
     }
 
-    public DeviceContext getDevice() {
-        return (DeviceContext) super.getDevice();
+    public DriverDeviceContext getDevice() {
+        return (DriverDeviceContext) super.getDevice();
     }
 
-    public ChannelContext getChannel() {
-        return (ChannelContext) super.getChannel();
-    }
-
-    static <C extends Configurable> C newInstance(Class<C> configurable) throws IllegalArgumentException {
-        try {
-            return (C) configurable.getDeclaredConstructor().newInstance();
-            
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new IllegalArgumentException(MessageFormat.format("Unable to instance {0}: {1}", 
-                    configurable.getSimpleName(), e.getMessage()));
-        }
+    public DriverChannelContext getChannel() {
+        return (DriverChannelContext) super.getChannel();
     }
 
 }

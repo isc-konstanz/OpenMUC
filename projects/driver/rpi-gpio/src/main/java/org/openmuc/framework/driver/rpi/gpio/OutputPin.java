@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,6 +25,7 @@ import java.util.List;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
+import org.openmuc.framework.driver.annotation.Write;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,8 @@ public class OutputPin extends InputPin {
         super(pin);
     }
 
-    @Override
-    public void onWrite(List<GpioChannel> channels) throws ConnectionException {
+    @Write
+    public void write(List<GpioChannel> channels) throws ConnectionException {
         for (GpioChannel channel : channels) {
             Record record = channel.getRecord();
             Value value;

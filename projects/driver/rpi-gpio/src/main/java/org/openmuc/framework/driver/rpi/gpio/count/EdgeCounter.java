@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -29,6 +29,8 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
+import org.openmuc.framework.driver.annotation.Listen;
+import org.openmuc.framework.driver.annotation.Read;
 import org.openmuc.framework.driver.rpi.gpio.GpioChannel;
 import org.openmuc.framework.driver.rpi.gpio.InputPin;
 import org.openmuc.framework.driver.spi.ConnectionException;
@@ -49,13 +51,13 @@ public class EdgeCounter extends InputPin {
         pin.addListener(counter);
     }
 
-    @Override
-    protected void onStartListening(List<GpioChannel> channels, RecordsReceivedListener listener) throws ConnectionException {
+    @Listen
+    public void listen(List<GpioChannel> channels, RecordsReceivedListener listener) throws ConnectionException {
         counter.setRecordListener(channels, listener);
     }
 
-    @Override
-    protected void onRead(List<GpioChannel> channels, String samplingGroup) throws ConnectionException {
+    @Read
+    public void read(List<GpioChannel> channels, String samplingGroup) throws ConnectionException {
         long samplingTime = System.currentTimeMillis();
         int newVal = counter.getValue();
 

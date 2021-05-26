@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,20 +20,19 @@
  */
 package org.openmuc.framework.config;
 
-import org.openmuc.framework.config.annotation.AddressSyntax;
 import org.openmuc.framework.config.option.Options;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.OptionType;
 
 public class Address extends Configurations {
 
     protected Address(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
-        this(configurable.getAnnotation(AddressSyntax.class));
-        parse(configuration, Options.parseAddress(configurable));
+        this(configurable.getAnnotation(OptionSyntax.class));
+        parse(configuration, Options.parse(OptionType.ADDRESS, configurable));
     }
 
-    private Address(AddressSyntax syntax) throws ArgumentSyntaxException {
-        super(syntax != null ? syntax.separator() : AddressSyntax.SEPARATOR_DEFAULT, 
-                syntax != null ? syntax.assignmentOperator(): AddressSyntax.ASSIGNMENT_OPERATOR_DEFAULT, 
-                syntax != null ? syntax.keyValuePairs() : AddressSyntax.KEY_VAL_PAIRS_DEFAULT);
+    private Address(OptionSyntax syntax) throws ArgumentSyntaxException {
+        super(OptionType.ADDRESS, syntax);
     }
 
 }

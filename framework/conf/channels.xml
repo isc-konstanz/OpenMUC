@@ -43,6 +43,24 @@
       </channel>
     </device>
   </driver>
+  <driver id="aggregator">
+    <device id="aggregationdevice">
+      <samplingTimeout>55s</samplingTimeout>
+      <connectRetryInterval>1m</connectRetryInterval>
+      <channel id="ev_power_aggr">
+        <channelAddress>power_electric_vehicle:avg:0.9</channelAddress>
+        <samplingInterval>5s</samplingInterval>
+        <samplingTimeOffset>5s</samplingTimeOffset>
+        <loggingInterval>5s</loggingInterval>
+      </channel>
+      <channel id="power_photovoltaics_aggr">
+        <channelAddress>power_photovoltaics:avg:0.9</channelAddress>
+        <samplingInterval>5s</samplingInterval>
+        <samplingTimeOffset>5s</samplingTimeOffset>
+        <loggingInterval>5s</loggingInterval>
+      </channel>
+    </device>
+  </driver>
   <driver id="virtual">
     <device id="virtual">
       <channel id="status_electric_vehicle">

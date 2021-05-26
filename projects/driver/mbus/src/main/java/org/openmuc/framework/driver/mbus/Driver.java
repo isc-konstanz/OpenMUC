@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -164,7 +164,7 @@ public class Driver implements DriverService {
     }
 
     @Override
-    public void interruptDeviceScan() throws UnsupportedOperationException {
+    public void interruptDeviceScan() {
         interruptScan = true;
     }
 
@@ -220,81 +220,15 @@ public class Driver implements DriverService {
         synchronized (this) {
 
             synchronized (interfaces) {
-                if (isTCP) {
-                    connectionInterface = interfaces.get(host + port);
-                }
-                else {
-                    connectionInterface = interfaces.get(serialPortName);
-                }
-
-                if (connectionInterface == null) {
-                    MBusConnection connection;
-                    try {
-                        if (isTCP) {
-                            connection = MBusConnection.newTcpBuilder(host, port)
-                                    .setConnectionTimeout(settings.connectionTimeout)
-                                    .setTimeout(settings.timeout)
-                                    .build();
-                        }
-                        else {
-                            connection = MBusConnection.newSerialBuilder(serialPortName)
-                                    .setBaudrate(settings.baudRate)
-                                    .setTimeout(settings.timeout)
-                                    .build();
-
-                        }
-                    } catch (IOException e) {
-                        throw new ConnectionException(
-                                "Unable to bind local interface: " + deviceAddressTokens[0 + offset], e);
-                    }
-
-                    if (logger.isTraceEnabled()) {
-                        connection.setVerboseMessageListener(new VerboseMessageListenerImpl());
-                    }
-
-                    if (isTCP) {
-                        connectionInterface = new ConnectionInterface(connection, host, port, settings.delay,
-                                interfaces);
-                    }
-                    else {
-                        connectionInterface = new ConnectionInterface(connection, serialPortName, settings.delay,
-                                interfaces);
-                    }
-                }
+                connectionInterface = setConnectionInterface(deviceAddressTokens, serialPortName, isTCP, host, port,
+                        offset, settings);
             }
 
             synchronized (connectionInterface) {
 
                 if (strictConnectionTest) {
                     try {
-                        MBusConnection mBusConnection = connectionInterface.getMBusConnection();
-                        int delay = 100 + settings.delay;
-                        boolean usesSecondaryAddress = secondaryAddress != null;
-
-                        if (usesSecondaryAddress || settings.resetLink) {
-                            try {
-                                mBusConnection.linkReset(mBusAddress);
-                                sleep(delay); // for slow slaves
-                            } catch (SerialPortTimeoutException e) {
-                                if (secondaryAddress == null) {
-                                    serialPortTimeoutExceptionHandler(connectionInterface, e);
-                                }
-                            }
-                        }
-
-                        if (usesSecondaryAddress) {
-                            if (settings.resetApplication) {
-                                mBusConnection.resetReadout(mBusAddress);
-                                sleep(delay);
-                            }
-                            mBusConnection.selectComponent(secondaryAddress);
-                            sleep(delay);
-                            mBusConnection.resetReadout(mBusAddress);
-                            sleep(delay);
-                        }
-                        mBusConnection.linkReset(mBusAddress);
-                        sleep(delay);
-
+                        testConnection(mBusAddress, secondaryAddress, connectionInterface, settings);
                     } catch (IOException e) {
                         connectionInterface.close();
                         throw new ConnectionException(e);
@@ -310,6 +244,100 @@ public class Driver implements DriverService {
         driverCon.setResetApplication(settings.resetApplication);
 
         return driverCon;
+    }
+
+    private void testConnection(Integer mBusAddress, SecondaryAddress secondaryAddress,
+            ConnectionInterface connectionInterface, Settings settings) throws IOException, ConnectionException {
+        MBusConnection mBusConnection = connectionInterface.getMBusConnection();
+        int delay = 100 + settings.delay;
+        boolean usesSecondaryAddress = secondaryAddress != null;
+
+        if (usesSecondaryAddress || settings.resetLink) {
+            linkReset(mBusAddress, secondaryAddress, connectionInterface, mBusConnection, delay);
+        }
+
+        if (usesSecondaryAddress) {
+            resetReadout(mBusAddress, settings.resetApplication, mBusConnection, delay);
+            mBusConnection.selectComponent(secondaryAddress);
+            sleep(delay);
+            mBusConnection.resetReadout(mBusAddress);
+            sleep(delay);
+        }
+        mBusConnection.linkReset(mBusAddress);
+        sleep(delay);
+    }
+
+    private ConnectionInterface setConnectionInterface(String[] deviceAddressTokens, String serialPortName,
+            boolean isTCP, String host, int port, int offset, Settings settings) throws ConnectionException {
+        ConnectionInterface connectionInterface;
+        if (isTCP) {
+            connectionInterface = interfaces.get(host + port);
+        }
+        else {
+            connectionInterface = interfaces.get(serialPortName);
+        }
+
+        if (connectionInterface == null) {
+            MBusConnection mBusConnection = getMBusConnection(deviceAddressTokens, serialPortName, isTCP, host, port,
+                    offset, settings);
+
+            if (logger.isTraceEnabled()) {
+                mBusConnection.setVerboseMessageListener(new VerboseMessageListenerImpl());
+            }
+
+            if (isTCP) {
+                connectionInterface = new ConnectionInterface(mBusConnection, host, port, settings.delay, interfaces);
+            }
+            else {
+                connectionInterface = new ConnectionInterface(mBusConnection, serialPortName, settings.delay,
+                        interfaces);
+            }
+        }
+        return connectionInterface;
+    }
+
+    private MBusConnection getMBusConnection(String[] deviceAddressTokens, String serialPortName, boolean isTCP,
+            String host, int port, int offset, Settings settings) throws ConnectionException {
+        MBusConnection connection;
+        try {
+            if (isTCP) {
+                connection = MBusConnection.newTcpBuilder(host, port)
+                        .setConnectionTimeout(settings.connectionTimeout)
+                        .setTimeout(settings.timeout)
+                        .build();
+            }
+            else {
+                connection = MBusConnection.newSerialBuilder(serialPortName)
+                        .setBaudrate(settings.baudRate)
+                        .setTimeout(settings.timeout)
+                        .build();
+
+            }
+        } catch (IOException e) {
+            throw new ConnectionException("Unable to bind local interface: " + deviceAddressTokens[0 + offset], e);
+        }
+        return connection;
+    }
+
+    private void resetReadout(Integer mBusAddress, boolean resetApplication, MBusConnection mBusConnection, int delay)
+            throws IOException, ConnectionException {
+        if (resetApplication) {
+            mBusConnection.resetReadout(mBusAddress);
+            sleep(delay);
+        }
+    }
+
+    private void linkReset(Integer mBusAddress, SecondaryAddress secondaryAddress,
+            ConnectionInterface connectionInterface, MBusConnection mBusConnection, int delay)
+            throws IOException, ConnectionException {
+        try {
+            mBusConnection.linkReset(mBusAddress);
+            sleep(delay); // for slow slaves
+        } catch (SerialPortTimeoutException e) {
+            if (secondaryAddress == null) {
+                serialPortTimeoutExceptionHandler(connectionInterface, e);
+            }
+        }
     }
 
     private void serialPortTimeoutExceptionHandler(ConnectionInterface connectionInterface,
@@ -394,18 +422,13 @@ public class Driver implements DriverService {
 
             String[] args = settings.split(":");
             if (settings.isEmpty() || args.length > 5) {
-
                 throw new ArgumentSyntaxException(message);
             }
 
             int i;
             if (args[0].equalsIgnoreCase(TCP)) {
                 host = args[1];
-                try {
-                    port = Integer.parseInt(args[2]);
-                } catch (NumberFormatException e) {
-                    throw new ArgumentSyntaxException("Error parsing TCP port");
-                }
+                parsePort(args);
                 i = 3;
             }
             else {
@@ -432,6 +455,14 @@ public class Driver implements DriverService {
                         throw new ArgumentSyntaxException("Argument " + (i + 1) + " is not an integer.");
                     }
                 }
+            }
+        }
+
+        private void parsePort(String[] args) throws ArgumentSyntaxException {
+            try {
+                port = Integer.parseInt(args[2]);
+            } catch (NumberFormatException e) {
+                throw new ArgumentSyntaxException("Error parsing TCP port");
             }
         }
 

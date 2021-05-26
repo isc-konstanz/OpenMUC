@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -23,9 +23,11 @@ package org.openmuc.framework.lib.parser.openmuc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmuc.framework.core.datamanager.LogRecordContainerImpl;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
@@ -33,6 +35,7 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.openmuc.framework.parser.spi.ParserService;
 import org.openmuc.framework.parser.spi.SerializationException;
 
@@ -49,14 +52,42 @@ class OpenmucParserServiceImplTest {
     }
 
     @Test
+    void serializeMultipleRecords() throws SerializationException {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"timestamp\":1582722316,\"flag\":\"VALID\",\"value\":3.0}");
+        sb.append("\n");
+        sb.append("{\"timestamp\":1582722316,\"flag\":\"VALID\",\"value\":5.0}");
+        sb.append("\n");
+        String controlString = sb.toString();
+
+        Value doubleValue1 = new DoubleValue(3.0);
+        long timestamp1 = 1582722316;
+        Flag flag1 = Flag.VALID;
+        Record record1 = new Record(doubleValue1, timestamp1, flag1);
+
+        Value doubleValue2 = new DoubleValue(5.0);
+        long timestamp2 = 1582722316;
+        Flag flag2 = Flag.VALID;
+        Record record2 = new Record(doubleValue2, timestamp2, flag2);
+
+        List<LoggingRecord> openMucRecords = new ArrayList<>();
+        openMucRecords.add(new LoggingRecord("channel1", record1));
+        openMucRecords.add(new LoggingRecord("channel2", record2));
+
+        byte[] serializedRecord = parserService.serialize(openMucRecords);
+        String serializedJson = new String(serializedRecord);
+        assertEquals(controlString, serializedJson);
+    }
+
+    @Test
     void serializeDoubleValue() throws SerializationException {
         String controlString = "{\"timestamp\":1582722316,\"flag\":\"VALID\",\"value\":3.0}";
         Value doubleValue = new DoubleValue(3.0);
         long timestamp = 1582722316;
         Flag flag = Flag.VALID;
         Record record = new Record(doubleValue, timestamp, flag);
-
-        byte[] serializedRecord = parserService.serialize(new LogRecordContainerImpl("test", record));
+        byte[] serializedRecord = parserService.serialize(new LoggingRecord("test", record));
         String serializedJson = new String(serializedRecord);
         assertEquals(controlString, serializedJson);
     }
@@ -69,7 +100,7 @@ class OpenmucParserServiceImplTest {
         Flag flag = Flag.VALID;
         Record record = new Record(doubleValue, timestamp, flag);
 
-        byte[] serializedRecord = parserService.serialize(new LogRecordContainerImpl("test", record));
+        byte[] serializedRecord = parserService.serialize(new LoggingRecord("test", record));
         String serializedJson = new String(serializedRecord);
         assertEquals(controlString, serializedJson);
     }
@@ -82,7 +113,7 @@ class OpenmucParserServiceImplTest {
         Flag flag = Flag.VALID;
         Record record = new Record(byteArrayValue, timestamp, flag);
 
-        byte[] serializedRecord = parserService.serialize(new LogRecordContainerImpl("test", record));
+        byte[] serializedRecord = parserService.serialize(new LoggingRecord("test", record));
         String serializedJson = new String(serializedRecord);
         assertEquals(controlString, serializedJson);
     }

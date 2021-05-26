@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,20 +20,19 @@
  */
 package org.openmuc.framework.config;
 
-import org.openmuc.framework.config.annotation.SettingsSyntax;
 import org.openmuc.framework.config.option.Options;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.OptionType;
 
 public class Settings extends Configurations {
 
     protected Settings(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
-        this(configurable.getAnnotation(SettingsSyntax.class));
-        parse(configuration, Options.parseSettings(configurable));
+        this(configurable.getAnnotation(OptionSyntax.class));
+        parse(configuration, Options.parse(OptionType.SETTING, configurable));
     }
 
-    private Settings(SettingsSyntax syntax) throws ArgumentSyntaxException {
-        super(syntax != null ? syntax.separator() : SettingsSyntax.SEPARATOR_DEFAULT, 
-                syntax != null ? syntax.assignmentOperator(): SettingsSyntax.ASSIGNMENT_OPERATOR_DEFAULT, 
-                syntax != null ? syntax.keyValuePairs() : SettingsSyntax.KEY_VAL_PAIRS_DEFAULT);
+    private Settings(OptionSyntax syntax) throws ArgumentSyntaxException {
+        super(OptionType.SETTING, syntax);
     }
 
 }

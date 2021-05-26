@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,16 +20,19 @@
  */
 package org.openmuc.framework.driver;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurable;
+import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Reflectable;
+import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.dataaccess.ChannelContainer;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelTaskContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 
-public abstract class ChannelContainerWrapper extends Configurable { //implements ChannelRecordContainer {
+public abstract class ChannelContainerWrapper extends Reflectable { //implements ChannelRecordContainer {
 
     public static enum ChannelTaskType {
         WRITE,
@@ -41,20 +44,24 @@ public abstract class ChannelContainerWrapper extends Configurable { //implement
     protected ChannelContainerWrapper() {
     }
 
-    protected void doConfigure(ChannelTaskContainer container) throws ArgumentSyntaxException {
+    void invokeConfigure(DriverChannelContext context, ChannelTaskContainer container) 
+    		throws ArgumentSyntaxException {
+    	
         if (!equals(container)) {
-            doConfigure(container.getChannel().getAddress(), container.getChannel().getSettings());
-            onConfigure();
+        	Address address = Configurations.parseAddress(container.getChannelAddress(), getClass());
+            configure(address);
+            
+            Settings settings = Configurations.parseSettings(container.getChannelSettings(), getClass());
+            configure(settings);
+            
+            invokeMethod(Configure.class, this, context, address, settings);
+            invokeMethod(Configure.class, this, context);
+            invokeMethod(Configure.class, this);
         }
         setTaskContainer(container);
     }
 
-    protected void doConfigure(String address, String settings) throws ArgumentSyntaxException {
-        configure(address, settings);
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
+    void configure(ChannelTaskContainer container) throws ArgumentSyntaxException {
     }
 
     public final ChannelTaskType getTaskType() {
@@ -151,11 +158,11 @@ public abstract class ChannelContainerWrapper extends Configurable { //implement
         container.setFlag(flag);
     }
 
-    public boolean equals(ChannelContainer container) {
+    public boolean equals(ChannelTaskContainer container) {
         return this.container != null && container != null &&
                 this.container.getChannel().getId().equals(container.getChannel().getId()) &&
-                this.container.getChannel().getSettings().equals(container.getChannel().getSettings()) &&
-                this.container.getChannel().getAddress().equals(container.getChannel().getAddress());
+                this.container.getChannelSettings().equals(container.getChannelSettings()) &&
+                this.container.getChannelAddress().equals(container.getChannelAddress());
     }
 
 }

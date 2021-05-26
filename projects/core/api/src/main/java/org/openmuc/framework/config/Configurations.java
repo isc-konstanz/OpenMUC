@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,12 +20,15 @@
  */
 package org.openmuc.framework.config;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openmuc.framework.config.option.Option;
+import org.openmuc.framework.config.option.OptionValue;
 import org.openmuc.framework.config.option.Options;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.OptionType;
 import org.openmuc.framework.data.Value;
 
 public abstract class Configurations {
@@ -36,6 +39,17 @@ public abstract class Configurations {
     private final String assignment;
     private final Boolean keyValue;
 
+    public static Configurations parse(OptionType type, String configuration, Class<? extends Configurable> configurable) 
+    		throws ArgumentSyntaxException {
+    	switch (type) {
+		case ADDRESS:
+			return parseAddress(configuration, configurable);
+		case SETTING:
+		default:
+			return parseSettings(configuration, configurable);
+    	}
+    }
+
     public static Address parseAddress(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
         return new Address(configuration, configurable);
     }
@@ -44,12 +58,20 @@ public abstract class Configurations {
         return new Settings(configuration, configurable);
     }
 
-    protected Configurations(String separator, String assignment, boolean keyValue) throws ArgumentSyntaxException {
-        super();
-        
-        this.separator = separator;
-        this.assignment = assignment;
-        this.keyValue = keyValue;
+    protected Configurations(OptionType type, OptionSyntax syntax) {
+    	super();
+        if (syntax == null) {
+            separator = OptionSyntax.SEPARATOR_DEFAULT;
+            assignment = OptionSyntax.ASSIGNMENT_DEFAULT;
+            keyValue = Arrays.stream(
+            		OptionSyntax.KEY_VAL_PAIRS_DEFAULT).anyMatch(type::equals);
+        }
+        else {
+            separator = syntax.separator();
+            assignment = syntax.assignment();
+            keyValue = Arrays.stream(
+            		syntax.keyValuePairs()).anyMatch(type::equals);
+        }
     }
 
     protected void parse(String parameterStr, Options options) throws ArgumentSyntaxException {
@@ -58,7 +80,7 @@ public abstract class Configurations {
             
             if (parameterArr.length >= options.getMandatoryCount()) {
                 if (options.hasKeyValuePairs()) {
-                    for (Option option : options) {
+                    for (OptionValue option : options) {
                         String key = option.getId();
                         Value value = null;
                         
@@ -104,7 +126,7 @@ public abstract class Configurations {
                     int optionalOptCount = 0;
                     
                     int i = 0;
-                    for (Option option : options) {
+                    for (OptionValue option : options) {
                         Value value = null;
                         
                         if (i >= parameterArr.length) {
@@ -142,12 +164,111 @@ public abstract class Configurations {
         }
     }
 
-    public boolean contains(String key) {
-        return configurations.containsKey(key);
-    }
-
     public Value get(String key) {
         return configurations.get(key);
+    }
+
+    public String getString(String key) {
+        return getString(key, null);
+    }
+
+    public String getString(String key, String defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asString();
+    }
+
+    public Double getDouble(String key) {
+        return getDouble(key, null);
+    }
+
+    public Double getDouble(String key, Double defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asDouble();
+    }
+
+    public Float getFloat(String key) {
+        return getFloat(key, null);
+    }
+
+    public Float getFloat(String key, Float defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asFloat();
+    }
+
+    public Long getLong(String key) {
+        return getLong(key, null);
+    }
+
+    public Long getLong(String key, Long defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asLong();
+    }
+
+    public Integer getInteger(String key) {
+        return getInteger(key, null);
+    }
+
+    public Integer getInteger(String key, Integer defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asInt();
+    }
+
+    public Short getShort(String key) {
+        return getShort(key, null);
+    }
+
+    public Short getShort(String key, Short defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asShort();
+    }
+
+    public Boolean getBoolean(String key) {
+        return getBoolean(key, null);
+    }
+
+    public Boolean getBoolean(String key, Boolean defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asBoolean();
+    }
+
+    public Byte getByte(String key) {
+        return getByte(key, null);
+    }
+
+    public Byte getByte(String key, Byte defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asByte();
+    }
+
+    public byte[] getByteArray(String key) {
+        return getByteArray(key, null);
+    }
+
+    public byte[] getByteArray(String key, byte[] defaultValue) {
+    	if (!contains(key)) {
+    		return defaultValue;
+    	}
+        return configurations.get(key).asByteArray();
+    }
+
+    public boolean contains(String key) {
+        return configurations.containsKey(key);
     }
 
     @Override

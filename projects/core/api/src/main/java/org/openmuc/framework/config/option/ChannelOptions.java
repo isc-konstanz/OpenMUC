@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,6 +25,9 @@ import java.io.IOException;
 import org.openmuc.framework.config.ChannelInfo;
 import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.ParseException;
+
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 public interface ChannelOptions extends ChannelInfo {
 
@@ -84,8 +87,8 @@ public interface ChannelOptions extends ChannelInfo {
             return address;
         }
 
-        ChannelOptions setAddress(Class<? extends Configurable> address) {
-            setAddressOptions(Options.parseAddress(address));
+        ChannelOptions setAddress(Class<? extends Configurable> configurable) {
+            setAddressOptions(Options.parse(ADDRESS, configurable));
             return this;
         }
 
@@ -99,8 +102,8 @@ public interface ChannelOptions extends ChannelInfo {
             return settings;
         }
 
-        ChannelOptions setSettings(Class<? extends Configurable> settings) {
-            setSettingsOptions(Options.parseSettings(settings));
+        ChannelOptions setSettings(Class<? extends Configurable> configurable) {
+            setSettingsOptions(Options.parse(SETTING, configurable));
             return this;
         }
 
@@ -114,8 +117,8 @@ public interface ChannelOptions extends ChannelInfo {
             return scanSettings;
         }
 
-        ChannelOptions setScanSettings(Class<? extends Configurable> scanSettings) {
-            setScanSettingsOptions(Options.parseSettings(scanSettings));
+        ChannelOptions setScanSettings(Class<? extends Configurable> configurable) {
+            setSettingsOptions(Options.parse(SETTING, configurable));
             return this;
         }
 

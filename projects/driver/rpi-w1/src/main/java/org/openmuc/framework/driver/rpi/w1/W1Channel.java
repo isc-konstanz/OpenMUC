@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,17 +20,20 @@
  */
 package org.openmuc.framework.driver.rpi.w1;
 
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.config.annotation.SettingsSyntax;
-import org.openmuc.framework.driver.DeviceChannel;
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.driver.DriverChannel;
 
 import com.pi4j.temperature.TemperatureScale;
 
-@SettingsSyntax(separator = ",", assignmentOperator = ":", keyValuePairs = true)
-public class W1Channel extends DeviceChannel {
+@OptionSyntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
+public class W1Channel extends DriverChannel {
 
-    @Setting(id = "unit",
-            name = "Unit",
+    @Option(type = SETTING,
+    		name = "Unit",
             description = "The unit of the value, read from e.g. a 1-Wire temperature sensor.",
             valueSelection = 
                     "CELSIUS:Celsius," +

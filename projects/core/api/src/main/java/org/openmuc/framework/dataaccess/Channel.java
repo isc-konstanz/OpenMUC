@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -171,6 +171,14 @@ public interface Channel {
     String getSettings();
 
     /**
+     * Returns the parent's device's configured sampling timeout in milliseconds. Returns the default of 0 if not
+     * configured.
+     *
+     * @return the parent's device's configured sampling timeout in milliseconds.
+     */
+    int getSamplingTimeout();
+
+    /**
      * Returns the channel's configured logging interval in milliseconds. Returns -1 if not configured.
      *
      * @return the channel's configured logging interval in milliseconds.
@@ -185,18 +193,18 @@ public interface Channel {
     int getLoggingTimeOffset();
 
     /**
-     * Returns <code>true</code> if the channel is configured to immediately log received values.
-     *
-     * @return <code>true</code> if the channel is configured to immediately log received values.
-     */
-    boolean isLoggingEvent();
-
-    /**
      * Returns the channel's configured logging settings. Returns the empty string if not configured.
      *
      * @return the channel's configured logging settings.
      */
     String getLoggingSettings();
+
+    /**
+     * Returns <code>true</code> if the channel is configured to immediately log received values.
+     *
+     * @return <code>true</code> if the channel is configured to immediately log received values.
+     */
+    boolean isLoggingEvent();
 
     /**
      * Returns the unique ID of the communication driver that is used by this channel to read/write data.
@@ -221,17 +229,17 @@ public interface Channel {
     String getDeviceDescription();
 
     /**
-     * Returns the channel's device address.
-     *
-     * @return the channel's device address.
-     */
+    * Returns the channel's device address.
+    *
+    * @return the channel's device address.
+    */
     String getDeviceAddress();
 
     /**
-     * Returns the channel's device settings.
-     *
-     * @return the channel's device settings.
-     */
+    * Returns the channel's device settings.
+    *
+    * @return the channel's device settings.
+    */
     String getDeviceSettings();
 
     /**

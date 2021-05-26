@@ -6,24 +6,23 @@ dependencies {
     implementation project(':openmuc-core-spi')
     implementation project(':openmuc-core-datamanager')
     implementation project(':openmuc-lib-amqp')
+    implementation project(':openmuc-lib-osgi')
+    implementation group: 'org.osgi', name: 'org.osgi.service.cm', version: '1.6.0'
     implementation group: 'com.google.code.gson', name: 'gson', version: gsonversion
 
-    testCompile 'org.junit.jupiter:junit-jupiter:5.5.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
 }
 
 jar {
-    manifest {
-        name = projectName
-        instruction 'Export-Package', ''
-    }
+    bnd('Bundle-Name': projectName)
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name projectName
-                description "AMQP data logger for the OpenMUC framework."
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = "AMQP data logger for the OpenMUC framework."
             }
         }
     }

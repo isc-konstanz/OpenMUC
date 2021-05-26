@@ -12,25 +12,22 @@ dependencies {
 }
 
 jar {
-    manifest {
-      name = projectName
-      instruction 'Bundle-ClassPath', '.,lib/amqp-client-' + rabbitmqVersion + '.jar'
-      instruction 'Import-Package', '!com.rabbitmq.*,javax.net,javax.net.ssl,*' + jarDefaultImportPackageVersion
+    bnd('Bundle-Name': projectName,
+            'Bundle-ClassPath': '.,lib/amqp-client-' + rabbitmqVersion + '.jar',
+            'Import-Package': '!com.rabbitmq.*,org.openmuc.framework.lib.ssl,org.slf4j,javax.net,javax.net.ssl,;resolution:=optional,*' + jarDefaultImportPackageVersion,
+            'Export-Package': 'org.openmuc.framework.lib.amqp')
+
+    into('lib') {
+        from configurations.embed
     }
 }
 
-jar {
-  into('lib') {
-    from configurations.embed
-  }
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name projectName
-                description projectDescription
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
             }
         }
     }

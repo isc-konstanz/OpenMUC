@@ -10,8 +10,6 @@
 
 package org.openmuc.framework.server.opcua;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
-
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
@@ -39,7 +37,7 @@ public class ChannelNamespace extends ManagedNamespace {
         subscriptionModel = new SubscriptionModel(server, this);
     }
 
-    public void addChannelNode(UaChannel channel) throws UaException {
+    public void addChannelNode(OpcChannel channel) throws UaException {
         String folderName = channel.getFolder();
 
         UaFolderNode folderNode;
@@ -80,7 +78,7 @@ public class ChannelNamespace extends ManagedNamespace {
         }
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId(channel.getId()))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
                 .setBrowseName(newQualifiedName(channel.getId()))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(channel.getNodeType())

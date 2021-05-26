@@ -162,6 +162,17 @@
     </div>
 
     <div class="form-group">
+      <label for="loggingSettings" class="col-md-2 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_SETTINGS_HINT' | translate}}"></span>
+        {{'CHANNEL_LOGGING_SETTINGS' | translate}}
+      </label>
+      <div class="col-md-6">
+        <input type="text" class="form-control" ng-disabled="selectedChannels.length > 1" id="loggingSettings" name="loggingSettings" ng-model="channel.configs.loggingSettings" >
+        <p class="help-block"><loggerId_A>[:<param_A>=<value_A>][,…​][;<loggerId_B>[:<param_B>=<value_B>]]</p>
+      </div>    
+    </div>
+
+    <div class="form-group">
       <label for="listening" class="col-md-2 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LISTENING_FOR_DATA_HINT' | translate}}"></span>
         {{'CHANNEL_LISTENING_FOR_DATA' | translate}}

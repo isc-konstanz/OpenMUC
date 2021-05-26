@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -43,12 +43,12 @@ import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.config.RootConfig;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
-import org.openmuc.framework.lib.json.Const;
-import org.openmuc.framework.lib.json.FromJson;
-import org.openmuc.framework.lib.json.ToJson;
-import org.openmuc.framework.lib.json.exceptions.MissingJsonObjectException;
-import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
-import org.openmuc.framework.lib.json.rest.objects.RestDriverWrapper;
+import org.openmuc.framework.lib.rest.Const;
+import org.openmuc.framework.lib.rest.FromJson;
+import org.openmuc.framework.lib.rest.ToJson;
+import org.openmuc.framework.lib.rest.exceptions.MissingJsonObjectException;
+import org.openmuc.framework.lib.rest.exceptions.RestConfigIsNotCorrectException;
+import org.openmuc.framework.lib.rest.objects.RestDriverWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

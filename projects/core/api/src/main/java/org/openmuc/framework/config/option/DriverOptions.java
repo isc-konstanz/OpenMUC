@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -168,7 +168,7 @@ public class DriverOptions extends DriverInfo {
             }
             this.id = nameAttribute.getTextContent();
             
-            Map<String, Option> optionsById = new HashMap<String, Option>();
+            Map<String, OptionValue> optionsById = new HashMap<String, OptionValue>();
             
             NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {

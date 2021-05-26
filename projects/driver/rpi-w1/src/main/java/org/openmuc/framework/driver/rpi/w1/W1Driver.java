@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -25,13 +25,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.Driver;
-import org.openmuc.framework.driver.annotation.Factory;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.driver.DriverActivator;
+import org.openmuc.framework.driver.DriverDeviceFactory;
+import org.openmuc.framework.driver.DriverDeviceScannerFactory;
+import org.openmuc.framework.driver.annotation.Connect;
+import org.openmuc.framework.driver.annotation.Disconnect;
+import org.openmuc.framework.driver.annotation.Driver;
 import org.openmuc.framework.driver.rpi.w1.device.TemperatureDevice;
-import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +45,10 @@ import org.slf4j.LoggerFactory;
 import com.pi4j.io.w1.W1Master;
 
 @Component(service = DriverService.class)
-@Factory(scanner = W1Scanner.class)
-public class W1Driver extends Driver<W1Device> {
+@Driver(id = W1Driver.ID,
+        name = W1Driver.NAME, description = W1Driver.DESCRIPTION)
+public class W1Driver extends DriverActivator implements DriverDeviceFactory, DriverDeviceScannerFactory {
+
     private static final Logger logger = LoggerFactory.getLogger(W1Driver.class);
 
     public static final String ID = "rpi-w1";
@@ -48,39 +56,24 @@ public class W1Driver extends Driver<W1Device> {
     public static final String DESCRIPTION = 
             "The 1-Wire Driver enables the access to 1-Wire devices, connected to the Raspberry Pi platform.";
 
-    private final List<String> connected = Collections.synchronizedList(new ArrayList<String>());
+    final List<String> connected = Collections.synchronizedList(new ArrayList<String>());
 
-    private W1Master master;
+    W1Master master;
 
-    @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public String getDescription() {
-        return DESCRIPTION;
-    }
-
-    @Override
-    public void onActivate() {
+    @Activate
+    public void activate() {
         // Pass the ClassLoader, as the W1Master may otherwise not be able to load and 
         // recognize available devices according to their DeviceType
         master = new W1Master(W1Driver.class.getClassLoader());
     }
 
     @Override
-    protected W1Scanner newScanner() {
+	public W1Scanner newScanner(Settings settings) {
         return new W1Scanner(master.getDevices(), connected);
     }
 
     @Override
-    public W1Device newDevice(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
+    public W1Device newDevice(Address address, Settings settings) throws ArgumentSyntaxException, ConnectionException {
         logger.trace("Connect 1-Wire device: {}", address);
         try {
             List<com.pi4j.io.w1.W1Device> devices = master.getDevices();
@@ -99,16 +92,14 @@ public class W1Driver extends Driver<W1Device> {
         throw new ConnectionException("Unable to find specified 1-Wire device: " + address);
     }
 
-    @Override
-    public void onConnect(Connection connection) {
-        String id = ((W1Device) connection).getId();
-        connected.add(id);
+    @Connect
+    protected void connect(W1Device device) {
+        connected.add(device.getId());
     }
 
-    @Override
-    public void onDisconnect(Connection connection) {
-        String id = ((W1Device) connection).getId();
-        connected.remove(id);
+    @Disconnect
+    protected void disconnect(W1Device device) {
+        connected.remove(device.getId());
     }
 
 }

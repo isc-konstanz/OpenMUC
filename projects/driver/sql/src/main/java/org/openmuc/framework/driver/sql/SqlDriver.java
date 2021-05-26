@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,12 +20,15 @@
  */
 package org.openmuc.framework.driver.sql;
 
-import org.openmuc.framework.driver.Driver;
+import org.openmuc.framework.driver.DriverActivator;
+import org.openmuc.framework.driver.annotation.Driver;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
-@Component(service = DriverService.class)
-public class SqlDriver extends Driver<SqlClient> {
+@Component
+@Driver(id = SqlDriver.ID, name = SqlDriver.NAME, description = SqlDriver.DESCRIPTION, 
+        device = SqlClient.class)
+public class SqlDriver extends DriverActivator implements DriverService {
 
     public static final String ID = "sql";
     public static final String NAME = "SQL";
@@ -41,20 +44,5 @@ public class SqlDriver extends Driver<SqlClient> {
 
     static final String DB_USER = System.getProperty(PKG + ".user", "root");
     static final String DB_PWD = System.getProperty(PKG + ".password", "");
-
-    @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public String getDescription() {
-        return DESCRIPTION;
-    }
 
 }

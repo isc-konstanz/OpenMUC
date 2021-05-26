@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -21,46 +21,66 @@
 package org.openmuc.framework.datalogger;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurable;
-import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.Configurations;
+import org.openmuc.framework.config.Reflectable;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.datalogger.annotation.Configure;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 
-public abstract class ChannelWrapper extends Configurable {
+public abstract class ChannelWrapper extends Reflectable {
 
     LogChannel channel;
 
     String settings = "";
 
-    @Setting(id={"intervalMax", "loggingMaxInterval"}, mandatory = false)
+    @Option(id={"intervalMax", "loggingMaxInterval"}, mandatory = false)
     int intervalMax = 0;
 
-    @Setting(id= {"tolerance", "loggingTolerance"}, mandatory = false)
+    @Option(id= {"tolerance", "loggingTolerance"}, mandatory = false)
     double tolerance = 0;
 
-    @Setting(mandatory = false)
+    @Option(mandatory = false)
     boolean average = false;
 
     protected ChannelWrapper() {
     }
 
-    void doConfigure(LogChannel channel) throws ArgumentSyntaxException {
+    void invokeConfigure(LoggingChannelContext context, LogChannel channel) 
+            throws ArgumentSyntaxException {
+        
         if (!equals(channel)) {
-            doConfigure(channel.getLoggingSettings());
-            onConfigure();
+            Settings settings = Configurations.parseSettings(channel.getLoggingSettings(), getClass());
+            configure(settings);
+            
+            this.settings = channel.getLoggingSettings();
+            this.channel = channel;
+            
+            if (intervalMax < 0) {
+                throw new ArgumentSyntaxException("Invalid maximum logging interval for channel: " + getId());
+            }
+            else {
+                this.intervalMax = Math.max(getLoggingInterval(), intervalMax);
+            }
+    		if (isAveraging()) {
+    	        switch (getValueType()) {
+    			case BOOLEAN:
+    			case BYTE:
+    			case BYTE_ARRAY:
+    			case STRING:
+    	            throw new ArgumentSyntaxException("Invalid value type \"" + getValueType() + "\" to calculate average of channel: " + getId());
+    			default:
+    				break;
+    	        }
+    		}
+            invokeMethod(Configure.class, this, context, settings);
+            invokeMethod(Configure.class, this, context);
+            invokeMethod(Configure.class, this);
+            return;
         }
         this.settings = channel.getLoggingSettings();
         this.channel = channel;
-        
-        onConfigure();
-    }
-
-    protected void doConfigure(String settings) throws ArgumentSyntaxException {
-        configureSettings(settings);
-    }
-
-    protected void onConfigure() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
     }
 
     public final String getId() {
@@ -108,7 +128,7 @@ public abstract class ChannelWrapper extends Configurable {
     }
 
     boolean isLoggingDynamic() {
-    	return intervalMax > getLoggingInterval();
+        return intervalMax > getLoggingInterval();
     }
 
     public final double getLoggingTolerance() {
@@ -126,26 +146,6 @@ public abstract class ChannelWrapper extends Configurable {
     public final boolean isAveraging() {
         return average;
     }
-
-	public String getDriverId() {
-		return channel.getDriverId();
-	}
-
-	public String getDeviceId() {
-		return channel.getDeviceId();
-	}
-
-	public String getDeviceDescription() {
-		return channel.getDeviceDescription();
-	}
-
-	public String getDeviceAddress() {
-		return channel.getDeviceAddress();
-	}
-
-	public String getDeviceSettings() {
-		return channel.getDeviceSettings();
-	}
 
     public boolean equals(LogChannel channel) {
         return this.channel.getId() != null && channel != null &&

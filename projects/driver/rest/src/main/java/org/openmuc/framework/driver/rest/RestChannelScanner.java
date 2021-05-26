@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -26,15 +26,15 @@ import java.util.List;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.driver.ChannelScanner;
+import org.openmuc.framework.driver.DriverChannelScanner;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.json.FromJson;
-import org.openmuc.framework.lib.json.rest.objects.RestChannel;
+import org.openmuc.framework.lib.rest.FromJson;
+import org.openmuc.framework.lib.rest.objects.RestChannel;
 
-public class RestChannelScanner extends ChannelScanner {
+public class RestChannelScanner extends DriverChannelScanner {
 
     @Override
-    public void onScan(List<ChannelScanInfo> channelScanInfos) throws ArgumentSyntaxException, ScanException, ConnectionException {
+    public void scan(List<ChannelScanInfo> channelScanInfos) throws ArgumentSyntaxException, ScanException, ConnectionException {
         try (RestConnection connection = new RestConnection((RestConfigs) getContext())) {
             FromJson json = new FromJson(connection.get(""));
             List<RestChannel> channels = json.getRestChannelList();

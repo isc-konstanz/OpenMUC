@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,24 +20,26 @@
  */
 package org.openmuc.framework.driver.rpi.w1;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.config.annotation.Setting;
-import org.openmuc.framework.driver.DeviceScanner;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.driver.DriverDeviceScanner;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.pi4j.io.w1.W1Device;
 
-public class W1Scanner extends DeviceScanner {
+public class W1Scanner extends DriverDeviceScanner {
     private static final Logger logger = LoggerFactory.getLogger(W1Scanner.class);
 
-    @Setting(id = "ignore",
+    @Option(type = SETTING,
             name = "Ignore existing",
             description = "Ignore already configured devices and only list possible new connections.",
             valueDefault = "true",
@@ -56,7 +58,7 @@ public class W1Scanner extends DeviceScanner {
     }
 
     @Override
-    public void onScan(DriverDeviceScanListener listener) 
+    public void scan(DriverDeviceScanListener listener) 
             throws ArgumentSyntaxException, ScanException, ScanInterruptedException {
         logger.info("Scan for 1-Wire devices connected to the Raspberry Pi platform.");
         
@@ -91,7 +93,7 @@ public class W1Scanner extends DeviceScanner {
     }
 
     @Override
-    public void onScanInterrupt() throws UnsupportedOperationException {
+    public void interrupt() throws UnsupportedOperationException {
         interrupt = true;
     }
 

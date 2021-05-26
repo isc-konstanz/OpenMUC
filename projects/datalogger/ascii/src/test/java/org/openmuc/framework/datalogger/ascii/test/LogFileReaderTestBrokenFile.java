@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -39,8 +39,8 @@ public class LogFileReaderTestBrokenFile {
     static int loggingTimeOffset = 0; // ms
     private static final String Channel0Name = "power";
 
-    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "", "Comment", "W", ValueType.DOUBLE, 0.0,
-            0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, "", false, false);
+    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "Comment", "W", ValueType.DOUBLE, 0.0,
+            0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
 
     @Test
     public void tc200_logfile_does_not_exist() {

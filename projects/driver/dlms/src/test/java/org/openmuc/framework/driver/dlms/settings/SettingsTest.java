@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -22,6 +22,8 @@ package org.openmuc.framework.driver.dlms.settings;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -36,17 +38,17 @@ public class SettingsTest {
 
     @Test
     public void testChannelAddress() throws Exception {
-        check(Options.parseAddress(ChannelAddress.class).getSyntax(), 2);
+        check(Options.parse(ADDRESS, ChannelAddress.class).getSyntax(), 2);
     }
 
     @Test
     public void testDeviceAddress() throws Exception {
-        check(Options.parseAddress(DeviceAddress.class).getSyntax(), 10);
+        check(Options.parse(ADDRESS, DeviceAddress.class).getSyntax(), 10);
     }
 
     @Test
     public void testDeviceSetting() throws Exception {
-        check(Options.parseSettings(DeviceSettings.class).getSyntax(), 12);
+        check(Options.parse(SETTING, DeviceSettings.class).getSyntax(), 12);
     }
 
     private static void check(String pat, int numArgs) {

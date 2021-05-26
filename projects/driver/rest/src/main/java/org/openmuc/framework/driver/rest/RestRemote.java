@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -33,20 +33,25 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.openmuc.framework.data.Flag;
-import org.openmuc.framework.driver.annotation.Factory;
+import org.openmuc.framework.driver.annotation.Connect;
+import org.openmuc.framework.driver.annotation.Device;
+import org.openmuc.framework.driver.annotation.Disconnect;
+import org.openmuc.framework.driver.annotation.Read;
+import org.openmuc.framework.driver.annotation.Write;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.json.FromJson;
+import org.openmuc.framework.lib.rest.FromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Factory(scanner = RestChannelScanner.class)
+@Device(channel = RestChannel.class, 
+        scanner = RestChannelScanner.class)
 public class RestRemote extends RestConfigs {
     private static final Logger logger = LoggerFactory.getLogger(RestRemote.class);
 
     private RestConnection connection;
 
-    @Override
-    protected void onConnect() throws ConnectionException {
+    @Connect
+    public void connect() throws ConnectionException {
         if (url.startsWith("https://")) {
             TrustManager[] trustManager = getTrustManager();
             
@@ -72,8 +77,8 @@ public class RestRemote extends RestConfigs {
         connection.connect();
     }
 
-    @Override
-    protected void onDisconnect() {
+    @Disconnect
+    public void close() {
         try {
             if (connection != null) {
                 connection.close();
@@ -109,8 +114,8 @@ public class RestRemote extends RestConfigs {
         }};
     }
 
-    @Override
-    public void onRead(List<RestChannel> channels, String samplingGroup) throws ConnectionException {
+    @Read
+    public void read(List<RestChannel> channels, String samplingGroup) throws ConnectionException {
         long timestamp = System.currentTimeMillis();
         try {
             if (bulkReading) {
@@ -131,17 +136,17 @@ public class RestRemote extends RestConfigs {
         logger.debug("Received json string: {}", jsonStr);
         
         // TODO: Move helper objects to library project and rename to JsonChannel
-        List<org.openmuc.framework.lib.json.rest.objects.RestChannel> records = json.getRestChannelList();
+        List<org.openmuc.framework.lib.rest.objects.RestChannel> records = json.getRestChannelList();
         for (RestChannel channel : channels) {
             readChannel(channel, records);
         }
     }
 
     private void readChannel(RestChannel channel,
-            List<org.openmuc.framework.lib.json.rest.objects.RestChannel> records) throws ConnectionException {
+            List<org.openmuc.framework.lib.rest.objects.RestChannel> records) throws ConnectionException {
     	
         // TODO: Move helper objects to library project and rename to JsonChannel
-        for (org.openmuc.framework.lib.json.rest.objects.RestChannel record : records) {
+        for (org.openmuc.framework.lib.rest.objects.RestChannel record : records) {
             if (channel.equals(record)) {
                 channel.setRecord(record.getRecord());
                 return;
@@ -156,8 +161,8 @@ public class RestRemote extends RestConfigs {
         }
     }
 
-    @Override
-    public void onWrite(List<RestChannel> channels) throws ConnectionException {
+    @Write
+    public void write(List<RestChannel> channels) throws ConnectionException {
         long timestamp = System.currentTimeMillis();
         try {
             for (RestChannel channel : channels) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -32,33 +32,22 @@ import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DataLoggerNotAvailableException;
 import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.dataaccess.RecordListener;
+import org.openmuc.framework.server.spi.ServerMappingContainer;
 
 public class ServerChannel extends ChannelContainerWrapper {
 
-    ChannelContext context;
+    ServerChannelContext context;
 
     protected ServerChannel() {
     }
 
-    final void doCreate(ChannelContext context) throws ArgumentSyntaxException {
+    void invokeConfigure(ServerChannelContext context, ServerMappingContainer container) 
+    		throws ArgumentSyntaxException {
+    	super.invokeConfigure(context, container);
         this.context = context;
-        this.onCreate(context);
-        this.onCreate();
     }
 
-    protected void onCreate(ChannelContext context) throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onCreate() throws ArgumentSyntaxException {
-        // Placeholder for the optional implementation
-    }
-
-    protected void onDestroy() {
-        // Placeholder for the optional implementation
-    }
-
-    public final ChannelContext getContext() {
+    public final ServerChannelContext getContext() {
         return context;
     }
 

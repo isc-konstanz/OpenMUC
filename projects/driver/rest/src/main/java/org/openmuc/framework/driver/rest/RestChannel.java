@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,28 +20,31 @@
  */
 package org.openmuc.framework.driver.rest;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.annotation.Address;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.driver.DeviceChannel;
+import org.openmuc.framework.driver.DriverChannel;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.json.Const;
-import org.openmuc.framework.lib.json.FromJson;
-import org.openmuc.framework.lib.json.ToJson;
-import org.openmuc.framework.lib.json.rest.objects.RestRecord;
+import org.openmuc.framework.lib.rest.Const;
+import org.openmuc.framework.lib.rest.FromJson;
+import org.openmuc.framework.lib.rest.ToJson;
+import org.openmuc.framework.lib.rest.objects.RestRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
-public class RestChannel extends DeviceChannel {
+public class RestChannel extends DriverChannel {
     private static final Logger logger = LoggerFactory.getLogger(RestRemote.class);
 
-    @Address(id = "id",
+    @Option(type = ADDRESS,
             name = "Channel ID",
             description = "The ID of the remote OpenMUC channel")
     private String id;
@@ -49,8 +52,8 @@ public class RestChannel extends DeviceChannel {
 
     private Record record = new Record(Flag.NO_VALUE_RECEIVED_YET);
 
-    @Override
-    protected void onConfigure() throws ArgumentSyntaxException {
+    @Configure
+    public void configure() throws ArgumentSyntaxException {
         try {
             uri = URLEncoder.encode(id, RestDriver.CHARSET.toString());
             
@@ -111,7 +114,7 @@ public class RestChannel extends DeviceChannel {
         setFlag(flag);
     }
 
-    public boolean equals(org.openmuc.framework.lib.json.rest.objects.RestChannel channel) {
+    public boolean equals(org.openmuc.framework.lib.rest.objects.RestChannel channel) {
         return id.equals(channel.getId());
     }
 

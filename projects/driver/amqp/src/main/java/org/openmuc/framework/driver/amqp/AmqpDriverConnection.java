@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -30,12 +30,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
-import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.dataaccess.Channel;
+import org.openmuc.framework.dataaccess.WriteValueContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -69,6 +70,7 @@ public class AmqpDriverConnection implements Connection {
 
         AmqpSettings amqpSettings = new AmqpSettings(deviceAddress, setting.port, setting.vhost, setting.user,
                 setting.password, setting.ssl, setting.exchange);
+
         try {
             connection = new AmqpConnection(amqpSettings);
         } catch (TimeoutException e) {
@@ -81,24 +83,19 @@ public class AmqpDriverConnection implements Connection {
     }
 
     @Override
-    public List<ChannelScanInfo> scanForChannels(String settings)
-            throws UnsupportedOperationException, ArgumentSyntaxException, ScanException, ConnectionException {
+    public List<ChannelScanInfo> scanForChannels(String settings) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
-            throws UnsupportedOperationException, ConnectionException {
-
+            throws UnsupportedOperationException {
         for (ChannelRecordContainer container : containers) {
 
-            String channelAddress = container.getChannelAddress();
-            String queue = setting.framework + '.' + channelAddress;
+            String queue = container.getChannelAddress();
 
-            // get a message
             byte[] message = reader.read(queue);
 
-            // message received
             if (message != null) {
                 Record record = getRecord(message, container.getChannel().getValueType());
                 container.setRecord(record);
@@ -112,12 +109,13 @@ public class AmqpDriverConnection implements Connection {
 
     @Override
     public void startListening(List<ChannelRecordContainer> containers, RecordsReceivedListener listener)
-            throws UnsupportedOperationException, ConnectionException {
+            throws UnsupportedOperationException {
 
         for (ChannelRecordContainer container : containers) {
-            String queue = setting.framework + setting.frameworkChannelSeparator + container.getChannelAddress();
+            String queue = container.getChannelAddress();
 
             reader.listen(Collections.singleton(queue), (String receivedQueue, byte[] message) -> {
+
                 Record record = getRecord(message, container.getChannel().getValueType());
 
                 if (recordsIsOld(container.getChannel().getId(), record)) {
@@ -161,32 +159,16 @@ public class AmqpDriverConnection implements Connection {
         recordContainerList.add(copiedContainer);
     }
 
-    private class LogRecordContainerImpl implements LogRecordContainer {
-        private final String channelId;
-        private final Record record;
-
-        public LogRecordContainerImpl(String channelId, Record record) {
-            this.channelId = channelId;
-            this.record = record;
-        }
-
-        @Override
-        public String getChannelId() {
-            return channelId;
-        }
-
-        @Override
-        public Record getRecord() {
-            return record;
-        }
-    }
-
     @Override
     public Object write(List<ChannelValueContainer> containers, Object containerListHandle)
-            throws UnsupportedOperationException, ConnectionException {
+            throws UnsupportedOperationException {
         for (ChannelValueContainer container : containers) {
             Record record = new Record(container.getValue(), System.currentTimeMillis());
-            LogRecordContainer logRecordContainer = new LogRecordContainerImpl(container.getChannelAddress(), record);
+
+            // ToDo: cleanup data structure
+            Channel channel = ((WriteValueContainer) container).getChannel();
+            LoggingRecord logRecordContainer = new LoggingRecord(channel.getId(), record);
+
             if (parsers.containsKey(setting.parser)) {
                 byte[] message = new byte[0];
                 try {

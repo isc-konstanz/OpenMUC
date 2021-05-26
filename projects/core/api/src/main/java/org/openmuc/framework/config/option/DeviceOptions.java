@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -19,6 +19,9 @@
  *
  */
 package org.openmuc.framework.config.option;
+
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import java.io.IOException;
 
@@ -87,8 +90,8 @@ public interface DeviceOptions extends DeviceInfo {
             return address;
         }
 
-        DeviceOptions setAddress(Class<? extends Configurable> address) {
-            setAddressOptions(Options.parseAddress(address));
+        DeviceOptions setAddress(Class<? extends Configurable> configurable) {
+            setAddressOptions(Options.parse(ADDRESS, configurable));
             return this;
         }
 
@@ -102,8 +105,8 @@ public interface DeviceOptions extends DeviceInfo {
             return settings;
         }
 
-        DeviceOptions setSettings(Class<? extends Configurable> settings) {
-            setSettingsOptions(Options.parseSettings(settings));
+        DeviceOptions setSettings(Class<? extends Configurable> configurable) {
+            setSettingsOptions(Options.parse(SETTING, configurable));
             return this;
         }
 
@@ -117,8 +120,8 @@ public interface DeviceOptions extends DeviceInfo {
             return scanSettings;
         }
 
-        DeviceOptions setScanSettings(Class<? extends Configurable> scanSettings) {
-            setScanSettingsOptions(Options.parseSettings(scanSettings));
+        DeviceOptions setScanSettings(Class<? extends Configurable> configurable) {
+            setSettingsOptions(Options.parse(SETTING, configurable));
             return this;
         }
 

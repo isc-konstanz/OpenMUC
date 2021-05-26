@@ -1,148 +1,172 @@
 project.ext {
+    cfgVersion = "0.20.0"
 
-  cfgVersion = "0.18.1"
+    cfgGroup = "org.openmuc.framework"
 
-  cfgGroup = "org.openmuc.framework"
+    cfgCopyDependencies = false
 
-  cfgCopyDependencies = false
+    cfgSignPom = false
 
-  cfgCopyToRoot = true
+    cfgSnapshotPattern = ~/\d+\.\d+\.\d+.*SNAPSHOT.*/
 
-  cfgSignPom = true
+    cfgRepository = project.properties.sonatypeRepository
 
-  cfgRepository = project.properties.sonatypeRepository
+    cfgRepositoryUser = project.properties.sonatypeUser
 
-  cfgSnapshotRepository = project.properties.sonatypeSnapshotRepository
+    cfgRepositoryPass = project.properties.sonatypePass
 
-  cfgRepositoryUser = project.properties.sonatypeUser
+    javaProjects = subprojects
 
-  cfgRepositoryPass = project.properties.sonatypePass
+    jarDefaultImportPackageVersion = ";version=0"
 
-  javaProjects = subprojects
+    distributionProjects = javaProjects.findAll {
+        it.getPath() == ":openmuc-app-simpledemo" ||
+                it.getPath() == ":openmuc-core-api" ||
+                it.getPath() == ":openmuc-core-datamanager" ||
+                it.getPath() == ":openmuc-core-spi" ||
+                it.getPath() == ":openmuc-datalogger-amqp" ||
+                it.getPath() == ":openmuc-datalogger-ascii" ||
+                it.getPath() == ":openmuc-datalogger-mqtt" ||
+                it.getPath() == ":openmuc-datalogger-slotsdb" ||
+                it.getPath() == ":openmuc-datalogger-sql" ||
+                it.getPath() == ":openmuc-driver-aggregator" ||
+                it.getPath() == ":openmuc-driver-amqp" ||
+                it.getPath() == ":openmuc-driver-csv" ||
+                it.getPath() == ":openmuc-driver-derivator" ||
+                it.getPath() == ":openmuc-driver-dlms" ||
+                it.getPath() == ":openmuc-driver-ehz" ||
+                it.getPath() == ":openmuc-driver-iec60870" ||
+                it.getPath() == ":openmuc-driver-iec61850" ||
+                it.getPath() == ":openmuc-driver-iec62056p21" ||
+                it.getPath() == ":openmuc-driver-knx" ||
+                it.getPath() == ":openmuc-driver-mbus" ||
+                it.getPath() == ":openmuc-driver-modbus" ||
+                it.getPath() == ":openmuc-driver-mqtt" ||
+                it.getPath() == ":openmuc-driver-rest" ||
+                it.getPath() == ":openmuc-driver-snmp" ||
+                it.getPath() == ":openmuc-driver-wmbus" ||
+                it.getPath() == ":openmuc-lib-amqp" ||
+                it.getPath() == ":openmuc-lib-filePersistence" ||
+                it.getPath() == ":openmuc-lib-mqtt" ||
+                it.getPath() == ":openmuc-lib-osgi" ||
+                it.getPath() == ":openmuc-lib-parser-openmuc" ||
+                it.getPath() == ":openmuc-lib-rest" ||
+                it.getPath() == ":openmuc-lib-ssl" ||
+                it.getPath() == ":openmuc-server-modbus" ||
+                it.getPath() == ":openmuc-server-restws" ||
+                it.getPath() == ":openmuc-webui-base" ||
+                it.getPath() == ":openmuc-webui-channelaccesstool" ||
+                it.getPath() == ":openmuc-webui-channelconfigurator" ||
+                it.getPath() == ":openmuc-webui-dataexporter" ||
+                it.getPath() == ":openmuc-webui-dataplotter" ||
+                it.getPath() == ":openmuc-webui-mediaviewer" ||
+                it.getPath() == ":openmuc-webui-simpledemovisualisation" ||
+                it.getPath() == ":openmuc-webui-spi" ||
+                it.getPath() == ":openmuc-webui-userconfigurator"
+    }
 
-  jarDefaultImportPackageVersion = ";version=0"
+    docProjects = distributionProjects.findAll {
+        it.getPath() == ":openmuc-core-api" ||
+                it.getPath() == ":openmuc-core-spi" ||
+                it.getPath() == ":openmuc-webui-spi"
+    }
 
-  distributionProjects = javaProjects.findAll {
-    it.getPath() == ":openmuc-app-simpledemo" ||
-    it.getPath() == ":openmuc-core-api" ||
-    it.getPath() == ":openmuc-core-datamanager" ||
-    it.getPath() == ":openmuc-core-spi" ||
-    it.getPath() == ":openmuc-datalogger" ||
-    it.getPath() == ":openmuc-datalogger-amqp" ||
-    it.getPath() == ":openmuc-datalogger-ascii" ||
-    it.getPath() == ":openmuc-datalogger-mqtt" ||
-    it.getPath() == ":openmuc-datalogger-slotsdb" ||
-    it.getPath() == ":openmuc-datalogger-sql" ||
-    it.getPath() == ":openmuc-driver" ||
-    it.getPath() == ":openmuc-driver-aggregator" ||
-    it.getPath() == ":openmuc-driver-amqp" ||
-    it.getPath() == ":openmuc-driver-csv" ||
-    it.getPath() == ":openmuc-driver-dlms" ||
-    it.getPath() == ":openmuc-driver-ehz" ||
-    it.getPath() == ":openmuc-driver-iec60870" ||
-    it.getPath() == ":openmuc-driver-iec61850" ||
-    it.getPath() == ":openmuc-driver-iec62056p21" ||
-    it.getPath() == ":openmuc-driver-knx" ||
-    it.getPath() == ":openmuc-driver-mbus" ||
-    it.getPath() == ":openmuc-driver-modbus" ||
-    it.getPath() == ":openmuc-driver-opcua" ||
-    it.getPath() == ":openmuc-driver-rest" ||
-    it.getPath() == ":openmuc-driver-rpi-gpio" ||
-    it.getPath() == ":openmuc-driver-rpi-w1" ||
-    it.getPath() == ":openmuc-driver-snmp" ||
-    it.getPath() == ":openmuc-driver-sql" ||
-    it.getPath() == ":openmuc-driver-wmbus" ||
-    it.getPath() == ":openmuc-lib-amqp" ||
-    it.getPath() == ":openmuc-lib-filePersistence" ||
-    it.getPath() == ":openmuc-lib-mqtt" ||
-    it.getPath() == ":openmuc-lib-parser-openmuc" ||
-    it.getPath() == ":openmuc-lib-ssl" ||
-    it.getPath() == ":openmuc-server" ||
-    it.getPath() == ":openmuc-server-restws" ||
-    it.getPath() == ":openmuc-server-modbus" ||
-    it.getPath() == ":openmuc-server-opcua" ||
-    it.getPath() == ":openmuc-server-restws" ||
-    it.getPath() == ":openmuc-webui-base" ||
-    it.getPath() == ":openmuc-webui-channelaccesstool" ||
-    it.getPath() == ":openmuc-webui-channelconfigurator" ||
-    it.getPath() == ":openmuc-webui-dataexporter" ||
-    it.getPath() == ":openmuc-webui-dataplotter" ||
-    it.getPath() == ":openmuc-webui-mediaviewer" ||
-    it.getPath() == ":openmuc-webui-simpledemovisualisation" ||
-    it.getPath() == ":openmuc-webui-spi" ||
-    it.getPath() == ":openmuc-webui-userconfigurator"
-  }
-
-  docProjects = distributionProjects.findAll {
-    it.getPath() == ":openmuc-core-api" ||
-    it.getPath() == ":openmuc-core-spi" ||
-    it.getPath() == ":openmuc-webui-spi"
-  }
-
-  repositoryProjects = distributionProjects
-
+    if (cfgVersion.matches(cfgSnapshotPattern)) {
+        repositoryProjects = javaProjects
+    } else {
+        repositoryProjects = distributionProjects
+    }
 }
 
 configure(javaProjects) {
-  apply plugin: "java"
-  apply plugin: "maven"
+    apply plugin: "java"
+    apply plugin: "maven-publish"
 
-  uploadArchives {
-    repositories {
-      mavenDeployer {
-        pom.project {
-          licenses {
-            license {
-              name "GNU General Public License"
-              url "http://www.gnu.org/copyleft/gpl-3.0.html"
-              distribution "repo"
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                pom {
+                    licenses {
+                        license {
+                            name = "GNU General Public License"
+                            url = "http://www.gnu.org/copyleft/gpl-3.0.html"
+                            distribution = "repo"
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
 }
 
 task framework {
-  apply from: "./framework/conf/bundles.gradle"
-  dependsOn updateBundles
+    apply from: "./framework/conf/bundles.gradle"
+    dependsOn updateBundles
 }
 
 tasks.withType(Tar) {
 
-  into(project.name) {
+    dependsOn(updateBundles)
 
-    from("build") {
-      include "libs/**"
+    into(project.name) {
+
+        from("./") {
+            include "build.gradle"
+            include "configuration.gradle"
+            include "license/**"
+            include "doc/CHANGELOG.txt"
+            include "gradle/wrapper/**"
+            include "gradlew"
+            include "gradlew.bat"
+            include "build/libs-all/**"
+            include "dependencies/**"
+
+            include "framework/felix/**"
+            include "framework/bundle"
+            include "framework/conf/**"
+            include "framework/bin/"
+            include "framework/media/README.txt/"
+            include "framework/log/README.txt"
+            include "framework/dependencies/**"
+            include "framework/csv-driver/**"
+            include "framework/README.txt"
+
+            exclude "**/projects/**/bin"
+            exclude "**/projects/**/build"
+            exclude "**/projects/**/.settings"
+            exclude "**/projects/**/.project"
+            exclude "**/projects/**/.classpath"
+            exclude "**/projects/**/.gradle"
+            exclude "gradle/develop"
+
+            for (Project myproject : distributionProjects) {
+                include myproject.getProjectDir().toString().substring((int) (getProjectDir().toString().size() + 1)) + "/**";
+            }
+
+        }
+
+        if (name.equals("tar")) {
+            exclude "**/dependencies/**/src"
+        }
+
+        from("./build/") {
+            include "settings.gradle"
+        }
     }
 
-    from("./") {
-      include "LICENSE"
-      include "dependencies/**"
-
+    into(project.name + "/doc/user-guide/") {
+        from("./build/docs/asciidoc/") {
+            include "**"
+        }
+        from("./build/docs/asciidocPdf/") {
+            include "*.pdf"
+        }
     }
 
-    if (name.equals("tar") ){
-      exclude "**/dependencies/**/src"
+    into(project.name + "/doc/") {
+        from("./build/docs/") {
+            include "javadoc/**"
+        }
     }
-	
-  }
-
-  into(project.name + "/libs/") {
-    from("build/libs-all") {
-      include "openmuc-**"
-    }
-  }
-
-  into(project.name + "/docs/") {
-    from("./doc/") {
-      include "CHANGELOG.txt"
-      include "user-guide/**"
-    }
-    from("./build/docs/") {
-      include "javadoc/**"
-    }
-  }
 
 }

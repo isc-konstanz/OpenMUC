@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -32,20 +32,18 @@ import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DeviceState;
 import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.driver.spi.Connection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Device {
 
-    DeviceConfigImpl deviceConfig;
-    DataManager dataManager;
-    private DeviceState state = null;
-    Connection connection;
-
+    private static final Logger logger = LoggerFactory.getLogger(Device.class);
     private final LinkedList<DeviceEvent> eventList;
     private final LinkedList<DeviceTask> taskList;
-
-    DeviceState getState() {
-        return state;
-    }
+    DeviceConfigImpl deviceConfig;
+    DataManager dataManager;
+    Connection connection;
+    private DeviceState state = null;
 
     public Device(DataManager dataManager, DeviceConfigImpl deviceConfig, long currentTime,
             List<LogChannel> logChannels) {
@@ -64,6 +62,7 @@ public final class Device {
         }
         else if (deviceConfig.driverParent.activeDriver == null) {
             state = DeviceState.DRIVER_UNAVAILABLE;
+            logger.warn("No driver bundle available for configured driver: '{}'.", deviceConfig.getDriver().getId());
             for (ChannelConfigImpl channelConfig : deviceConfig.channelConfigsById.values()) {
                 channelConfig.channel = new ChannelImpl(dataManager, channelConfig, ChannelState.DRIVER_UNAVAILABLE,
                         Flag.DRIVER_UNAVAILABLE, currentTime, logChannels);
@@ -77,6 +76,10 @@ public final class Device {
                         Flag.CONNECTING, currentTime, logChannels);
             }
         }
+    }
+
+    DeviceState getState() {
+        return state;
     }
 
     public void configChangedSignal(DeviceConfigImpl newDeviceConfig, long currentTime, List<LogChannel> logChannels) {
@@ -539,40 +542,6 @@ public final class Device {
 
     }
 
-    private void setConnected(long currentTime) {
-
-        List<ChannelRecordContainerImpl> listeningChannels = null;
-        for (ChannelConfigImpl channelConfig : deviceConfig.channelConfigsById.values()) {
-            if (channelConfig.state != ChannelState.DISABLED) {
-                if (channelConfig.isListening()) {
-                    if (listeningChannels == null) {
-                        listeningChannels = new LinkedList<>();
-                    }
-                    listeningChannels.add(channelConfig.channel.createChannelRecordContainer());
-                    channelConfig.state = ChannelState.LISTENING;
-                    channelConfig.channel.setFlag(Flag.NO_VALUE_RECEIVED_YET);
-                }
-                else if (channelConfig.getSamplingInterval() != ChannelConfig.SAMPLING_INTERVAL_DEFAULT) {
-                    dataManager.addToSamplingCollections(channelConfig.channel, currentTime);
-                    channelConfig.state = ChannelState.SAMPLING;
-                    channelConfig.channel.setFlag(Flag.NO_VALUE_RECEIVED_YET);
-                }
-                else {
-                    channelConfig.state = ChannelState.CONNECTED;
-                }
-            }
-        }
-
-        if (listeningChannels != null) {
-            taskList.add(new StartListeningTask(dataManager, this, listeningChannels));
-            state = DeviceState.STARTING_TO_LISTEN;
-        }
-        else {
-            state = DeviceState.CONNECTED;
-        }
-
-    }
-
     private void connect() {
 
         ConnectTask connectTask = new ConnectTask(deviceConfig.driverParent.activeDriver, deviceConfig.device,
@@ -681,5 +650,39 @@ public final class Device {
         return state == DeviceState.CONNECTED || state == DeviceState.READING
                 || state == DeviceState.SCANNING_FOR_CHANNELS || state == DeviceState.STARTING_TO_LISTEN
                 || state == DeviceState.WRITING;
+    }
+
+    private void setConnected(long currentTime) {
+
+        List<ChannelRecordContainerImpl> listeningChannels = null;
+        for (ChannelConfigImpl channelConfig : deviceConfig.channelConfigsById.values()) {
+            if (channelConfig.state != ChannelState.DISABLED) {
+                if (channelConfig.isListening()) {
+                    if (listeningChannels == null) {
+                        listeningChannels = new LinkedList<>();
+                    }
+                    listeningChannels.add(channelConfig.channel.createChannelRecordContainer());
+                    channelConfig.state = ChannelState.LISTENING;
+                    channelConfig.channel.setFlag(Flag.NO_VALUE_RECEIVED_YET);
+                }
+                else if (channelConfig.getSamplingInterval() != ChannelConfig.SAMPLING_INTERVAL_DEFAULT) {
+                    dataManager.addToSamplingCollections(channelConfig.channel, currentTime);
+                    channelConfig.state = ChannelState.SAMPLING;
+                    channelConfig.channel.setFlag(Flag.NO_VALUE_RECEIVED_YET);
+                }
+                else {
+                    channelConfig.state = ChannelState.CONNECTED;
+                }
+            }
+        }
+
+        if (listeningChannels != null) {
+            taskList.add(new StartListeningTask(dataManager, this, listeningChannels));
+            state = DeviceState.STARTING_TO_LISTEN;
+        }
+        else {
+            state = DeviceState.CONNECTED;
+        }
+
     }
 }

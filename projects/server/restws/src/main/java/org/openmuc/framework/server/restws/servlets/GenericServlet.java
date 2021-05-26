@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -39,7 +39,7 @@ import org.openmuc.framework.config.ConfigChangeListener;
 import org.openmuc.framework.config.ConfigService;
 import org.openmuc.framework.config.RootConfig;
 import org.openmuc.framework.dataaccess.DataAccessService;
-import org.openmuc.framework.lib.json.ToJson;
+import org.openmuc.framework.lib.rest.ToJson;
 import org.openmuc.framework.server.restws.RestServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

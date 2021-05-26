@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -24,7 +24,7 @@ package org.openmuc.framework.core.datamanager;
 import java.util.List;
 
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +33,10 @@ class LogTask extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(LogTask.class);
 
     private final DataLoggerService dataLogger;
-    private final List<LogRecordContainer> containers;
+    private final List<LoggingRecord> containers;
     private final long timestamp;
 
-    public LogTask(DataLoggerService dataLogger, List<LogRecordContainer> containers, long timestamp) {
+    public LogTask(DataLoggerService dataLogger, List<LoggingRecord> containers, long timestamp) {
         this.dataLogger = dataLogger;
         this.containers = containers;
         this.timestamp = timestamp;
