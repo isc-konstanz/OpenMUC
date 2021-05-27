@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.sql;
+package org.openmuc.framework.datalogger.sql2;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;

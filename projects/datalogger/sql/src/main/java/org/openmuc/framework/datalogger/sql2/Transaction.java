@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with emonjava.  If not, see <mqtt://www.gnu.org/licenses/>.
  */
-package org.openmuc.framework.datalogger.sql;
+package org.openmuc.framework.datalogger.sql2;
 
 import java.sql.Connection;
 import java.sql.SQLException;

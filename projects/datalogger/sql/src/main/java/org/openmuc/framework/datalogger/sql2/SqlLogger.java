@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.sql;
+package org.openmuc.framework.datalogger.sql2;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,14 +27,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.datalogger.DataLogger;
+import org.openmuc.framework.datalogger.DataLoggerActivator;
+import org.openmuc.framework.datalogger.annotation.Configure;
+import org.openmuc.framework.datalogger.annotation.DataLogger;
+import org.openmuc.framework.datalogger.annotation.Read;
+import org.openmuc.framework.datalogger.annotation.Write;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component(service = DataLoggerService.class)
-public class SqlLogger extends DataLogger<SqlChannel> {
+@Component
+@DataLogger(id="sql", channel = SqlChannel.class)
+public class SqlLogger extends DataLoggerActivator implements DataLoggerService {
     private static final Logger logger = LoggerFactory.getLogger(SqlLogger.class);
 
     private static final String PKG = SqlLogger.class.getPackage().getName().toLowerCase().replace(".datalogger", "");;
@@ -58,20 +64,8 @@ public class SqlLogger extends DataLogger<SqlChannel> {
 
     private final Map<String, SqlClient> clients = new HashMap<String, SqlClient>();
 
-    @Override
-    public String getId() {
-        return "sql";
-    }
-
-    @Override
-    public void onDeactivate() {
-        for (SqlClient client : clients.values()) {
-            client.close();
-        }
-    }
-
-    @Override
-    protected void onConfigure(List<SqlChannel> channels) throws IOException {
+    @Configure
+    public void configure(List<SqlChannel> channels) throws IOException {
         Map<String, SqlClientChannels> clients = new HashMap<String, SqlClientChannels>();
         List<Thread> threads = new ArrayList<Thread>();
         for (SqlChannel channel : channels) {
@@ -80,14 +74,14 @@ public class SqlLogger extends DataLogger<SqlChannel> {
                 client = new SqlClientChannels();
                 clients.put(channel.getDatabase(), client);
                 
-                threads.add(onConfigureClient(client, channel));
+                threads.add(configure(client, channel));
             }
             client.add(channel);
         }
         for (Thread t : threads) t.start();
     }
 
-    protected Thread onConfigureClient(final SqlClientChannels channels, SqlConfigs configs) {
+    protected Thread configure(final SqlClientChannels channels, SqlConfigs configs) {
         // Instantiation needs to be in separate threads, as onConfigure() is called by the regularly
         // interrupted DataManager main thread
         return new Thread(new Runnable() {
@@ -104,8 +98,15 @@ public class SqlLogger extends DataLogger<SqlChannel> {
         });
     }
 
-    @Override
-    protected void onWrite(List<SqlChannel> channels, long timestamp) throws IOException {
+    @Deactivate
+    public void deactivate() {
+        for (SqlClient client : clients.values()) {
+            client.close();
+        }
+    }
+
+    @Write
+    public void write(List<SqlChannel> channels, long timestamp) throws IOException {
         Map<String, SqlClientChannels> clients = new HashMap<String, SqlClientChannels>();
         for (SqlChannel channel : channels) {
             SqlClientChannels client = clients.get(channel.getDatabase());
@@ -120,8 +121,8 @@ public class SqlLogger extends DataLogger<SqlChannel> {
         }
     }
 
-    @Override
-    protected List<Record> onRead(SqlChannel channel, long startTime, long endTime) throws IOException {
+    @Read
+    public List<Record> read(SqlChannel channel, long startTime, long endTime) throws IOException {
         return clients.get(channel.getDatabase()).read(channel, startTime, endTime);
     }
 

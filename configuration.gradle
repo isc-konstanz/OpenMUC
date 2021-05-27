@@ -52,6 +52,7 @@ project.ext {
                 it.getPath() == ":openmuc-lib-parser-openmuc" ||
                 it.getPath() == ":openmuc-lib-rest" ||
                 it.getPath() == ":openmuc-lib-ssl" ||
+                it.getPath() == ":openmuc-lib-sql" ||
                 it.getPath() == ":openmuc-server-modbus" ||
                 it.getPath() == ":openmuc-server-restws" ||
                 it.getPath() == ":openmuc-webui-base" ||

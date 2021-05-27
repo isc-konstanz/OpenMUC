@@ -1,4 +1,4 @@
-package org.openmuc.framework.datalogger.sql;
+package org.openmuc.framework.datalogger.sql2;
 
 public enum IndexType {
 

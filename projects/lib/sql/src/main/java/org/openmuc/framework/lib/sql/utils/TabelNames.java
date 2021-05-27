@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -18,32 +18,17 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.sql.time;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+package org.openmuc.framework.lib.sql.utils;
 
-import org.openmuc.framework.datalogger.sql.Index;
-
-
-public class TimestampUnix extends Index {
-
-    protected final int resolution;
-
-    public TimestampUnix(String column, int resolution) {
-        super(column);
-        this.resolution = resolution;
-    }
-
-    @Override
-    public long decode(ResultSet result) throws SQLException {
-        long timestamp = result.getLong(column);
-        return timestamp*resolution;
-    }
-
-    @Override
-    public String encode(long timestamp) {
-        return String.valueOf(Math.round((double) timestamp/resolution));
-    }
-
+public class TabelNames {
+    public static final String STRING_VALUE = "StringValue";
+    public static final String SHORT_VALUE = "ShortValue";
+    public static final String BYTE_VALUE = "ByteValue";
+    public static final String LONG_VALUE = "LongValue";
+    public static final String INT_VALUE = "IntValue";
+    public static final String DOUBLE_VALUE = "DoubleValue";
+    public static final String FLOAT_VALUE = "FloatValue";
+    public static final String BYTE_ARRAY_VALUE = "ByteArrayValue";
+    public static final String BOOLEAN_VALUE = "BooleanValue";
 }

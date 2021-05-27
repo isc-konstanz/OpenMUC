@@ -1,12 +1,14 @@
-package org.openmuc.framework.datalogger.sql;
+package org.openmuc.framework.datalogger.sql2;
+
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-import org.openmuc.framework.config.annotation.Address;
-import org.openmuc.framework.config.annotation.Setting;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -41,13 +43,13 @@ public class SqlChannel extends SqlConfigs {
         "VARCHAR"
     };
 
-    @Address(mandatory = false)
+    @Option(type = ADDRESS, mandatory = false)
     protected String dataColumn = "data";
 
-    @Setting(mandatory = false)
+    @Option(type = SETTING, mandatory = false)
     protected String keyColumn = "key";
 
-    @Setting(mandatory = false)
+    @Option(type = SETTING, mandatory = false)
     protected String key = null;
 
     public String getDataColumn() {

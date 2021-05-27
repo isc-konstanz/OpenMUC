@@ -83,6 +83,10 @@ public abstract class ChannelWrapper extends Reflectable {
         this.channel = channel;
     }
 
+    protected final LogChannel getChannel() {
+    	return channel;
+    }
+
     public final String getId() {
         return channel.getId();
     }

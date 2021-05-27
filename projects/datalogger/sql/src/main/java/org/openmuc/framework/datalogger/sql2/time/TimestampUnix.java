@@ -18,34 +18,32 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.sql;
+package org.openmuc.framework.datalogger.sql2.time;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.MessageFormat;
-import java.text.ParseException;
+
+import org.openmuc.framework.datalogger.sql2.Index;
 
 
-public abstract class Index {
+public class TimestampUnix extends Index {
 
-    protected final String column;
+    protected final int resolution;
 
-    public Index(String column) {
-        this.column = column;
+    public TimestampUnix(String column, int resolution) {
+        super(column);
+        this.resolution = resolution;
     }
 
-    public String getColumn() {
-        return column;
+    @Override
+    public long decode(ResultSet result) throws SQLException {
+        long timestamp = result.getLong(column);
+        return timestamp*resolution;
     }
 
-    public String queryWhere(long startTime, long endTime) {
-        return MessageFormat.format("WHERE {0} >= ''{1}'' AND {0} <= ''{2}'' ORDER BY {0} ASC", column,
-                encode(startTime),
-                encode(endTime));
+    @Override
+    public String encode(long timestamp) {
+        return String.valueOf(Math.round((double) timestamp/resolution));
     }
-
-    public abstract long decode(ResultSet result) throws SQLException, ParseException;
-
-    public abstract String encode(long timestamp);
 
 }

@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.sql.time;
+package org.openmuc.framework.datalogger.sql2.time;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -27,7 +27,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.openmuc.framework.datalogger.sql.Index;
+import org.openmuc.framework.datalogger.sql2.Index;
 
 
 public class TimestampSplit extends Index {
