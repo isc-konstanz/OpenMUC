@@ -60,7 +60,7 @@ public abstract class LoggingChannelContext extends Reflectable {
 
     @SuppressWarnings("unchecked")
     Class<? extends LoggingChannel> getChannelClass() {
-        if (this instanceof LoggingChannelFactory) {
+        if (LoggingChannelFactory.class.isAssignableFrom(getClass())) {
             try {
                 Method method = getClass().getMethod("newChannel", Settings.class);
                 return (Class<? extends LoggingChannel>) method.getReturnType();
@@ -73,16 +73,15 @@ public abstract class LoggingChannelContext extends Reflectable {
         return logger.channel();
     }
 
-    @SuppressWarnings("unchecked")
-    final <C extends LoggingChannel> LoggingChannel newChannel(LogChannel configs) 
+    final LoggingChannel newChannel(LogChannel configs) 
             throws RuntimeException, ArgumentSyntaxException {
         
-        C channel;
+    	LoggingChannel channel;
         if (this instanceof LoggingChannelFactory) {
-            channel = (C) ((LoggingChannelFactory) this).newChannel(parseSettings(channelClass, configs.getLoggingSettings()));
+            channel = ((LoggingChannelFactory) this).newChannel(parseSettings(channelClass, configs.getLoggingSettings()));
         }
         else {
-            channel = (C) newInstance(channelClass);
+            channel = newInstance(channelClass);
         }
         return channel;
     }

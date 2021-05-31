@@ -69,7 +69,7 @@ public interface ChannelOptions extends ChannelInfo {
     }
 
     public static Options readConfigOptions() throws ParseException, IOException {
-        return DriverOptions.readConfigs("device");
+        return DriverOptions.readConfigs("channel");
     }
 
     public static class ChannelConfigs implements ChannelOptions {

@@ -30,7 +30,6 @@ import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.Reflectable;
-import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.server.annotation.Server;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 import org.slf4j.Logger;
@@ -58,9 +57,9 @@ public class ServerChannelContext extends Reflectable {
 
     @SuppressWarnings("unchecked")
     Class<? extends ServerChannel> getChannelClass() {
-        if (this instanceof ServerChannelFactory) {
+        if (ServerChannelFactory.class.isAssignableFrom(getClass())) {
             try {
-                Method method = getClass().getMethod("newChannel", Settings.class);
+                Method method = getClass().getMethod("newChannel", Address.class);
                 return (Class<? extends ServerChannel>) method.getReturnType();
                 
             } catch (NoSuchMethodException | SecurityException e) {
@@ -71,18 +70,17 @@ public class ServerChannelContext extends Reflectable {
         return server.channel();
     }
 
-    @SuppressWarnings("unchecked")
-    final <C extends ServerChannel> ServerChannel newChannel(ServerMappingContainer container) 
+    final ServerChannel newChannel(ServerMappingContainer container) 
             throws RuntimeException, ArgumentSyntaxException {
         
         Address address = Configurations.parseAddress(container.getServerMapping().getServerAddress(), channelClass);
         
-        C channel;
+        ServerChannel channel;
         if (this instanceof ServerChannelFactory) {
-            channel = (C) ((ServerChannelFactory) this).newChannel(address);
+            channel = ((ServerChannelFactory) this).newChannel(address);
         }
         else {
-            channel = (C) newInstance(channelClass);
+            channel = newInstance(channelClass);
         }
         return channel;
     }

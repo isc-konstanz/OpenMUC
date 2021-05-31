@@ -81,9 +81,9 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
 
     @SuppressWarnings("unchecked")
     Class<? extends DriverChannelScanner> getScannerClass(Class<? extends DriverChannelContext> context) {
-        if (this instanceof DriverChannelScannerFactory) {
+        if (DriverChannelScannerFactory.class.isAssignableFrom(context)) {
             try {
-                Method method = getClass().getMethod("newScanner", Settings.class);
+                Method method = context.getMethod("newScanner", Settings.class);
                 return (Class<? extends DriverChannelScanner>) method.getReturnType();
                 
             } catch (NoSuchMethodException | SecurityException e) {
@@ -96,9 +96,9 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
 
     @SuppressWarnings("unchecked")
     Class<? extends DriverChannel> getChannelClass(Class<? extends DriverChannelContext> context) {
-        if (this instanceof DriverChannelFactory) {
+        if (DriverChannelFactory.class.isAssignableFrom(context)) {
             try {
-                Method method = getClass().getMethod("newChannel", Address.class, Settings.class);
+                Method method = context.getMethod("newChannel", Address.class, Settings.class);
                 return (Class<? extends DriverChannel>) method.getReturnType();
                 
             } catch (NoSuchMethodException | SecurityException e) {
@@ -159,19 +159,18 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return scanner;
     }
 
-    @SuppressWarnings("unchecked")
-    final <C extends DriverChannel> DriverChannel newChannel(ChannelTaskContainer container) 
+    final DriverChannel newChannel(ChannelTaskContainer container) 
             throws RuntimeException, ArgumentSyntaxException {
         
         Address address = Configurations.parseAddress(container.getChannelAddress(), channelClass);
         Settings settings = Configurations.parseSettings(container.getChannelSettings(), channelClass);
         
-        C channel;
+        DriverChannel channel;
         if (this instanceof DriverChannelFactory) {
-            channel = (C) ((DriverChannelFactory) this).newChannel(address, settings);
+            channel = ((DriverChannelFactory) this).newChannel(address, settings);
         }
         else {
-            channel = (C) newInstance(channelClass);
+            channel = newInstance(channelClass);
         }
         return channel;
     }
@@ -202,12 +201,11 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return (List<DriverChannel>) channels.values();
     }
 
-    @SuppressWarnings("unchecked")
-    final <C extends DriverChannel> List<C> getChannels(List<? extends ChannelTaskContainer> containers) {
-        List<C> channels = new ArrayList<C>();
+    final List<DriverChannel> getChannels(List<? extends ChannelTaskContainer> containers) {
+        List<DriverChannel> channels = new ArrayList<DriverChannel>();
         for (ChannelTaskContainer container : containers) {
             try {
-                channels.add((C) getChannel(container));
+                channels.add(getChannel(container));
                 
             } catch (ArgumentSyntaxException | NullPointerException e) {
                 logger.warn("Unable to configure channel \"{}\": {}", container.getChannel().getId(), e.getMessage());
@@ -218,13 +216,12 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return channels;
     }
 
-    @SuppressWarnings("unchecked")
-    final <C extends DriverChannel> List<C> newChannels(List<? extends ChannelTaskContainer> containers) {
-        List<C> channels = new ArrayList<C>();
+    final List<DriverChannel> newChannels(List<? extends ChannelTaskContainer> containers) {
+        List<DriverChannel> channels = new ArrayList<DriverChannel>();
         for (ChannelTaskContainer container : containers) {
-            C channel;
+        	DriverChannel channel;
             try {
-                channel = (C) newChannel(container);
+                channel = newChannel(container);
                 channel.invokeConfigure(this, container);
                 channels.add(channel);
                 
