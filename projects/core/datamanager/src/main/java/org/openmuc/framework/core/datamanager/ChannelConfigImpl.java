@@ -65,7 +65,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     private Integer loggingTimeOffset = null;
     private String loggingSettings = null;
     private Double loggingTolerance = null;
-    private Boolean loggingAveraging = null;
+    private Boolean loggingAverage = null;
     private Boolean loggingEvent = null;
     private String reader;
     private Boolean disabled = null;
@@ -178,8 +178,8 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 else if (childName.equals("loggingTolerance")) {
                     config.setLoggingTolerance(Double.parseDouble(childNode.getTextContent()));
                 }
-                else if (childName.equals("loggingAveraging")) {
-                    config.setLoggingAveraging(Boolean.parseBoolean(childNode.getTextContent()));
+                else if (childName.equals("loggingAverage")) {
+                    config.setloggingAverage(Boolean.parseBoolean(childNode.getTextContent()));
                 }
                 else if (childName.equals("loggingEvent")) {
                     config.setLoggingEvent(Boolean.parseBoolean(childNode.getTextContent()));
@@ -503,13 +503,13 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     }
 
     @Override
-    public Boolean isLoggingAveraging() {
-        return loggingAveraging;
+    public Boolean isloggingAverage() {
+        return loggingAverage;
     }
 
     @Override
-    public void setLoggingAveraging(Boolean averaging) {
-        this.loggingAveraging = averaging;
+    public void setloggingAverage(Boolean averaging) {
+        this.loggingAverage = averaging;
     }
 
     @Override
@@ -685,9 +685,9 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
-        if (loggingAveraging != null) {
-            childElement = document.createElement("loggingAveraging");
-            childElement.setTextContent(loggingAveraging.toString());
+        if (loggingAverage != null) {
+            childElement = document.createElement("loggingAverage");
+            childElement.setTextContent(loggingAverage.toString());
             parentElement.appendChild(childElement);
         }
 
@@ -726,7 +726,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         configClone.loggingTimeOffset = loggingTimeOffset;
         configClone.loggingSettings = loggingSettings;
         configClone.loggingTolerance = loggingTolerance;
-        configClone.loggingAveraging = loggingAveraging;
+        configClone.loggingAverage = loggingAverage;
         configClone.loggingEvent = loggingEvent;
         configClone.serverMappings = serverMappings;
         configClone.reader = reader;
@@ -879,11 +879,11 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             configClone.loggingTolerance = loggingTolerance;
         }
 
-        if (loggingAveraging == null) {
-            configClone.loggingAveraging = ChannelConfig.LOGGING_AVERAGING_DEFAULT;
+        if (loggingAverage == null) {
+            configClone.loggingAverage = ChannelConfig.LOGGING_AVERAGING_DEFAULT;
         }
         else {
-            configClone.loggingAveraging = loggingAveraging;
+            configClone.loggingAverage = loggingAverage;
         }
 
         if (loggingEvent == null) {

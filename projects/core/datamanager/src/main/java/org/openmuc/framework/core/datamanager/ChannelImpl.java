@@ -204,8 +204,8 @@ public final class ChannelImpl implements Channel {
 	}
 
 	@Override
-	public boolean isLoggingAveraging() {
-		return config.isLoggingAveraging();
+	public boolean isloggingAverage() {
+		return config.isloggingAverage();
 	}
 
     @Override

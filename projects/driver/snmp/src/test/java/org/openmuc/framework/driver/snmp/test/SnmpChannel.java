@@ -152,7 +152,7 @@ public class SnmpChannel implements Channel {
 	}
 
 	@Override
-	public boolean isLoggingAveraging() {
+	public boolean isloggingAverage() {
 		return false;
 	}
 

@@ -45,7 +45,7 @@ public class RestChannelConfig {
     private Integer loggingTimeOffset = null;
     private String loggingSettings = null;
     private Double loggingTolerance = null;
-    private Boolean loggingAveraging = null;
+    private Boolean loggingAverage = null;
     private Boolean loggingEvent = null;
     private Boolean disabled = null;
     private List<ServerMapping> serverMappings = null;
@@ -194,12 +194,12 @@ public class RestChannelConfig {
         this.loggingTolerance = loggingTolerance;
     }
 
-    public Boolean isLoggingAveraging() {
-        return loggingAveraging;
+    public Boolean isloggingAverage() {
+        return loggingAverage;
     }
 
-    public void setLoggingAveraging(Boolean loggingAveraging) {
-        this.loggingAveraging = loggingAveraging;
+    public void setloggingAverage(Boolean loggingAverage) {
+        this.loggingAverage = loggingAverage;
     }
 
     public Boolean isLoggingEvent() {

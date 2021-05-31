@@ -120,9 +120,9 @@ public interface ChannelConfig {
 
     void setLoggingTolerance(Double tolerance);
 
-    Boolean isLoggingAveraging();
+    Boolean isloggingAverage();
 
-    void setLoggingAveraging(Boolean averaging);
+    void setloggingAverage(Boolean averaging);
 
     Boolean isLoggingEvent();
 

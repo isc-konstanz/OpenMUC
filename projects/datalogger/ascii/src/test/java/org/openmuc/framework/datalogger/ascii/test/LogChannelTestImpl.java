@@ -183,7 +183,7 @@ public class LogChannelTestImpl implements LogChannel {
 	}
 
 	@Override
-	public Boolean isLoggingAveraging() {
+	public Boolean isloggingAverage() {
 		return false;
 	}
 

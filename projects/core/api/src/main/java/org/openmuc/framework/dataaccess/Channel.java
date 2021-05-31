@@ -218,7 +218,7 @@ public interface Channel {
      *
      * @return <code>true</code> if the channel is configured to dynamically average received values.
      */
-    boolean isLoggingAveraging();
+    boolean isloggingAverage();
 
     /**
      * Returns <code>true</code> if the channel is configured to immediately log received values.

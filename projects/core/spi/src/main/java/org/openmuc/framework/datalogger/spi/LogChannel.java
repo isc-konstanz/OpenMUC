@@ -61,7 +61,7 @@ public interface LogChannel {
 
     Double getLoggingTolerance();
 
-    Boolean isLoggingAveraging();
+    Boolean isloggingAverage();
 
     Boolean isLoggingEvent();
 

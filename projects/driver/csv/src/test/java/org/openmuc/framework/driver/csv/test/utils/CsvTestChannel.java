@@ -150,7 +150,7 @@ public class CsvTestChannel implements Channel {
 	}
 
 	@Override
-	public boolean isLoggingAveraging() {
+	public boolean isloggingAverage() {
         // TODO Auto-generated method stub
 		return false;
 	}

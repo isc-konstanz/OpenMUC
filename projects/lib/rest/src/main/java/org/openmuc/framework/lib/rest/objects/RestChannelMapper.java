@@ -119,7 +119,7 @@ public class RestChannelMapper {
         rcc.setLoggingTimeOffset(cc.getLoggingTimeOffset());
         rcc.setLoggingSettings(cc.getLoggingSettings());
         rcc.setLoggingTolerance(cc.getLoggingTolerance());
-        rcc.setLoggingAveraging(cc.isLoggingAveraging());
+        rcc.setloggingAverage(cc.isloggingAverage());
         rcc.setLoggingEvent(cc.isLoggingEvent());
         rcc.setDisabled(cc.isDisabled());
         // rcc.setServerMappings(cc.getServerMappings());
@@ -156,7 +156,7 @@ public class RestChannelMapper {
         cc.setLoggingTimeOffset(rcc.getLoggingTimeOffset());
         cc.setLoggingSettings(rcc.getLoggingSettings());
         cc.setLoggingTolerance(rcc.getLoggingTolerance());
-        cc.setLoggingAveraging(rcc.isLoggingAveraging());
+        cc.setloggingAverage(rcc.isloggingAverage());
         cc.setLoggingEvent(rcc.isLoggingEvent());
         cc.setDisabled(rcc.isDisabled());
         // cc.setServerMappings(rcc.getServerMappings());

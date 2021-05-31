@@ -204,12 +204,12 @@
     </div>
 
     <div class="form-group">
-      <label for="loggingAveraging" class="col-md-3 control-label">
-        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_AVERAGING_HINT' | translate}}"></span>
-        {{'CHANNEL_LOGGING_AVERAGING' | translate}}
+      <label for="loggingAverage" class="col-md-3 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_AVERAGE_HINT' | translate}}"></span>
+        {{'CHANNEL_LOGGING_AVERAGE' | translate}}
       </label>
       <div class="col-md-6">
-        <input type="checkbox" id="loggingAveraging" ng-class="{discrepancy: !compareChannels('loggingAveraging')}" ng-model="channel.configs.loggingAveraging">
+        <input type="checkbox" id="loggingAverage" ng-class="{discrepancy: !compareChannels('loggingAverage')}" ng-model="channel.configs.loggingAverage">
         <p class="help-block">{{'FALSE' | translate}} **</p>
       </div>
     </div>

@@ -127,7 +127,7 @@ public abstract class ChannelWrapper extends Reflectable {
     }
 
     public final boolean isAveraging() {
-        return channel.isLoggingAveraging();
+        return channel.isloggingAverage();
     }
 
     public boolean equals(LogChannel channel) {
