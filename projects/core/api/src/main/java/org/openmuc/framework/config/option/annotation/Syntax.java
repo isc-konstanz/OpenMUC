@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface OptionSyntax {
+public @interface Syntax {
 
     static final String SEPARATOR_DEFAULT = ";";
     static final String ASSIGNMENT_DEFAULT = "=";

@@ -25,11 +25,11 @@ import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import org.apache.commons.codec.binary.Base64;
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.framework.driver.DriverDevice;
 import org.openmuc.framework.driver.annotation.Configure;
 
-@OptionSyntax(separator = ";", assignment = ":", keyValuePairs = SETTING)
+@Syntax(separator = ";", assignment = ":", keyValuePairs = SETTING)
 public abstract class RestConfigs extends DriverDevice {
 
     @Option(type = ADDRESS,

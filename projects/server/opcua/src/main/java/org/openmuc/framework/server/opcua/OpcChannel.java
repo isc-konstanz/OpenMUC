@@ -33,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -47,7 +47,7 @@ import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.server.ServerChannel;
 
-@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = ADDRESS)
+@Syntax(separator = ";", assignment = "=", keyValuePairs = ADDRESS)
 public class OpcChannel extends ServerChannel implements AttributeDelegate {
 
     @Option(mandatory = false)

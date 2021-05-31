@@ -20,19 +20,33 @@
  */
 package org.openmuc.framework.config;
 
+import org.openmuc.framework.config.option.OptionSyntax;
 import org.openmuc.framework.config.option.Options;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.framework.config.option.annotation.OptionType;
 
 public class Settings extends Configurations {
 
-    protected Settings(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
-        this(configurable.getAnnotation(OptionSyntax.class));
+    public Settings(String configuration, Class<? extends Configurable> configurable) 
+    		throws ArgumentSyntaxException {
+    	
+        this(configurable.getAnnotation(Syntax.class));
         parse(configuration, Options.parse(OptionType.SETTING, configurable));
     }
 
-    private Settings(OptionSyntax syntax) throws ArgumentSyntaxException {
-        super(OptionType.SETTING, syntax);
+    public Settings(String configuration, Class<? extends Configurable> configurable, OptionSyntax syntax) 
+    		throws ArgumentSyntaxException {
+    	
+        this(syntax);
+        parse(configuration, Options.parse(OptionType.SETTING, syntax, configurable));
+    }
+
+    private Settings(Syntax syntax) throws ArgumentSyntaxException {
+    	this(new OptionSyntax(OptionType.SETTING, syntax));
+    }
+
+    private Settings(OptionSyntax syntax) {
+    	super(syntax);
     }
 
 }

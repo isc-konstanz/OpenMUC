@@ -27,7 +27,6 @@ import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
 import org.openmuc.framework.driver.DriverDevice;
 import org.openmuc.framework.driver.annotation.Device;
 
@@ -35,7 +34,6 @@ import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 
-@OptionSyntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
 @Device(channel = GpioChannel.class)
 public class GpioConfigs extends DriverDevice {
 

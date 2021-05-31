@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -47,7 +47,7 @@ import org.openmuc.framework.driver.annotation.Configure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = { ADDRESS, SETTING })
+@Syntax(separator = ";", assignment = "=", keyValuePairs = { ADDRESS, SETTING })
 public class SqlChannel extends DriverChannel {
     private static final Logger logger = LoggerFactory.getLogger(SqlChannel.class);
 

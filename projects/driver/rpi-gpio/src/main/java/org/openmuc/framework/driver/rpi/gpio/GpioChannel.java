@@ -20,14 +20,11 @@
  */
 package org.openmuc.framework.driver.rpi.gpio;
 
-import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
 import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
 import org.openmuc.framework.driver.DriverChannel;
 
-@OptionSyntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
 public class GpioChannel extends DriverChannel {
 
     @Option(type = SETTING,

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.FloatValue;
@@ -38,7 +39,7 @@ import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoggingChannel extends ChannelWrapper {
+public abstract class LoggingChannel extends ChannelWrapper {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingChannel.class);
 
@@ -48,25 +49,26 @@ public class LoggingChannel extends ChannelWrapper {
 
     final List<Record> records = new ArrayList<Record>();
 
-    void invokeConfigure(LoggingChannelContext context, LogChannel channel) 
-    		throws ArgumentSyntaxException {
-    	super.invokeConfigure(context, channel);
+    void invokeConfigure(LoggingChannelContext context, LogChannel channel, Settings settings) 
+            throws ArgumentSyntaxException {
+        
         this.context = context;
+        super.invokeConfigure(context, channel, settings);
     }
 
     final void invokeWrite(long timestamp) throws IOException {
-    	invokeMethod(Write.class, this, getRecord(), timestamp);
-    	invokeMethod(Write.class, this, getRecord());
+        invokeMethod(Write.class, this, getRecord(), timestamp);
+        invokeMethod(Write.class, this, getRecord());
     }
 
     @SuppressWarnings("unchecked")
-	final List<Record> invokeRead(long startTime, long endTime) throws IOException {
-    	List<Record> records = (List<Record>) invokeReturn(Read.class, this, startTime, endTime);
+    final List<Record> invokeRead(long startTime, long endTime) throws IOException {
+        List<Record> records = (List<Record>) invokeReturn(Read.class, this, startTime, endTime);
         return records;
     }
 
     boolean isUpdate(Record record) {
-    	if (Flag.VALID != record.getFlag()) {
+        if (Flag.VALID != record.getFlag()) {
             logger.trace("Skipped logging value for unchanged flag: {}", record.getFlag());
             return false;
         }
@@ -89,7 +91,7 @@ public class LoggingChannel extends ChannelWrapper {
             case DOUBLE:
                 double delta = Math.abs(record.getValue().asDouble() - getRecord().getValue().asDouble());
                 if (getLoggingTolerance() >= delta && 
-                        (record.getTimestamp() - getRecord().getTimestamp()) < getLoggingIntervalMax()) {
+                        (record.getTimestamp() - getRecord().getTimestamp()) < getLoggingTimeMax()) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Skipped logging value inside tolerance: {} -> {} <= {}",
                                 getRecord().getValue().asDouble(), record.getValue(), getLoggingTolerance());
@@ -104,40 +106,40 @@ public class LoggingChannel extends ChannelWrapper {
     }
 
     void updateRecord(Record record) {
-    	if (isAveraging()) {
-    		double average = records.stream().mapToDouble(c -> c.getValue().asDouble())
-    	            .average().getAsDouble();
-    		
-    		long timestamp = record.getTimestamp();
-    		switch (getValueType()) {
-			case SHORT:
-				record = new Record(new ShortValue((short) Math.round(average)), timestamp);
-				break;
-			case INTEGER:
-				record = new Record(new IntValue((int) Math.round(average)), timestamp);
-				break;
-			case LONG:
-				record = new Record(new LongValue((long) Math.round(average)), timestamp);
-				break;
-			case FLOAT:
-				record = new Record(new FloatValue((float) average), timestamp);
-				break;
-			case DOUBLE:
-				record = new Record(new DoubleValue(average), timestamp);
-				break;
-			default:
-				break;
-    		}
+        if (isAveraging() && records.size() > 0) {
+            double average = records.stream().mapToDouble(c -> c.getValue().asDouble())
+                    .average().getAsDouble();
+            
+            long timestamp = record.getTimestamp();
+            switch (getValueType()) {
+            case SHORT:
+                record = new Record(new ShortValue((short) Math.round(average)), timestamp);
+                break;
+            case INTEGER:
+                record = new Record(new IntValue((int) Math.round(average)), timestamp);
+                break;
+            case LONG:
+                record = new Record(new LongValue((long) Math.round(average)), timestamp);
+                break;
+            case FLOAT:
+                record = new Record(new FloatValue((float) average), timestamp);
+                break;
+            case DOUBLE:
+                record = new Record(new DoubleValue(average), timestamp);
+                break;
+            default:
+                break;
+            }
             logger.trace("Average of {} values for channel \"{}\": {}", records.size(), channel.getId(), average);
             records.clear();
-    	}
-    	this.record = record;
+        }
+        this.record = record;
     }
 
     boolean update(Record record) {
-    	if (isAveraging()) {
-    		records.add(record);
-    	}
+        if (isValid() && isAveraging()) {
+            records.add(record);
+        }
         if (isUpdate(record)) {
             updateRecord(record);
             return true;

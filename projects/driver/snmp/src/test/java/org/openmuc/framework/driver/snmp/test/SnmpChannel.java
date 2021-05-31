@@ -131,6 +131,11 @@ public class SnmpChannel implements Channel {
         return 0;
     }
 
+	@Override
+	public int getLoggingDelayMaximum() {
+		return 0;
+	}
+
     @Override
     public int getLoggingTimeOffset() {
         return 0;
@@ -140,6 +145,16 @@ public class SnmpChannel implements Channel {
     public String getLoggingSettings() {
         return "";
     }
+
+	@Override
+	public double getLoggingTolerance() {
+		return 0;
+	}
+
+	@Override
+	public boolean isLoggingAveraging() {
+		return false;
+	}
 
 	@Override
 	public boolean isLoggingEvent() {
@@ -163,7 +178,7 @@ public class SnmpChannel implements Channel {
 
     @Override
     public String getDeviceAddress() {
-        return null;
+        return deviceAddress;
     }
 
     @Override

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.Reflectable;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.data.TypeConversionException;
@@ -37,7 +36,7 @@ import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoggingChannelContext extends Reflectable {
+public abstract class LoggingChannelContext extends Reflectable {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingChannelContext.class);
 
@@ -48,6 +47,8 @@ public class LoggingChannelContext extends Reflectable {
     LoggingChannelContext() {
         channelClass = getChannelClass();
     }
+
+    abstract String getId();
 
     DataLogger getLoggerAnnotation() {
     	DataLogger logger = getClass().getAnnotation(DataLogger.class);
@@ -76,11 +77,9 @@ public class LoggingChannelContext extends Reflectable {
     final <C extends LoggingChannel> LoggingChannel newChannel(LogChannel configs) 
             throws RuntimeException, ArgumentSyntaxException {
         
-        Settings settings = Configurations.parseSettings(configs.getLoggingSettings(), channelClass);
-        
         C channel;
         if (this instanceof LoggingChannelFactory) {
-            channel = (C) ((LoggingChannelFactory) this).newChannel(settings);
+            channel = (C) ((LoggingChannelFactory) this).newChannel(parseSettings(channelClass, configs.getLoggingSettings()));
         }
         else {
             channel = (C) newInstance(channelClass);
@@ -96,12 +95,13 @@ public class LoggingChannelContext extends Reflectable {
                 channel = newChannel(configs);
                 channels.put(id, channel);
             }
-            channel.invokeConfigure(this, configs);
+            Settings settings = parseSettings(channel.getClass(), configs.getLoggingSettings());
+            
+            channel.invokeConfigure(this, configs, settings);
             
         } catch (ArgumentSyntaxException e) {
             
             channels.remove(id);
-            
             throw e;
         }
         return channel;
@@ -136,6 +136,18 @@ public class LoggingChannelContext extends Reflectable {
             }
         }
         return channels;
+    }
+
+    Settings parseSettings(Class<? extends LoggingChannel> channelClass, String settings) throws ArgumentSyntaxException {
+        String loggerSettings = "";
+        for (String loggerSegment : settings.split(";")) {
+        	String[] loggerSettingsPair = loggerSegment.split(":");
+            if (loggerSettingsPair[0].equals(getId()) && loggerSettingsPair.length == 2) {
+                loggerSettings = loggerSettingsPair[1];
+                break;
+            }
+        }
+        return new Settings(loggerSettings, channelClass, new LoggingSyntax());
     }
 
 }

@@ -20,14 +20,13 @@
  */
 package org.openmuc.framework.config;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.openmuc.framework.config.option.OptionSyntax;
 import org.openmuc.framework.config.option.OptionValue;
 import org.openmuc.framework.config.option.Options;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
 import org.openmuc.framework.config.option.annotation.OptionType;
 import org.openmuc.framework.data.Value;
 
@@ -35,9 +34,7 @@ public abstract class Configurations {
 
     private final Map<String, Value> configurations = new HashMap<String, Value>();
 
-    private final String separator;
-    private final String assignment;
-    private final Boolean keyValue;
+    private final OptionSyntax syntax;
 
     public static Configurations parse(OptionType type, String configuration, Class<? extends Configurable> configurable) 
     		throws ArgumentSyntaxException {
@@ -58,28 +55,17 @@ public abstract class Configurations {
         return new Settings(configuration, configurable);
     }
 
-    protected Configurations(OptionType type, OptionSyntax syntax) {
+    protected Configurations(OptionSyntax syntax) {
     	super();
-        if (syntax == null) {
-            separator = OptionSyntax.SEPARATOR_DEFAULT;
-            assignment = OptionSyntax.ASSIGNMENT_DEFAULT;
-            keyValue = Arrays.stream(
-            		OptionSyntax.KEY_VAL_PAIRS_DEFAULT).anyMatch(type::equals);
-        }
-        else {
-            separator = syntax.separator();
-            assignment = syntax.assignment();
-            keyValue = Arrays.stream(
-            		syntax.keyValuePairs()).anyMatch(type::equals);
-        }
+    	this.syntax = syntax;
     }
 
     protected void parse(String parameterStr, Options options) throws ArgumentSyntaxException {
         if (parameterStr != null && !parameterStr.trim().isEmpty()) {
-            String[] parameterArr = parameterStr.trim().split(options.getSeparator());
+            String[] parameterArr = parameterStr.trim().split(options.getSyntax().getSeparator());
             
             if (parameterArr.length >= options.getMandatoryCount()) {
-                if (options.hasKeyValuePairs()) {
+                if (options.getSyntax().hasKeyValuePairs()) {
                     for (OptionValue option : options) {
                         String key = option.getId();
                         Value value = null;
@@ -88,10 +74,10 @@ public abstract class Configurations {
                         
                         parameterLoop:
                         for (String parameter : parameterArr) {
-                            String[] keyValue = parameter.trim().split(options.getAssignmentOperator(), 2);
+                            String[] keyValue = parameter.trim().split(options.getSyntax().getAssignment(), 2);
                             if (keyValue.length != 2) {
                                 throw new ArgumentSyntaxException("Parameter is not a key value pair of type " 
-                                        + "<key>" + options.getAssignmentOperator() + "<value> in parsed options: " + parameter);
+                                        + "<key>" + options.getSyntax().getAssignment() + "<value> in parsed options: " + parameter);
                             }
                             if (keyValue[1].trim().isEmpty()) {
                                 throw new ArgumentSyntaxException("Parameter " + parameter + "is empty");
@@ -282,11 +268,11 @@ public abstract class Configurations {
                 first = false;
             }
             else {
-                sb.append(separator);
+                sb.append(syntax.getSeparator());
             }
-            if (keyValue) {
+            if (syntax.hasKeyValuePairs()) {
                 sb.append(entry.getKey());
-                sb.append(assignment);
+                sb.append(syntax.getAssignment());
             }
             sb.append(entry.getValue());
         }

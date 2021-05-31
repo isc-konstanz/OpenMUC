@@ -24,11 +24,9 @@ import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
 import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
 import org.openmuc.framework.driver.DriverDevice;
 import org.openmuc.framework.driver.annotation.Device;
 
-@OptionSyntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
 @Device(channel = W1Channel.class)
 public abstract class W1Device extends DriverDevice {
 

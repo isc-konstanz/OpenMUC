@@ -23,6 +23,7 @@ package org.openmuc.framework.lib.rest.objects;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openmuc.framework.config.option.OptionSyntax;
 import org.openmuc.framework.config.option.Options;
 import org.openmuc.framework.data.ValueType;
 
@@ -64,12 +65,7 @@ public class RestOptions {
         if (options != null) {
             restOptions = new RestOptions();
             restOptions.setOptions(RestOption.getOptions(options));
-            
-            RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
-            restSyntax.setSeparator(options.getSeparator());
-            restSyntax.setAssignmentOperator(options.getAssignmentOperator());
-            restSyntax.setKeyValue(options.hasKeyValuePairs());
-            restOptions.setSyntax(restSyntax);
+            restOptions.setSyntax(new RestOptionSyntax(options.getSyntax()));
         }
         return restOptions;
     }
@@ -100,21 +96,34 @@ public class RestOptions {
         restOption.setDescription(syntax);
         restOption.setMandatory(false);
         restOptions.addOption(restOption);
-        
-        RestOptionSyntax restSyntax = restOptions.new RestOptionSyntax();
-        restSyntax.setSeparator(";");
-        restSyntax.setAssignmentOperator(null);
-        restSyntax.setKeyValue(false);
-        restOptions.setSyntax(restSyntax);
+        restOptions.setSyntax(new RestOptionSyntax(";"));
         
         return restOptions;
     }
 
-    class RestOptionSyntax {
+    static class RestOptionSyntax {
 
         String separator = null;
         String assignment = null;
         Boolean keyValue = null;
+
+        RestOptionSyntax(OptionSyntax syntax) {
+        	this.separator = syntax.getSeparator();
+        	this.assignment = syntax.getAssignment();
+        	this.keyValue = syntax.hasKeyValuePairs();
+        }
+
+        RestOptionSyntax(String separator, String assignment, boolean keyValue) {
+        	this.separator = separator;
+        	this.assignment = assignment;
+        	this.keyValue = keyValue;
+        }
+
+        RestOptionSyntax(String separator) {
+        	this.separator = separator;
+        	this.assignment = null;
+        	this.keyValue = false;
+        }
 
         public void setSeparator(String separator) {
             this.separator = separator;

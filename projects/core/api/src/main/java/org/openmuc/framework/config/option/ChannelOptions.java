@@ -37,7 +37,7 @@ public interface ChannelOptions extends ChannelInfo {
         if (address == null) {
             return null;
         }
-        return address.getSyntax();
+        return address.getSynopsis();
     }
 
     @Override
@@ -46,7 +46,7 @@ public interface ChannelOptions extends ChannelInfo {
         if (settings == null) {
             return null;
         }
-        return settings.getSyntax();
+        return settings.getSynopsis();
     }
 
     @Override
@@ -55,7 +55,7 @@ public interface ChannelOptions extends ChannelInfo {
         if (settings == null) {
             return null;
         }
-        return settings.getSyntax();
+        return settings.getSynopsis();
     }
 
     public Options getAddressOptions();

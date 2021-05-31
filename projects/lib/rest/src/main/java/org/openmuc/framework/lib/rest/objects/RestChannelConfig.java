@@ -41,8 +41,11 @@ public class RestChannelConfig {
     private String samplingGroup = null;
     private String settings = null;
     private Integer loggingInterval = null;
+    private Integer loggingDelayMaximum = null;
     private Integer loggingTimeOffset = null;
     private String loggingSettings = null;
+    private Double loggingTolerance = null;
+    private Boolean loggingAveraging = null;
     private Boolean loggingEvent = null;
     private Boolean disabled = null;
     private List<ServerMapping> serverMappings = null;
@@ -159,6 +162,14 @@ public class RestChannelConfig {
         this.loggingInterval = loggingInterval;
     }
 
+    public Integer getLoggingTimeMax() {
+        return loggingDelayMaximum;
+    }
+
+    public void setLoggingTimeMax(Integer loggingTimeMax) {
+        this.loggingDelayMaximum = loggingTimeMax;
+    }
+
     public Integer getLoggingTimeOffset() {
         return loggingTimeOffset;
     }
@@ -173,6 +184,22 @@ public class RestChannelConfig {
 
     public void setLoggingSettings(String loggingSettings) {
         this.loggingSettings = loggingSettings;
+    }
+
+    public Double getLoggingTolerance() {
+        return loggingTolerance;
+    }
+
+    public void setLoggingTolerance(Double loggingTolerance) {
+        this.loggingTolerance = loggingTolerance;
+    }
+
+    public Boolean isLoggingAveraging() {
+        return loggingAveraging;
+    }
+
+    public void setLoggingAveraging(Boolean loggingAveraging) {
+        this.loggingAveraging = loggingAveraging;
     }
 
     public Boolean isLoggingEvent() {

@@ -42,9 +42,10 @@ public class ServerChannel extends ChannelContainerWrapper {
     }
 
     void invokeConfigure(ServerChannelContext context, ServerMappingContainer container) 
-    		throws ArgumentSyntaxException {
-    	super.invokeConfigure(context, container);
+            throws ArgumentSyntaxException {
+        
         this.context = context;
+        super.invokeConfigure(context, container);
     }
 
     public final ServerChannelContext getContext() {
@@ -52,7 +53,7 @@ public class ServerChannel extends ChannelContainerWrapper {
     }
 
     private final Channel getChannel() {
-    	return container.getChannel();
+        return container.getChannel();
     }
 
     public final String getId() {

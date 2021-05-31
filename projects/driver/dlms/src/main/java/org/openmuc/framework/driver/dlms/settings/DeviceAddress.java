@@ -27,9 +27,9 @@ import java.net.InetAddress;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.Syntax;
 
-@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = ADDRESS)
+@Syntax(separator = ";", assignment = "=", keyValuePairs = ADDRESS)
 public class DeviceAddress extends Configurable {
 
     @Option(id = "t",

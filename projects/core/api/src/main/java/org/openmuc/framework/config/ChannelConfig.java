@@ -40,8 +40,11 @@ public interface ChannelConfig {
     int SAMPLING_TIME_OFFSET_DEFAULT = 0;
     String SAMPLING_GROUP_DEFAULT = "";
     int LOGGING_INTERVAL_DEFAULT = -1;
+    int LOGGING_DELAY_MAX_DEFAULT = 0;
     int LOGGING_TIME_OFFSET_DEFAULT = 0;
+    boolean LOGGING_AVERAGING_DEFAULT = false;
     boolean LOGGING_EVENT_DEFAULT = false;
+    Double LOGGING_TOLERANCE_DEFAULT = 0.0;
     String LOGGING_SETTINGS_DEFAULT = "";
     String LOGGING_READER_DEFAULT = "";
 
@@ -101,6 +104,10 @@ public interface ChannelConfig {
 
     void setLoggingInterval(Integer interval);
 
+    Integer getLoggingDelayMaximum();
+
+    void setLoggingDelayMaximum(Integer maximum);
+
     Integer getLoggingTimeOffset();
 
     void setLoggingTimeOffset(Integer offset);
@@ -108,6 +115,14 @@ public interface ChannelConfig {
     String getLoggingSettings();
 
     void setLoggingSettings(String settings);
+
+    Double getLoggingTolerance();
+
+    void setLoggingTolerance(Double tolerance);
+
+    Boolean isLoggingAveraging();
+
+    void setLoggingAveraging(Boolean averaging);
 
     Boolean isLoggingEvent();
 
