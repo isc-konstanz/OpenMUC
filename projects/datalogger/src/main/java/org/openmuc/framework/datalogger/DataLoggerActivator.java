@@ -84,7 +84,8 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
         if (channelClass != LoggingChannel.class) {
             channelSettings = Options.parse(SETTING, channelClass);
             if (channelSettings != null) {
-                return channelSettings.getMandatoryCount() > 0;
+                return channelSettings.size() > 0;
+                //return channelSettings.getMandatoryCount() > 0;
             }
         }
         return false;
