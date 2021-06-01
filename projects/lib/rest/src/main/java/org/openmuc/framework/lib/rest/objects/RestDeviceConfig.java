@@ -24,7 +24,7 @@ public class RestDeviceConfig {
 
     private String id;
     private String description = null;
-    private String deviceAddress = null;
+    private String address = null;
     private String settings = null;
     private Integer samplingTimeout = null;
     private Integer connectRetryInterval = null;
@@ -46,12 +46,12 @@ public class RestDeviceConfig {
         this.description = description;
     }
 
-    public String getDeviceAddress() {
-        return deviceAddress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setDeviceAddress(String deviceAddress) {
-        this.deviceAddress = deviceAddress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getSettings() {

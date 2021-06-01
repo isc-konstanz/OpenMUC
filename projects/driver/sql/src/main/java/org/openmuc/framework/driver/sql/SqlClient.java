@@ -36,7 +36,7 @@ import java.util.Map;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.framework.driver.DriverChannelScannerFactory;
 import org.openmuc.framework.driver.DriverDevice;
 import org.openmuc.framework.driver.annotation.Configure;
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = { ADDRESS, SETTING })
+@Syntax(separator = ";", assignment = "=", keyValuePairs = { ADDRESS, SETTING })
 @Device(channel = SqlChannel.class)
 public class SqlClient extends DriverDevice implements DriverChannelScannerFactory {
     private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);

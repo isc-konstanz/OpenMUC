@@ -18,26 +18,20 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.config;
+package org.openmuc.framework.datalogger; 
 
 import org.openmuc.framework.config.option.OptionSyntax;
-import org.openmuc.framework.config.option.Options;
 import org.openmuc.framework.config.option.annotation.OptionType;
-import org.openmuc.framework.config.option.annotation.Syntax;
 
-public class Address extends Configurations {
+public class LoggingSyntax extends OptionSyntax {
 
-	public Address(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
-        this(configurable.getAnnotation(Syntax.class));
-        parse(configuration, Options.parse(OptionType.ADDRESS, configurable));
-    }
+	public static String ASSIGNMENT = "=";
+	public static String SEPARATOR = ",";
 
-	public Address(Syntax syntax) throws ArgumentSyntaxException {
-    	this(new OptionSyntax(OptionType.ADDRESS, syntax));
-    }
-
-	public Address(OptionSyntax syntax) {
-    	super(syntax);
+    protected LoggingSyntax() {
+    	super(OptionType.SETTING);
+    	this.assignment = ASSIGNMENT;
+    	this.separator = SEPARATOR;
     }
 
 }

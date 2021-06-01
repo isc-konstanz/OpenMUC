@@ -84,7 +84,8 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
         if (channelClass != LoggingChannel.class) {
             channelSettings = Options.parse(SETTING, channelClass);
             if (channelSettings != null) {
-            	return channelSettings.getMandatoryCount() > 0;
+                return channelSettings.size() > 0;
+                //return channelSettings.getMandatoryCount() > 0;
             }
         }
         return false;
@@ -93,19 +94,23 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
     @Override
     public final void log(List<LoggingRecord> containers, long timestamp) {
         try {
-            if (hasMethod(Write.class, this)) {
-                invokeMethod(Write.class, this, getChannels(containers), timestamp);
-            }
-            else if (hasMethod(Write.class, channelClass)) {
-                
-                for (LoggingChannel loggingChannel : getChannels(containers)) {
-                    loggingChannel.invokeWrite(timestamp);
-                }
+            synchronized(channels) {
+	            if (hasMethod(Write.class, this)) {
+	                invokeMethod(Write.class, this, getChannels(containers), timestamp);
+	            }
+	            else if (hasMethod(Write.class, channelClass)) {
+	            	
+	                for (LoggingChannel loggingChannel : getChannels(containers)) {
+	                    loggingChannel.invokeWrite(timestamp);
+	                }
+	            }
+	            else {
+	                throw new UnsupportedOperationException("Logging values unsupported for " + getClass().getSimpleName());
+	            }
             }
         } catch (IOException e) {
             logger.error("Failed to log channels: {}", e.getMessage());
         }
-        throw new UnsupportedOperationException("Logging values unsupported for " + getClass().getSimpleName());
     }
 
     @Override

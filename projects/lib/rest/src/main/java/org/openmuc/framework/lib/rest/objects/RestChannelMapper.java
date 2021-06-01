@@ -115,8 +115,11 @@ public class RestChannelMapper {
         rcc.setSamplingTimeOffset(cc.getSamplingTimeOffset());
         rcc.setSamplingGroup(cc.getSamplingGroup());
         rcc.setLoggingInterval(cc.getLoggingInterval());
+        rcc.setLoggingTimeMax(cc.getLoggingDelayMaximum());
         rcc.setLoggingTimeOffset(cc.getLoggingTimeOffset());
         rcc.setLoggingSettings(cc.getLoggingSettings());
+        rcc.setLoggingTolerance(cc.getLoggingTolerance());
+        rcc.setloggingAverage(cc.isloggingAverage());
         rcc.setLoggingEvent(cc.isLoggingEvent());
         rcc.setDisabled(cc.isDisabled());
         // rcc.setServerMappings(cc.getServerMappings());
@@ -149,8 +152,11 @@ public class RestChannelMapper {
         cc.setSamplingInterval(rcc.getSamplingInterval());
         cc.setSamplingTimeOffset(rcc.getSamplingTimeOffset());
         cc.setLoggingInterval(rcc.getLoggingInterval());
+        cc.setLoggingDelayMaximum(rcc.getLoggingTimeMax());
         cc.setLoggingTimeOffset(rcc.getLoggingTimeOffset());
         cc.setLoggingSettings(rcc.getLoggingSettings());
+        cc.setLoggingTolerance(rcc.getLoggingTolerance());
+        cc.setloggingAverage(rcc.isloggingAverage());
         cc.setLoggingEvent(rcc.isLoggingEvent());
         cc.setDisabled(rcc.isDisabled());
         // cc.setServerMappings(rcc.getServerMappings());

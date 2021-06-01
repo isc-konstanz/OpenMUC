@@ -25,12 +25,12 @@ import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 
-@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = ADDRESS)
+@Syntax(separator = ";", assignment = "=", keyValuePairs = ADDRESS)
 public class ChannelAddress extends Configurable {
 
     private static final String LOGICAL_NAME_FORMAT = "<Interface_Class_ID>/<Instance_ID>/<Object_Attribute_ID>";

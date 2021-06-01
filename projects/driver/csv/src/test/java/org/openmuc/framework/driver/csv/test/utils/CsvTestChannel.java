@@ -125,6 +125,12 @@ public class CsvTestChannel implements Channel {
         return 0;
     }
 
+	@Override
+	public int getLoggingDelayMaximum() {
+        // TODO Auto-generated method stub
+		return 0;
+	}
+
     @Override
     public int getLoggingTimeOffset() {
         // TODO Auto-generated method stub
@@ -136,6 +142,18 @@ public class CsvTestChannel implements Channel {
         // TODO Auto-generated method stub
         return "";
     }
+
+	@Override
+	public double getLoggingTolerance() {
+        // TODO Auto-generated method stub
+		return 0.0;
+	}
+
+	@Override
+	public boolean isloggingAverage() {
+        // TODO Auto-generated method stub
+		return false;
+	}
 
     @Override
     public boolean isLoggingEvent() {

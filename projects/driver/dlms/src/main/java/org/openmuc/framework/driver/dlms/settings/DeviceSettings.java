@@ -25,9 +25,9 @@ import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.Syntax;
 
-@OptionSyntax(separator = ";", assignment = "=", keyValuePairs = SETTING)
+@Syntax(separator = ";", assignment = "=", keyValuePairs = SETTING)
 public class DeviceSettings extends Configurable {
 
     @Option(id = "ld",

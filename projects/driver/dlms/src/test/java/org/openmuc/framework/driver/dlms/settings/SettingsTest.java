@@ -38,17 +38,17 @@ public class SettingsTest {
 
     @Test
     public void testChannelAddress() throws Exception {
-        check(Options.parse(ADDRESS, ChannelAddress.class).getSyntax(), 2);
+        check(Options.parse(ADDRESS, ChannelAddress.class).getSynopsis(), 2);
     }
 
     @Test
     public void testDeviceAddress() throws Exception {
-        check(Options.parse(ADDRESS, DeviceAddress.class).getSyntax(), 10);
+        check(Options.parse(ADDRESS, DeviceAddress.class).getSynopsis(), 10);
     }
 
     @Test
     public void testDeviceSetting() throws Exception {
-        check(Options.parse(SETTING, DeviceSettings.class).getSyntax(), 12);
+        check(Options.parse(SETTING, DeviceSettings.class).getSynopsis(), 12);
     }
 
     private static void check(String pat, int numArgs) {

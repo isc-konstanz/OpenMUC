@@ -20,16 +20,13 @@
  */
 package org.openmuc.framework.driver.rpi.w1;
 
-import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
 import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
 import org.openmuc.framework.driver.DriverChannel;
 
 import com.pi4j.temperature.TemperatureScale;
 
-@OptionSyntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
 public class W1Channel extends DriverChannel {
 
     @Option(type = SETTING,

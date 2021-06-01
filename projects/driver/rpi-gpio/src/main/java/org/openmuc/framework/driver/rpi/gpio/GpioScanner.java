@@ -28,7 +28,7 @@ import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
+import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.framework.driver.DriverDeviceScanner;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.system.SystemInfo.BoardType;
 
-@OptionSyntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
+@Syntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
 public class GpioScanner extends DriverDeviceScanner {
     private static final Logger logger = LoggerFactory.getLogger(GpioScanner.class);
 

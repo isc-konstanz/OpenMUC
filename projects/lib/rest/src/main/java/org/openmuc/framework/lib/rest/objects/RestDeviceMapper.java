@@ -43,7 +43,7 @@ public class RestDeviceMapper {
         RestDeviceConfig rdc = new RestDeviceConfig();
         rdc.setConnectRetryInterval(dc.getConnectRetryInterval());
         rdc.setDescription(dc.getDescription());
-        rdc.setDeviceAddress(dc.getAddress());
+        rdc.setAddress(dc.getAddress());
         rdc.isDisabled(dc.isDisabled());
         rdc.setId(dc.getId());
         rdc.setSamplingTimeout(dc.getSamplingTimeout());
@@ -65,7 +65,7 @@ public class RestDeviceMapper {
                 }
                 dc.setConnectRetryInterval(rdc.getConnectRetryInterval());
                 dc.setDescription(rdc.getDescription());
-                dc.setAddress(rdc.getDeviceAddress());
+                dc.setAddress(rdc.getAddress());
                 dc.setDisabled(rdc.getDisabled());
                 dc.setSamplingTimeout(rdc.getSamplingTimeout());
                 dc.setSettings(rdc.getSettings());

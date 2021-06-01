@@ -36,8 +36,8 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.Configurable;
 import org.openmuc.framework.config.ParseException;
 import org.openmuc.framework.config.option.annotation.Option;
-import org.openmuc.framework.config.option.annotation.OptionSyntax;
 import org.openmuc.framework.config.option.annotation.OptionType;
+import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.ByteValue;
@@ -61,32 +61,24 @@ public class Options extends ArrayList<OptionValue> {
     private static final Logger logger = LoggerFactory.getLogger(Options.class);
 
     private final OptionType type;
+    private final OptionSyntax syntax;
 
     private Locale locale = Locale.ENGLISH;
-    private String separator;
-    private String assignment;
-    private boolean keyValue;
 
     private int mandatoryCount = 0;
 
     private Options(OptionType type) {
         this.type = type;
+        this.syntax = new OptionSyntax(type);
     }
 
     private Options(OptionType type, OptionSyntax syntax) {
-        this(type);
-        if (syntax == null) {
-            separator = OptionSyntax.SEPARATOR_DEFAULT;
-            assignment = OptionSyntax.ASSIGNMENT_DEFAULT;
-            keyValue = Arrays.stream(
-                    OptionSyntax.KEY_VAL_PAIRS_DEFAULT).anyMatch(type::equals);
-        }
-        else {
-            separator = syntax.separator();
-            assignment = syntax.assignment();
-            keyValue = Arrays.stream(
-                    syntax.keyValuePairs()).anyMatch(type::equals);
-        }
+        this.type = type;
+        this.syntax = syntax;
+    }
+
+    private Options(OptionType type, Syntax syntax) {
+        this(type, new OptionSyntax(type, syntax));
     }
 
     public OptionType getType() {
@@ -103,57 +95,11 @@ public class Options extends ArrayList<OptionValue> {
         return mandatoryCount;
     }
 
-    public String getSeparator() {
-        return separator;
+    public OptionSyntax getSyntax() {
+    	return syntax;
     }
 
-    Options setSeparator(String separator) {
-        this.separator = separator;
-        return this;
-    }
-
-    public String getAssignmentOperator() {
-        return assignment;
-    }
-
-    Options setAssignmentOperator(String assignment) {
-        this.assignment = assignment;
-        return this;
-    }
-
-    public boolean hasKeyValuePairs() {
-        return keyValue;
-    }
-
-    Options setKeyValuePairs(boolean enable) {
-        if (!enable) {
-            this.assignment = null;
-        }
-        this.keyValue = enable;
-        return this;
-    }
-
-    void setSyntax(String separator) {
-        this.separator = separator;
-        this.assignment = null;
-        this.keyValue = false;
-    }
-
-    void setSyntax(String separator, String assignment) {
-        this.separator = separator;
-        this.assignment = assignment;
-        this.keyValue = true;
-    }
-
-    Locale getLocale() {
-        return locale;
-    }
-
-    void setLocale(Locale locale) {
-        this.locale = locale;
-    }
-
-    public String getSyntax() {
+    public String getSynopsis() {
 
         StringBuilder sb = new StringBuilder();
 
@@ -176,23 +122,23 @@ public class Options extends ArrayList<OptionValue> {
                     }
                     value = ssb.toString();
                 }
-                else if (keyValue) {
+                else if (syntax.hasKeyValuePairs()) {
                     value = option.getType().name().replace('_', ' ').toLowerCase(locale);
                 }
                 
-                String syntax;
-                if (keyValue) {
-                    syntax = key + assignment + '<' + value + '>';
+                String synopsis;
+                if (syntax.hasKeyValuePairs()) {
+                    synopsis = key + syntax.getAssignment() + '<' + value + '>';
                 }
                 else {
-                    syntax = '<' + key + '>';
+                    synopsis = '<' + key + '>';
                 }
                 
                 if (!mandatory) sb.append('[');
                 if (!first) {
-                    sb.append(separator);
+                    sb.append(syntax.getSeparator());
                 }
-                sb.append(syntax);
+                sb.append(synopsis);
                 if (!mandatory) sb.append(']');
                 
                 first = false;
@@ -204,7 +150,19 @@ public class Options extends ArrayList<OptionValue> {
         return sb.toString();
     }
 
+    Locale getLocale() {
+        return locale;
+    }
+
+    void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
     public static Options parse(OptionType type, Class<? extends Configurable> configs) {
+    	return Options.parse(type, new OptionSyntax(type, configs), configs);
+    }
+
+    public static Options parse(OptionType type, OptionSyntax syntax, Class<? extends Configurable> configs) {
         //Class<C> configs = (Class<C>) MethodHandles.lookup().lookupClass();
         try {
             List<Field> fields = new LinkedList<Field>();
@@ -213,7 +171,6 @@ public class Options extends ArrayList<OptionValue> {
                 fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
                 clazz = clazz.getSuperclass();
             }
-            OptionSyntax syntax = configs.getAnnotation(OptionSyntax.class);
             Options options = new Options(type, syntax);
             
             for (Field field : fields) {
@@ -379,10 +336,10 @@ public class Options extends ArrayList<OptionValue> {
                     else if (syntaxNodeName.equals("keyValue")) {
                         String keyValString = syntaxNode.getTextContent().trim().toLowerCase();
                         if (keyValString.equals("true")) {
-                            options.setKeyValuePairs(true);
+                            options.getSyntax().setKeyValuePairs(true);
                         }
                         else if (keyValString.equals("false")) {
-                            options.setKeyValuePairs(false);
+                            options.getSyntax().setKeyValuePairs(false);
                         }
                         else {
                             throw new ParseException("Syntax \"keyValue\" contains neither \"true\" nor \"false\"");
@@ -391,11 +348,11 @@ public class Options extends ArrayList<OptionValue> {
                         NamedNodeMap attributes = syntaxNode.getAttributes();
                         Node nameAttribute = attributes.getNamedItem("assignment");
                         if (nameAttribute != null) {
-                            options.setAssignmentOperator(nameAttribute.getTextContent());
+                            options.getSyntax().setAssignmentOperator(nameAttribute.getTextContent());
                         }
                     }
                     else if (syntaxNodeName.equals("separator")) {
-                        options.setSeparator(syntaxNode.getTextContent());
+                        options.getSyntax().setSeparator(syntaxNode.getTextContent());
                     }
                     else {
                         throw new ParseException("Unknown tag found:" + syntaxNodeName);

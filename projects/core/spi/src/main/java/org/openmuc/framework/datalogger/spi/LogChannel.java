@@ -53,9 +53,15 @@ public interface LogChannel {
 
     Integer getLoggingInterval();
 
+    Integer getLoggingDelayMaximum();
+
     Integer getLoggingTimeOffset();
 
     String getLoggingSettings();
+
+    Double getLoggingTolerance();
+
+    Boolean isloggingAverage();
 
     Boolean isLoggingEvent();
 

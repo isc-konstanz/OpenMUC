@@ -186,6 +186,13 @@ public interface Channel {
     int getLoggingInterval();
 
     /**
+     * Returns the channel's configured logging delay maximum in milliseconds. Returns the default of 0 if not configured.
+     *
+     * @return the channel's configured logging delay maximum in milliseconds.
+     */
+    int getLoggingDelayMaximum();
+
+    /**
      * Returns the channel's configured logging time offset in milliseconds. Returns the default of 0 if not configured.
      *
      * @return the channel's configured logging time offset in milliseconds.
@@ -198,6 +205,20 @@ public interface Channel {
      * @return the channel's configured logging settings.
      */
     String getLoggingSettings();
+
+    /**
+     * Returns the channel's configured logging tolerance. Returns the default of 0 if not configured.
+     *
+     * @return the channel's configured logging tolerance.
+     */
+    double getLoggingTolerance();
+
+    /**
+     * Returns <code>true</code> if the channel is configured to dynamically average received values.
+     *
+     * @return <code>true</code> if the channel is configured to dynamically average received values.
+     */
+    boolean isloggingAverage();
 
     /**
      * Returns <code>true</code> if the channel is configured to immediately log received values.

@@ -40,9 +40,10 @@ public abstract class DriverChannel extends ChannelContainerWrapper {
     }
 
     void invokeConfigure(DriverChannelContext context, ChannelTaskContainer container) 
-    		throws ArgumentSyntaxException {
-    	super.invokeConfigure(context, container);
+            throws ArgumentSyntaxException {
+        
         this.context = context;
+        super.invokeConfigure(context, container);
     }
 
     public final DriverChannelContext getContext() {
@@ -50,40 +51,40 @@ public abstract class DriverChannel extends ChannelContainerWrapper {
     }
 
     private final Channel getChannel() {
-    	return container.getChannel();
+        return container.getChannel();
     }
 
-	public String getId() {
-		return getChannel().getId();
-	}
+    public String getId() {
+        return getChannel().getId();
+    }
 
-	public String getDescription() {
-		return getChannel().getDescription();
-	}
+    public String getDescription() {
+        return getChannel().getDescription();
+    }
 
-	public String getUnit() {
-		return getChannel().getUnit();
-	}
+    public String getUnit() {
+        return getChannel().getUnit();
+    }
 
-	public ValueType getValueType() {
-		return getChannel().getValueType();
-	}
+    public ValueType getValueType() {
+        return getChannel().getValueType();
+    }
 
-	public int getValueTypeLength() {
-		return getChannel().getValueTypeLength();
-	}
+    public int getValueTypeLength() {
+        return getChannel().getValueTypeLength();
+    }
 
     final void invokeListening(RecordsReceivedListener listener) throws ConnectionException {
-    	invokeMethod(Listen.class, this, listener);
+        invokeMethod(Listen.class, this, listener);
     }
 
     final void invokeRead(long timestamp) throws ConnectionException {
-    	Record record = (Record) invokeReturn(Read.class, this, timestamp);
+        Record record = (Record) invokeReturn(Read.class, this, timestamp);
         setRecord(record);
     }
 
     final void invokeWrite() throws ConnectionException {
-    	Flag flag = (Flag) invokeReturn(Write.class, this, getRecord());
+        Flag flag = (Flag) invokeReturn(Write.class, this, getRecord());
         setFlag(flag);
     }
 

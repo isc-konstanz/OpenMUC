@@ -21,10 +21,8 @@
 package org.openmuc.framework.datalogger;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Configurations;
 import org.openmuc.framework.config.Reflectable;
 import org.openmuc.framework.config.Settings;
-import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.annotation.Configure;
 import org.openmuc.framework.datalogger.spi.LogChannel;
@@ -35,45 +33,30 @@ public abstract class ChannelWrapper extends Reflectable {
 
     String settings = "";
 
-    @Option(id={"intervalMax", "loggingMaxInterval"}, mandatory = false)
-    int intervalMax = 0;
-
-    @Option(id= {"tolerance", "loggingTolerance"}, mandatory = false)
-    double tolerance = 0;
-
-    @Option(mandatory = false)
-    boolean average = false;
-
     protected ChannelWrapper() {
     }
 
-    void invokeConfigure(LoggingChannelContext context, LogChannel channel) 
+    void invokeConfigure(LoggingChannelContext context, LogChannel channel, Settings settings) 
             throws ArgumentSyntaxException {
         
+    	// TODO: verify equality only for logger specific settings
         if (!equals(channel)) {
-            Settings settings = Configurations.parseSettings(channel.getLoggingSettings(), getClass());
             configure(settings);
             
             this.settings = channel.getLoggingSettings();
             this.channel = channel;
             
-            if (intervalMax < 0) {
-                throw new ArgumentSyntaxException("Invalid maximum logging interval for channel: " + getId());
+            if (isAveraging()) {
+                switch (getValueType()) {
+                case BOOLEAN:
+                case BYTE:
+                case BYTE_ARRAY:
+                case STRING:
+                    throw new ArgumentSyntaxException("Invalid value type \"" + getValueType() + "\" to calculate average of channel: " + getId());
+                default:
+                    break;
+                }
             }
-            else {
-                this.intervalMax = Math.max(getLoggingInterval(), intervalMax);
-            }
-    		if (isAveraging()) {
-    	        switch (getValueType()) {
-    			case BOOLEAN:
-    			case BYTE:
-    			case BYTE_ARRAY:
-    			case STRING:
-    	            throw new ArgumentSyntaxException("Invalid value type \"" + getValueType() + "\" to calculate average of channel: " + getId());
-    			default:
-    				break;
-    	        }
-    		}
             invokeMethod(Configure.class, this, context, settings);
             invokeMethod(Configure.class, this, context);
             invokeMethod(Configure.class, this);
@@ -115,45 +98,45 @@ public abstract class ChannelWrapper extends Reflectable {
         return channel.getValueTypeLength();
     }
 
-    public Double getValueOffset() {
+    public final Double getValueOffset() {
         return channel.getValueOffset();
     }
 
-    public Double getScalingFactor() {
+    public final Double getScalingFactor() {
         return channel.getScalingFactor();
     }
 
-    public Integer getLoggingInterval() {
+    public final int getLoggingInterval() {
         return channel.getLoggingInterval();
     }
 
-    public final int getLoggingIntervalMax() {
-        return intervalMax;
+    public final int getLoggingTimeMax() {
+        return channel.getLoggingDelayMaximum();
     }
 
-    boolean isLoggingDynamic() {
-        return intervalMax > getLoggingInterval();
-    }
-
-    public final double getLoggingTolerance() {
-        return tolerance;
-    }
-
-    public Integer getLoggingTimeOffset() {
+    public final int getLoggingTimeOffset() {
         return channel.getLoggingTimeOffset();
     }
 
-    public Boolean isLoggingEvent() {
+    public final double getLoggingTolerance() {
+        return channel.getLoggingTolerance();
+    }
+
+    public final boolean isLoggingEvent() {
         return channel.isLoggingEvent();
     }
 
+    final boolean isLoggingDynamic() {
+        return channel.getLoggingDelayMaximum() > getLoggingInterval();
+    }
+
     public final boolean isAveraging() {
-        return average;
+        return channel.isloggingAverage();
     }
 
     public boolean equals(LogChannel channel) {
-        return this.channel.getId() != null && channel != null &&
-                this.channel.getId().equals(channel.getId()) &&
+        return this.channel != null && channel != null && 
+                this.channel.getId().equals(channel.getId()) && 
                 this.settings.equals(channel.getLoggingSettings());
     }
 

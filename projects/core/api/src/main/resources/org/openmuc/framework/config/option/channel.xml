@@ -14,7 +14,7 @@
     </selection>
   </option>
   <option id="samplingTimeOffset">
-    <name>Sampling time offset</name>
+    <name>Sampling Time Offset</name>
     <mandatory>false</mandatory>
     <type>INTEGER</type>
     <default>0</default>
@@ -23,7 +23,7 @@
     </selection>
   </option>
   <option id="samplingGroup">
-    <name>Sampling group</name>
+    <name>Sampling Group</name>
     <description><![CDATA[
         For grouping channels. All channels with the same samplingGroup and same samplingInterval are in one group.<br>
         The purpose of samplingGroups is to improve the drivers performance – if possible.
@@ -39,7 +39,7 @@
     <type>BOOLEAN</type>
   </option>
   <option id="loggingInterval">
-    <name>Logging interval</name>
+    <name>Logging Interval</name>
     <description><![CDATA[
         Time difference until this channel is logged again.<br>
         Setting the time interval to -1 or omitting the logging interval parameter disables logging on this channel.
@@ -51,8 +51,12 @@
       <default>time</default>
     </selection>
   </option>
-  <option id="loggingTimeOffset">
-    <name>Logging time offset</name>
+  <option id="loggingDelayMaximum">
+    <name>Logging Delay Maximum</name>
+    <description><![CDATA[
+        Time delay maximum until a value will be logged again, even if it changed less than the configured tolerance
+      ]]>
+    </description>
     <mandatory>false</mandatory>
     <type>INTEGER</type>
     <default>0</default>
@@ -60,8 +64,47 @@
       <default>time</default>
     </selection>
   </option>
+  <option id="loggingTimeOffset">
+    <name>Logging Time Offset</name>
+    <mandatory>false</mandatory>
+    <type>INTEGER</type>
+    <default>0</default>
+    <selection>
+      <default>time</default>
+    </selection>
+  </option>
+  <option id="loggingTolerance">
+    <name>Logging Tolerance</name>
+    <description><![CDATA[
+        The absolute tolerance, a value will be delayed to be logged if below. Needs to have a logging delay maximum greater than 0.
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>DOUBLE</type>
+    <default>0</default>
+  </option>
+  <option id="loggingAverage">
+    <name>Logging Average</name>
+    <description><![CDATA[
+        Enables the averaging of delayed values, below the configured tolerance.'
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>BOOLEAN</type>
+    <default>false</default>
+  </option>
+  <option id="loggingEvent">
+    <name>Logging Event</name>
+    <description><![CDATA[
+        Determines if channel shall passivly logged for incomming value changes. Needs listening activated and logging intervall off.'
+      ]]>
+    </description>
+    <mandatory>false</mandatory>
+    <type>BOOLEAN</type>
+    <default>false</default>
+  </option>
   <option id="valueType">
-    <name>Value type</name>
+    <name>Value Type</name>
     <mandatory>false</mandatory>
     <type>STRING</type>
     <default>DOUBLE</default>
@@ -78,7 +121,7 @@
     </selection>
   </option>
   <option id="valueTypeLength">
-    <name>Value length</name>
+    <name>Value Length</name>
     <description><![CDATA[
         Only used if valueType == BYTE_ARRAY or STRING.<br>
         Determines the maximum length of the byte array or string.
@@ -88,7 +131,7 @@
     <type>INTEGER</type>
   </option>
   <option id="scalingFactor">
-    <name>Scaling factor</name>
+    <name>Scaling Factor</name>
     <description><![CDATA[
         Is used to scale a value read by a driver or set by an application. 
         The value read by an driver is multiplied with the scalingFactor and a value set by an application 
@@ -100,7 +143,7 @@
     <default>1</default>
   </option>
   <option id="valueOffset">
-    <name>Value offset</name>
+    <name>Value Offset</name>
     <description><![CDATA[
         Is used to offset a value read by a driver or set by an application. 
         The offset is added to a value read by a driver and subtracted from a value set by an application.

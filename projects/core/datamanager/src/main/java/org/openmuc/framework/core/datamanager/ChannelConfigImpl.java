@@ -60,10 +60,13 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     private Integer samplingTimeOffset = null;
     private String samplingGroup = null;
     private String settings;
-    private Boolean loggingEvent = null;
     private Integer loggingInterval = null;
+    private Integer loggingDelayMaximum = null;
     private Integer loggingTimeOffset = null;
     private String loggingSettings = null;
+    private Double loggingTolerance = null;
+    private Boolean loggingAverage = null;
+    private Boolean loggingEvent = null;
     private String reader;
     private Boolean disabled = null;
     private List<ServerMapping> serverMappings = null;
@@ -159,15 +162,24 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 else if (childName.equals("samplingGroup")) {
                     config.setSamplingGroup(childNode.getTextContent());
                 }
+                else if (childName.equals("loggingInterval")) {
+                    config.setLoggingInterval(timeStringToMillis(childNode.getTextContent()));
+                }
+                else if (childName.equals("loggingDelayMaximum") || childName.equals("loggingDelayMax")) {
+                    config.setLoggingDelayMaximum(timeStringToMillis(childNode.getTextContent()));
+                }
+                else if (childName.equals("loggingTimeOffset")) {
+                    config.setLoggingTimeOffset(timeStringToMillis(childNode.getTextContent()));
+                }
                 else if (childName.equals("loggingSettings")) {
                     config.setLoggingSettings(childNode.getTextContent());
                     config.setReader(getAttributeValue(childNode, "reader"));
                 }
-                else if (childName.equals("loggingInterval")) {
-                    config.setLoggingInterval(timeStringToMillis(childNode.getTextContent()));
+                else if (childName.equals("loggingTolerance")) {
+                    config.setLoggingTolerance(Double.parseDouble(childNode.getTextContent()));
                 }
-                else if (childName.equals("loggingTimeOffset")) {
-                    config.setLoggingTimeOffset(timeStringToMillis(childNode.getTextContent()));
+                else if (childName.equals("loggingAverage")) {
+                    config.setloggingAverage(Boolean.parseBoolean(childNode.getTextContent()));
                 }
                 else if (childName.equals("loggingEvent")) {
                     config.setLoggingEvent(Boolean.parseBoolean(childNode.getTextContent()));
@@ -442,6 +454,19 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     }
 
     @Override
+    public Integer getLoggingDelayMaximum() {
+        return loggingDelayMaximum;
+    }
+
+    @Override
+    public void setLoggingDelayMaximum(Integer loggingDelayMaximum) {
+        if (loggingDelayMaximum != null && loggingDelayMaximum < 0) {
+            throw new IllegalArgumentException("The logging time maximum may not be negative.");
+        }
+        this.loggingDelayMaximum = loggingDelayMaximum;
+    }
+
+    @Override
     public Integer getLoggingTimeOffset() {
         return loggingTimeOffset;
     }
@@ -462,6 +487,29 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     @Override
     public void setLoggingSettings(String settings) {
         loggingSettings = settings;
+    }
+
+    @Override
+    public Double getLoggingTolerance() {
+        return loggingTolerance;
+    }
+
+    @Override
+    public void setLoggingTolerance(Double loggingTolerance) {
+        if (loggingTolerance != null && loggingTolerance < 0) {
+            throw new IllegalArgumentException("The logging tolerance may not be negative.");
+        }
+        this.loggingTolerance = loggingTolerance;
+    }
+
+    @Override
+    public Boolean isloggingAverage() {
+        return loggingAverage;
+    }
+
+    @Override
+    public void setloggingAverage(Boolean averaging) {
+        this.loggingAverage = averaging;
     }
 
     @Override
@@ -613,6 +661,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             parentElement.appendChild(childElement);
         }
 
+        if (loggingDelayMaximum != null) {
+            childElement = document.createElement("loggingDelayMaximum");
+            childElement.setTextContent(millisToTimeString(loggingDelayMaximum));
+            parentElement.appendChild(childElement);
+        }
+
         if (loggingTimeOffset != null) {
             childElement = document.createElement("loggingTimeOffset");
             childElement.setTextContent(millisToTimeString(loggingTimeOffset));
@@ -622,6 +676,18 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         if (loggingSettings != null) {
             childElement = document.createElement("loggingSettings");
             childElement.setTextContent(loggingSettings);
+            parentElement.appendChild(childElement);
+        }
+
+        if (loggingTolerance != null) {
+            childElement = document.createElement("loggingTolerance");
+            childElement.setTextContent(Double.toString(loggingTolerance));
+            parentElement.appendChild(childElement);
+        }
+
+        if (loggingAverage != null) {
+            childElement = document.createElement("loggingAverage");
+            childElement.setTextContent(loggingAverage.toString());
             parentElement.appendChild(childElement);
         }
 
@@ -656,8 +722,11 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         configClone.samplingGroup = samplingGroup;
         configClone.settings = settings;
         configClone.loggingInterval = loggingInterval;
+        configClone.loggingDelayMaximum = loggingDelayMaximum;
         configClone.loggingTimeOffset = loggingTimeOffset;
         configClone.loggingSettings = loggingSettings;
+        configClone.loggingTolerance = loggingTolerance;
+        configClone.loggingAverage = loggingAverage;
         configClone.loggingEvent = loggingEvent;
         configClone.serverMappings = serverMappings;
         configClone.reader = reader;
@@ -782,25 +851,11 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
             configClone.loggingInterval = loggingInterval;
         }
 
-        if (loggingEvent == null) {
-            configClone.loggingEvent = ChannelConfig.LOGGING_EVENT_DEFAULT;
+        if (loggingDelayMaximum == null) {
+            configClone.loggingDelayMaximum = ChannelConfig.LOGGING_DELAY_MAX_DEFAULT;
         }
         else {
-            configClone.loggingEvent = loggingEvent;
-        }
-
-        if (loggingSettings == null) {
-            configClone.loggingSettings = ChannelConfig.LOGGING_SETTINGS_DEFAULT;
-        }
-        else {
-            configClone.loggingSettings = loggingSettings;
-        }
-
-        if (reader == null) {
-            configClone.reader = ChannelConfig.LOGGING_READER_DEFAULT;
-        }
-        else {
-            configClone.reader = reader;
+            configClone.loggingDelayMaximum = loggingDelayMaximum;
         }
 
         if (loggingTimeOffset == null) {
@@ -815,6 +870,34 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         }
         else {
             configClone.loggingSettings = loggingSettings;
+        }
+
+        if (loggingTolerance == null) {
+            configClone.loggingTolerance = ChannelConfig.LOGGING_TOLERANCE_DEFAULT;
+        }
+        else {
+            configClone.loggingTolerance = loggingTolerance;
+        }
+
+        if (loggingAverage == null) {
+            configClone.loggingAverage = ChannelConfig.LOGGING_AVERAGING_DEFAULT;
+        }
+        else {
+            configClone.loggingAverage = loggingAverage;
+        }
+
+        if (loggingEvent == null) {
+            configClone.loggingEvent = ChannelConfig.LOGGING_EVENT_DEFAULT;
+        }
+        else {
+            configClone.loggingEvent = loggingEvent;
+        }
+
+        if (reader == null) {
+            configClone.reader = ChannelConfig.LOGGING_READER_DEFAULT;
+        }
+        else {
+            configClone.reader = reader;
         }
 
         if (disabled == null) {
