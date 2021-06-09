@@ -128,7 +128,7 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
                 return null;
             }
             if (hasMethod(Read.class, this)) {
-                return (List<Record>) invokeReturn(Read.class, loggingChannel, startTime, endTime);
+                return (List<Record>) invokeReturn(Read.class, this, loggingChannel, startTime, endTime);
             }
             else if (hasMethod(Read.class, channelClass)) {
                 return loggingChannel.invokeRead(startTime, endTime);

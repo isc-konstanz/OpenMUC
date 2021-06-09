@@ -25,6 +25,7 @@ import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,25 +160,26 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return scanner;
     }
 
-    final DriverChannel newChannel(ChannelTaskContainer container) 
+    @SuppressWarnings("unchecked")
+	final <C extends DriverChannel> C newChannel(ChannelTaskContainer container) 
             throws RuntimeException, ArgumentSyntaxException {
         
         Address address = Configurations.parseAddress(container.getChannelAddress(), channelClass);
         Settings settings = Configurations.parseSettings(container.getChannelSettings(), channelClass);
         
-        DriverChannel channel;
+        C channel;
         if (this instanceof DriverChannelFactory) {
-            channel = ((DriverChannelFactory) this).newChannel(address, settings);
+            channel = (C) ((DriverChannelFactory) this).newChannel(address, settings);
         }
         else {
-            channel = newInstance(channelClass);
+            channel = (C) newInstance(channelClass);
         }
         return channel;
     }
 
-    final <C extends DriverChannel> DriverChannel getChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
+    final <C extends DriverChannel> C getChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
         String id = container.getChannel().getId();
-        DriverChannel channel = channels.get(id);
+		C channel = getChannel(id);
         try {
             if (channel == null) {
                 channel = newChannel(container);
@@ -193,16 +195,18 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return channel;
     }
 
-    public final DriverChannel getChannel(String id) {
-        return channels.get(id);
+    @SuppressWarnings("unchecked")
+	public final <C extends DriverChannel> C getChannel(String id) {
+        return (C) channels.get(id);
     }
 
-    public final List<DriverChannel> getChannels() {
-        return (List<DriverChannel>) channels.values();
+    @SuppressWarnings("unchecked")
+	public final <C extends DriverChannel> List<C> getChannels() {
+        return new ArrayList<C>((Collection<C>) channels.values());
     }
 
-    final List<DriverChannel> getChannels(List<? extends ChannelTaskContainer> containers) {
-        List<DriverChannel> channels = new ArrayList<DriverChannel>();
+    final <C extends DriverChannel> List<C> getChannels(List<? extends ChannelTaskContainer> containers) {
+        List<C> channels = new ArrayList<C>();
         for (ChannelTaskContainer container : containers) {
             try {
                 channels.add(getChannel(container));
@@ -216,10 +220,10 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return channels;
     }
 
-    final List<DriverChannel> newChannels(List<? extends ChannelTaskContainer> containers) {
-        List<DriverChannel> channels = new ArrayList<DriverChannel>();
+    final <C extends DriverChannel> List<C> newChannels(List<? extends ChannelTaskContainer> containers) {
+        List<C> channels = new ArrayList<C>();
         for (ChannelTaskContainer container : containers) {
-        	DriverChannel channel;
+        	C channel;
             try {
                 channel = newChannel(container);
                 channel.invokeConfigure(this, container);

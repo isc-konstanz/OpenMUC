@@ -59,6 +59,7 @@ public abstract class ChannelWrapper extends Reflectable {
             }
             invokeMethod(Configure.class, this, context, settings);
             invokeMethod(Configure.class, this, context);
+            invokeMethod(Configure.class, this, settings);
             invokeMethod(Configure.class, this);
             return;
         }
@@ -94,15 +95,15 @@ public abstract class ChannelWrapper extends Reflectable {
         return channel.getValueType();
     }
 
-    public final Integer getValueTypeLength() {
+    public final int getValueTypeLength() {
         return channel.getValueTypeLength();
     }
 
-    public final Double getValueOffset() {
+    public final double getValueOffset() {
         return channel.getValueOffset();
     }
 
-    public final Double getScalingFactor() {
+    public final double getScalingFactor() {
         return channel.getScalingFactor();
     }
 

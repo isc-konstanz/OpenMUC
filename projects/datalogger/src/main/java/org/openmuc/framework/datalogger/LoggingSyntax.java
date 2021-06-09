@@ -28,7 +28,7 @@ public class LoggingSyntax extends OptionSyntax {
 	public static String ASSIGNMENT = "=";
 	public static String SEPARATOR = ",";
 
-    protected LoggingSyntax() {
+    public LoggingSyntax() {
     	super(OptionType.SETTING);
     	this.assignment = ASSIGNMENT;
     	this.separator = SEPARATOR;
