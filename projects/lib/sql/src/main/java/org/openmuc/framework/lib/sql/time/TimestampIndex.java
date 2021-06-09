@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -18,14 +18,15 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.sql.time;
+package org.openmuc.framework.lib.sql.time;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.openmuc.framework.driver.sql.Index;
+import org.openmuc.framework.lib.sql.Index;
+import org.openmuc.framework.lib.sql.IndexType;
 
 
 public class TimestampIndex extends Index {
@@ -35,6 +36,11 @@ public class TimestampIndex extends Index {
     public TimestampIndex(String column, String format) {
         super(column);
         this.format = new SimpleDateFormat(format);
+    }
+
+    @Override
+    public IndexType getType() {
+        return IndexType.TIMESTAMP;
     }
 
     @Override

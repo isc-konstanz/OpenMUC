@@ -1,4 +1,4 @@
-package org.openmuc.framework.driver.sql;
+package org.openmuc.framework.lib.sql;
 
 public enum IndexType {
 

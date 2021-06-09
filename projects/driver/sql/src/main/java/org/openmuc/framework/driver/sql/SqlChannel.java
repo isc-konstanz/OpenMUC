@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
+import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.framework.data.BooleanValue;
@@ -44,11 +45,14 @@ import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.DriverChannel;
 import org.openmuc.framework.driver.annotation.Configure;
+import org.openmuc.framework.lib.sql.Index;
+import org.openmuc.framework.lib.sql.SqlData;
+import org.openmuc.framework.lib.sql.TableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Syntax(separator = ";", assignment = "=", keyValuePairs = { ADDRESS, SETTING })
-public class SqlChannel extends DriverChannel {
+public class SqlChannel extends DriverChannel implements SqlData {
     private static final Logger logger = LoggerFactory.getLogger(SqlChannel.class);
 
     @Option(type = ADDRESS,
@@ -70,21 +74,28 @@ public class SqlChannel extends DriverChannel {
             description = "The column name of the table containing the unique key identifying the series.<br>" +
                           "<i>Only necessary for unnormalized tables</i>.",
             mandatory = false)
-    protected String keyColumn = "key";
+    protected String keyColumn = "channelid";
 
     @Option(type = ADDRESS,
-            name = "Data column",
+            name = "Value column",
             description = "The column name of the table containing the value data.",
             mandatory = false)
-    protected String dataColumn = "data";
+    protected String valueColumn = "data";
 
     @Configure
-    public void setTable(SqlClient client) {
+    public void setTable(SqlClient client) throws ArgumentSyntaxException {
         if (table == null) {
             table = client.getTable();
         }
         if (table == null) {
             table = getId().toLowerCase().replaceAll("[^a-zA-Z0-9]", "_");
+        }
+        else {
+            String valid = table.replaceAll("[^a-zA-Z0-9]", "_");
+            if (!table.equals(valid)) {
+                throw new ArgumentSyntaxException(
+                        "Table name invalid. Only alphanumeric letters separated by underscore are allowed: " + valid);
+            }
         }
     }
 
@@ -100,14 +111,15 @@ public class SqlChannel extends DriverChannel {
         return keyColumn;
     }
 
-    public String getDataColumn() {
-        return dataColumn;
-    }
+	@Override
+	public String getValueColumn() {
+		return valueColumn;
+	}
 
     public Record decode(ResultSet result, Index index) {
         String valueStr;
         try {
-            valueStr = result.getString(getDataColumn()).replaceAll("\"", "");
+            valueStr = result.getString(getValueColumn()).replaceAll("\"", "");
             try {
                 Value value = decode(valueStr);
                 long time = index.decode(result);
@@ -115,10 +127,10 @@ public class SqlChannel extends DriverChannel {
                 return new Record(value, time, Flag.VALID);
             
             } catch(NullPointerException  | IllegalArgumentException | ParseException e) {
-                logger.warn("Error decoding column {} ({}): {}", getDataColumn(), getValueType(), valueStr);
+                logger.warn("Error decoding column {} ({}): {}", getValueColumn(), getValueType(), valueStr);
             }
         } catch (SQLException e) {
-            logger.warn("Error reading column {} ({}): {}", getDataColumn(), getValueType(), e.getMessage());
+            logger.warn("Error reading column {} ({}): {}", getValueColumn(), getValueType(), e.getMessage());
         }
         return new Record(Flag.DRIVER_ERROR_DECODING_RESPONSE_FAILED);
     }
@@ -167,5 +179,11 @@ public class SqlChannel extends DriverChannel {
         }
         return b;
     }
+
+	@Override
+	public TableType getTableType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

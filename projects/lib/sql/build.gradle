@@ -4,23 +4,40 @@ def projectDescription = "SQL library for the OpenMUC framework"
 configurations.create('embed')
 
 dependencies {
-    implementation project(':openmuc-core-api')
-    //implementation project(':openmuc-core-datamanager')
-    implementation project(':openmuc-lib-osgi')
-    //implementation group: 'org.osgi', name: 'org.osgi.service.cm', version: '1.6.0'
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
-    implementation group: 'com.h2database', name: 'h2', version: '1.4.200'
-    embed group: 'org.osgi', name: 'org.osgi.service.jdbc', version: '1.0.0'
-    api group: 'org.osgi', name: 'org.osgi.service.jdbc', version: '1.0.0'
+    api              project(':openmuc-lib-osgi')
+    implementation   project(':openmuc-core-api')
+    //implementation   group: 'org.postgresql', name: 'postgresql',            version: '42.2.14'
+    //implementation   group: 'com.h2database', name: 'h2',                    version: '1.4.200'
+    implementation   group: 'com.mchange',    name: 'c3p0',                  version: '0.9.5.4'
+    embed            group: 'com.mchange',    name: 'c3p0',                  version: '0.9.5.4'
+    embed            group: 'org.osgi',       name: 'org.osgi.service.jdbc', version: '1.0.0'
+    api              group: 'org.osgi',       name: 'org.osgi.service.jdbc', version: '1.0.0'
+}
+
+def embed = configurations.embed.findAll {
+    !it.getName().contains("protobuf")
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 
-        'Bundle-ClassPath': '.,lib/org.osgi.service.jdbc-1.0.0.jar',
-        'Export-Package': 'org.openmuc.framework.lib.sql.*,org.osgi.service.jdbc')
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,' + embed.collect { 'lib/'+it.getName() }.join(','),
+        'Export-Package': 'org.openmuc.framework.lib.sql.*,' +
+                          'org.osgi.service.jdbc,' +
+                          'com.mchange.*',
+        'Import-Package': 'com.mysql.cj.jdbc,' +
+                          //'org.postgresql,' +
+                          //'org.h2.tools,' +
+                          'org.slf4j,' +
+                          'javax.sql,' +
+                          '!org.apache.log*,' +
+                          '!org.openmuc.framework.lib.sql.*,' +
+                          '!org.osgi.service.jdbc.*,' +
+                          '!com.mchange.*,' +
+                          '!com.typesafe.config.*,*' + jarDefaultImportPackageVersion)
 
     into('lib') {
-        from configurations.embed
+        from embed
     }
 }
 

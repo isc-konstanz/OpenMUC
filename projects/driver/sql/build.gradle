@@ -1,36 +1,25 @@
-
 def projectName = "OpenMUC Driver - SQL"
 def projectDescription = "SQL driver for the OpenMUC framework."
 
-def c3poVersion =  '0.9.5.4'
-
-configurations.create('embed')
-
 dependencies {
-  implementation project(':openmuc-driver')
-  implementation group: 'com.mchange', name: 'c3p0',                 version: c3poVersion
-  embed          group: 'com.mchange', name: 'c3p0',                 version: c3poVersion
-}
-
-def embed = configurations.embed.findAll {
-  !it.getName().contains("protobuf")
+    implementation project(':openmuc-driver')
+    implementation project(':openmuc-lib-sql')
 }
 
 jar {
-  into('libs') {
-    from embed
-  }
-  manifest {
+    manifest {
     attributes('Bundle-Name':        projectName,
-               'Bundle-Description': projectDescription,
-               'Bundle-ClassPath': '.,' + embed.collect { 'libs/'+it.getName() }.join(','),
-               'Import-Package':    '!com.mchange.*,' +
-                                    '!org.jboss.*,' +
-                                    '!org.apache.log*,' +
-                                    '!com.typesafe.*,' +
-                                    '!javax.swing.*,' +
-                                    'com.mysql.cj.jdbc,' +
-                                    '*' + jarDefaultImportPackageVersion,
-               'Export-Package':    '')
+               'Bundle-Description': projectDescription)
   }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
 }

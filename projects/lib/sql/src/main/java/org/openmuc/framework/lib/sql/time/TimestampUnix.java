@@ -18,12 +18,13 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.datalogger.sql2.time;
+package org.openmuc.framework.lib.sql.time;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.openmuc.framework.datalogger.sql2.Index;
+import org.openmuc.framework.lib.sql.Index;
+import org.openmuc.framework.lib.sql.IndexType;
 
 
 public class TimestampUnix extends Index {
@@ -33,6 +34,11 @@ public class TimestampUnix extends Index {
     public TimestampUnix(String column, int resolution) {
         super(column);
         this.resolution = resolution;
+    }
+
+    @Override
+    public IndexType getType() {
+        return IndexType.TIMESTAMP_UNIX;
     }
 
     @Override

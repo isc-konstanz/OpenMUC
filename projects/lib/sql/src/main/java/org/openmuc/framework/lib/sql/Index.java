@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -18,10 +18,11 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.sql;
+package org.openmuc.framework.lib.sql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.text.ParseException;
 
 
@@ -35,6 +36,14 @@ public abstract class Index {
 
     public String getColumn() {
         return column;
+    }
+
+    public abstract IndexType getType();
+
+    public String queryWhere(long startTime, long endTime) {
+        return MessageFormat.format("WHERE {0} >= ''{1}'' AND {0} <= ''{2}'' ORDER BY {0} ASC", column,
+                encode(startTime),
+                encode(endTime));
     }
 
     public String queryLatest() {

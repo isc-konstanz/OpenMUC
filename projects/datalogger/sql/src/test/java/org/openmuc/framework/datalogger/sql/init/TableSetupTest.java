@@ -46,9 +46,9 @@ import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.sql.DbAccess;
 import org.openmuc.framework.datalogger.sql.MetaBuilder;
 import org.openmuc.framework.datalogger.sql.TableSetup;
-import org.openmuc.framework.datalogger.sql.utils.PropertyHandlerProvider;
-import org.openmuc.framework.datalogger.sql.utils.Settings;
 import org.openmuc.framework.lib.osgi.config.PropertyHandler;
+import org.openmuc.framework.lib.sql.properties.PropertyHandlerProvider;
+import org.openmuc.framework.lib.sql.properties.PropertySettings;
 
 class TableSetupTest {
 
@@ -71,7 +71,7 @@ class TableSetupTest {
         when(accessMock.getColumnLength(anyList(), anyString())).thenReturn(Collections.nCopies(20, 20));
 
         PropertyHandler propHandlerMock = mock(PropertyHandler.class);
-        when(propHandlerMock.getString(Settings.URL)).thenReturn("jdbc:h2");
+        when(propHandlerMock.getString(PropertySettings.URL)).thenReturn("jdbc:h2");
         PropertyHandlerProvider.getInstance().setPropertyHandler(propHandlerMock);
 
         tableSetup = new TableSetup(channelList, accessMock);

@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.sql.table;
+package org.openmuc.framework.driver.sql;
 
 import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
@@ -37,11 +37,9 @@ import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.driver.DriverChannelScanner;
 import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.sql.SqlClient;
+import org.openmuc.framework.lib.sql.SqlConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.mchange.v2.c3p0.PooledDataSource;
 
 public class ColumnScanner extends DriverChannelScanner {
     private static final Logger logger = LoggerFactory.getLogger(ColumnScanner.class);
@@ -52,17 +50,14 @@ public class ColumnScanner extends DriverChannelScanner {
             mandatory = false)
     private String table;
 
-    private final String database;
+    private String database;
 
-    private final PooledDataSource source;
-
-    public ColumnScanner(PooledDataSource source, String database) {
-        this.source = source;
-        this.database = database;
-    }
+    private SqlConnector connector;
 
     @Configure
-    public void setTable(SqlClient client) {
+    public void configure(SqlClient client) {
+        this.connector = client.getDatabaseConnector();
+        this.database = client.getDatabaseUrl();
         if (table == null) {
             table = client.getTable();
         }
@@ -80,7 +75,7 @@ public class ColumnScanner extends DriverChannelScanner {
     public void scan(List<ChannelScanInfo> channels) throws ArgumentSyntaxException, ScanException, ConnectionException {
         logger.info("Scan for columns in {}.{}", database, table);
         
-        try (Connection connection = source.getConnection()) {
+        try (Connection connection = connector.connect()) {
             try (Statement statement = connection.createStatement()) {
                 try (ResultSet result = statement.executeQuery(String.format("SELECT * FROM %s LIMIT 1", table))) {
                     if (result.first()) {

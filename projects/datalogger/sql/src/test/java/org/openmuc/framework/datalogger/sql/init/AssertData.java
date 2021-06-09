@@ -21,15 +21,15 @@
 
 package org.openmuc.framework.datalogger.sql.init;
 
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.BOOLEAN_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.BYTE_ARRAY_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.BYTE_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.DOUBLE_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.FLOAT_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.INT_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.LONG_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.SHORT_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.STRING_VALUE;
+import static org.openmuc.framework.lib.sql.Table.BOOLEAN_VALUE;
+import static org.openmuc.framework.lib.sql.Table.BYTE_ARRAY_VALUE;
+import static org.openmuc.framework.lib.sql.Table.BYTE_VALUE;
+import static org.openmuc.framework.lib.sql.Table.DOUBLE_VALUE;
+import static org.openmuc.framework.lib.sql.Table.FLOAT_VALUE;
+import static org.openmuc.framework.lib.sql.Table.INT_VALUE;
+import static org.openmuc.framework.lib.sql.Table.LONG_VALUE;
+import static org.openmuc.framework.lib.sql.Table.SHORT_VALUE;
+import static org.openmuc.framework.lib.sql.Table.STRING_VALUE;
 
 import java.sql.JDBCType;
 import java.util.ArrayList;

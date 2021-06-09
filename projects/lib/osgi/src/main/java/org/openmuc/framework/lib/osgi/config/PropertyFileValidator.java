@@ -111,7 +111,7 @@ public class PropertyFileValidator {
             if (!existingProp.contains("#") && serviceProperties.keySet()
                     .stream()
                     .map(prop -> prop.toString())
-                    .noneMatch(key -> key.contains(existingProp.split("=")[0]))) {
+                    .noneMatch(key -> key.contains(existingProp.split("=")[0].trim()))) {
                 logger.warn("{} in {} is deprecated", existingProp, filename);
             }
         }

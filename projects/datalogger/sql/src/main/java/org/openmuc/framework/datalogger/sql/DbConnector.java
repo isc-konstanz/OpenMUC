@@ -21,9 +21,9 @@
 
 package org.openmuc.framework.datalogger.sql;
 
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.MYSQL;
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.POSTGRES;
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.POSTGRESQL;
+import static org.openmuc.framework.lib.sql.SqlData.MYSQL;
+import static org.openmuc.framework.lib.sql.SqlData.POSTGRES;
+import static org.openmuc.framework.lib.sql.SqlData.POSTGRESQL;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,9 +42,9 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.h2.tools.Server;
-import org.openmuc.framework.datalogger.sql.utils.PropertyHandlerProvider;
-import org.openmuc.framework.datalogger.sql.utils.Settings;
 import org.openmuc.framework.lib.osgi.config.PropertyHandler;
+import org.openmuc.framework.lib.sql.properties.PropertyHandlerProvider;
+import org.openmuc.framework.lib.sql.properties.PropertySettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -67,7 +67,7 @@ public class DbConnector {
 
     public DbConnector() {
         PropertyHandler propertyHandler = PropertyHandlerProvider.getInstance().getPropertyHandler();
-        url = propertyHandler.getString(Settings.URL);
+        url = propertyHandler.getString(PropertySettings.URL);
         initConnector();
         getConnectionToDb();
     }
@@ -164,14 +164,14 @@ public class DbConnector {
         PropertyHandler propertyHandler = PropertyHandlerProvider.getInstance().getPropertyHandler();
         Properties properties = new Properties();
         properties.setProperty("url", url);
-        properties.setProperty("password", propertyHandler.getString(Settings.PASSWORD));
-        properties.setProperty("user", propertyHandler.getString(Settings.USER));
+        properties.setProperty("password", propertyHandler.getString(PropertySettings.PASSWORD));
+        properties.setProperty("user", propertyHandler.getString(PropertySettings.USER));
         if (!url.contains("h2")) {
             if (url.contains(POSTGRESQL)) {
-                properties.setProperty("ssl", propertyHandler.getString(Settings.SSL));
+                properties.setProperty("ssl", propertyHandler.getString(PropertySettings.SSL));
             }
-            properties.setProperty("tcpKeepAlive", propertyHandler.getString(Settings.TCP_KEEP_ALIVE));
-            properties.setProperty("socketTimeout", propertyHandler.getString(Settings.SOCKET_TIMEOUT));
+            properties.setProperty("tcpKeepAlive", propertyHandler.getString(PropertySettings.TCP_KEEP_ALIVE));
+            properties.setProperty("socketTimeout", propertyHandler.getString(PropertySettings.SOCKET_TIMEOUT));
         }
 
         return properties;
@@ -183,12 +183,19 @@ public class DbConnector {
      * which has to be instantiated with the MySQL JDBC Driver class
      */
     private void setDataSourceFactory() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        BundleContext bundleContext = FrameworkUtil.getBundle(SqlLoggerService.class).getBundleContext();
+        BundleContext bundleContext = FrameworkUtil.getBundle(SqlLogger.class).getBundleContext();
         if (url.contains(POSTGRESQL)) {
             for (Bundle bundle : bundleContext.getBundles()) {
                 if (bundle.getSymbolicName().equals("org.postgresql.jdbc")) {
-                    dataSourceFactory = (DataSourceFactory) bundle.loadClass("org.postgresql.osgi.PGDataSourceFactory")
-                            .newInstance();
+                    try {
+                        dataSourceFactory = (DataSourceFactory) bundle.loadClass("org.postgresql.osgi.PGDataSourceFactory")
+                                .getDeclaredConstructor().newInstance();
+                    
+                    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                            | InvocationTargetException | NoSuchMethodException | SecurityException
+                            | ClassNotFoundException e) {
+                        logger.error(e.getMessage());
+                    }
                     // ToDo: make this running
                     // dataSourceFactory = new PGDataSourceFactory();
                 }
@@ -198,14 +205,21 @@ public class DbConnector {
         if (url.contains(MYSQL)) {
             for (Bundle bundle : bundleContext.getBundles()) {
                 if (bundle.getSymbolicName().equals("com.mysql.cj")) {
-                    // retrieve MySQL JDBC driver
-                    driver = (java.sql.Driver) bundle.loadClass("com.mysql.cj.jdbc.Driver").newInstance();
+                    try {
+                        // retrieve MySQL JDBC driver
+                        driver = (java.sql.Driver) bundle.loadClass("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+                    
+                    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                            | InvocationTargetException | NoSuchMethodException | SecurityException
+                            | ClassNotFoundException e) {
+                        logger.error(e.getMessage());
+                    }
                 }
                 if (bundle.getSymbolicName().equals("org.ops4j.pax.jdbc")) {
                     // get constructor and instantiate with MySQL driver
-                    Constructor[] constructors = bundle.loadClass("org.ops4j.pax.jdbc.impl.DriverDataSourceFactory")
+                    Constructor<?>[] constructors = bundle.loadClass("org.ops4j.pax.jdbc.impl.DriverDataSourceFactory")
                             .getDeclaredConstructors();
-                    Constructor constructor = constructors[0];
+                    Constructor<?> constructor = constructors[0];
                     constructor.setAccessible(true);
                     try {
                         dataSourceFactory = (DataSourceFactory) constructor.newInstance(driver);
@@ -253,7 +267,7 @@ public class DbConnector {
             }
             PropertyHandler propertyHandler = PropertyHandlerProvider.getInstance().getPropertyHandler();
             cmd[1] = "-c";
-            cmd[2] = "PGPASSWORD=" + propertyHandler.getString(Settings.PSQL_PASS)
+            cmd[2] = "PGPASSWORD=" + propertyHandler.getString(PropertySettings.PASSWORD_PSQL)
                     + " psql -c 'ALTER EXTENSION timescaledb UPDATE;'  -U postgres -h localhost -d " + dbName;
             Process process = Runtime.getRuntime().exec(cmd);
 

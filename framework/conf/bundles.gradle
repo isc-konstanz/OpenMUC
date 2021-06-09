@@ -54,7 +54,8 @@ dependencies {
   // The official JDBC driver for MySQL.
   // Only necessary if the default configurations with the SQL DataLogger is used.
   //------------------------------------------------------------------------------------------------------
-  //osgibundles group: 'mysql',                 name: 'mysql-connector-java',              version: "8.0.17"
+  osgibundles group: 'com.h2database',        name: 'h2',                                    version: '1.4.200'
+  osgibundles group: 'org.postgresql',        name: 'postgresql',                            version: '42.2.14'
 
   //------------------------------------------------------------------------------------------------------
   // The Apache Felix Gogo standard shell for OSGi (http://felix.apache.org/site/apache-felix-gogo.html)

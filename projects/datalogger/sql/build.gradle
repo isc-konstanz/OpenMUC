@@ -1,33 +1,19 @@
 def projectName = "OpenMUC Data Logger - SQL"
 def projectDescription = "SQL data logger for the OpenMUC framework."
 
-configurations.create('embed')
-
 dependencies {
     implementation project(':openmuc-datalogger')
+    implementation project(':openmuc-lib-sql')
     implementation project(':openmuc-lib-osgi')
     implementation group: 'org.osgi', name: 'org.osgi.service.cm', version: '1.6.0'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
     implementation group: 'com.h2database', name: 'h2', version: '1.4.200'
-    implementation group: 'com.mchange', name: 'c3p0', version: '0.9.5.4'
-    embed group: 'org.osgi', name: 'org.osgi.service.jdbc', version: '1.0.0'
-    api group: 'org.osgi', name: 'org.osgi.service.jdbc', version: '1.0.0'
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 
-        'Bundle-Description': projectDescription,
-        'Bundle-ClassPath': '.,lib/org.osgi.service.jdbc-1.0.0.jar',
-        'Export-Package': 'org.osgi.service.jdbc',
-        'Import-Package': 'org.postgresql,javax.sql,org.h2.tools,' +
-                          'org.openmuc.framework.*,' +
-                          'org.osgi.*,org.slf4j,!org.osgi.service.jdbc,' + jarDefaultImportPackageVersion)
-
-    into('lib') {
-        from configurations.embed
-    }
+    bnd('Bundle-Name':        projectName, 
+        'Bundle-Description': projectDescription)
 }
-
 
 publishing {
     publications {

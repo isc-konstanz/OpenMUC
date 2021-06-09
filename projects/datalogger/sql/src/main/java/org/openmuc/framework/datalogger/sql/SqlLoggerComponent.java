@@ -32,19 +32,19 @@ import org.osgi.service.component.annotations.Deactivate;
 public class SqlLoggerComponent {
 
     private RegistrationHandler registrationHandler;
-    private SqlLoggerService loggerService;
+    private SqlLogger logger;
 
     @Activate
     public void activate(BundleContext bundleContext) {
+        logger = new SqlLogger();
         registrationHandler = new RegistrationHandler(bundleContext);
-        loggerService = new SqlLoggerService();
-        String pid = SqlLoggerService.class.getName();
-        registrationHandler.provideInFramework(DataLoggerService.class.getName(), loggerService, pid);
+        registrationHandler.provideInFramework(DataLoggerService.class.getName(), logger, 
+        		SqlLogger.class.getName());
     }
 
     @Deactivate
     public void deactivate() {
         registrationHandler.removeAllProvidedServices();
-        loggerService.shutdown();
+        logger.shutdown();
     }
 }

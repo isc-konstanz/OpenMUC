@@ -23,21 +23,14 @@ package org.openmuc.framework.driver.sql;
 import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
 import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
+import java.io.IOException;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.Settings;
 import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.config.option.annotation.Syntax;
-import org.openmuc.framework.driver.DriverChannelScannerFactory;
 import org.openmuc.framework.driver.DriverDevice;
 import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.annotation.Connect;
@@ -46,174 +39,192 @@ import org.openmuc.framework.driver.annotation.Disconnect;
 import org.openmuc.framework.driver.annotation.Read;
 import org.openmuc.framework.driver.annotation.Write;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.driver.sql.table.ColumnScanner;
-import org.openmuc.framework.driver.sql.table.TimestampTable;
-import org.openmuc.framework.driver.sql.table.UnionTable;
-import org.openmuc.framework.driver.sql.time.TimestampIndex;
-import org.openmuc.framework.driver.sql.time.TimestampSplit;
-import org.openmuc.framework.driver.sql.time.TimestampUnix;
+import org.openmuc.framework.lib.sql.IndexType;
+import org.openmuc.framework.lib.sql.SqlConnector;
+import org.openmuc.framework.lib.sql.SqlData;
+import org.openmuc.framework.lib.sql.SqlSettings;
+import org.openmuc.framework.lib.sql.TableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-
 @Syntax(separator = ";", assignment = "=", keyValuePairs = { ADDRESS, SETTING })
-@Device(channel = SqlChannel.class)
-public class SqlClient extends DriverDevice implements DriverChannelScannerFactory {
+@Device(channel = SqlChannel.class, scanner = ColumnScanner.class)
+public class SqlClient extends DriverDevice implements SqlSettings {
     private static final Logger logger = LoggerFactory.getLogger(SqlClient.class);
 
+    private SqlConnector connector;
+
+//    @Option(type = ADDRESS,
+//            name = "URL",
+//            description = "URL of the database.<br><br>" +
+//                          "<b>Example:</b>" +
+//                          "<ol>" +
+//                              "<li>jdbc:mysql://127.0.0.1:3306/openmuc</li>" +
+//                              "<li>jdbc:postgresql://127.0.0.1:5432/openmuc</li>" +
+//                          "</ol>",
+//            mandatory = false)
     protected String url;
 
     @Option(type = ADDRESS,
             name = "Host name",
-            description = "The host name of the SQL server to connect to.<br><br>" +
+            description = "Host name of the database, if the URL is not configured.<br><br>" +
                           "<b>Example:</b>" +
                           "<ol>" +
                               "<li>localhost</li>" +
                               "<li>127.0.0.1</li>" +
                               "<li>192.168.178.88</li>" +
-                          "</ol>")
+                          "</ol>",
+            mandatory = false)
     protected String host;
 
-    @Option(id = "port",
+    @Option(type = ADDRESS,
             name = "Port",
-            description = "The port of the SQL server to connect to.",
+            description = "Port of the database, if the URL is not configured.",
             valueDefault = "3306",
             mandatory = false)
-    protected int port = 3306;
+    protected int port;
 
-    @Option(id = "database",
+    @Option(type = ADDRESS,
             name = "Database name",
-            description = "Name of the database to connect to.")
+            description = "Name of the database, if the URL is not configured.",
+            mandatory = false)
     protected String database;
 
-    @Option(id = "table",
+    @Option(type = ADDRESS,
             name = "Table name",
-            description = "Tablename to read columns from.",
+            description = "Default tablename to read columns from.",
             mandatory = false)
     protected String table;
 
-    private final List<String> tables = new ArrayList<String>();
-
     @Option(type = SETTING,
-    		name = "Table union",
-            description = "Enable the union of all found tables in the database, before queries.",
-            valueDefault = "false",
+            name = "Table type",
+            description = "The type of the table.",
+            valueSelection = "SINGLE_COLUMN:Single column,MULTI_COLUMN:Multi columns,VALUE_TYPE:Value types,UNION:Union",
             mandatory = false)
-    protected boolean union = false;
+    protected TableType tableType;
 
     @Option(type = SETTING,
-    		name = "Database driver",
+            name = "Database driver",
             mandatory = false)
-    protected String driver = SqlDriver.DB_DRIVER;
+    protected String driver;
 
     @Option(type = SETTING,
-    		name = "Database type",
+            name = "Database type",
             mandatory = false)
-    protected String type = SqlDriver.DB_TYPE;
+    protected String type;
 
     @Option(type = SETTING,
-    		name = "Username",
+            name = "Username",
             description = "Username to authorize the connection to the database.",
             mandatory = false)
-    protected String user = SqlDriver.DB_USER;
+    protected String user;
 
     @Option(type = SETTING,
-    		name = "Password",
+            name = "Password",
             description = "Password to authenticate the connection to the database.",
             mandatory = false)
-    protected String password = SqlDriver.DB_PWD;
+    protected String password;
 
     @Option(type = SETTING,
-    		name = "Time resolution",
+            name = "Time resolution",
             description = "The time resolution of stored time series.",
             valueSelection = "1:Milliseconds,1000:Seconds,60000:Minutes,3600000:Hours",
-            valueDefault = "1000",
             mandatory = false)
-    protected int timeResolution = 1000;
+    protected int timeResolution;
 
     @Option(type = SETTING,
-    		name = "Time format",
-            description = "The format of the stored time index.",
-            valueDefault = "yyyy-MM-dd HH:mm:ss",
+            name = "Time format",
+            description = "The format of the stored time index.<br><br>" +
+                          "<b>Example:</b> yyyy-MM-dd HH:mm:ss",
             mandatory = false)
-    protected String timeFormat = "yyyy-MM-dd HH:mm:ss";
+    protected String timeFormat;
 
     @Option(type = SETTING,
-    		name = "Index type",
+            name = "Index type",
             description = "The type of the index.",
             valueSelection = "TIMESTAMP:Timestamp,TIMESTAMP_UNIX:Unix timestamp,TIMESTAMP_SPLIT:Split timestamp.",
-            valueDefault = "TIMESTAMP_UNIX",
             mandatory = false
     )
-    protected IndexType indexType = IndexType.TIMESTAMP_UNIX;
+    protected IndexType indexType;
 
     @Option(type = SETTING,
-    		name = "Index column",
+            name = "Index column",
             description = "The column name of the table primary key.",
-            valueDefault = "time",
             mandatory = false)
-    protected String indexColumn = "time";
+    protected String indexColumn;
 
-    protected Index index;
+    @Connect
+    public void open() throws ConnectionException {
+    	try {
+			connector.open();
+			
+		} catch (IOException e) {
+			throw new ConnectionException(e);
+		}
+    }
 
-    private ComboPooledDataSource source = null;
+    public SqlConnector getDatabaseConnector() {
+    	return connector;
+    }
 
-    public String getDatabase() {
+    @Override
+    public String getDatabaseUrl() {
         return url;
     }
 
+    @Override
     public String getDatabaseName() {
         return database;
     }
 
+    @Override
     public String getDatabaseDriver() {
         return driver;
     }
 
+    @Override
     public String getDatabaseType() {
         return type;
     }
 
+    @Override
     public String getDatabaseUser() {
         return user;
     }
 
+    @Override
     public String getDatabasePassword() {
         return password;
     }
 
+    @Override
     public String getTable() {
         return table;
     }
 
-    public boolean isUnion() {
-        return union;
+    @Override
+    public TableType getTableType() {
+        return tableType;
     }
 
+    @Override
     public int getTimeResolution() {
         return timeResolution;
     }
 
+    @Override
     public String getTimeFormat() {
         return timeFormat;
     }
 
+    @Override
     public IndexType getIndexType() {
         return indexType;
     }
 
+    @Override
     public String getIndexColumn() {
         return indexColumn;
-    }
-
-    public Index getIndex() {
-        return index;
-    }
-
-    @Override
-    public ColumnScanner newScanner(Settings settings) {
-        return new ColumnScanner(source, type + "://" + host + ":" + port + "/" + database);
     }
 
     @Configure
@@ -234,34 +245,16 @@ public class SqlClient extends DriverDevice implements DriverChannelScannerFacto
                         "Table name invalid. Only alphanumeric letters separated by underscore are allowed: " + valid);
             }
         }
-        
-        switch(indexType) {
-        case TIMESTAMP:
-            index = new TimestampIndex(indexColumn, timeFormat);
-            break;
-        case TIMESTAMP_SPLIT:
-            index = new TimestampSplit(indexColumn, timeFormat);
-            break;
-        default:
-            index = new TimestampUnix(indexColumn, timeResolution);
-            break;
-        }
     }
 
     @Connect
     protected void connect() throws ArgumentSyntaxException, ConnectionException {
         logger.info("Initializing SQL connection \"{}\"", url);
         try {
-            if (source != null) {
-                source.close();
+            if (connector != null) {
+                connector.close();
             }
-            source = new ComboPooledDataSource();
-            source.setDriverClass(driver);
-            source.setJdbcUrl(url);
-            source.setUser(user);
-            source.setPassword(password);
-            
-            readTables();
+            connector = new SqlConnector(this);
 
         } catch (Exception e) {
             throw new ConnectionException(e);
@@ -270,75 +263,27 @@ public class SqlClient extends DriverDevice implements DriverChannelScannerFacto
 
     @Disconnect
     public void close() {
-        source.close();
-        source = null;
+        connector.close();
+        connector = null;
     }
 
     @Read
-    public void read(List<SqlChannel> channels, String samplingGroup) throws  ConnectionException {
-        try (Connection connection = source.getConnection()) {
-            if (union) {
-                readTables();
-                readUnion(channels, connection);
-            }
-            else {
-                read(channels, connection);
-            }
-        } catch (SQLException e) {
+    public void read(List<SqlData> data, String samplingGroup) throws  ConnectionException {
+        try (Connection connection = connector.connect()) {
+            connector.read(connection, data);
+            
+        } catch (Exception e) {
             throw new ConnectionException(e);
         }
-    }
-
-    private void read(List<SqlChannel> channels, Connection connection) throws SQLException {
-        for (SqlTable table : groupChannels(channels)) {
-            table.read(connection);
-        }
-    }
-
-    private void readUnion(List<SqlChannel> channels, Connection connection) throws SQLException {
-        UnionTable union = new UnionTable(this.tables, index);
-        union.channels.addAll(channels);
-        union.read(connection);
-    }
-
-    private void readTables() throws ConnectionException {
-        tables.clear();
-        
-        try (Connection connection = source.getConnection()) {
-            try (Statement statement = connection.createStatement()) {
-                try (ResultSet result = statement.executeQuery(String.format("SHOW tables FROM %s", database))) {
-                    while (result.next()) {
-                        tables.add(result.getString("tables_in_" + database));
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new ConnectionException(e);
-        }
-        logger.debug("Read tables for database {}: {}", database, String.join(", ", tables));
-    }
-
-    protected Collection<SqlTable> groupChannels(List<SqlChannel> channels) {
-        Map<String, SqlTable> tables = new HashMap<String, SqlTable>();
-        for (SqlChannel channel : channels) {
-            String tableName = channel.getTable();
-            SqlTable table = tables.get(channel.getTable());
-            if (table == null) {
-                table = new TimestampTable(tableName, index);
-                tables.put(tableName, table);
-            }
-            table.channels.add(channel);
-        }
-        return tables.values();
     }
 
     @Write
-    public void write(List<SqlChannel> channels) throws ConnectionException {
-        try (Connection connection = source.getConnection()) {
-            try (Transaction transaction = new Transaction(connection)) {
-                for (SqlTable table : groupChannels(channels)) {
-                    table.write(transaction);
-                }
+    public void write(List<SqlData> data) throws ConnectionException {
+        long timestamp = System.currentTimeMillis();
+        
+        try (Connection connection = connector.connect()) {
+            try (Statement statement = connection.createStatement()) {
+                connector.write(statement, data, timestamp);
             }
         } catch (Exception e) {
             throw new ConnectionException(e);

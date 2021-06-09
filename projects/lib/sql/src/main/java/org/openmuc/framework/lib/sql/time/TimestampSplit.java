@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2020 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -18,15 +18,17 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.driver.sql.time;
+package org.openmuc.framework.lib.sql.time;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.openmuc.framework.driver.sql.Index;
+import org.openmuc.framework.lib.sql.Index;
+import org.openmuc.framework.lib.sql.IndexType;
 
 
 public class TimestampSplit extends Index {
@@ -42,6 +44,29 @@ public class TimestampSplit extends Index {
         this.formatDate = new SimpleDateFormat(formats[0]);
         this.formatTime = new SimpleDateFormat(formats[1]);
         this.format = new SimpleDateFormat(format);
+    }
+
+    @Override
+    public IndexType getType() {
+        return IndexType.TIMESTAMP_SPLIT;
+    }
+
+    @Override
+    public String queryWhere(long startTime, long endTime) {
+        String[] columns = column.split(",");
+        
+        Date startDate = new Date(startTime);
+        Date endDate = new Date(endTime);
+        
+        return MessageFormat.format("WHERE {0} >= ''{1}'' AND {0} <= ''{2}'' AND {3} >= ''{4}'' AND {3} <= ''{5}'' ORDER BY {0} ASC, {3} ASC", 
+                columns[0], formatDate.format(startDate), formatDate.format(endDate),
+                columns[1], formatTime.format(startDate), formatDate.format(formatTime));
+    }
+
+    @Override
+    public String queryLatest() {
+        String[] columns = column.split(",");
+        return String.format("ORDER BY %s DESC, %s DESC LIMIT 1", columns[0], columns[1]);
     }
 
     @Override
@@ -62,12 +87,6 @@ public class TimestampSplit extends Index {
     public String encode(long timestamp) {
         Date date = new Date(timestamp);
         return formatDate.format(date) + "','" + formatTime.format(date);
-    }
-    
-    @Override
-    public String queryLatest() {
-        String[] columns = column.split(",");
-        return String.format("ORDER BY %s DESC, %s DESC LIMIT 1", columns[0], columns[1]);
     }
 
 }

@@ -21,11 +21,11 @@
 
 package org.openmuc.framework.datalogger.sql;
 
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.COLUMNS;
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.MYSQL;
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.NULL;
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.POSTGRES;
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.POSTGRESQL;
+import static org.openmuc.framework.lib.sql.SqlData.MYSQL;
+import static org.openmuc.framework.lib.sql.SqlData.POSTGRES;
+import static org.openmuc.framework.lib.sql.SqlData.POSTGRESQL;
+import static org.openmuc.framework.lib.sql.Table.COLUMNS;
+import static org.openmuc.framework.lib.sql.Table.NULL;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -33,11 +33,10 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
-import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.sql.utils.PropertyHandlerProvider;
-import org.openmuc.framework.datalogger.sql.utils.Settings;
 import org.openmuc.framework.lib.osgi.config.PropertyHandler;
+import org.openmuc.framework.lib.sql.properties.PropertyHandlerProvider;
+import org.openmuc.framework.lib.sql.properties.PropertySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,7 @@ public class MetaBuilder {
         this.channels = channels;
         this.dbAccess = dbAccess;
         PropertyHandler propertyHandler = PropertyHandlerProvider.getInstance().getPropertyHandler();
-        url = propertyHandler.getString(Settings.URL);
+        url = propertyHandler.getString(PropertySettings.URL);
     }
 
     public void writeMetaTable() {
@@ -217,12 +216,11 @@ public class MetaBuilder {
         String samplingGroup = logChannel.getSamplingGroup();
         String disabled = logChannel.isDisabled().toString();
         String loggingInterval = getLoggingInterval(logChannel);
-        String valueTypeLength = getValueTypeLength(logChannel);
         String loggingTimeOffset = logChannel.getLoggingTimeOffset().toString();
         String channelId = logChannel.getId();
         String unit = logChannel.getUnit();
-        ValueType vType = logChannel.getValueType();
-        String valueType = vType.toString();
+        String valueType = logChannel.getValueType().toString();
+        String valueTypeLength = getValueTypeLength(logChannel);
         String loggingEvent = String.valueOf(logChannel.isLoggingEvent());
         String description = logChannel.getDescription();
 

@@ -19,16 +19,29 @@
  *
  */
 
-package org.openmuc.framework.lib.sql.utils;
+package org.openmuc.framework.lib.sql.properties;
 
-public class TabelNames {
-    public static final String STRING_VALUE = "StringValue";
-    public static final String SHORT_VALUE = "ShortValue";
-    public static final String BYTE_VALUE = "ByteValue";
-    public static final String LONG_VALUE = "LongValue";
-    public static final String INT_VALUE = "IntValue";
-    public static final String DOUBLE_VALUE = "DoubleValue";
-    public static final String FLOAT_VALUE = "FloatValue";
-    public static final String BYTE_ARRAY_VALUE = "ByteArrayValue";
-    public static final String BOOLEAN_VALUE = "BooleanValue";
+import org.openmuc.framework.lib.osgi.config.PropertyHandler;
+
+public class PropertyHandlerProvider {
+    static PropertyHandlerProvider instance;
+    private PropertyHandler propertyHandler;
+
+    private PropertyHandlerProvider() {
+    }
+
+    public static PropertyHandlerProvider getInstance() {
+        if (instance == null) {
+            instance = new PropertyHandlerProvider();
+        }
+        return instance;
+    }
+
+    public PropertyHandler getPropertyHandler() {
+        return propertyHandler;
+    }
+
+    public void setPropertyHandler(PropertyHandler propertyHandler) {
+        this.propertyHandler = propertyHandler;
+    }
 }

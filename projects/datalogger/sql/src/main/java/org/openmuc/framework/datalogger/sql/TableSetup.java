@@ -21,18 +21,18 @@
 
 package org.openmuc.framework.datalogger.sql;
 
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.MYSQL;
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.POSTGRES;
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.POSTGRESQL;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.BOOLEAN_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.BYTE_ARRAY_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.BYTE_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.DOUBLE_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.FLOAT_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.INT_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.LONG_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.SHORT_VALUE;
-import static org.openmuc.framework.datalogger.sql.utils.TabelNames.STRING_VALUE;
+import static org.openmuc.framework.lib.sql.SqlData.MYSQL;
+import static org.openmuc.framework.lib.sql.SqlData.POSTGRES;
+import static org.openmuc.framework.lib.sql.SqlData.POSTGRESQL;
+import static org.openmuc.framework.lib.sql.Table.BOOLEAN_VALUE;
+import static org.openmuc.framework.lib.sql.Table.BYTE_ARRAY_VALUE;
+import static org.openmuc.framework.lib.sql.Table.BYTE_VALUE;
+import static org.openmuc.framework.lib.sql.Table.DOUBLE_VALUE;
+import static org.openmuc.framework.lib.sql.Table.FLOAT_VALUE;
+import static org.openmuc.framework.lib.sql.Table.INT_VALUE;
+import static org.openmuc.framework.lib.sql.Table.LONG_VALUE;
+import static org.openmuc.framework.lib.sql.Table.SHORT_VALUE;
+import static org.openmuc.framework.lib.sql.Table.STRING_VALUE;
 
 import java.sql.JDBCType;
 import java.sql.SQLException;
@@ -43,9 +43,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.sql.utils.PropertyHandlerProvider;
-import org.openmuc.framework.datalogger.sql.utils.Settings;
 import org.openmuc.framework.lib.osgi.config.PropertyHandler;
+import org.openmuc.framework.lib.sql.properties.PropertyHandlerProvider;
+import org.openmuc.framework.lib.sql.properties.PropertySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class TableSetup {
         this.dbAccess = dbAccess;
         this.channels = channels;
         PropertyHandler propertyHandler = PropertyHandlerProvider.getInstance().getPropertyHandler();
-        url = propertyHandler.getString(Settings.URL);
+        url = propertyHandler.getString(PropertySettings.URL);
     }
 
     /**
@@ -131,7 +131,8 @@ public class TableSetup {
         // reduceSizeOfChannelIdCol(tableNameList);
     }
 
-    private void reduceSizeOfChannelIdCol(List<String> tableNameList) {
+    @SuppressWarnings("unused")
+	private void reduceSizeOfChannelIdCol(List<String> tableNameList) {
         // FIXME
         for (LogChannel logChannel : channels) {
             String channelId = logChannel.getId();

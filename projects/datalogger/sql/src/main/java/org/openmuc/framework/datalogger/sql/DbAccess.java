@@ -21,8 +21,8 @@
 
 package org.openmuc.framework.datalogger.sql;
 
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.POSTGRESQL;
-import static org.openmuc.framework.datalogger.sql.utils.SqlValues.VALUE;
+import static org.openmuc.framework.lib.sql.SqlData.POSTGRESQL;
+import static org.openmuc.framework.lib.sql.Table.VALUE;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,9 +37,9 @@ import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.StringValue;
-import org.openmuc.framework.datalogger.sql.utils.PropertyHandlerProvider;
-import org.openmuc.framework.datalogger.sql.utils.Settings;
 import org.openmuc.framework.lib.osgi.config.PropertyHandler;
+import org.openmuc.framework.lib.sql.properties.PropertyHandlerProvider;
+import org.openmuc.framework.lib.sql.properties.PropertySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class DbAccess {
     public DbAccess() {
         dbConnector = new DbConnector();
         PropertyHandler propertyHandler = PropertyHandlerProvider.getInstance().getPropertyHandler();
-        url = propertyHandler.getString(Settings.URL);
+        url = propertyHandler.getString(PropertySettings.URL);
         if (url.contains("h2") && url.contains("tcp")) {
             dbConnector.startH2Server();
         }
@@ -151,7 +151,7 @@ public class DbAccess {
      */
     public List<Record> queryRecords(StringBuilder sb, StringBuilder sbString, StringBuilder sbByteArray,
             StringBuilder sbBoolean) {
-        // retrieve numeric values from database and add them to the records list
+        // Retrieve numeric values from database and add them to the records list
         List<Record> records = new ArrayList<>();
         String sql = sb.toString();
         try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sql);) {
@@ -162,7 +162,7 @@ public class DbAccess {
         } catch (SQLException e) {
             logger.error(MessageFormat.format("Error executing SQL: \n{0}", sql), e.getMessage());
         }
-        // retrieve string values from database and add them to the records list
+        // Retrieve string values from database and add them to the records list
         String sqlString = sbString.toString();
         try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sqlString);) {
             while (resultSet.next()) {
@@ -172,7 +172,7 @@ public class DbAccess {
         } catch (SQLException e) {
             logger.error(MessageFormat.format("Error executing SQL: \n{0}", sqlString), e.getMessage());
         }
-        // retrieve byte array values from database and add them to the records list
+        // Retrieve byte array values from database and add them to the records list
         String sqlByteArray = sbByteArray.toString();
         try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sqlByteArray);) {
             while (resultSet.next()) {
@@ -182,7 +182,7 @@ public class DbAccess {
         } catch (SQLException e) {
             logger.error(MessageFormat.format("Error executing SQL: \n{0}", sqlByteArray), e.getMessage());
         }
-        // retrieve boolean values from database and add them to the records list
+        // Retrieve boolean values from database and add them to the records list
         String sqlBoolean = sbBoolean.toString();
         try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sqlBoolean);) {
             while (resultSet.next()) {
