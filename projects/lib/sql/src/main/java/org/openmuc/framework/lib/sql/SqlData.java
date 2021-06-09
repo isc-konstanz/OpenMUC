@@ -120,18 +120,25 @@ public interface SqlData {
 	            switch(getValueType()) {
 	            case DOUBLE:
 	                value = new DoubleValue(Double.valueOf(valueStr));
+	                break;
 	            case FLOAT:
 	                value = new FloatValue(Float.valueOf(valueStr));
+	                break;
 	            case INTEGER:
 	                value = new IntValue(Integer.valueOf(valueStr));
+	                break;
 	            case LONG:
 	                value = new LongValue(Long.valueOf(valueStr));
+	                break;
 	            case SHORT:
 	                value = new ShortValue(Short.valueOf(valueStr));
+	                break;
 	            case BYTE:
 	                value = new ByteValue(Byte.valueOf(valueStr));
+	                break;
 	            case BOOLEAN:
 	                value = new BooleanValue(Boolean.valueOf(valueStr));
+	                break;
 	            case BYTE_ARRAY:
 	                byte[] arr;
 	                if (!valueStr.startsWith("0x")) {
@@ -141,8 +148,10 @@ public interface SqlData {
 	                    arr = hexStringToByteArray(valueStr.substring(2).trim());
 	                }
 	                value = new ByteArrayValue(arr);
+	                break;
 	            default:
 	                value = new StringValue(valueStr);
+	                break;
 	            }
 	            return new Record(value, timestamp, Flag.VALID);
 	        
