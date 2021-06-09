@@ -22,6 +22,7 @@ package org.openmuc.framework.datalogger;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,22 +74,23 @@ public abstract class LoggingChannelContext extends Reflectable {
         return logger.channel();
     }
 
-    final LoggingChannel newChannel(LogChannel configs) 
+    @SuppressWarnings("unchecked")
+	final <C extends LoggingChannel> C newChannel(LogChannel configs) 
             throws RuntimeException, ArgumentSyntaxException {
         
-    	LoggingChannel channel;
+    	C channel;
         if (this instanceof LoggingChannelFactory) {
-            channel = ((LoggingChannelFactory) this).newChannel(parseSettings(channelClass, configs.getLoggingSettings()));
+            channel = (C) ((LoggingChannelFactory) this).newChannel(parseSettings(channelClass, configs.getLoggingSettings()));
         }
         else {
-            channel = newInstance(channelClass);
+            channel = (C) newInstance(channelClass);
         }
         return channel;
     }
 
-    final LoggingChannel getChannel(LogChannel configs) throws ArgumentSyntaxException {
+	final <C extends LoggingChannel> C getChannel(LogChannel configs) throws ArgumentSyntaxException {
         String id = configs.getId();
-        LoggingChannel channel = channels.get(id);
+        C channel = getChannel(id);
         try {
             if (channel == null) {
                 channel = newChannel(configs);
@@ -106,22 +108,24 @@ public abstract class LoggingChannelContext extends Reflectable {
         return channel;
     }
 
-    public LoggingChannel getChannel(String id) {
-        return channels.get(id);
+    @SuppressWarnings("unchecked")
+	public <C extends LoggingChannel> C getChannel(String id) {
+        return (C) channels.get(id);
     }
 
-    public List<LoggingChannel> getChannels() {
-        return (List<LoggingChannel>) channels.values();
+    @SuppressWarnings("unchecked")
+	public <C extends LoggingChannel> List<C> getChannels() {
+        return new ArrayList<C>((Collection<C>) channels.values());
     }
 
-	final List<LoggingChannel> getChannels(List<? extends LoggingRecord> containers) {
-        List<LoggingChannel> channels = new ArrayList<LoggingChannel>();
+	final <C extends LoggingChannel> List<C> getChannels(List<? extends LoggingRecord> containers) {
+        List<C> channels = new ArrayList<C>();
         if (containers == null || containers.isEmpty()) {
             logger.trace("Logger received empty container list");
             return channels;
         }
         for (LoggingRecord container : containers) {
-        	LoggingChannel channel = getChannel(container.getChannelId());
+        	C channel = getChannel(container.getChannelId());
             if (channel == null) {
                 logger.trace("Failed to log record for unconfigured channel \"{}\"", container.getChannelId());
                 continue;

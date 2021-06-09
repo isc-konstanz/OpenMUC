@@ -22,6 +22,7 @@ package org.openmuc.framework.server;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,24 +71,25 @@ public class ServerChannelContext extends Reflectable {
         return server.channel();
     }
 
-    final ServerChannel newChannel(ServerMappingContainer container) 
+    @SuppressWarnings("unchecked")
+	final <C extends ServerChannel> C newChannel(ServerMappingContainer container) 
             throws RuntimeException, ArgumentSyntaxException {
         
         Address address = Configurations.parseAddress(container.getServerMapping().getServerAddress(), channelClass);
         
-        ServerChannel channel;
+        C channel;
         if (this instanceof ServerChannelFactory) {
-            channel = ((ServerChannelFactory) this).newChannel(address);
+            channel = (C) ((ServerChannelFactory) this).newChannel(address);
         }
         else {
-            channel = newInstance(channelClass);
+            channel = (C) newInstance(channelClass);
         }
         return channel;
     }
 
-    final ServerChannel getChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
+	final <C extends ServerChannel> C getChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
         String id = container.getChannel().getId();
-        ServerChannel channel = channels.get(id);
+        C channel = getChannel(id);
         try {
             if (channel == null) {
                 channel = newChannel(container);
@@ -104,16 +106,18 @@ public class ServerChannelContext extends Reflectable {
         return channel;
     }
 
-    public ServerChannel getChannel(String id) {
-        return channels.get(id);
+    @SuppressWarnings("unchecked")
+	public <C extends ServerChannel> C getChannel(String id) {
+        return (C) channels.get(id);
     }
 
-    public List<ServerChannel> getChannels() {
-        return (List<ServerChannel>) channels.values();
+    @SuppressWarnings("unchecked")
+	public <C extends ServerChannel> List<C> getChannels() {
+        return new ArrayList<C>((Collection<C>) channels.values());
     }
 
-    final List<ServerChannel> getChannels(List<ServerMappingContainer> containers) {
-        List<ServerChannel> channels = new ArrayList<ServerChannel>();
+    final <C extends ServerChannel> List<C> getChannels(List<ServerMappingContainer> containers) {
+        List<C> channels = new ArrayList<C>();
         for (ServerMappingContainer container : containers) {
             try {
                 channels.add(getChannel(container));
