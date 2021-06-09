@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -186,7 +186,7 @@ public class ModbusChannel {
     }
 
     @SuppressWarnings("deprecation")
-	private void setFunctionCodeForWriting() {
+    private void setFunctionCodeForWriting() {
         switch (datatype) {
         case BOOLEAN:
             if (primaryTable.equals(EPrimaryTable.COILS)) {
@@ -199,13 +199,13 @@ public class ModbusChannel {
         case SHORT:
         case INT16:
         case UINT16:
-            if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
-                functionCode = EFunctionCode.FC_06_WRITE_SINGLE_REGISTER;
-            }
-            else {
-                invalidWriteAddressParameterCombination();
-            }
-            break;
+//            if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
+//                functionCode = EFunctionCode.FC_06_WRITE_SINGLE_REGISTER;
+//            }
+//            else {
+//                invalidWriteAddressParameterCombination();
+//            }
+//            break;
         case INT32:
         case UINT32:
         case FLOAT:

@@ -1,43 +1,34 @@
-
 def projectName = "OpenMUC Driver - REST"
 def projectDescription = "REST driver for the OpenMUC framework."
 
 configurations.create('embed')
 
-def commonscodecversion = '1.11'
-def gsonversion = '2.8.5'
+if(rootProject.tasks.findByName("codeCoverageReport"))
+    rootProject.tasks.codeCoverageReport.enabled(false)
 
 dependencies {
-  implementation project(':openmuc-core-spi')
-  implementation project(':openmuc-core-api')
-  implementation group: 'com.google.code.gson', name: 'gson', version: gsonversion
-  implementation group: 'commons-codec', name: 'commons-codec', version: commonscodecversion
-  embed group: 'commons-codec', name: 'commons-codec', version: commonscodecversion
+    implementation project(':openmuc-driver')
+    implementation project(':openmuc-lib-rest')
+    implementation 'commons-codec:commons-codec:1.13'
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Bundle-Classpath', '.,lib/commons-codec-' + commonscodecversion + '.jar'
-    instruction 'Import-Package', '!org.apache.commons.codec*,*' + jarDefaultImportPackageVersion
-    instruction 'Export-Package', ''
-  }
-}
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Import-Package': '*' + jarDefaultImportPackageVersion)
 
-jar {
-  into('lib') {
-    from configurations.embed
-  }
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description projectDescription
-      }
+    into('lib') {
+        from configurations.embed
     }
-  }
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description projectDescription
+            }
+        }
+    }
+}

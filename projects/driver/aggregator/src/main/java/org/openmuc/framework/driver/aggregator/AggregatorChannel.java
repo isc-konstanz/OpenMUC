@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -21,8 +21,12 @@
 package org.openmuc.framework.driver.aggregator;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
@@ -33,6 +37,8 @@ import org.openmuc.framework.dataaccess.DataLoggerNotAvailableException;
 
 public abstract class AggregatorChannel {
 
+    private static final Pattern TIME_PATTERN = Pattern.compile("^([0-9]+)(ms|s|m|h)?$");
+
     protected ChannelAddress channelAddress;
     protected Channel aggregatedChannel;
     protected Channel sourceChannel;
@@ -41,7 +47,7 @@ public abstract class AggregatorChannel {
     protected long aggregationInterval;
     protected long aggregationSamplingTimeOffset;
 
-    // TODO dataAccessService wird über viele ebenen durchgereicht, wie kann ich das vermeiden?
+    // TODO dataAccessService wird ueber viele ebenen durchgereicht, wie kann ich das vermeiden?
     // Brauche den dataAccessService eigentlich nur hier
 
     public AggregatorChannel(ChannelAddress channelAddress, DataAccessService dataAccessService)
@@ -97,7 +103,7 @@ public abstract class AggregatorChannel {
         return records;
     }
 
-    private void checkIfChannelsNotNull() throws AggregationException {
+    protected void checkIfChannelsNotNull() throws AggregationException {
 
         if (aggregatedChannel == null) {
             throw new AggregationException("aggregatedChannel is null");
@@ -116,9 +122,7 @@ public abstract class AggregatorChannel {
      * @param sourceSamplingOffset
      * @throws AggregationException
      */
-    private void checkIntervals()
-
-            throws AggregationException {
+    protected void checkIntervals() throws AggregationException {
 
         // check 1
         // -------
@@ -187,6 +191,51 @@ public abstract class AggregatorChannel {
                 // remove record since it can't be cast to double for further processing
                 recordIterator.remove();
             }
+        }
+    }
+
+    protected static Integer timeStringToMillis(String timeString) throws AggregationException {
+        if (timeString == null || timeString.isEmpty()) {
+            return null;
+        }
+        timeString = timeString.toLowerCase();
+
+        Matcher timeMatcher = TIME_PATTERN.matcher(timeString);
+        if (!timeMatcher.matches()) {
+            throw new AggregationException(MessageFormat.format("Unknown time string: ''{0}''.", timeString));
+        }
+
+        String timeNumStr = timeMatcher.group(1);
+        Long timeNum;
+        try {
+        	timeNum = Long.parseLong(timeNumStr);
+            
+        } catch (NumberFormatException e) {
+            throw new AggregationException(e.getMessage());
+        }
+
+        String timeUnit = timeMatcher.group(2);
+        final TimeUnit milliseconds = TimeUnit.MILLISECONDS;
+
+        if (timeUnit == null) {
+            return timeNum.intValue();
+        }
+
+        switch (timeUnit) {
+        case "ms":
+            return timeNum.intValue();
+
+        case "s":
+            return (int) milliseconds.convert(timeNum, TimeUnit.SECONDS);
+
+        case "m":
+            return (int) milliseconds.convert(timeNum, TimeUnit.MINUTES);
+
+        case "h":
+            return (int) milliseconds.convert(timeNum, TimeUnit.HOURS);
+
+        default:
+            throw new AggregationException("Unknown time unit: " + timeUnit);
         }
     }
 }

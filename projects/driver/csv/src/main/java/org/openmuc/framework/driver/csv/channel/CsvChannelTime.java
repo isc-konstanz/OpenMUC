@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -27,7 +27,6 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,19 +40,19 @@ public abstract class CsvChannelTime extends CsvChannel {
     protected long firstTimestamp;
     protected long lastTimestamp;
 
-    public CsvChannelTime(ChannelContainer channel, Map<String, List<String>> csv, boolean rewind) 
-    		throws ArgumentSyntaxException {
-    	super(channel, csv, rewind);
-    	
+    public CsvChannelTime(String column, Map<String, List<String>> csv, boolean rewind) 
+            throws ArgumentSyntaxException {
+        super(column, csv, rewind);
+        
         timestamps = parseIndex(csv);
         firstTimestamp = timestamps[0];
         lastTimestamp = timestamps[timestamps.length - 1];
     }
 
-    protected CsvChannelTime(ChannelContainer channel, long[] index, Map<String, List<String>> csv, boolean rewind) 
-    		throws ArgumentSyntaxException {
-    	super(channel, csv, rewind);
-    	
+    protected CsvChannelTime(String column, long[] index, Map<String, List<String>> csv, boolean rewind) 
+            throws ArgumentSyntaxException {
+        super(column, csv, rewind);
+        
         this.timestamps = index;
         firstTimestamp = index[0];
         lastTimestamp = index[index.length - 1];

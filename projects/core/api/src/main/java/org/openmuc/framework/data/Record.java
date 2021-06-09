@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -75,6 +75,10 @@ public class Record {
 
     public Flag getFlag() {
         return flag;
+    }
+
+    public boolean isValid() {
+    	return flag == Flag.VALID;
     }
 
     @Override

@@ -1,0 +1,23 @@
+def projectName = "OpenMUC Driver - Derivator"
+def projectDescription = "Derivator driver for the OpenMUC framework."
+
+dependencies {
+    implementation project(':openmuc-core-spi')
+    implementation project(':openmuc-core-api')
+}
+
+jar {
+    bnd('Bundle-Name': projectName,
+        'Import-Package': '*' + jarDefaultImportPackageVersion)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
+}

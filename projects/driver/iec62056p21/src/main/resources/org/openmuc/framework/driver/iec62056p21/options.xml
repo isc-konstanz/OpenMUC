@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<configuration>
+<options>
   <driver id="iec62056p21">
     <name>IEC 62056-21</name>
     <description>This driver can read meters using IEC 62056-21 Mode A, B and C.</description>
@@ -125,4 +125,4 @@
       </option>
     </channelAddress>
   </driver>
-</configuration>
+</options>

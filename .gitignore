@@ -33,6 +33,7 @@ hs_err_pid*
 local.properties
 
 # Eclipse project files
+*.buildpath
 *.classpath
 *.project
 *.settings/
@@ -45,7 +46,9 @@ build/
 
 #Framework
 framework/data
+framework/felix
 framework/felix-cache
 framework/conf/shadow
+framework/conf/properties
 framework/bundle
 /bin/

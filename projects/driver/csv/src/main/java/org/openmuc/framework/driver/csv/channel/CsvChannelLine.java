@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 
 /**
  * Channel to return value of next line in the file. Timestamps are ignored. It always starts with the first line, which
@@ -32,14 +31,14 @@ import org.openmuc.framework.driver.spi.ChannelContainer;
  */
 public class CsvChannelLine extends CsvChannel {
 
-    public CsvChannelLine(ChannelContainer channel, Map<String, List<String>> data, boolean rewind) 
-    		throws ArgumentSyntaxException {
-    	super(channel, data, rewind);
-    	this.lastIndexRead = -1;
+    public CsvChannelLine(String column, Map<String, List<String>> data, boolean rewind) 
+            throws ArgumentSyntaxException {
+        super(column, data, rewind);
+        this.lastIndexRead = -1;
     }
 
     @Override
-    public double readValue(long sampleTime) {
+    public String readValue(long sampleTime) {
 
         lastIndexRead++;
         if (lastIndexRead > maxIndex) {
@@ -52,8 +51,7 @@ public class CsvChannelLine extends CsvChannel {
             }
         }
 
-        double value = Double.parseDouble(data.get(lastIndexRead));
-        return value;
+        return data.get(lastIndexRead);
     }
 
 }

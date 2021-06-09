@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -46,12 +46,12 @@ import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
 import org.openmuc.framework.dataaccess.DeviceState;
-import org.openmuc.framework.lib.json.Const;
-import org.openmuc.framework.lib.json.FromJson;
-import org.openmuc.framework.lib.json.ToJson;
-import org.openmuc.framework.lib.json.exceptions.MissingJsonObjectException;
-import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
-import org.openmuc.framework.lib.json.rest.objects.RestDeviceWrapper;
+import org.openmuc.framework.lib.rest.Const;
+import org.openmuc.framework.lib.rest.FromJson;
+import org.openmuc.framework.lib.rest.ToJson;
+import org.openmuc.framework.lib.rest.exceptions.MissingJsonObjectException;
+import org.openmuc.framework.lib.rest.exceptions.RestConfigIsNotCorrectException;
+import org.openmuc.framework.lib.rest.objects.RestDeviceWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,14 +60,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 public class DeviceResourceServlet extends GenericServlet {
+    private static final long serialVersionUID = 4619892734239871891L;
+
+    private static final Logger logger = LoggerFactory.getLogger(DeviceResourceServlet.class);
 
     private static final String REQUESTED_REST_PATH_IS_NOT_AVAILABLE = "Requested rest path is not available";
     private static final String REQUESTED_ID_IS_NOT_AVAILABLE = "Requested device is not available";
     private static final String REST_PATH = " Rest Path = ";
     private static final String REST_ID = " Device ID = ";
-    private static final String APPLICATION_JSON = "application/json";
-    private static final long serialVersionUID = 4619892734239871891L;
-    private static final Logger logger = LoggerFactory.getLogger(DeviceResourceServlet.class);
 
     private DataAccessService dataAccess;
     private ConfigService configService;
@@ -77,7 +77,6 @@ public class DeviceResourceServlet extends GenericServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -172,7 +171,7 @@ public class DeviceResourceServlet extends GenericServlet {
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
         }
     }
 
@@ -207,7 +206,7 @@ public class DeviceResourceServlet extends GenericServlet {
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
         }
     }
 
@@ -237,7 +236,7 @@ public class DeviceResourceServlet extends GenericServlet {
         }
         else {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, deviceId);
         }
     }
 
@@ -245,7 +244,6 @@ public class DeviceResourceServlet extends GenericServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -272,7 +270,6 @@ public class DeviceResourceServlet extends GenericServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -390,7 +387,7 @@ public class DeviceResourceServlet extends GenericServlet {
                 json.setDeviceConfig(deviceConfig, deviceId);
             } catch (IdCollisionException e) {
             }
-        	
+            
             configService.setConfig(rootConfig);
             configService.writeConfigToFile();
             response.setStatus(HttpServletResponse.SC_OK);
@@ -404,7 +401,6 @@ public class DeviceResourceServlet extends GenericServlet {
             throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 

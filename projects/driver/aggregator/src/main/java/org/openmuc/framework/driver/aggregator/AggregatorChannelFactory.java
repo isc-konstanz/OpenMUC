@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -22,12 +22,13 @@ package org.openmuc.framework.driver.aggregator;
 
 import static org.openmuc.framework.driver.aggregator.AggregatorConstants.ADDRESS_QUALITY_INDEX;
 import static org.openmuc.framework.driver.aggregator.AggregatorConstants.ADDRESS_SEPARATOR;
-import static org.openmuc.framework.driver.aggregator.AggregatorConstants.AGGREGATION_TYPE_AVG;
+import static org.openmuc.framework.driver.aggregator.AggregatorConstants.TYPE_PARAM_SEPARATOR;
 import static org.openmuc.framework.driver.aggregator.AggregatorConstants.DEFAULT_QUALITY;
 import static org.openmuc.framework.driver.aggregator.AggregatorConstants.MAX_ADDRESS_PARTS_LENGTH;
 import static org.openmuc.framework.driver.aggregator.AggregatorConstants.MIN_ADDRESS_PARTS_LENGTH;
 
 import org.openmuc.framework.dataaccess.DataAccessService;
+import org.openmuc.framework.driver.aggregator.ChannelRecordDeque.ChannelRecordDeques;
 import org.openmuc.framework.driver.aggregator.types.AverageAggregation;
 import org.openmuc.framework.driver.aggregator.types.DiffAggregation;
 import org.openmuc.framework.driver.aggregator.types.LastAggregation;
@@ -38,6 +39,8 @@ import org.openmuc.framework.driver.spi.ChannelRecordContainer;
  * Creates a AggregatorChannel instance according to the aggregationType
  */
 public class AggregatorChannelFactory {
+
+	private static final ChannelRecordDeques channelRecords = new ChannelRecordDeques();
 
     public static AggregatorChannel createAggregatorChannel(ChannelRecordContainer container,
             DataAccessService dataAccessService) throws AggregationException {
@@ -58,11 +61,11 @@ public class AggregatorChannelFactory {
     private static AggregatorChannel createByAddress(ChannelAddress channelAddress, DataAccessService dataAccessService)
             throws AggregationException {
 
-        String aggregationType = channelAddress.getAggregationType();
+        String aggregationType = channelAddress.getAggregationType().split(TYPE_PARAM_SEPARATOR)[0];
 
         switch (aggregationType) {
-        case AGGREGATION_TYPE_AVG:
-            return new AverageAggregation(channelAddress, dataAccessService);
+        case AggregatorConstants.AGGREGATION_TYPE_AVG:
+            return new AverageAggregation(channelAddress, dataAccessService, channelRecords);
         case AggregatorConstants.AGGREGATION_TYPE_LAST:
             return new LastAggregation(channelAddress, dataAccessService);
         case AggregatorConstants.AGGREGATION_TYPE_DIFF:

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -32,12 +32,26 @@ public interface DataLoggerService {
 
     void setChannelsToLog(List<LogChannel> channels);
 
-    void log(List<LogRecordContainer> containers, long timestamp);
+    /**
+     * Called by data manager to tell the logger that it should log the given records
+     * <p>
+     * NOTE: Implementation of this method should be non blocking to avoid blocking in the data manager.
+     *
+     * @param containers
+     *            containers to log
+     * @param timestamp
+     *            logging timestamp
+     */
+    void log(List<LoggingRecord> containers, long timestamp);
+
+    void logEvent(List<LoggingRecord> containers, long timestamp);
+
+    boolean logSettingsRequired();
 
     /**
      * Returns a list of all logged data records with timestamps from <code>startTime</code> to <code>endTime</code> for
      * the channel with the given <code>channelId</code>.
-     * 
+     *
      * @param channelId
      *            the channel ID.
      * @param startTime

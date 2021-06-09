@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,14 +20,19 @@
  */
 package org.openmuc.framework.driver.rpi.w1.device;
 
+import java.text.MessageFormat;
 import java.util.List;
 
+import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.w1.W1Connection;
-import org.openmuc.framework.driver.rpi.w1.configs.W1Channel;
+import org.openmuc.framework.driver.annotation.Read;
+import org.openmuc.framework.driver.annotation.Write;
+import org.openmuc.framework.driver.rpi.w1.W1Channel;
+import org.openmuc.framework.driver.rpi.w1.W1Device;
+import org.openmuc.framework.driver.rpi.w1.W1Type;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,21 +40,23 @@ import org.slf4j.LoggerFactory;
 import com.pi4j.component.temperature.TemperatureSensor;
 
 
-public class TemperatureDevice extends W1Connection {
+public class TemperatureDevice extends W1Device {
     private static final Logger logger = LoggerFactory.getLogger(TemperatureDevice.class);
 
     private final TemperatureSensor sensor;
 
-    private final double maximum;
-
-    public TemperatureDevice(String id, TemperatureSensor sensor, Double maximum) {
-    	super(id);
-        this.sensor = sensor;
+    public TemperatureDevice(com.pi4j.io.w1.W1Device device) throws ArgumentSyntaxException {
+        super();
+        if (W1Type.valueOf(device) != type) {
+            throw new ArgumentSyntaxException(MessageFormat.format("1-Wire device \"{0}\" not the expected type: {1}", 
+                    id, type));
+        }
+        this.sensor = (TemperatureSensor) device;
         this.maximum = maximum.isNaN() ? 127 : maximum;
     }
 
-    @Override
-    public Object onRead(List<W1Channel> channels, Object containerListHandle, String samplingGroup) throws ConnectionException {
+    @Read
+    public void read(List<W1Channel> channels, String samplingGroup) throws ConnectionException {
         long samplingTime = System.currentTimeMillis();
         
         for (W1Channel channel : channels) {
@@ -63,7 +70,7 @@ public class TemperatureDevice extends W1Connection {
                 }
                 else {
                     // Don't skip the reading, if the latest value read was longer than 15 minutes ago 
-                	// or above 90% of the maximum configured value of the sensor
+                    // or above 90% of the maximum configured value of the sensor
                     Record lastRecord = channel.getRecord();
                     if (lastRecord != null && lastRecord.getFlag() == Flag.VALID) {
                         if (samplingTime - lastRecord.getTimestamp() >= 900000 || 
@@ -83,7 +90,11 @@ public class TemperatureDevice extends W1Connection {
                 channel.setRecord(new Record(null, samplingTime, Flag.DRIVER_ERROR_READ_FAILURE));
             }
         }
-        return null;
     }
+
+	@Write
+	protected void write(List<W1Channel> channels) throws UnsupportedOperationException, ConnectionException {
+		throw new UnsupportedOperationException("Unable to write to 1-Wire temperature sensors");
+	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -23,48 +23,39 @@ package org.openmuc.framework.core.datamanager;
 
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.dataaccess.ReadRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 
-public final class ChannelRecordContainerImpl implements ChannelRecordContainer {
+public final class ChannelRecordContainerImpl extends ChannelContainerImpl implements ReadRecordContainer, ChannelRecordContainer {
 
-    private static final Record defaulRecord = new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
+    private static final Record RECORD_DEFAULT = new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE);
 
-    private final ChannelImpl channel;
     private Record record;
-    private Object channelHandle;
-    private final String channelAddress;
-    private final String channelSettings;
+    private Object handle;
 
     public ChannelRecordContainerImpl(ChannelImpl channel) {
-        this(channel, defaulRecord);
+        this(channel, RECORD_DEFAULT);
     }
 
     private ChannelRecordContainerImpl(ChannelImpl channel, Record record) {
-        this.channel = channel;
-        this.channelAddress = channel.config.getChannelAddress();
-        this.channelSettings = channel.config.getChannelSettings();
-        this.channelHandle = channel.handle;
+        super(channel);
         this.record = record;
-    }
-
-    @Override
-    public String getChannelAddress() {
-        return channelAddress;
-    }
-
-    @Override
-    public String getChannelSettings() {
-        return channelSettings;
+        this.handle = channel.handle;
     }
 
     @Override
     public Object getChannelHandle() {
-        return channelHandle;
+        return handle;
     }
 
     @Override
     public void setChannelHandle(Object handle) {
-        channelHandle = handle;
+        this.handle = handle;
+    }
+
+    @Override
+    public Record getRecord() {
+        return record;
     }
 
     @Override
@@ -74,16 +65,7 @@ public final class ChannelRecordContainerImpl implements ChannelRecordContainer 
 
     @Override
     public ChannelRecordContainer copy() {
-        return new ChannelRecordContainerImpl(channel, record);
+        return new ChannelRecordContainerImpl(channel, getRecord());
     }
 
-    @Override
-    public ChannelImpl getChannel() {
-        return channel;
-    }
-
-    @Override
-    public Record getRecord() {
-        return record;
-    }
 }

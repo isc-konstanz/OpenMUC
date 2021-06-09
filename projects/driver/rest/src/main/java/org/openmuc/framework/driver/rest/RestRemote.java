@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -33,19 +33,26 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.driver.annotation.Connect;
+import org.openmuc.framework.driver.annotation.Device;
+import org.openmuc.framework.driver.annotation.Disconnect;
+import org.openmuc.framework.driver.annotation.Read;
+import org.openmuc.framework.driver.annotation.Write;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.json.FromJson;
+import org.openmuc.framework.lib.rest.FromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Device(channel = RestChannel.class, 
+        scanner = RestChannelScanner.class)
 public class RestRemote extends RestConfigs {
     private static final Logger logger = LoggerFactory.getLogger(RestRemote.class);
-    
+
     private RestConnection connection;
 
-	@Override
-    protected void onConnect() throws ConnectionException {
-        if (address.startsWith("https://")) {
+    @Connect
+    public void connect() throws ConnectionException {
+        if (url.startsWith("https://")) {
             TrustManager[] trustManager = getTrustManager();
             
             try {
@@ -63,23 +70,23 @@ public class RestRemote extends RestConfigs {
             HostnameVerifier allHostsValid = getHostnameVerifier();
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
         }
-        logger.info("Connecting to remote OpenMUC: {}", address);
+        logger.info("Connecting to remote OpenMUC: {}", url);
 
         // This is only used to verify the existence of the remote OpenMUC
-    	connection = new RestConnection(this);
-    	connection.connect();
+        connection = new RestConnection(url, authorization, timeout);
+        connection.connect();
     }
 
-	@Override
-	protected void onDisconnect() {
-		try {
-			if (connection != null) {
-				connection.close();
-			}
-		} catch (IOException e) {
-			logger.warn("Unexpected error closing REST connection: {}", e.getMessage());
-		}
-	}
+    @Disconnect
+    public void close() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (IOException e) {
+            logger.warn("Unexpected error closing REST connection: {}", e.getMessage());
+        }
+    }
 
     private HostnameVerifier getHostnameVerifier() {
         return new HostnameVerifier() {
@@ -107,46 +114,45 @@ public class RestRemote extends RestConfigs {
         }};
     }
 
-    @Override
-    public Object onRead(List<RestChannel> channels, Object containerListHandle, String samplingGroup)
-            throws UnsupportedOperationException, ConnectionException {
-
+    @Read
+    public void read(List<RestChannel> channels, String samplingGroup) throws ConnectionException {
         long timestamp = System.currentTimeMillis();
         try {
-        	if (bulkReading) {
-        		return readChannels(channels);
-        	}
+            if (bulkReading) {
+                readChannels(channels);
+            }
             for (RestChannel channel : channels) {
-            	readChannel(channel);
+                readChannel(channel);
             }
         } finally {
             logger.trace("Read {} channels in {}ms",
                     channels.size(), System.currentTimeMillis() - timestamp);
         }
-        return null;
     }
 
-    private Object readChannels(List<RestChannel> channels) throws ConnectionException {
-    	String jsonStr = connection.get();
+    private void readChannels(List<RestChannel> channels) throws ConnectionException {
+        String jsonStr = connection.get();
         FromJson json = new FromJson(jsonStr);
-    	logger.debug("Received json string: {}", jsonStr);
+        logger.debug("Received json string: {}", jsonStr);
         
-    	List<org.openmuc.framework.lib.json.rest.objects.RestChannel> records = json.getRestChannelList();
+        // TODO: Move helper objects to library project and rename to JsonChannel
+        List<org.openmuc.framework.lib.rest.objects.RestChannel> records = json.getRestChannelList();
         for (RestChannel channel : channels) {
-        	readChannel(channel, records);
+            readChannel(channel, records);
         }
-    	return null;
     }
 
     private void readChannel(RestChannel channel,
-    		List<org.openmuc.framework.lib.json.rest.objects.RestChannel> records) throws ConnectionException {
-    	for (org.openmuc.framework.lib.json.rest.objects.RestChannel record : records) {
+            List<org.openmuc.framework.lib.rest.objects.RestChannel> records) throws ConnectionException {
+    	
+        // TODO: Move helper objects to library project and rename to JsonChannel
+        for (org.openmuc.framework.lib.rest.objects.RestChannel record : records) {
             if (channel.equals(record)) {
-            	channel.setRecord(record.getRecord());
-            	return;
+                channel.setRecord(record.getRecord());
+                return;
             }
-    	}
-    	channel.setFlag(Flag.DRIVER_ERROR_READ_FAILURE);
+        }
+        channel.setFlag(Flag.DRIVER_ERROR_READ_FAILURE);
     }
 
     private void readChannel(RestChannel channel) throws ConnectionException {
@@ -155,20 +161,17 @@ public class RestRemote extends RestConfigs {
         }
     }
 
-    @Override
-    public Object onWrite(List<RestChannel> channels, Object containerListHandle)
-            throws UnsupportedOperationException, ConnectionException {
-
+    @Write
+    public void write(List<RestChannel> channels) throws ConnectionException {
         long timestamp = System.currentTimeMillis();
         try {
             for (RestChannel channel : channels) {
-                channel.write(connection, timestamp);
+                channel.write(connection);
             }
         } finally {
             logger.trace("Wrote {} channels in {}ms",
                     channels.size(), System.currentTimeMillis() - timestamp);
         }
-        return null;
     }
 
 }

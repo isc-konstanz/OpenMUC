@@ -9,6 +9,9 @@
         $scope.plotting = false;
         $scope.paused = false;
         $scope.advanced = false;
+        $scope.enableAutoRange = true;
+        $scope.yMinValue = null;
+        $scope.yMaxValue = null;
 
         var data = [];
         var nowText;
@@ -124,6 +127,16 @@
                 .defined((d, i) => typeof(d.y) === 'number' && !isNaN(d.y) && d.y !== null);
 
             chart.legend.maxKeyLength(100);
+
+            if ($scope.yMinValue != null && $scope.yMaxValue != null){
+                if ((isNaN(parseInt($scope.yMinValue)) === true || isNaN(parseInt($scope.yMaxValue))) || $scope.enableAutoRange == true){
+                    console.log(parseInt($scope.yMinValue));
+                    console.log(parseInt($scope.yMaxValue));
+                }
+                else {
+                    chart.yDomain([$scope.yMinValue,$scope.yMaxValue]);
+                }
+            }
 
             chart.interactiveLayer.tooltip.contentGenerator(function (d) {
                 var header = d.value;

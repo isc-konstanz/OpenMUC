@@ -1,24 +1,20 @@
-
 def projectName = "OpenMUC App - Simple Demo"
 
 dependencies {
-  implementation project(':openmuc-core-api')
+    implementation project(':openmuc-core-api')
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Export-Package', ''
-  }
+    bnd('Bundle-Name': projectName)
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description "A simple demo app for the OpenMUC framework."
-      }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = "A simple demo app for the OpenMUC framework."
+            }
+        }
     }
-  }
 }

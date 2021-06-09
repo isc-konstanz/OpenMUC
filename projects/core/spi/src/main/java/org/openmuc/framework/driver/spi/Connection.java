@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -53,7 +53,7 @@ public interface Connection {
      * @throws UnsupportedOperationException
      *             if the method is not implemented by the driver.
      * @throws ArgumentSyntaxException
-     *             if the syntax of the settings string is incorrect.
+     *             if the syntax of the address or settings string is incorrect.
      * @throws ScanException
      *             if an error occurs while scanning but the connection is still alive.
      * @throws ConnectionException

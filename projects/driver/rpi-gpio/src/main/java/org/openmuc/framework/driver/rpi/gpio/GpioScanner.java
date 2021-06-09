@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,14 +20,17 @@
  */
 package org.openmuc.framework.driver.rpi.gpio;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DeviceScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
-import org.openmuc.framework.driver.DeviceScanner;
-import org.openmuc.framework.driver.rpi.gpio.configs.GpioConfigs;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.Syntax;
+import org.openmuc.framework.driver.DriverDeviceScanner;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
-import org.openmuc.framework.options.Setting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +39,14 @@ import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.system.SystemInfo.BoardType;
 
-public class GpioScanner extends DeviceScanner {
+@Syntax(separator = ",", assignment = ":", keyValuePairs = { ADDRESS, SETTING })
+public class GpioScanner extends DriverDeviceScanner {
     private static final Logger logger = LoggerFactory.getLogger(GpioScanner.class);
 
-    @Setting(id = GpioConfigs.MODE,
-             name = "I/O mode",
-             valueSelection = "DIGITAL_INPUT:Input,DIGITAL_OUTPUT:Output"
+    @Option(id = GpioConfigs.MODE,
+            type = SETTING,
+    		name = "I/O mode",
+            valueSelection = "DIGITAL_INPUT:Input,DIGITAL_OUTPUT:Output"
     )
     private PinMode mode;
 
@@ -50,7 +55,7 @@ public class GpioScanner extends DeviceScanner {
     private volatile boolean interrupt = false;
 
     @Override
-    public void onScan(DriverDeviceScanListener listener) 
+    public void scan(DriverDeviceScanListener listener) 
             throws ArgumentSyntaxException, ScanException, ScanInterruptedException {
         
         logger.info("Scan for {}s of the Raspberry Pi platform: {}", 
@@ -78,7 +83,7 @@ public class GpioScanner extends DeviceScanner {
     }
 
     @Override
-    public void onScanInterrupt() throws UnsupportedOperationException {
+    public void interrupt() throws UnsupportedOperationException {
         interrupt = true;
     }
 

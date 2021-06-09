@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -96,7 +96,7 @@ class WriteHandle {
         return resultCodes;
     }
 
-    private List<SetParameter> createSetParamsFor(List<ChannelValueContainer> writeList)
+    private static List<SetParameter> createSetParamsFor(List<ChannelValueContainer> writeList)
             throws ConnectionException {
         List<SetParameter> setParams = new ArrayList<>(writeList.size());
 

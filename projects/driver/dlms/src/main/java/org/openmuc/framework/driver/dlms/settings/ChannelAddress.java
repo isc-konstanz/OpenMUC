@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,59 +20,63 @@
  */
 package org.openmuc.framework.driver.dlms.settings;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.AddressSyntax;
-import org.openmuc.framework.options.Configurable;
+import org.openmuc.framework.config.Configurable;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.config.option.annotation.Syntax;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 
-@AddressSyntax(separator = ";", assignmentOperator = "=", keyValuePairs = true)
+@Syntax(separator = ";", assignment = "=", keyValuePairs = ADDRESS)
 public class ChannelAddress extends Configurable {
 
     private static final String LOGICAL_NAME_FORMAT = "<Interface_Class_ID>/<Instance_ID>/<Object_Attribute_ID>";
 
-    @Address(id = "a",
-             name = "Address",
-             description = "The Address in logical name format "+LOGICAL_NAME_FORMAT
+    @Option(id = "a",
+    		type = ADDRESS,
+    		name = "Address",
+            description = "The Address in logical name format "+LOGICAL_NAME_FORMAT
     )
     private String address;
 
-    @Address(id = "t",
-             name = "Data Object Type",
-    		 valueSelection = "NULL_DATA:Null," +
-		    		          "ARRAY:Array," +
-		    		          "STRUCTURE:Structure," +
-		    		          "BOOLEAN:Bool," +
-		    		          "BIT_STRING:Bit String," +
-		    		          "DOUBLE_LONG:Integer 32," +
-		    		          "DOUBLE_LONG_UNSIGNED:Unsigned integer 32," +
-		    		          "OCTET_STRING:Octet String," +
-		    		          "UTF8_STRING:UTF-8 String," +
-		    		          "VISIBLE_STRING:Visible String," +
-		    		          "BCD:BCD," +
-		    		          "INTEGER:Integer 8," +
-		    		          "LONG_INTEGER:Integer 16," +
-		    		          "UNSIGNED:Unsigned integer 8," +
-		    		          "LONG_UNSIGNED:Unsigned integer 16," +
-		    		          "COMPACT_ARRAY:Compact array," +
-		    		          "LONG64:Integer 64," +
-		    		          "LONG64_UNSIGNED:Unsigned integer 64," +
-		    		          "ENUMERATE:Enum," +
-		    		          "FLOAT32:Float 32," +
-		    		          "FLOAT64:Float 64," +
-		    		          "DATE_TIME:Date Time," +
-		    		          "DATE:Date," +
-		    		          "TIME:Time," +
-		    		          "DONT_CARE:None"
+    @Option(id = "t",
+    		type = ADDRESS,
+    		name = "Data Object Type",
+            valueSelection = "NULL_DATA:Null," +
+                             "ARRAY:Array," +
+                             "STRUCTURE:Structure," +
+                             "BOOLEAN:Bool," +
+                             "BIT_STRING:Bit String," +
+                             "DOUBLE_LONG:Integer 32," +
+                             "DOUBLE_LONG_UNSIGNED:Unsigned integer 32," +
+                             "OCTET_STRING:Octet String," +
+                             "UTF8_STRING:UTF-8 String," +
+                             "VISIBLE_STRING:Visible String," +
+                             "BCD:BCD," +
+                             "INTEGER:Integer 8," +
+                             "LONG_INTEGER:Integer 16," +
+                             "UNSIGNED:Unsigned integer 8," +
+                             "LONG_UNSIGNED:Unsigned integer 16," +
+                             "COMPACT_ARRAY:Compact array," +
+                             "LONG64:Integer 64," +
+                             "LONG64_UNSIGNED:Unsigned integer 64," +
+                             "ENUMERATE:Enum," +
+                             "FLOAT32:Float 32," +
+                             "FLOAT64:Float 64," +
+                             "DATE_TIME:Date Time," +
+                             "DATE:Date," +
+                             "TIME:Time," +
+                             "DONT_CARE:None"
     )
     private Type type;
 
     private AttributeAddress attributeAddress;
 
-    public ChannelAddress(String parameters) throws ArgumentSyntaxException {
-        configureAddress(parameters);
+    public ChannelAddress(String address) throws ArgumentSyntaxException {
+        configure(ADDRESS, address);
 
         String[] arguments = address.split("/");
         if (arguments.length != 3) {

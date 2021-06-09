@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.data.BooleanValue;
@@ -64,14 +65,13 @@ import org.slf4j.LoggerFactory;
 public final class ChannelImpl implements Channel {
 
     private static final Logger logger = LoggerFactory.getLogger(ChannelImpl.class);
-
-    private volatile Record latestRecord;
+    private final Set<RecordListener> listeners = new LinkedHashSet<>();
+    private final DataManager dataManager;
     volatile ChannelConfigImpl config;
     ChannelCollection samplingCollection;
     ChannelCollection loggingCollection;
-    private final Set<RecordListener> listeners = new LinkedHashSet<>();
-    private final DataManager dataManager;
     volatile Object handle;
+    private volatile Record latestRecord;
     private Timer timer = null;
     private List<FutureValue> futureValues;
 
@@ -95,10 +95,14 @@ public final class ChannelImpl implements Channel {
         }
 
         if (!config.getLoggingSettings().equals(ChannelConfig.LOGGING_SETTINGS_DEFAULT) || 
-        		config.getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT) {
-        	if (config.getLoggingInterval() > 0) {
+                config.getLoggingInterval() != ChannelConfig.LOGGING_INTERVAL_DEFAULT) {
+            if (config.getLoggingInterval() > 0) {
                 dataManager.addToLoggingCollections(this, currentTime);
-        	}
+            }
+            logChannels.add(config);
+        }
+        else if (config.getLoggingInterval() == ChannelConfig.LOGGING_INTERVAL_DEFAULT && config.isLoggingEvent()
+                && config.isListening()) {
             logChannels.add(config);
         }
     }
@@ -109,18 +113,18 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
-    public String getChannelAddress() {
-        return config.getChannelAddress();
-    }
-
-    @Override
-    public String getChannelSettings() {
-        return config.getChannelSettings();
+    public String getAddress() {
+        return config.getAddress();
     }
 
     @Override
     public String getDescription() {
         return config.getDescription();
+    }
+
+    @Override
+    public String getSettings() {
+        return config.getSettings();
     }
 
     @Override
@@ -139,11 +143,24 @@ public final class ChannelImpl implements Channel {
     }
 
     @Override
+    public double getValueOffset() {
+        if (config.getValueOffset() == null) {
+            return 0d;
+        }
+        return config.getValueOffset();
+    }
+
+    @Override
     public double getScalingFactor() {
         if (config.getScalingFactor() == null) {
             return 1d;
         }
         return config.getScalingFactor();
+    }
+
+    @Override
+    public boolean isListening() {
+        return config.isListening();
     }
 
     @Override
@@ -155,11 +172,21 @@ public final class ChannelImpl implements Channel {
     public int getSamplingTimeOffset() {
         return config.getSamplingTimeOffset();
     }
+    
+    @Override
+    public int getSamplingTimeout() {
+        return config.deviceParent.getSamplingTimeout();
+    }
 
     @Override
     public int getLoggingInterval() {
         return config.getLoggingInterval();
     }
+
+	@Override
+	public int getLoggingDelayMaximum() {
+		return config.getLoggingDelayMaximum();
+	}
 
     @Override
     public int getLoggingTimeOffset() {
@@ -171,19 +198,24 @@ public final class ChannelImpl implements Channel {
         return config.getLoggingSettings();
     }
 
+	@Override
+	public double getLoggingTolerance() {
+		return config.getLoggingTolerance();
+	}
+
+	@Override
+	public boolean isloggingAverage() {
+		return config.isloggingAverage();
+	}
+
+    @Override
+    public boolean isLoggingEvent() {
+        return config.isLoggingEvent() && config.isListening() && config.getLoggingInterval() == -1;
+    }
+
     @Override
     public String getDriverId() {
         return config.deviceParent.driverParent.getId();
-    }
-
-    @Override
-    public String getDeviceAddress() {
-        return config.deviceParent.getDeviceAddress();
-    }
-
-    @Override
-    public String getDeviceSettings() {
-        return config.deviceParent.getSettings();
     }
 
     @Override
@@ -194,6 +226,16 @@ public final class ChannelImpl implements Channel {
     @Override
     public String getDeviceDescription() {
         return config.deviceParent.getDescription();
+    }
+
+    @Override
+    public String getDeviceAddress() {
+        return config.deviceParent.getAddress();
+    }
+
+    @Override
+    public String getDeviceSettings() {
+        return config.deviceParent.getSettings();
     }
 
     @Override
@@ -232,7 +274,8 @@ public final class ChannelImpl implements Channel {
 
     @Override
     public Record getLoggedRecord(long timestamp) throws DataLoggerNotAvailableException, IOException {
-        List<Record> records = dataManager.getDataLogger().getRecords(config.getId(), timestamp, timestamp);
+        String reader = getValidReaderIdFromConfig();
+        List<Record> records = dataManager.getDataLogger(reader).getRecords(config.getId(), timestamp, timestamp);
         if (!records.isEmpty()) {
             return records.get(0);
         }
@@ -243,13 +286,15 @@ public final class ChannelImpl implements Channel {
 
     @Override
     public List<Record> getLoggedRecords(long startTime) throws DataLoggerNotAvailableException, IOException {
-        return dataManager.getDataLogger().getRecords(config.getId(), startTime, System.currentTimeMillis());
+        String reader = getValidReaderIdFromConfig();
+        return dataManager.getDataLogger(reader).getRecords(config.getId(), startTime, System.currentTimeMillis());
     }
 
     @Override
     public List<Record> getLoggedRecords(long startTime, long endTime)
             throws DataLoggerNotAvailableException, IOException {
-        List<Record> toReturn = dataManager.getDataLogger().getRecords(config.getId(), startTime, endTime);
+        String reader = getValidReaderIdFromConfig();
+        List<Record> toReturn = dataManager.getDataLogger(reader).getRecords(config.getId(), startTime, endTime);
 
         // values in the future values list are sorted.
         Long currentTime = System.currentTimeMillis();
@@ -265,6 +310,24 @@ public final class ChannelImpl implements Channel {
             }
         }
         return toReturn;
+    }
+
+    private String getValidReaderIdFromConfig() {
+        if (config.getReader().isEmpty() || config.getReader() == null) {
+            return firstLoggerFromLogSettings();
+        }
+        else {
+            return config.getReader();
+        }
+    }
+
+    private String firstLoggerFromLogSettings() {
+        String[] loggerSegments = config.getLoggingSettings().split(";");
+        List<String> definedLogger = Arrays.stream(loggerSegments)
+                .map(seg -> seg.split(":")[0])
+                .collect(Collectors.toList());
+
+        return definedLogger.get(0);
     }
 
     Record setNewRecord(Record record) {
@@ -500,15 +563,6 @@ public final class ChannelImpl implements Channel {
             timer.schedule(timerTask, scheduleTime);
         }
 
-    }
-
-    @Override
-    public void write(List<Record> values) {
-        ArrayList<FutureValue> fValues = new ArrayList<>(values.size());
-        for (Record record : values) {
-            fValues.add(new FutureValue(record.getValue(), record.getTimestamp()));
-        }
-        writeFuture(fValues);
     }
 
     @Override

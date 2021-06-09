@@ -1,54 +1,62 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configuration>
-  <driver id="opcua">
-    <device id="device_opcua">
-      <deviceAddress>localhost:4840/opc</deviceAddress>
-      <channel id="channel_id_opcua">
-        <description>OPC UA test channel</description>
-        <channelAddress>power_photovoltaics</channelAddress>
-        <samplingInterval>5s</samplingInterval>
-      </channel>
-    </device>
-  </driver>
   <driver id="csv">
     <samplingTimeout>10s</samplingTimeout>
     <connectRetryInterval>1m</connectRetryInterval>
     <device id="home1">
-      <deviceAddress>./csv-driver/home1.csv</deviceAddress>
+      <description/>
+      <address>./csv-driver/home1.csv</address>
       <settings>samplingmode=hhmmss;rewind=true</settings>
       <channel id="hhmmss">
         <description>hhmmss</description>
-        <channelAddress>hhmmss</channelAddress>
-        <serverMapping id="opcua">ns:0</serverMapping>
+        <address>hhmmss</address>
         <samplingInterval>5s</samplingInterval>
       </channel>
       <channel id="power_photovoltaics">
-        <description>PV power production</description>
-        <channelAddress>pv_power_production</channelAddress>
-        <serverMapping id="opcua">folder:PV</serverMapping>
+        <description>PV Power Production</description>
+        <address>pv_power_production</address>
+        <settings>tilt=30:azimuth=0</settings>
         <unit>W</unit>
         <samplingInterval>5s</samplingInterval>
         <loggingInterval>5s</loggingInterval>
       </channel>
       <channel id="power_grid">
-        <description>grid_power</description>
-        <channelAddress>grid_power</channelAddress>
+        <description>Grid Power</description>
+        <address>grid_power</address>
         <unit>W</unit>
         <samplingInterval>5s</samplingInterval>
         <loggingInterval>5s</loggingInterval>
       </channel>
       <channel id="power_heatpump">
-        <description>hp_power_consumption</description>
-        <channelAddress>hp_power_consumption</channelAddress>
+        <description>Heat Pump Power Consumption</description>
+        <address>hp_power_consumption</address>
         <unit>W</unit>
         <samplingInterval>5s</samplingInterval>
         <loggingInterval>5s</loggingInterval>
       </channel>
       <channel id="power_electric_vehicle">
-        <description>ev_power_consumption</description>
-        <channelAddress>ev_power_consumption</channelAddress>
+        <description>EV Power Consumption</description>
+        <address>ev_power_consumption</address>
         <unit>W</unit>
         <samplingInterval>5s</samplingInterval>
+        <loggingInterval>5s</loggingInterval>
+      </channel>
+    </device>
+  </driver>
+  <driver id="aggregator">
+    <device id="aggregationdevice">
+      <samplingTimeout>55s</samplingTimeout>
+      <connectRetryInterval>1m</connectRetryInterval>
+      <channel id="ev_power_aggr">
+        <channelAddress>power_electric_vehicle:avg:0.9</channelAddress>
+        <samplingInterval>5s</samplingInterval>
+        <samplingTimeOffset>5s</samplingTimeOffset>
+        <loggingInterval>5s</loggingInterval>
+      </channel>
+      <channel id="power_photovoltaics_aggr">
+        <channelAddress>power_photovoltaics:avg:0.9</channelAddress>
+        <samplingInterval>5s</samplingInterval>
+        <samplingTimeOffset>5s</samplingTimeOffset>
         <loggingInterval>5s</loggingInterval>
       </channel>
     </device>
