@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Core - Server"
-def projectDescription = "The core server component of the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Core - Server"
+    projectDescription = "The core server component of the OpenMUC framework."
+}
 
 dependencies {
     api project(':openmuc-core-spi')
@@ -16,7 +18,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

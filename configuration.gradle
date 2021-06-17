@@ -24,11 +24,13 @@ project.ext {
                 it.getPath() == ":openmuc-core-api" ||
                 it.getPath() == ":openmuc-core-datamanager" ||
                 it.getPath() == ":openmuc-core-spi" ||
+                it.getPath() == ":openmuc-datalogger" ||
                 it.getPath() == ":openmuc-datalogger-amqp" ||
                 it.getPath() == ":openmuc-datalogger-ascii" ||
                 it.getPath() == ":openmuc-datalogger-mqtt" ||
                 it.getPath() == ":openmuc-datalogger-slotsdb" ||
                 it.getPath() == ":openmuc-datalogger-sql" ||
+                it.getPath() == ":openmuc-driver" ||
                 it.getPath() == ":openmuc-driver-aggregator" ||
                 it.getPath() == ":openmuc-driver-amqp" ||
                 it.getPath() == ":openmuc-driver-csv" ||
@@ -42,8 +44,12 @@ project.ext {
                 it.getPath() == ":openmuc-driver-mbus" ||
                 it.getPath() == ":openmuc-driver-modbus" ||
                 it.getPath() == ":openmuc-driver-mqtt" ||
+                it.getPath() == ":openmuc-driver-opcua" ||
                 it.getPath() == ":openmuc-driver-rest" ||
+                it.getPath() == ":openmuc-driver-rpi-gpio" ||
+                it.getPath() == ":openmuc-driver-rpi-w1" ||
                 it.getPath() == ":openmuc-driver-snmp" ||
+                it.getPath() == ":openmuc-driver-sql" ||
                 it.getPath() == ":openmuc-driver-wmbus" ||
                 it.getPath() == ":openmuc-lib-amqp" ||
                 it.getPath() == ":openmuc-lib-filePersistence" ||
@@ -53,7 +59,9 @@ project.ext {
                 it.getPath() == ":openmuc-lib-rest" ||
                 it.getPath() == ":openmuc-lib-ssl" ||
                 it.getPath() == ":openmuc-lib-sql" ||
+                it.getPath() == ":openmuc-server" ||
                 it.getPath() == ":openmuc-server-modbus" ||
+                it.getPath() == ":openmuc-server-opcua" ||
                 it.getPath() == ":openmuc-server-restws" ||
                 it.getPath() == ":openmuc-webui-base" ||
                 it.getPath() == ":openmuc-webui-channelaccesstool" ||
@@ -101,8 +109,13 @@ configure(javaProjects) {
 }
 
 task framework {
-    apply from: "./framework/conf/bundles.gradle"
+    apply from: rootDir.getPath() + "/framework/conf/bundles.gradle"
     dependsOn updateBundles
+}
+
+task packages {
+    apply from: rootDir.getPath() + "/packages/build.gradle"
+    dependsOn debianPackages
 }
 
 tasks.withType(Tar) {

@@ -1,0 +1,73 @@
+import java.nio.file.Paths
+project.ext {
+    cfgPackageGit = 'https://github.com/isc-konstanz/OpenMUC'
+    cfgPackageHomepage = 'https://openmuc.org'
+}
+
+task deletePackages(type: Delete) {
+  delete Paths.get(rootDir.getPath(), 'build', 'dpkg')
+  followSymlinks = true
+}
+
+task debianPackages {
+    dependsOn(distributionProjects.build)
+    dependsOn(deletePackages)
+    doLast {
+        for (Project project: distributionProjects) {
+            if (project.getProjectDir().equals(getProjectDir())) {
+                continue;
+            }
+            configure(project) {
+                def projectDir = project.getProjectDir().getPath()
+                def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', project.name + '_' + cfgVersion + '_all').toString()
+                def projectBundles = Paths.get(projectPackage, 'opt', 'openmuc', 'bundle').toString()
+                if (new File(projectDir, 'pkg').exists()) {
+                    copy {
+                        from Paths.get(projectDir, 'pkg')
+                        into Paths.get(projectPackage)
+                        filter {
+                            line -> line.replaceAll('<package>', project.name)
+                                        .replaceAll('<description>', project.ext.projectName)
+                                        .replaceAll('<version>', cfgVersion)
+                                        .replaceAll('<homepage>', cfgPackageHomepage)
+                                        .replaceAll('<repository>', cfgPackageGit)
+                        }
+                        exclude '*.gradle'
+                    }
+                    def gradleFile = new File(projectDir, 'debian.gradle')
+                    if (gradleFile.exists()) {
+                        apply from: gradleFile.getPath()
+                    }
+                    else {
+                        copy {
+                            //from project.configurations.default
+                            from project.configurations.default.getAllArtifacts().getFiles()
+                            into Paths.get(projectPackage, 'opt', 'openmuc', 'bundle').toString()
+                        }
+                    }
+                }
+            }
+        }
+        new File(rootDir.getPath(), 'packages').eachDir {
+            def projectName = it.getName()
+            def projectDir = it.getPath()
+            def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', projectName + '_' + cfgVersion + '_all').toString()
+            if (new File(projectDir, 'DEBIAN').exists()) {
+                copy {
+                    from projectDir
+                    into projectPackage
+                    filter {
+                        line -> line.replaceAll('<version>', cfgVersion)
+                                    .replaceAll('<homepage>', cfgPackageHomepage)
+                                    .replaceAll('<repository>', cfgPackageGit)
+                    }
+                    exclude '*.gradle'
+                }
+                def gradleFile = new File(projectDir, 'debian.gradle')
+                if (gradleFile.exists()) {
+                    apply from: gradleFile.getPath()
+                }
+            }
+        }
+    }
+}

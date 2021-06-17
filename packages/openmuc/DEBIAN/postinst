@@ -1,0 +1,3 @@
+#!/bin/sh
+# Add the Multi Utility Communication user, if it does not exist
+chown muc -R /opt/openmuc /var/opt/openmuc

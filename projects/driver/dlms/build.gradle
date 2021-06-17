@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Driver - DLMS/COSEM"
-def projectDescription = "DLMS/COSEM driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - DLMS/COSEM"
+    projectDescription = "DLMS/COSEM driver for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
@@ -20,8 +22,9 @@ dependencies {
 
 jar {
     bnd('Bundle-Name': projectName,
-            'Bundle-ClassPath': '.,lib/jdlms-' + jdlmsversion + '.jar, lib/asn1bean-' + asn1version + '.jar',
-            'Import-Package': '!org.openmuc.jdlms*,!com.beanit.asn1bean.*,!org.bouncycastle.*,javax.net;resolution:=optional,*' + jarDefaultImportPackageVersion)
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/jdlms-' + jdlmsversion + '.jar, lib/asn1bean-' + asn1version + '.jar',
+        'Import-Package': '!org.openmuc.jdlms*,!com.beanit.asn1bean.*,!org.bouncycastle.*,javax.net;resolution:=optional,*' + jarDefaultImportPackageVersion)
 
     into('lib') {
         from configurations.embed
@@ -33,7 +36,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

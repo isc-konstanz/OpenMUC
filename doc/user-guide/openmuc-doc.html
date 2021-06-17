@@ -5627,7 +5627,7 @@ Alternatively on *nix one can use the tool openssl:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>keytool -keystore conf/truststore.jks -importcert cert.crt</code></pre>
+<pre class="CodeRay highlight"><code>keytool -keystore cert/truststore.jks -importcert cert.crt</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5635,7 +5635,7 @@ Alternatively on *nix one can use the tool openssl:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>keytool -keystore conf/truststore.jks -storepasswd</code></pre>
+<pre class="CodeRay highlight"><code>keytool -keystore cert/truststore.jks -storepasswd</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5643,19 +5643,19 @@ Alternatively on *nix one can use the tool openssl:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>keytool -importkeystore -srckeystore otherstore.jks -destkeystore conf/truststore.jks</code></pre>
+<pre class="CodeRay highlight"><code>keytool -importkeystore -srckeystore otherstore.jks -destkeystore cert/truststore.jks</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Editing <code>conf/keystore.jks</code> is done analog to the Trust Store.</p>
+<p>Editing <code>cert/keystore.jks</code> is done analog to the Trust Store.</p>
 </div>
 <div class="paragraph">
 <p>Edit <code>/conf/system.properties</code> to reflect the changes:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>org.openmuc.framework.truststore = conf/truststore.jks
-org.openmuc.framework.keystore = conf/keystore.jks
+<pre class="CodeRay highlight"><code>org.openmuc.framework.truststore = cert/truststore.jks
+org.openmuc.framework.keystore = cert/keystore.jks
 org.openmuc.framework.truststorepassword = changeme
 org.openmuc.framework.keystorepassword = changeme</code></pre>
 </div>

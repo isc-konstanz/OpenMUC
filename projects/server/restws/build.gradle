@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Server - RESTful Web Service"
-def projectDescription = "REST server for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Server - RESTful Web Service"
+    projectDescription = "REST server for the OpenMUC framework."
+}
 
 configurations.create('embed')
 

@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Driver - KNX"
-def projectDescription = "KNX driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - KNX"
+    projectDescription = "KNX driver for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
@@ -15,8 +17,10 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 'Bundle-ClassPath': '.,lib/calimero-core-' + calimerovers + '.jar',
-            'Import-Package': '!tuwien.auto.calimero*,*' + jarDefaultImportPackageVersion)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/calimero-core-' + calimerovers + '.jar',
+        'Import-Package': '!tuwien.auto.calimero*,*' + jarDefaultImportPackageVersion)
 
     into('lib') {
         from configurations.embed
@@ -28,7 +32,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

@@ -1,6 +1,7 @@
-def projectName = "OpenMUC Library - MQTT Service"
-def projectDescription = "MQTT service for the OpenMUC framework"
-
+project.ext {
+    projectName = "OpenMUC Library - MQTT Service"
+    projectDescription = "MQTT service for the OpenMUC framework"
+}
 
 def hivemqVersion = '1.2.1'
 
@@ -21,9 +22,10 @@ jar {
     def bundles = '.'
     configurations.embed.each {bundles += ',lib/' + it.name}
     bnd('Bundle-Name': projectName,
-            'Bundle-ClassPath': bundles,
-            'Export-Package': 'org.openmuc.framework.lib.*',
-            'Import-Package': 'org.openmuc.*,org.slf4j.*,org.osgi.*,javax.*,sun.misc.*'
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': bundles,
+        'Export-Package': 'org.openmuc.framework.lib.*',
+        'Import-Package': 'org.openmuc.*,org.slf4j.*,org.osgi.*,javax.*,sun.misc.*'
     )
 
     into('lib') {
@@ -36,7 +38,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Library - SQL"
-def projectDescription = "SQL library for the OpenMUC framework"
+project.ext {
+    projectName = "OpenMUC Library - SQL"
+    projectDescription = "SQL library for the OpenMUC framework"
+}
 
 configurations.create('embed')
 

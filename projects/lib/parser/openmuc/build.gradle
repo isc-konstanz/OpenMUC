@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Library - OpenMUC Parser Service"
-def projectDescription = "Parser library for the OpenMUC to OpenMUC communication."
+project.ext {
+    projectName = "OpenMUC Library - OpenMUC Parser Service"
+    projectDescription = "Parser library for the OpenMUC to OpenMUC communication."
+}
 
 dependencies {
     implementation project(':openmuc-core-spi')
@@ -8,7 +10,8 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
 publishing {

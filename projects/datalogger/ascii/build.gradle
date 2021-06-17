@@ -1,4 +1,7 @@
-def projectName = "OpenMUC Data Logger - ASCII"
+project.ext {
+    projectName = "OpenMUC Data Logger - ASCII"
+    projectDescription = "ASCII data logger for the OpenMUC framework."
+}
 
 dependencies {
     implementation project(':openmuc-core-spi')
@@ -7,7 +10,8 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
 publishing {
@@ -15,7 +19,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description "ASCII data logger for the OpenMUC framework."
+                description = projectDescription
             }
         }
     }

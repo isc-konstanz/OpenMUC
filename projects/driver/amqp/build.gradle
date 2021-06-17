@@ -1,4 +1,7 @@
-def projectName = "OpenMUC Driver - AMQP"
+project.ext {
+    projectName = "OpenMUC Driver - AMQP"
+    projectDescription = "AMQP driver for the OpenMUC framework."
+}
 
 dependencies {
     implementation project(':openmuc-core-spi')
@@ -8,7 +11,8 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
 publishing {

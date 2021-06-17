@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Core - API"
-
+project.ext {
+    projectName = "OpenMUC Core - API"
+    projectDescription = "The core API of the OpenMUC framework."
+}
 
 dependencies {
     api group: 'org.osgi', name: 'osgi.core', version: '7.0.0'
@@ -11,7 +13,9 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 'Export-Package': 'org.openmuc.framework.*')
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Export-Package': 'org.openmuc.framework.*')
 }
 
 publishing {
@@ -19,7 +23,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description = "The core API of the OpenMUC framework."
+                description = projectDescription
             }
         }
     }

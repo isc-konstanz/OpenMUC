@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Core - Driver"
-def projectDescription = "The core driver component of the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Core - Driver"
+    projectDescription = "The core driver component of the OpenMUC framework."
+}
 
 dependencies {
     api project(':openmuc-core-spi')

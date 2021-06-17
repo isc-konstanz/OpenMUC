@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Data Logger - SQL"
-def projectDescription = "SQL data logger for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Data Logger - SQL"
+    projectDescription = "SQL data logger for the OpenMUC framework."
+}
 
 dependencies {
     implementation project(':openmuc-datalogger')
