@@ -1,3 +1,0 @@
-#!/bin/sh
-# Set permissions of the bundle jar
-chown muc /opt/openmuc/bundle/<package>.jar

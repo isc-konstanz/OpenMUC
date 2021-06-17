@@ -1,4 +1,4 @@
-Package: <package>
+Package: openmuc-driver-mysql
 Priority: optional
 Section: contrib/electronics
 Version: <version>
@@ -8,4 +8,4 @@ Build-Depends: debhelper (>= 9)
 Homepage: <homepage>
 Vcs-Browser: <repository>
 Vcs-Git: <repository>.git
-Description: <description>
+Description: OpenMUC Driver - MySQL
