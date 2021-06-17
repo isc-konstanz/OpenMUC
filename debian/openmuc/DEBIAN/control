@@ -1,8 +1,0 @@
-Package: openmuc
-Version: 0.18.2
-Section: base
-Priority: optional
-Architecture: armhf
-Depends: default-jre-headless
-Maintainer: Adrian Minde <adrian.minde@isc-konstanz.de>
-Description: openmuc package 

@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Server - OPC UA"
-def projectDescription = "OPC UA server for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Server - OPC UA"
+    projectDescription = "OPC UA server for the OpenMUC framework."
+}
 
 def miloVersion = '0.4.3'
 
@@ -50,7 +52,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

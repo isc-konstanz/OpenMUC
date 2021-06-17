@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Driver - SNMP"
-def projectDescription = "SNMP driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - SNMP"
+    projectDescription = "SNMP driver for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
@@ -17,8 +19,9 @@ dependencies {
 
 jar {
     bnd('Bundle-Name': projectName,
-            'Bundle-ClassPath': '.,lib/snmp4j-' + snmp4jVersion + '.jar',
-            'Import-Package': '!org.snmp4j*,javax.crypto,javax.crypto.spec,javax.net.ssl,*' + jarDefaultImportPackageVersion)
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/snmp4j-' + snmp4jVersion + '.jar',
+        'Import-Package': '!org.snmp4j*,javax.crypto,javax.crypto.spec,javax.net.ssl,*' + jarDefaultImportPackageVersion)
 
     into('lib') {
         from configurations.embed
@@ -30,7 +33,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

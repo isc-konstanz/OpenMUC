@@ -1,26 +1,19 @@
-def projectName = "OpenMUC WebUI - Base"
-def projectDescription = "WebUI base for the OpenMUC framework."
-
-configurations.create('embed')
-
-def gsonVersion = '2.8.6'
+project.ext {
+    projectName = "OpenMUC WebUI - Base"
+    projectDescription = "WebUI base for the OpenMUC framework."
+}
 
 dependencies {
-    implementation project(':openmuc-core-api')
     implementation project(':openmuc-webui-spi')
-    implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
     implementation group: 'org.apache.felix', name: 'org.apache.felix.http.servlet-api', version: '1.1.2'
-    embed group: 'com.google.code.gson', name: 'gson', version: gsonVersion
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 'Bundle-ClassPath': '.,lib/gson-' + gsonVersion + '.jar',
-            'Import-Package': '!com.google.gson.*,*' + jarDefaultImportPackageVersion)
-
-    into('lib') {
-        from configurations.embed
-    }
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
+
 publishing {
     publications {
         mavenJava(MavenPublication) {

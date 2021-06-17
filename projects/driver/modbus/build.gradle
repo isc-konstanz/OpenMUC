@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Driver - Modbus"
-def projectDescription = "Modbus driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - Modbus"
+    projectDescription = "Modbus driver for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
@@ -16,8 +18,10 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 'Bundle-ClassPath': '.,lib/j2mod-r100.jar',
-            'Import-Package': '!com.ghgande.j2mod*,gnu.io;resolution:=optional,*' + jarDefaultImportPackageVersion)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/j2mod-r100.jar',
+        'Import-Package': '!com.ghgande.j2mod*,gnu.io;resolution:=optional,*' + jarDefaultImportPackageVersion)
 
     into('lib') {
         from configurations.embed
@@ -29,7 +33,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

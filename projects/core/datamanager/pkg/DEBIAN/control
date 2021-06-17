@@ -1,0 +1,11 @@
+Package: <package>
+Priority: optional
+Section: contrib/electronics
+Version: <version>
+Architecture: all
+Depends: openmuc-core-api, openmuc-core-spi
+Build-Depends: debhelper (>= 9)
+Homepage: <homepage>
+Vcs-Browser: <repository>
+Vcs-Git: <repository>.git
+Description: <description>

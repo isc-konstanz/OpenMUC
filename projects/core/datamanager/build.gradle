@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Core - Data Manager"
-
+project.ext {
+    projectName = "OpenMUC Core - Data Manager"
+    projectDescription = "The data manager is the core bundle of the OpenMUC framework."
+}
 dependencies {
     testImplementation group: 'pl.pragmatists', name: 'JUnitParams', version: '1.1.1'
 
@@ -9,7 +11,8 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
 publishing {
@@ -17,7 +20,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description = "The data manager is the core bundle of the OpenMUC framework."
+                description = projectDescription
             }
         }
     }

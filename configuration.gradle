@@ -15,8 +15,6 @@ project.ext {
 
     cfgRepositoryPass = project.properties.sonatypePass
 
-    cfgDebianDir = '/opt/openmuc'
-
     javaProjects = subprojects
 
     jarDefaultImportPackageVersion = ";version=0"
@@ -102,13 +100,13 @@ configure(javaProjects) {
 }
 
 task framework {
-    apply from: "./framework/conf/bundles.gradle"
+    apply from: rootDir.getPath() + "/framework/conf/bundles.gradle"
     dependsOn updateBundles
 }
 
 task packages {
-    apply from: rootDir.getPath() + "/debian/packages.gradle"
-    dependsOn(copyPackages)
+    apply from: rootDir.getPath() + "/packages/build.gradle"
+    dependsOn debianPackages
 }
 
 tasks.withType(Tar) {

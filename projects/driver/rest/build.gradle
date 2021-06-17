@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Driver - REST"
-def projectDescription = "REST driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - REST"
+    projectDescription = "REST driver for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
@@ -27,7 +29,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

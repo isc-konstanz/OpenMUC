@@ -5,7 +5,7 @@
     <connectRetryInterval>1m</connectRetryInterval>
     <device id="home1">
       <description/>
-      <address>./csv-driver/home1.csv</address>
+      <address>./csv/home1.csv</address>
       <settings>samplingmode=hhmmss;rewind=true</settings>
       <channel id="hhmmss">
         <description>hhmmss</description>

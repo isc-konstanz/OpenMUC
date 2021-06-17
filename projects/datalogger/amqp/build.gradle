@@ -1,4 +1,7 @@
-def projectName = "OpenMUC Data Logger - AMQP"
+project.ext {
+    projectName = "OpenMUC Data Logger - AMQP"
+    projectDescription = "AMQP data logger for the OpenMUC framework."
+}
 
 def gsonversion = '2.8.5'
 
@@ -14,7 +17,8 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
 publishing {
@@ -22,7 +26,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description = "AMQP data logger for the OpenMUC framework."
+                description = projectDescription
             }
         }
     }

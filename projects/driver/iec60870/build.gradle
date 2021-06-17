@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Driver - IEC 60870-104"
-def projectDescription = "IEC 60870-104 driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - IEC 60870-104"
+    projectDescription = "IEC 60870-104 driver for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
@@ -14,8 +16,9 @@ dependencies {
 
 jar {
     bnd('Bundle-Name': projectName,
-            'Bundle-ClassPath': '.,lib/j60870-' + j60870version + '.jar',
-            'Import-Package': '!org.openmuc.j60870*,javax.net,*' + jarDefaultImportPackageVersion
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/j60870-' + j60870version + '.jar',
+        'Import-Package': '!org.openmuc.j60870*,javax.net,*' + jarDefaultImportPackageVersion
     )
 
     into('lib') {
@@ -28,7 +31,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

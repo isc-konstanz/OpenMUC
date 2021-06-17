@@ -1,21 +1,24 @@
-def projectName = "OpenMUC Library - AMQP Service"
-def projectDescription = "AMQP service for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Library - AMQP Service"
+    projectDescription = "AMQP service for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
 def rabbitmqVersion = '5.9.0'
 
 dependencies {
-    implementation group: 'com.rabbitmq', name: 'amqp-client', version: rabbitmqVersion
     implementation project(':openmuc-lib-ssl')
+    implementation group: 'com.rabbitmq', name: 'amqp-client', version: rabbitmqVersion
     embed group: 'com.rabbitmq', name: 'amqp-client', version: rabbitmqVersion
 }
 
 jar {
     bnd('Bundle-Name': projectName,
-            'Bundle-ClassPath': '.,lib/amqp-client-' + rabbitmqVersion + '.jar',
-            'Import-Package': '!com.rabbitmq.*,org.openmuc.framework.lib.ssl,org.slf4j,javax.net,javax.net.ssl,;resolution:=optional,*' + jarDefaultImportPackageVersion,
-            'Export-Package': 'org.openmuc.framework.lib.amqp')
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/amqp-client-' + rabbitmqVersion + '.jar',
+        'Import-Package': '!com.rabbitmq.*,org.openmuc.framework.lib.ssl,org.slf4j,javax.net,javax.net.ssl,;resolution:=optional,*' + jarDefaultImportPackageVersion,
+        'Export-Package': 'org.openmuc.framework.lib.amqp')
 
     into('lib') {
         from configurations.embed

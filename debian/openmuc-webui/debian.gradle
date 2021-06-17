@@ -1,6 +1,0 @@
-copy {
-  from project.configurations.default.getAllArtifacts().getFiles()
-  from project.configurations.default
-  into rootDir.getPath() + '/build/dpkg/openmuc-webui' + cfgDebianDir + '/bundle'
-  include 'openmuc-webui*.jar'
-}

@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Driver - IEC 62056-21"
-def projectDescription = "IEC 62056-21 driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - IEC 62056-21"
+    projectDescription = "IEC 62056-21 driver for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
@@ -13,8 +15,10 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 'Bundle-ClassPath': '.,lib/j62056-' + j62056version + '.jar',
-            'Import-Package': '!org.openmuc.j62056*,org.openmuc.jrxtx,*' + jarDefaultImportPackageVersion)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/j62056-' + j62056version + '.jar',
+        'Import-Package': '!org.openmuc.j62056*,org.openmuc.jrxtx,*' + jarDefaultImportPackageVersion)
 
     into('lib') {
         from configurations.embed
@@ -26,7 +30,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

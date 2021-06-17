@@ -1,8 +1,0 @@
-Package: openmuc-driver-mbus
-Version: 0.18.2
-Section: base
-Priority: optional
-Architecture: armhf
-Depends: openmuc-lib-rxtx
-Maintainer: Adrian Minde <adrian.minde@isc-konstanz.de>
-Description: OpenMUC driver-mbus

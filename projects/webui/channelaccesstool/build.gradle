@@ -1,13 +1,15 @@
-def projectName = "OpenMUC WebUI - Channel Access Tool"
-def projectDescription = "Channel Access Tool plug-in for the WebUI of the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC WebUI - Channel Access Tool"
+    projectDescription = "Channel Access Tool plug-in for the WebUI of the OpenMUC framework."
+}
 
 dependencies {
-    implementation project(':openmuc-core-api')
     implementation project(':openmuc-webui-spi')
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
 publishing {

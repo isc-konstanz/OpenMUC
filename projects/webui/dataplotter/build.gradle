@@ -1,13 +1,15 @@
-def projectName = "OpenMUC WebUI - Data Plotter"
-def projectDescription = "Data Plotter plug-in for the WebUI of the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC WebUI - Data Plotter"
+    projectDescription = "Data Plotter plug-in for the WebUI of the OpenMUC framework."
+}
 
 dependencies {
-    implementation project(':openmuc-core-api')
     implementation project(':openmuc-webui-spi')
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
 publishing {

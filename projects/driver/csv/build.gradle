@@ -1,5 +1,7 @@
-def projectName = "OpenMUC Driver - CSV"
-def projectDescription = "CSV driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - CSV"
+    projectDescription = "CSV driver for the OpenMUC framework."
+}
 
 def univocityVersion = '2.8.4'
 
@@ -14,12 +16,13 @@ dependencies {
     testImplementation "org.mockito:mockito-core:2.25.0"
     testImplementation "org.powermock:powermock-api-mockito2:2.0.2"
     testImplementation "org.powermock:powermock-module-junit4:2.0.2"
-
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 'Bundle-ClassPath': '.,lib/univocity-parsers-' + univocityVersion + '.jar',
-            'Import-Package': '!com.univocity.parsers.*,!com.googlecode.openbeans.*,*' + jarDefaultImportPackageVersion)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/univocity-parsers-' + univocityVersion + '.jar',
+        'Import-Package': '!com.univocity.parsers.*,!com.googlecode.openbeans.*,*' + jarDefaultImportPackageVersion)
 
     into('lib') {
         from configurations.embed
@@ -31,7 +34,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description projectDescription
+                description = projectDescription
             }
         }
     }

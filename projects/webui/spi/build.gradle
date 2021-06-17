@@ -1,12 +1,16 @@
-def projectName = "OpenMUC WebUI - SPI"
-def projectDescription = "WebUI SPI of the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC WebUI - SPI"
+    projectDescription = "WebUI SPI of the OpenMUC framework."
+}
 
 dependencies {
-    implementation project(':openmuc-core-api')
+    api project(':openmuc-core-api')
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 'Export-Package': 'org.openmuc.framework.*')
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Export-Package': 'org.openmuc.framework.*')
 }
 
 publishing {

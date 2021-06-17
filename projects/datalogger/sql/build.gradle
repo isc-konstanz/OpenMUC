@@ -1,4 +1,7 @@
-def projectName = "OpenMUC Data Logger - SQL"
+project.ext {
+    projectName = "OpenMUC Data Logger - SQL"
+    projectDescription = "SQL data logger for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
@@ -14,23 +17,24 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName, 'Bundle-ClassPath': '.,lib/org.osgi.service.jdbc-1.0.0.jar',
-            'Export-Package': 'org.osgi.service.jdbc',
-            'Import-Package': 'org.postgresql,javax.sql,org.h2.tools,' +
-                    'org.openmuc.framework.*,' +
-                    'org.osgi.*,org.slf4j,!org.osgi.service.jdbc,' + jarDefaultImportPackageVersion)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/org.osgi.service.jdbc-1.0.0.jar',
+        'Export-Package': 'org.osgi.service.jdbc',
+        'Import-Package': 'org.postgresql,javax.sql,org.h2.tools,' +
+                          'org.openmuc.framework.*,' +
+                          'org.osgi.*,org.slf4j,!org.osgi.service.jdbc,' + jarDefaultImportPackageVersion)
     into('lib') {
         from configurations.embed
     }
 }
-
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description "SQL data logger for the OpenMUC framework."
+                description = projectDescription
             }
         }
     }

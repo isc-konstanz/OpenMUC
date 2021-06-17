@@ -36,11 +36,11 @@ public class Settings extends GenericSettings implements ManagedService {
 
     Settings() {
         super();
-        properties.put(KEYSTORE, new ServiceProperty(KEYSTORE, "path to the keystore", "conf/keystore.jks", true));
+        properties.put(KEYSTORE, new ServiceProperty(KEYSTORE, "path to the keystore", "cert/keystore.jks", true));
         properties.put(KEYSTORE_PASSWORD,
                 new ServiceProperty(KEYSTORE_PASSWORD, "keystore password", "changeme", true));
         properties.put(TRUSTSTORE,
-                new ServiceProperty(TRUSTSTORE, "path to the truststore", "conf/truststore.jks", true));
+                new ServiceProperty(TRUSTSTORE, "path to the truststore", "cert/truststore.jks", true));
         properties.put(TRUSTSTORE_PASSWORD,
                 new ServiceProperty(TRUSTSTORE_PASSWORD, "truststore password", "changeme", true));
     }
