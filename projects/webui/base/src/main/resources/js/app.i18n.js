@@ -5,7 +5,7 @@
     app.config(function ($translateProvider) {
 
         $translateProvider.translations('en', {
-            WELCOME_TO_OPEN_MUC: 'Welcome to the OpenMUC Framework Administration Utility',
+            WELCOME_TO_OPEN_MUC: 'Welcome to the Seal Framework Administration Utility',
             SHOW_ADVANCED: 'show advanced options',
             APPLICATIONS: 'Applications',
             DRIVERS: 'Drivers',

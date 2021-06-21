@@ -44,11 +44,11 @@ body {
 
 #footer {
   text-align: center;
-  height: 70px;
+  height: 50px;
   padding: 15px 20px;
 
   background: #E9EDEB;  
-  margin-top: 60px;
+  margin-top: 80px;
 }
 
 .navbar-brand {
@@ -102,7 +102,7 @@ body {
 }
 
 .dropdown .icon {
-	color: #00947a;
+	color: #004F9E;
 	margin-right: 10px;
 	font-size: 20px;
 	width: 28px;
@@ -116,7 +116,7 @@ body {
 /* FORMS */
 
 .form-horizontal .fa-info-circle {
-	color: #009474;
+	color: #005C9E;
 }
 
 .help-label {

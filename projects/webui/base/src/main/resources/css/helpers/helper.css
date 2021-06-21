@@ -1,7 +1,7 @@
 /* OVERWRITE MAIN LINK COLOR */
 
-a {color:#009474}
-a:hover,a:focus{color:#006956}
+a {color:#005C9E}
+a:hover,a:focus{color:#003B75}
 
 /* PAGE HEADER */
 
@@ -59,7 +59,7 @@ a:hover,a:focus{color:#006956}
 
 .form-group .glyphicon-info-sign {
   margin-right: 2px;
-  color: #07947A;
+  color: #0854A0;
 }
 
 .help-block {
@@ -81,9 +81,9 @@ a:hover,a:focus{color:#006956}
 /* ALERTS */
 
 .alert-primary {
-	color: #00947a;
-	background-color: #E3F0EE;
-	border-color: #D0DFDC;
+	color: #004F9E;
+	background-color: #DBE3EB;
+	border-color: #C3CFDB;
 	position: relative;
 }
 
@@ -103,9 +103,9 @@ a:hover,a:focus{color:#006956}
 }
 
 #driverid.card-header{
-	background-color: #E3F0EE;
-	border-color: #D0DFDC;
-	color: #00947a;
+	background-color: #DBE3EB;
+	border-color: #C3CFDB;
+	color: #004F9E;
 }
 
 .card-link-heading {
@@ -136,14 +136,14 @@ a:hover,a:focus{color:#006956}
 /* BUTTONS */
 
 #bodyID .btn-primary {
-  background-color: #009474;
-  border-color: #009474;
+  background-color: #005C9E;
+  border-color: #005C9E;
 }
 #bodyID .btn-primary[disabled],
 #bodyID .btn-primary[disabled]:hover,
 #bodyID .btn-primary[disabled]:focus {
-  background-color: #009474;
-  border-color: #009474;
+  background-color: #005C9E;
+  border-color: #005C9E;
 }
 #bodyID .btn-primary:hover,
 #bodyID .btn-primary:focus,
@@ -153,8 +153,8 @@ a:hover,a:focus{color:#006956}
 #bodyID .btn-primary.open,
 #bodyID .open > .dropdown-toggle.btn-primary {
 	color: white;
-  background-color: #00816A;
-	border-color: #00816A;
+  background-color: #00458A;
+	border-color: #00458A;
 	box-shadow: none;
 }
 
@@ -205,14 +205,14 @@ a:hover,a:focus{color:#006956}
 #bodyID .btn-grid.active,
 #bodyID .open > .dropdown-toggle.btn-grid {
   background-color: #FAFAFA;
-	border-color: #83b8af;
+	border-color: #7E9CB9;
 	box-shadow: none;
 }
 
 /* ASIDE */
 
 .aside .aside-dialog .aside-header {
-	background: #009474;
+	background: #005C9E;
 }
 
 /* PAGE HEADER */
@@ -268,13 +268,13 @@ table#access-tool-table td.border.accessInput{
 }
 
 table#access-tool-table caption{
-	color: #389681;
-	background-color: #e3f0ee;
+	color: #336699;
+	background-color: #DBE3EB;
 	caption-side: top;
 	text-align: center;
-	border-left: 1px solid #e3f0ee;;
-	border-right: 1px solid #e3f0ee;;
-	border-top: 1px solid #e3f0ee;;
+	border-left: 1px solid #DBE3EB;;
+	border-right: 1px solid #DBE3EB;;
+	border-top: 1px solid #DBE3EB;;
 }
 
 .textRight{
@@ -308,8 +308,8 @@ label.deactivated {
 #bodyID .dropdown-item.open,
 #bodyID .open > .dropdown-toggle.dropdown-item {
 	color: #333;
-  background-color: #E5E5E5;
-	border-color: #00816A;
+    background-color: #E5E5E5;
+	border-color: #00458A;
 	box-shadow: none;
 }
 
