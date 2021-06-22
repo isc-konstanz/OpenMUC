@@ -1,7 +1,8 @@
 import java.nio.file.Paths
 project.ext {
-    cfgPackageGit = 'https://github.com/isc-konstanz/OpenMUC'
     cfgPackageHomepage = 'https://openmuc.org'
+    cfgPackageRepository = 'https://github.com/isc-konstanz/OpenMUC'
+    cfgPackageMaintainer = 'Adrian Minde <adrian.minde@isc-konstanz.de>'
 }
 
 task deletePackages(type: Delete) {
@@ -29,8 +30,9 @@ task debianPackages {
                             line -> line.replaceAll('<package>', project.name)
                                         .replaceAll('<description>', project.ext.projectName)
                                         .replaceAll('<version>', cfgVersion)
+                                        .replaceAll('<maintainer>', cfgPackageMaintainer)
+                                        .replaceAll('<repository>', cfgPackageRepository)
                                         .replaceAll('<homepage>', cfgPackageHomepage)
-                                        .replaceAll('<repository>', cfgPackageGit)
                         }
                         exclude '*.gradle'
                     }
@@ -58,8 +60,9 @@ task debianPackages {
                     into projectPackage
                     filter {
                         line -> line.replaceAll('<version>', cfgVersion)
+                                    .replaceAll('<maintainer>', cfgPackageMaintainer)
+                                    .replaceAll('<repository>', cfgPackageRepository)
                                     .replaceAll('<homepage>', cfgPackageHomepage)
-                                    .replaceAll('<repository>', cfgPackageGit)
                     }
                     exclude '*.gradle'
                 }
