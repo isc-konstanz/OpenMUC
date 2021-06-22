@@ -16,6 +16,7 @@ Depends: openmuc-core-api,
   openmuc-webui-mediaviewer,
   openmuc-webui-userconfigurator
 Build-Depends: debhelper (>= 9)
+Maintainer: <maintainer>
 Homepage: <homepage>
 Vcs-Browser: <repository>
 Vcs-Git: <repository>.git
