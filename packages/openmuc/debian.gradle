@@ -15,6 +15,11 @@ copy {
 copy {
     from project.configurations.osgibundles
     into Paths.get(projectPackage, 'opt', 'openmuc', 'bundle')
+    include 'openmuc-core*'
+}
+copy {
+    from project.configurations.osgibundles
+    into Paths.get(projectPackage, 'opt', 'openmuc', 'bundle')
     exclude 'openmuc*'
     exclude 'gson*'
 }

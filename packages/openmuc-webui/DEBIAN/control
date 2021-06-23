@@ -3,7 +3,7 @@ Priority: optional
 Section: contrib/electronics
 Version: <version>
 Architecture: all
-Depends: openmuc-core-api,
+Depends: openmuc,
   openmuc-lib-gson,
   openmuc-lib-rest,
   openmuc-server-restws,

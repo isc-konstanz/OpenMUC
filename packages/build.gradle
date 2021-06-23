@@ -20,14 +20,14 @@ task debianPackages {
             }
             configure(project) {
                 def projectDir = project.getProjectDir().getPath()
-                def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', project.name + '_' + cfgVersion + '_all').toString()
+                def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', project.name.toLowerCase() + '_' + cfgVersion + '_all').toString()
                 def projectBundles = Paths.get(projectPackage, 'opt', 'openmuc', 'bundle').toString()
                 if (new File(projectDir, 'pkg').exists()) {
                     copy {
                         from Paths.get(projectDir, 'pkg')
                         into Paths.get(projectPackage)
                         filter {
-                            line -> line.replaceAll('<package>', project.name)
+                            line -> line.replaceAll('<package>', project.name.toLowerCase())
                                         .replaceAll('<description>', project.ext.projectName)
                                         .replaceAll('<version>', cfgVersion)
                                         .replaceAll('<maintainer>', cfgPackageMaintainer)

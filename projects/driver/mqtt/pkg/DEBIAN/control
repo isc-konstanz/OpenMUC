@@ -3,7 +3,7 @@ Priority: optional
 Section: contrib/electronics
 Version: <version>
 Architecture: all
-Depends: openmuc-core-spi, openmuc-lib-mqtt
+Depends: openmuc, openmuc-lib-mqtt
 Build-Depends: debhelper (>= 9)
 Maintainer: <maintainer>
 Homepage: <homepage>
