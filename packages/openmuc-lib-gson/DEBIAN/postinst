@@ -1,3 +1,3 @@
 #!/bin/sh
 # Set permissions of the bundle jar
-chown muc:muc /opt/openmuc/bundle/openmuc-lib-gson.jar
+chown muc:muc /opt/openmuc/bundle/openmuc-lib-gson-<version>.jar

@@ -4,7 +4,7 @@ Section: contrib/electronics
 Version: <version>
 Architecture: all
 Depends: default-jre-headless | java9-runtime-headless, openmuc-core-datamanager
-Build-Depends: debhelper (>= 9)
+Build-Depends: debhelper (>= 9), dh-systemd (>= 1.5)
 Maintainer: <maintainer>
 Homepage: <homepage>
 Vcs-Browser: <repository>
