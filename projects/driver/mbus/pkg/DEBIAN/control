@@ -3,7 +3,7 @@ Priority: optional
 Section: contrib/electronics
 Version: <version>
 Architecture: all
-Depends: openmuc-core-spi, openmuc-lib-rxtx
+Depends: openmuc, openmuc-lib-rxtx
 Build-Depends: debhelper (>= 9)
 Maintainer: <maintainer>
 Homepage: <homepage>
