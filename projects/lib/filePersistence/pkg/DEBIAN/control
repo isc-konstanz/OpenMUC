@@ -1,4 +1,4 @@
-Package: openmuc-lib-filepersistence
+Package: <package>
 Priority: optional
 Section: contrib/electronics
 Version: <version>
