@@ -1,9 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/sh
 #Scriptname: build.sh
 #Description: script to build OpenMUC debian packages with dpkg
 
-find_openmuc()
-{
+if [ $(id -u) != 0 ]; then
+    echo "DPKG build process should be performed with root privileges." 1>&2
+    exit 1
+fi
+
+find_openmuc() {
     # Attempt to set OPENMUC_HOME
     # Resolve links: $0 may be a link
     PRG="$0"
@@ -38,6 +42,10 @@ cd "$OPENMUC_HOME"
 
 eval $GRADLE packages
 
+for package in build/dpkg/*/ ; do
+    chmod 755 $package/DEBIAN/pre* 2>/dev/null
+    chmod 755 $package/DEBIAN/post* 2>/dev/null
 
-
+    dpkg-deb --build $package
+done
 exit 0
