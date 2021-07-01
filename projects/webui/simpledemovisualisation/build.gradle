@@ -1,5 +1,7 @@
-def projectName = "OpenMUC WebUI - Simple Demo Visualisation"
-def projectDescription = "Simple Demo Visualisation plug-in for the WebUI of the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC WebUI - Simple Demo Visualisation"
+    projectDescription = "Simple Demo Visualisation plug-in for the WebUI of the OpenMUC framework."
+}
 
 dependencies {
     implementation project(':openmuc-core-api')
@@ -7,7 +9,8 @@ dependencies {
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
 publishing {

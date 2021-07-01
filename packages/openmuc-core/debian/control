@@ -2,7 +2,7 @@ Source: <package>
 Section: contrib/electronics
 Priority: optional
 Standards-Version: <version>
-Build-Depends: debhelper (>= 9)
+Build-Depends: debhelper (>= 9), dh-systemd (>= 1.5)
 Maintainer: <maintainer>
 Homepage: <homepage>
 Vcs-Browser: <repository>
@@ -10,5 +10,5 @@ Vcs-Git: <repository>.git
 
 Package: <package>
 Architecture: all
-Depends: ${misc:Depends}, openmuc-driver, openmuc-lib-rpi
-Description: <description>
+Depends: ${misc:Depends}, default-jre-headless | java9-runtime-headless
+Description: OpenMUC Core

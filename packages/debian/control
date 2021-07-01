@@ -10,5 +10,5 @@ Vcs-Git: <repository>.git
 
 Package: <package>
 Architecture: all
-Depends: ${misc:Depends}, openmuc-driver, openmuc-lib-rpi
+Depends: ${misc:Depends}, <depends>
 Description: <description>
