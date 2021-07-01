@@ -22,7 +22,7 @@ task debianPackages {
             if (['openmuc-core', 'simpledemo'].any { project.name.contains(it) }) {
                 continue
             }
-            def projectName = project.name
+            def projectName = project.name.toLowerCase()
             def projectDesc = project.ext.projectDescription
             def projectDir = project.getProjectDir().getPath()
             def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', projectName + '-' + cfgVersion).toString()
@@ -32,7 +32,13 @@ task debianPackages {
 								                       .findAll { it.getName().startsWith('openmuc') }
 								                       .collect { it.getName().replaceAll('openmuc-core-.*', 'openmuc-core')
 								                                              .replaceAll('-' + cfgVersion + '.*', '') }.unique().join(', ')
-            copy {
+            
+			copy {
+				//from project.configurations.default
+				from project.configurations.default.getAllArtifacts().getFiles()
+				into Paths.get(projectPackage, 'bundle').toString()
+			}
+			copy {
                 from Paths.get(rootDir.getPath(), 'packages', 'debian')
                 into Paths.get(projectPackage, 'debian')
                 filter {
@@ -45,7 +51,8 @@ task debianPackages {
                                 .replaceAll('<homepage>', cfgPackageHomepage)
                 }
             }
-            if (new File(projectDir, 'pkg').exists()) {
+			def packageDir = Paths.get(projectDir, 'pkg').toString()
+            if (new File(packageDir).exists()) {
                 copy {
                     from Paths.get(projectDir, 'pkg')
                     into Paths.get(projectPackage)
@@ -60,17 +67,10 @@ task debianPackages {
                     }
                     exclude '*.gradle'
                 }
-                def gradleFile = new File(projectDir, 'debian.gradle')
-                if (gradleFile.exists()) {
-                    apply from: gradleFile.getPath()
-                }
-                else {
-                    copy {
-                        //from project.configurations.default
-                        from project.configurations.default.getAllArtifacts().getFiles()
-                        into Paths.get(projectPackage, 'bundle').toString()
-                    }
-                }
+				def gradleFile = new File(packageDir, 'debian.gradle')
+				if (gradleFile.exists()) {
+					apply from: gradleFile.getPath()
+				}
             }
         }
         new File(rootDir.getPath(), 'packages').eachDir { dir ->

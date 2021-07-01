@@ -42,11 +42,11 @@ cd "$OPENMUC_HOME"
 
 eval $GRADLE packages
 
-for package in build/dpkg/*/ ; do
+for package in $OPENMUC_HOME/build/dpkg/*/ ; do
     cd $package
-    chmod 755 $package/debian/pre* 2>/dev/null
-    chmod 755 $package/debian/post* 2>/dev/null
-    chmod 755 $package/debian/rules
+    chmod 755 debian/pre* 2>/dev/null
+    chmod 755 debian/post* 2>/dev/null
+    chmod 755 debian/rules
 
     dpkg-buildpackage -us -uc
 done
