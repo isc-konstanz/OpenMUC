@@ -1,0 +1,6 @@
+#!/usr/bin/dh-exec
+bin    /opt/openmuc
+bundle /opt/openmuc
+cert   /opt/openmuc
+conf   /opt/openmuc
+felix  /opt/openmuc
