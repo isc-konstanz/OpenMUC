@@ -10,5 +10,5 @@ Vcs-Git: <repository>.git
 
 Package: <package>
 Architecture: all
-Depends: ${misc:Depends}, openmuc-core
+Depends: ${misc:Depends}, openmuc-core, librxtx-java
 Description: RXTX library for the OpenMUC framework.
