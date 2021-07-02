@@ -6,4 +6,9 @@ chown muc /opt/openmuc/bundle/<package>-<version>.jar
 
 #DEBHELPER#
 
+# Start service if still idle
+if ! systemctl is-active --quiet openmuc; then
+    systemctl start openmuc
+fi
+
 exit 0
