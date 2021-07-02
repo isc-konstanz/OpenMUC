@@ -4,4 +4,4 @@ bundle /opt/openmuc
 cert   /opt/openmuc
 conf   /opt/openmuc
 
-tmpfiles/openmuc.conf /usr/lib/tmpfiles.d/openmuc.conf
+tmpfiles /usr/lib/tmpfiles.d
