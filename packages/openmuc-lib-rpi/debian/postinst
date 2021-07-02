@@ -2,7 +2,7 @@
 set -e
 
 # Set permissions of the bundle jar
-chown muc /opt/openmuc/bundle/pi4j-*.jar
+chown muc:muc /opt/openmuc/bundle/pi4j-*.jar
 
 #DEBHELPER#
 

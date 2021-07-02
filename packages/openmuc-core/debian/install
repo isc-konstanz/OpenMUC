@@ -4,3 +4,5 @@ bundle /opt/openmuc
 cert   /opt/openmuc
 conf   /opt/openmuc
 felix  /opt/openmuc
+
+tmpfiles/openmuc.conf /usr/lib/tmpfiles.d/openmuc.conf

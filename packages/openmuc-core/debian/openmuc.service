@@ -3,6 +3,8 @@ Description=Multi Utility Communication controller
 After=network.target
 
 [Service]
+User=muc
+Group=muc
 Type=forking
 Restart=always
 RestartSec=60s

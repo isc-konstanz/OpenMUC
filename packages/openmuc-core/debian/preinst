@@ -5,7 +5,7 @@ set -e
 if ! id "muc" >/dev/null 2>&1; then
     useradd --system --no-create-home --comment="Multi Utility Communication" "muc"
 fi
-mkdir -p /var/opt/openmuc
+mkdir -p /var/opt/openmuc /var/log/openmuc /var/tmp/openmuc
 
 #DEBHELPER#
 
