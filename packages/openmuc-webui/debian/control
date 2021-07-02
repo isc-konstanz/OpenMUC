@@ -23,4 +23,4 @@ Depends: ${misc:Depends},
   openmuc-webui-dataplotter,
   openmuc-webui-mediaviewer,
   openmuc-webui-userconfigurator
-Description: OpenMUC WebUI
+Description: WebUI for the OpenMUC framework.

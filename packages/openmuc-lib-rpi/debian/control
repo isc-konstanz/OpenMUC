@@ -11,4 +11,4 @@ Vcs-Git: <repository>.git
 Package: <package>
 Architecture: all
 Depends: ${misc:Depends}, openmuc-core, wiringpi
-Description: OpenMUC Library - Raspberry Pi
+Description: Raspberry Pi (pi4j) library for the OpenMUC framework.

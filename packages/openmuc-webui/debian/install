@@ -1,3 +1,2 @@
 #!/usr/bin/dh-exec
 conf   /opt/openmuc
-bundle /opt/openmuc

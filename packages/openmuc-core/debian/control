@@ -11,4 +11,4 @@ Vcs-Git: <repository>.git
 Package: <package>
 Architecture: all
 Depends: ${misc:Depends}, default-jre-headless | java9-runtime-headless
-Description: OpenMUC Core
+Description: Core package of the OpenMUC framework.
