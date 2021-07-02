@@ -3,7 +3,7 @@ set -e
 
 # Delete the Multi Utility Communication user, if it exists
 if id -u "muc" >/dev/null 2>&1; then
-    userdel "muc"
+    userdel -f "muc"
 fi
 
 #DEBHELPER#
