@@ -14,39 +14,6 @@ ERR_FILE=/dev/null
 cd "$OPENMUC_HOME"
 
 
-# If root change user to owner of this script
-if [ $UID -eq 0 ] ; then
-    SCRIPT_OWNER=`stat -c "%U" bin/openmuc`
-    echo "Executed as root, will run as owner of this script: $SCRIPT_OWNER"
-    if [ "$SCRIPT_OWNER" != "root" ] ; then
-        exec su $SCRIPT_OWNER  -- bin/openmuc "$@"
-    fi
-fi
-
-
-# Determine the Java command to use to start the JVM.
-if [ -n "$JAVA_HOME" ] ; then
-    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
-        # IBM's JDK on AIX uses strange locations for the executables
-        JAVACMD="$JAVA_HOME/jre/sh/java"
-    else
-        JAVACMD="$JAVA_HOME/bin/java"
-    fi
-    if [ ! -x "$JAVACMD" ] ; then
-        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
-
-Please set the JAVA_HOME variable in your environment to match the
-location of your Java installation."
-    fi
-else
-    JAVACMD="java"
-    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
-
-Please set the JAVA_HOME variable in your environment to match the
-location of your Java installation."
-fi
-
-
 # Apache Felix FileInstall
 # Since FileInstall doesn't create the felix.fileinstall.dir by itself, this script creates
 # the folder. If the folder doesn't exist the org.apache.felix.fileinstall bundle will throw null pointer
@@ -56,7 +23,7 @@ fi
 create_install_dir(){
    
     SYSPROP=$OPENMUC_HOME/conf/system.properties
-    FILE_INSTALL_KEY="felix.fileinstall.dir="
+    FILE_INSTALL_KEY="felix.fileinstall.dir = "
     FILE_INSTALL_VALUE=`grep $FILE_INSTALL_KEY $SYSPROP | sed "s/${FILE_INSTALL_KEY}//g"`
     FILE_INSTALL_FOLDER_DEFAULT=/load
 

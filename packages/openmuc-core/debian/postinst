@@ -3,6 +3,7 @@ set -e
 
 # Add the Multi Utility Communication user, if it does not exist
 chown muc:muc -R /opt/openmuc /var/opt/openmuc /var/log/openmuc /var/tmp/openmuc
+chmod 0755       /opt/openmuc/bin/openmuc
 
 #DEBHELPER#
 
