@@ -1,0 +1,39 @@
+#!/bin/sh
+set -e
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+SYSTEM_PROPERTIES=/opt/openmuc/conf/system.properties
+
+if [ -e $SYSTEM_PROPERTIES ]; then
+
+    # Fetching configuration from debconf
+    db_get openmuc/port_http
+    port_http_value=$RET
+    port_http_key="org.osgi.service.http.port"
+
+    db_get openmuc/port_https
+    port_https_value=$RET
+    port_https_key="org.osgi.service.http.port.secure"
+
+    # Print some confirmation output to screen
+    echo "Replacing existing OpenMUC properties:"
+    echo " - HTTP port configuration:  $port_http_value"
+    echo " - HTTPS port configuration: $port_https_value"
+
+    # Update system.properties with the configured values:
+    sed -i "0,/$port_http_key/ s/.*$port_http_key.*/$port_http_key = $port_http_value/g"     $SYSTEM_PROPERTIES
+    sed -i "0,/$port_https_key/ s/.*$port_https_key.*/$port_https_key = $port_https_value/g" $SYSTEM_PROPERTIES
+fi
+
+echo "To update OpenMUC RESTful Web Service configurations, run 'dpkg-reconfigure --priority=medium openmuc-server-restws'"
+
+#DEBHELPER#
+
+# Start service if still idle
+if ! systemctl is-active --quiet openmuc; then
+    systemctl start openmuc
+fi
+
+exit 0

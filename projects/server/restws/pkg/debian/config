@@ -1,0 +1,37 @@
+#!/bin/sh
+set -e
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+SYSTEM_PROPERTIES=/opt/openmuc/conf/system.properties
+
+if [ -e $SYSTEM_PROPERTIES ]; then
+
+    port_http_key="org.osgi.service.http.port"
+    port_http_value=`grep -m 1 $port_http_key $SYSTEM_PROPERTIES | sed "s/${port_http_key}.*=//;s/^[ \t]*//g"`
+    port_http_value_default=8888
+
+    if [ -n "$port_http_value" ]; then
+        db_set openmuc/port_http "$port_http_value"
+    else
+        db_set openmuc/port_http "$port_http_value_default"
+    fi
+
+    port_https_key="org.osgi.service.http.port.secure"
+    port_https_value=`grep -m 1 $port_https_key $SYSTEM_PROPERTIES | sed "s/${port_https_key}.*=//;s/^[ \t]*//g"`
+    port_https_value_default=8889
+
+    if [ -n "$port_https_value" ]; then
+        db_set openmuc/port_https "$port_https_value"
+    else
+        db_set openmuc/port_https "$port_https_value_default"
+    fi
+fi
+
+# Prompt questions
+db_input medium openmuc/port_http || true
+db_input medium openmuc/port_https || true
+
+# Show interface
+db_go || true
