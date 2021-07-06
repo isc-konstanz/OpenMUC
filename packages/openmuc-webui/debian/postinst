@@ -1,3 +1,6 @@
 #!/bin/sh
-# Set permissions of the bundle jar
-chown muc:muc /opt/openmuc/bundle/openmuc-webui*.jar
+set -e
+
+#DEBHELPER#
+
+exit 0
