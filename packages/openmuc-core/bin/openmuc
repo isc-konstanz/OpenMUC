@@ -21,19 +21,20 @@ cd "$OPENMUC_HOME"
 # The folder should be specified in system.properties e.g: felix.fileinstall.dir=conf/properties
 # If the property is missing then the default folder "load" for Felix FileInstall is created in "framework/load"
 create_install_dir(){
-   
+
     SYSPROP=$OPENMUC_HOME/conf/system.properties
-    FILE_INSTALL_KEY="felix.fileinstall.dir = "
-    FILE_INSTALL_VALUE=`grep $FILE_INSTALL_KEY $SYSPROP | sed "s/${FILE_INSTALL_KEY}//g"`
+    FILE_INSTALL_KEY="felix.fileinstall.dir"
+    FILE_INSTALL_VALUE=`grep $FILE_INSTALL_KEY $SYSPROP | sed "s/${FILE_INSTALL_KEY}.*=//g"`
+    FILE_INSTALL_VALUE=${FILE_INSTALL_VALUE//[[:blank:]]/}
     FILE_INSTALL_FOLDER_DEFAULT=/load
 
     # if FILE_INSTALL_VALUE exists in system.properties
     if [ -n "$FILE_INSTALL_VALUE" ]; then
 
-        # check if string starts with / 
-        if [[ $FILE_INSTALL_VALUE =~ ^/ ]]; then
-            FILE_INSTALL_FOLDER=$OPENMUC_HOME$FILE_INSTALL_VALUE
-        else 
+        # check if string is relative path
+        if [[ $FILE_INSTALL_VALUE = /* ]]; then
+            FILE_INSTALL_FOLDER=$FILE_INSTALL_VALUE
+        else
             FILE_INSTALL_FOLDER=$OPENMUC_HOME"/"$FILE_INSTALL_VALUE
         fi
 
@@ -44,16 +45,16 @@ create_install_dir(){
             # create folder if it doesn't exist
             mkdir -p $FILE_INSTALL_FOLDER
             if test -e "$FILE_INSTALL_FOLDER"; then
-               echo "Felix FileInstall folder created: $FILE_INSTALL_FOLDER"
+                echo "Felix FileInstall folder created: $FILE_INSTALL_FOLDER"
             else
                 echo "ERROR: unable to create Felix FileInstall $FILE_INSTALL_FOLDER. Try to create folder manually and start OpenMUC again."
                 exit 1
-            fi 
-        fi 
+            fi
+        fi
     else
         # create default Felix FileInstall folder "load"
-        mkdir -p $OPENMUC_HOME$FILE_INSTALL_FOLDER_DEFAULT        
-    fi  
+        mkdir -p $OPENMUC_HOME$FILE_INSTALL_FOLDER_DEFAULT
+    fi
 }
 
 
