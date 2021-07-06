@@ -1,7 +1,7 @@
-def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-driver-mysql_' + cfgVersion + '_all'
+def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-driver-mysql-' + cfgVersion
 
-configurations.create("dpkgmysql")
-configurations.dpkgmysql.transitive = false;
+configurations.create("openmuc_driver_mysql")
+configurations.openmuc_driver_mysql.transitive = false;
 
 repositories {
     mavenCentral()
@@ -10,10 +10,10 @@ repositories {
     }
 }
 dependencies {
-    dpkgmysql project(':openmuc-driver-sql')
-    dpkgmysql group: 'mysql', name: 'mysql-connector-java', version: "8.0.17"
+    openmuc_driver_mysql project(':openmuc-driver-sql')
+    openmuc_driver_mysql group: 'mysql', name: 'mysql-connector-java', version: "8.0.17"
 }
 copy {
-    from project.configurations.dpkgmysql
-    into projectPackage + '/opt/openmuc/bundle'
+    from project.configurations.openmuc_driver_mysql
+    into projectPackage + '/bundle'
 }

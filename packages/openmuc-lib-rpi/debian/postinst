@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+# Set permissions of the bundle jar
+chown muc:muc /opt/openmuc/bundle/pi4j-*.jar
+
+#DEBHELPER#
+
+exit 0

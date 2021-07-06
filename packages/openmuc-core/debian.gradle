@@ -1,0 +1,35 @@
+def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-core-' + cfgVersion
+
+import java.nio.file.Paths
+//copy {
+//    from Paths.get(rootDir.getPath(), 'framework', 'bin')
+//    into Paths.get(projectPackage, 'bin')
+//    exclude '*.bat'
+//}
+//copy {
+//    from Paths.get(rootDir.getPath(), 'framework', 'conf')
+//    into Paths.get(projectPackage, 'conf')
+//    include '*.properties'
+//    include 'logback.xml'
+//}
+copy {
+    from Paths.get(rootDir.getPath(), 'framework', 'cert')
+    into Paths.get(projectPackage, 'cert')
+    include '*.jks'
+}
+copy {
+    from project.configurations.osgibundles
+    into Paths.get(projectPackage, 'bundle')
+    include 'openmuc-core*'
+}
+copy {
+    from project.configurations.osgibundles
+    into Paths.get(projectPackage, 'bundle')
+    exclude 'openmuc*'
+    exclude 'gson*'
+}
+copy {
+    from project.configurations.osgimain
+    into Paths.get(projectPackage, 'bin')
+    rename (/org.apache.felix.main-.*jar/, 'felix.jar')
+}

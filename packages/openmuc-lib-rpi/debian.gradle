@@ -1,7 +1,7 @@
-def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-lib-rpi_' + cfgVersion + '_all'
+def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-lib-rpi-' + cfgVersion
 
-configurations.create("dpkgrpi")
-configurations.dpkgrpi.transitive = false;
+configurations.create("openmuc_lib_rpi")
+configurations.openmuc_lib_rpi.transitive = false;
 
 repositories {
     mavenCentral()
@@ -10,10 +10,10 @@ repositories {
     }
 }
 dependencies {
-    dpkgrpi group: 'com.pi4j', name: 'pi4j-core', version: '1.4'
-    dpkgrpi group: 'com.pi4j', name: 'pi4j-device', version: '1.3'
+    openmuc_lib_rpi group: 'com.pi4j', name: 'pi4j-core', version: '1.4'
+    openmuc_lib_rpi group: 'com.pi4j', name: 'pi4j-device', version: '1.3'
 }
 copy {
-    from project.configurations.dpkgrpi
-    into projectPackage + '/opt/openmuc/bundle'
+    from project.configurations.openmuc_lib_rpi
+    into projectPackage + '/bundle'
 }

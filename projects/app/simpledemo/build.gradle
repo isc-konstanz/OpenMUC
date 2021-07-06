@@ -1,11 +1,15 @@
-def projectName = "OpenMUC App - Simple Demo"
+project.ext {
+    projectName = "OpenMUC App - Simple Demo"
+    projectDescription = "A simple demo app for the OpenMUC framework."
+}
 
 dependencies {
     implementation project(':openmuc-core-api')
 }
 
 jar {
-    bnd('Bundle-Name': projectName)
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
 publishing {
@@ -13,7 +17,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description = "A simple demo app for the OpenMUC framework."
+                description = projectDescription
             }
         }
     }
