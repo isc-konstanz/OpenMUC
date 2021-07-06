@@ -45,8 +45,7 @@ create_install_dir(){
 
     SYSPROP=$OPENMUC_HOME/conf/system.properties
     FILE_INSTALL_KEY="felix.fileinstall.dir"
-    FILE_INSTALL_VALUE=`grep $FILE_INSTALL_KEY $SYSPROP | sed "s/${FILE_INSTALL_KEY}.*=//g"`
-    FILE_INSTALL_VALUE=${FILE_INSTALL_VALUE//[[:blank:]]/}
+    FILE_INSTALL_VALUE=`grep $FILE_INSTALL_KEY $SYSPROP | sed "s/${FILE_INSTALL_KEY}.*=//;s/^[ \t]*//g"`
     FILE_INSTALL_FOLDER_DEFAULT=/load
 
     # if FILE_INSTALL_VALUE exists in system.properties

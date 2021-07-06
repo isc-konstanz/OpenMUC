@@ -3,6 +3,9 @@ set -e
 
 #DEBHELPER#
 
+# Reset permissions of the framework directories
+chown root:root -R /opt/openmuc /var/*/openmuc 2>/dev/null
+
 # Delete the Multi Utility Communication user, if it exists
 if id -u "muc" >/dev/null 2>&1; then
     userdel -f "muc"
