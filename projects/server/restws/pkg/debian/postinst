@@ -8,6 +8,11 @@ SYSTEM_PROPERTIES=/opt/openmuc/conf/system.properties
 
 if [ -e $SYSTEM_PROPERTIES ]; then
 
+    # Stop service if still running
+    if systemctl is-active --quiet openmuc; then
+        systemctl stop openmuc
+    fi
+
     # Fetching configuration from debconf
     db_get openmuc/port_http
     port_http_value=$RET
