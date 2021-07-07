@@ -10,5 +10,5 @@ Vcs-Git: <repository>.git
 
 Package: <package>
 Architecture: all
-Depends: ${misc:Depends}, openmuc-driver, openmuc-lib-sql, mariadb-server, mariadb-client
+Depends: ${misc:Depends}, openmuc-datalogger, openmuc-lib-sql, mariadb-server, mariadb-client
 Description: MySQL driver for the OpenMUC framework.
