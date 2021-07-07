@@ -1,0 +1,7 @@
+#!/usr/bin/dh-exec
+bin    /opt/openmuc
+bundle /opt/openmuc
+cert   /opt/openmuc
+conf   /opt/openmuc
+
+tmpfiles/*.conf /usr/lib/tmpfiles.d/

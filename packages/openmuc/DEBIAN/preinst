@@ -1,6 +1,0 @@
-#!/bin/sh
-# Add the Multi Utility Communication user, if it does not exist and create necessary directories
-if ! id "muc" >/dev/null 2>&1; then
-    useradd --system --no-create-home --comment="Multi Utility Communication" "muc"
-fi
-mkdir -p /var/opt/openmuc

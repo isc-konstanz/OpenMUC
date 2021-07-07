@@ -1,7 +1,7 @@
-def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-lib-rxtx_' + cfgVersion + '_all'
+def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-lib-rxtx-' + cfgVersion
 
-configurations.create("dpkgrxtx")
-configurations.dpkgrxtx.transitive = false;
+configurations.create("openmuc_lib_rxtx")
+configurations.openmuc_lib_rxtx.transitive = false;
 
 repositories {
     mavenCentral()
@@ -10,9 +10,9 @@ repositories {
     }
 }
 dependencies {
-    dpkgrxtx group: 'org.openmuc', name: 'jrxtx', version: '1.0.1'
+    openmuc_lib_rxtx group: 'org.openmuc', name: 'jrxtx', version: '1.0.1'
 }
 copy {
-    from project.configurations.dpkgrxtx
-    into projectPackage + '/opt/openmuc/bundle'
+    from project.configurations.openmuc_lib_rxtx
+    into projectPackage + '/bundle'
 }

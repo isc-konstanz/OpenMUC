@@ -16,50 +16,85 @@ task debianPackages {
     doLast {
         for (Project project: distributionProjects) {
             if (project.getProjectDir().equals(getProjectDir())) {
-                continue;
+                continue
             }
-            configure(project) {
-                def projectDir = project.getProjectDir().getPath()
-                def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', project.name.toLowerCase() + '_' + cfgVersion + '_all').toString()
-                def projectBundles = Paths.get(projectPackage, 'opt', 'openmuc', 'bundle').toString()
-                if (new File(projectDir, 'pkg').exists()) {
-                    copy {
-                        from Paths.get(projectDir, 'pkg')
-                        into Paths.get(projectPackage)
-                        filter {
-                            line -> line.replaceAll('<package>', project.name.toLowerCase())
-                                        .replaceAll('<description>', project.ext.projectName)
-                                        .replaceAll('<version>', cfgVersion)
-                                        .replaceAll('<maintainer>', cfgPackageMaintainer)
-                                        .replaceAll('<repository>', cfgPackageRepository)
-                                        .replaceAll('<homepage>', cfgPackageHomepage)
-                        }
-                        exclude '*.gradle'
-                    }
-                    def gradleFile = new File(projectDir, 'debian.gradle')
-                    if (gradleFile.exists()) {
-                        apply from: gradleFile.getPath()
-                    }
-                    else {
-                        copy {
-                            //from project.configurations.default
-                            from project.configurations.default.getAllArtifacts().getFiles()
-                            into Paths.get(projectPackage, 'opt', 'openmuc', 'bundle').toString()
-                        }
-                    }
+            // TODO: Build packages for simpledemo?
+            if (['openmuc-core', 'simpledemo'].any { project.name.contains(it) }) {
+                continue
+            }
+            def projectName = project.name.toLowerCase()
+            def projectDesc = project.ext.projectDescription
+            def projectDir = project.getProjectDir().getPath()
+            def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', projectName + '-' + cfgVersion).toString()
+            def projectBundles = Paths.get(projectPackage, 'bundle').toString()
+            
+            def projectDepends = project.configurations.runtimeClasspath { transitive = false }
+								                       .findAll { it.getName().startsWith('openmuc') }
+								                       .collect { it.getName().replaceAll('openmuc-core-.*', 'openmuc-core')
+								                                              .replaceAll('-' + cfgVersion + '.*', '') }.unique().join(', ')
+            
+			copy {
+				//from project.configurations.default
+				from project.configurations.default.getAllArtifacts().getFiles()
+				into Paths.get(projectPackage, 'bundle').toString()
+			}
+			copy {
+                from Paths.get(rootDir.getPath(), 'packages', 'debian')
+                into Paths.get(projectPackage, 'debian')
+                filter {
+                    line -> line.replaceAll('<package>', projectName)
+                                .replaceAll('<description>', projectDesc)
+                                .replaceAll('<depends>', projectDepends)
+                                .replaceAll('<version>', cfgVersion)
+                                .replaceAll('<maintainer>', cfgPackageMaintainer)
+                                .replaceAll('<repository>', cfgPackageRepository)
+                                .replaceAll('<homepage>', cfgPackageHomepage)
                 }
             }
+			def packageDir = Paths.get(projectDir, 'pkg').toString()
+            if (new File(packageDir).exists()) {
+                copy {
+                    from Paths.get(projectDir, 'pkg')
+                    into Paths.get(projectPackage)
+                    filter {
+                        line -> line.replaceAll('<package>', projectName)
+                                    .replaceAll('<description>', projectDesc)
+                                    .replaceAll('<depends>', projectDepends)
+                                    .replaceAll('<version>', cfgVersion)
+                                    .replaceAll('<maintainer>', cfgPackageMaintainer)
+                                    .replaceAll('<repository>', cfgPackageRepository)
+                                    .replaceAll('<homepage>', cfgPackageHomepage)
+                    }
+                    exclude '*.gradle'
+                }
+				def gradleFile = new File(packageDir, 'debian.gradle')
+				if (gradleFile.exists()) {
+					apply from: gradleFile.getPath()
+				}
+            }
         }
-        new File(rootDir.getPath(), 'packages').eachDir {
-            def projectName = it.getName()
-            def projectDir = it.getPath()
-            def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', projectName + '_' + cfgVersion + '_all').toString()
-            if (new File(projectDir, 'DEBIAN').exists()) {
+        new File(rootDir.getPath(), 'packages').eachDir { dir ->
+            def projectName = dir.getName()
+            def projectDir = dir.getPath()
+            def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', projectName + '-' + cfgVersion).toString()
+            if (new File(projectDir, 'debian').exists()) {
+                copy {
+                    from Paths.get(rootDir.getPath(), 'packages', 'debian')
+                    into Paths.get(projectPackage, 'debian')
+                    filter {
+                        line -> line.replaceAll('<package>', projectName)
+                                    .replaceAll('<version>', cfgVersion)
+                                    .replaceAll('<maintainer>', cfgPackageMaintainer)
+                                    .replaceAll('<repository>', cfgPackageRepository)
+                                    .replaceAll('<homepage>', cfgPackageHomepage)
+                    }
+                }
                 copy {
                     from projectDir
                     into projectPackage
                     filter {
-                        line -> line.replaceAll('<version>', cfgVersion)
+                        line -> line.replaceAll('<package>', projectName)
+                                    .replaceAll('<version>', cfgVersion)
                                     .replaceAll('<maintainer>', cfgPackageMaintainer)
                                     .replaceAll('<repository>', cfgPackageRepository)
                                     .replaceAll('<homepage>', cfgPackageHomepage)

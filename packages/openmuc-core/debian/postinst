@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+# Set permissions of the framework directories
+chown muc:muc -R /opt/openmuc /var/*/openmuc
+chmod 0755       /opt/openmuc/bin/openmuc
+
+#DEBHELPER#
+
+exit 0

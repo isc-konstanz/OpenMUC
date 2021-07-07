@@ -1,0 +1,26 @@
+Source: <package>
+Section: contrib/electronics
+Priority: optional
+Standards-Version: <version>
+Build-Depends: debhelper (>= 9)
+Maintainer: <maintainer>
+Homepage: <homepage>
+Vcs-Browser: <repository>
+Vcs-Git: <repository>.git
+
+Package: <package>
+Architecture: all
+Depends: ${misc:Depends}, 
+  openmuc-core,
+  openmuc-lib-gson,
+  openmuc-lib-rest,
+  openmuc-server-restws,
+  openmuc-webui-spi,
+  openmuc-webui-base, 
+  openmuc-webui-channelaccesstool,
+  openmuc-webui-channelconfigurator,
+  openmuc-webui-dataexporter,
+  openmuc-webui-dataplotter,
+  openmuc-webui-mediaviewer,
+  openmuc-webui-userconfigurator
+Description: WebUI for the OpenMUC framework.

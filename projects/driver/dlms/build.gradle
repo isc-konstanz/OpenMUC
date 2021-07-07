@@ -7,7 +7,6 @@ configurations.create('embed')
 
 def jdlmsversion = "1.7.1"
 def asn1version = "1.12.0"
-def jrxtxversion = "1.0.1"
 def bouncycastleversion = "1.67"
 
 dependencies {

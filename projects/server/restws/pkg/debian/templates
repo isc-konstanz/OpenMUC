@@ -1,0 +1,11 @@
+Template: openmuc/port_http
+Type: string
+Default: 8888
+Description: Server port:
+ Enter the port used for OpenMUC Web Services available via HTTP
+
+Template: openmuc/port_https
+Type: string
+Default: 8889
+Description: Secure port:
+ Enter the port used for OpenMUC Web Services available via HTTPS

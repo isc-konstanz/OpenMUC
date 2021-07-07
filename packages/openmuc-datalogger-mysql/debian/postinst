@@ -1,0 +1,75 @@
+#!/bin/sh
+set -e
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+INSTALL_FILE=/var/opt/openmuc/install/org.openmuc.framework.datalogger.sql.SqlLogger.cfg
+
+if [ -e $INSTALL_FILE ]; then
+
+    # Stop service if still running
+    if systemctl is-active --quiet openmuc; then
+        systemctl stop openmuc
+    fi
+
+    # Fetching configuration from debconf
+    db_get openmuc/mysql_host
+    mysql_host_value=$RET
+    mysql_host_key="host"
+
+    db_get openmuc/mysql_port
+    mysql_port_value=$RET
+    mysql_port_key="port"
+
+    db_get openmuc/mysql_database
+    mysql_database_value=$RET
+    mysql_database_key="database"
+
+    db_get openmuc/mysql_user
+    mysql_user_value=$RET
+    mysql_user_key="user"
+
+    db_get openmuc/mysql_password
+    mysql_password_value=$RET
+    mysql_password_key="password"
+
+    db_get openmuc/mysql_column_index
+    mysql_column_index_value=$RET
+    mysql_column_index_key="index_column"
+
+    db_get openmuc/mysql_column_data
+    mysql_column_data_value=$RET
+    mysql_column_data_key="value_column"
+
+    # Print some confirmation output to screen
+    echo "Replacing existing OpenMUC MySQL configurations:"
+    echo " - MySQL connection configuration: $mysql_user_value connecting to $mysql_database_value on $mysql_host_value:$mysql_port_value/"
+    echo " - MySQL database configuration:   Normalized table values read from $mysql_column_data_key, indexed by $mysql_column_index_key"
+
+    # Update system.properties with the configured values:
+    sed -i "0,/$mysql_host_key = / s/$mysql_host_key.*/$mysql_host_key = $mysql_host_value/g" $INSTALL_FILE
+    sed -i "0,/$mysql_port_key = / s/$mysql_port_key.*/$mysql_port_key = $mysql_port_value/g" $INSTALL_FILE
+
+    sed -i "0,/$mysql_host_key = / s/$mysql_database_key.*/$mysql_database_key = $mysql_database_value/g" $INSTALL_FILE
+
+    sed -i "0,/$mysql_user_key = / s/$mysql_user_key.*/$mysql_user_key = $mysql_user_value/g"                 $INSTALL_FILE
+    sed -i "0,/$mysql_password_key = / s/$mysql_password_key.*/$mysql_password_key = $mysql_password_value/g" $INSTALL_FILE
+
+    sed -i "0,/$mysql_column_index_key = / s/$mysql_column_index_key.*/$mysql_column_index_key = $mysql_column_index_value/g" $INSTALL_FILE
+    sed -i "0,/$mysql_column_data_key = / s/$mysql_column_data_key.*/$mysql_column_data_key = $mysql_column_data_value/g"     $INSTALL_FILE
+fi
+
+echo "To update OpenMUC MySQL Data Logger configurations, run 'dpkg-reconfigure --priority=low openmuc-datalogger-mysql'"
+
+# Set permissions of the bundle jar
+chown muc:muc /opt/openmuc/bundle/openmuc-driver-sql-<version>.jar /opt/openmuc/bundle/mysql-connector-java*.jar
+
+#DEBHELPER#
+
+# Start service if still idle
+if ! systemctl is-active --quiet openmuc; then
+    systemctl start openmuc
+fi
+
+exit 0
