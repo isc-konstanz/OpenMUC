@@ -10,7 +10,7 @@ if [ -e $SYSTEM_PROPERTIES ]; then
 
     port_http_key="org.osgi.service.http.port"
     port_http_value=`grep -m 1 $port_http_key $SYSTEM_PROPERTIES | sed "s/${port_http_key}.*=//;s/^[ \t]*//g"`
-    port_http_value_default=8888
+    port_http_value_default=8080
 
     if [ -n "$port_http_value" ]; then
         db_set openmuc/port_http "$port_http_value"
@@ -20,7 +20,7 @@ if [ -e $SYSTEM_PROPERTIES ]; then
 
     port_https_key="org.osgi.service.http.port.secure"
     port_https_value=`grep -m 1 $port_https_key $SYSTEM_PROPERTIES | sed "s/${port_https_key}.*=//;s/^[ \t]*//g"`
-    port_https_value_default=8889
+    port_https_value_default=8443
 
     if [ -n "$port_https_value" ]; then
         db_set openmuc/port_https "$port_https_value"
