@@ -1,0 +1,19 @@
+def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-datalogger-mysql-' + cfgVersion
+
+configurations.create("openmuc_datalogger_mysql")
+configurations.openmuc_datalogger_mysql.transitive = false;
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs rootDir.getPath() + '/build/libs-all'
+    }
+}
+dependencies {
+    openmuc_datalogger_mysql project(':openmuc-datalogger-sql')
+    openmuc_datalogger_mysql group: 'mysql', name: 'mysql-connector-java', version: "8.0.17"
+}
+copy {
+    from project.configurations.openmuc_datalogger_mysql
+    into projectPackage + '/bundle'
+}
