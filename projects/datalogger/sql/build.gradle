@@ -14,7 +14,9 @@ dependencies {
 
 jar {
     bnd('Bundle-Name':        projectName, 
-        'Bundle-Description': projectDescription)
+        'Bundle-Description': projectDescription,
+        'Import-Package': '!org.postgresql,' +
+                          '!org.h2.tools,*' + jarDefaultImportPackageVersion)
 }
 
 publishing {
