@@ -118,69 +118,42 @@ task packages {
     dependsOn debianPackages
 }
 
-tasks.withType(Tar) {
+task distribute(type: Tar) {
+    dependsOn(distributionProjects.build)
 
-    dependsOn(updateBundles)
+    archiveName = project.name + "-" + cfgVersion + ".tar.gz"
+    compression = Compression.GZIP
+    destinationDir = file("build/dist/")
 
     into(project.name) {
-
+        from("build") {
+          include "libs/**"
+        }
         from("./") {
-            include "build.gradle"
-            include "configuration.gradle"
-            include "license/**"
-            include "doc/CHANGELOG.txt"
-            include "gradle/wrapper/**"
-            include "gradlew"
-            include "gradlew.bat"
-            include "build/libs-all/**"
-            include "dependencies/**"
-
-            include "framework/felix/**"
-            include "framework/bundle"
-            include "framework/conf/**"
-            include "framework/bin/"
-            include "framework/media/README.txt/"
-            include "framework/log/README.txt"
-            include "framework/dependencies/**"
-            include "framework/csv-driver/**"
-            include "framework/README.txt"
-
-            exclude "**/projects/**/bin"
-            exclude "**/projects/**/build"
-            exclude "**/projects/**/.settings"
-            exclude "**/projects/**/.project"
-            exclude "**/projects/**/.classpath"
-            exclude "**/projects/**/.gradle"
-            exclude "gradle/develop"
-
-            for (Project myproject : distributionProjects) {
-                include myproject.getProjectDir().toString().substring((int) (getProjectDir().toString().size() + 1)) + "/**";
-            }
+          include "LICENSE"
+          include "dependencies/**"
 
         }
-
-        if (name.equals("tar")) {
-            exclude "**/dependencies/**/src"
-        }
-
-        from("./build/") {
-            include "settings.gradle"
+        if (name.equals("tar") ){
+          exclude "**/dependencies/**/src"
         }
     }
 
-    into(project.name + "/doc/user-guide/") {
-        from("./build/docs/asciidoc/") {
-            include "**"
-        }
-        from("./build/docs/asciidocPdf/") {
-            include "*.pdf"
-        }
+    into(project.name + "/libs/") {
+		from("./build/libs-all/") {
+			for (Project dist : distributionProjects) {
+				include dist.getName() + "**"
+			}
+		}
     }
 
-    into(project.name + "/doc/") {
+    into(project.name + "/docs/") {
+        from("./doc/") {
+          include "CHANGELOG.txt"
+          include "user-guide/**"
+        }
         from("./build/docs/") {
-            include "javadoc/**"
+          include "javadoc/**"
         }
     }
-
 }
