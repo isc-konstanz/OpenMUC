@@ -4,4 +4,5 @@ bundle /opt/openmuc
 cert   /opt/openmuc
 conf   /opt/openmuc
 
-tmpfiles/*.conf /usr/lib/tmpfiles.d/
+tmpfiles.d/openmuc.conf /usr/lib/tmpfiles.d/
+logrotate.d/openmuc /etc/logrotate.d/

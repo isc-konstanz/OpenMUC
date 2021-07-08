@@ -1,0 +1,11 @@
+/var/log/openmuc/openmuc.log
+{
+    rotate 4
+    weekly
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    nocreate
+}
