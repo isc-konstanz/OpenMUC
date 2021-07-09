@@ -146,8 +146,13 @@ public class SqlChannel extends LoggingChannel implements SqlData, SqlSettings {
             throw new ArgumentSyntaxException("Database name needs to be configured");
         }
         if (url == null || url.isEmpty()) {
-            url = type + "://" + host + ":" + port + "/" + database + "?autoReconnect=true&useSSL=false";
+            url = type + "://" + host + ":" + port + "/" + database + "?autoReconnect=true";
         }
+        // TODO: implement SSL through configurations
+        url += "&useSSL=false";
+        
+        // Necessary for MariaDB implementations
+        url += "&serverTimezone=UTC";
         
         if (user == null || user.isEmpty() || password == null || password.isEmpty()) {
             throw new ArgumentSyntaxException("Database login credentials need to be configured");

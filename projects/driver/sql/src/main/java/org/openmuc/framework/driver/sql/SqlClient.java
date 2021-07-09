@@ -232,7 +232,13 @@ public class SqlClient extends DriverDevice implements SqlSettings {
         if (database == null || database.isEmpty()) {
             throw new ArgumentSyntaxException("Database name needs to be configured");
         }
-        url = type + "://" + host + ":" + port + "/" + database + "?autoReconnect=true&useSSL=false";
+        url = type + "://" + host + ":" + port + "/" + database + "?autoReconnect=true";
+        
+        // TODO: implement SSL through configurations
+        url += "&useSSL=false";
+        
+        // Necessary for MariaDB implementations
+        url += "&serverTimezone=UTC";
         
         if (user == null || user.isEmpty() || password == null || password.isEmpty()) {
             throw new ArgumentSyntaxException("Database login credentials need to be configured");

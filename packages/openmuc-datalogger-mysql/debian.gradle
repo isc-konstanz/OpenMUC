@@ -11,7 +11,7 @@ repositories {
 }
 dependencies {
     openmuc_datalogger_mysql project(':openmuc-datalogger-sql')
-    openmuc_datalogger_mysql group: 'mysql', name: 'mysql-connector-java', version: "8.0.17"
+    openmuc_datalogger_mysql group: 'mysql', name: 'mysql-connector-java', version: "8.0.22"
 }
 copy {
     from project.configurations.openmuc_datalogger_mysql
