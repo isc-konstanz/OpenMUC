@@ -153,18 +153,18 @@ public class SqlConnector {
     }
 
     public void createTables(Connection connection, List<SqlData> dataList) 
-    		throws SQLException, ArgumentSyntaxException {
-    	
+            throws SQLException, ArgumentSyntaxException {
+        
         for (SqlDataTable data : groupTables(dataList)) {
-        	Table table = data.getTable();
+            Table table = data.getTable();
             if (!hasTable(table.getName())) {
-            	try {
-            		data.create(connection);
-            		
-            	} catch(UnsupportedOperationException e) {
-            		logger.debug("Unable to create table of type {}", 
-            				table.getType());
-            	}
+                try {
+                    data.create(connection);
+                    
+                } catch(UnsupportedOperationException e) {
+                    logger.debug("Unable to create table of type {}", 
+                            table.getType());
+                }
             }
         }
     }
@@ -185,6 +185,9 @@ public class SqlConnector {
             throws SQLException, ArgumentSyntaxException {
 
         Table table = createTable(data);
+        if (!hasTable(table)) {
+            throw new SqlTableUnavalableException("Unable to find table: " + table.getName());
+        }
         return table.read(connection, data, startTime, endTime);
     }
 
@@ -192,7 +195,10 @@ public class SqlConnector {
             throws SQLException, ArgumentSyntaxException {
 
         for (SqlDataTable table : groupTables(dataList)) {
-            table.read(connection);
+            if (!hasTable(table.getTable())) {
+                throw new SqlTableUnavalableException("Unable to find table: " + table.getName());
+            }
+        	table.read(connection);
         }
     }
 
@@ -200,6 +206,9 @@ public class SqlConnector {
             throws SQLException, ArgumentSyntaxException {
         
         for (SqlDataTable table : groupTables(dataList)) {
+            if (!hasTable(table.getTable())) {
+                throw new SqlTableUnavalableException("Unable to find table: " + table.getName());
+            }
             table.write(statement, timestamp);
         }
     }

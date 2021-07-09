@@ -10,8 +10,8 @@ dependencies {
     implementation   project(':openmuc-core-api')
     //implementation   group: 'org.postgresql', name: 'postgresql',            version: '42.2.14'
     //implementation   group: 'com.h2database', name: 'h2',                    version: '1.4.200'
-    implementation   group: 'com.mchange',    name: 'c3p0',                  version: '0.9.5.4'
-    embed            group: 'com.mchange',    name: 'c3p0',                  version: '0.9.5.4'
+    implementation   group: 'com.mchange',    name: 'c3p0',                  version: '0.9.5.5'
+    embed            group: 'com.mchange',    name: 'c3p0',                  version: '0.9.5.5'
     embed            group: 'org.osgi',       name: 'org.osgi.service.jdbc', version: '1.0.0'
     api              group: 'org.osgi',       name: 'org.osgi.service.jdbc', version: '1.0.0'
 }
