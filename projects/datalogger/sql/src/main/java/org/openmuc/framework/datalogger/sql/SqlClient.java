@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.lib.sql.SqlConnector;
@@ -59,9 +60,19 @@ public class SqlClient extends SqlConnector {
     }
 
     @SuppressWarnings("unchecked")
-	protected List<SqlData> getChannels() {
+	public List<SqlData> getChannels() {
     	return (List<SqlData>) (List<? extends SqlData>) channels;
     }
+
+	protected List<SqlData> outChannels(List<SqlChannel> channels) {
+    	return channels.stream()
+                       .filter(c -> hasChannel(c))
+                       .collect(Collectors.toList());
+    }
+
+	public boolean hasChannel(SqlChannel channel) {
+		return channels.stream().anyMatch(c -> c.getId().equals(channel.getId()));
+	}
 
     public void addChannel(SqlChannel channel) {
         channels.add(channel);
@@ -76,10 +87,10 @@ public class SqlClient extends SqlConnector {
         }
     }
 
-    public void write(long timestamp) throws IOException {
+    public void write(List<SqlChannel> channels, long timestamp) throws IOException {
         try (Connection connection = connect()) {
             try (Statement statement = connection.createStatement()) {
-                this.write(statement, getChannels(), timestamp);
+                this.write(statement, outChannels(channels), timestamp);
             }
         } catch (Exception e) {
             throw new IOException(e);

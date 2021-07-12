@@ -157,9 +157,11 @@ public class SqlConnector {
         
         for (SqlDataTable data : groupTables(dataList)) {
             Table table = data.getTable();
-            if (!hasTable(table.getName())) {
+            String tableName = table.getName();
+            if (!hasTable(tableName)) {
                 try {
                     data.create(connection);
+                    tables.add(tableName);
                     
                 } catch(UnsupportedOperationException e) {
                     logger.debug("Unable to create table of type {}", 

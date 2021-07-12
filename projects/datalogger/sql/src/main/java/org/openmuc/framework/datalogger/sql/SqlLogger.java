@@ -39,7 +39,6 @@ import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.lib.osgi.config.DictionaryPreprocessor;
 import org.openmuc.framework.lib.osgi.config.PropertyHandler;
 import org.openmuc.framework.lib.osgi.config.ServicePropertyException;
-import org.openmuc.framework.lib.sql.Table;
 import org.openmuc.framework.lib.sql.properties.PropertyHandlerProvider;
 import org.openmuc.framework.lib.sql.properties.PropertySettings;
 import org.osgi.service.cm.ManagedService;
@@ -76,7 +75,6 @@ public class SqlLogger extends DataLoggerActivator implements DataLoggerService,
         configure((List<SqlChannel>) channels);
     }
 
-    //@Configure
     public void configure(List<SqlChannel> channels) throws IOException {
         List<Thread> threads = new ArrayList<Thread>();
         for (SqlChannel channel : channels) {
@@ -147,9 +145,9 @@ public class SqlLogger extends DataLoggerActivator implements DataLoggerService,
     }
 
     @Write
-    public void write(List<Table> channels, long timestamp) throws IOException {
+    public void write(List<SqlChannel> channels, long timestamp) throws IOException {
         for (SqlClient client : clients.values()) {
-            client.write(timestamp);
+            client.write(channels, timestamp);
         }
     }
 
