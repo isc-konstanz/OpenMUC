@@ -65,8 +65,7 @@ public abstract class Reflectable extends Configurable {
     	return hasMethod(annot, obj.getClass());
     }
 
-    protected <A extends Annotation> void invokeMethod(Class<A> annot, Object obj, Object... args) 
-            throws RuntimeException {
+    protected <A extends Annotation> void invokeMethod(Class<A> annot, Object obj, Object... args) {
         List<Method> methods = getMethods(annot, obj.getClass());
         if (methods.size() < 1) {
             logger.trace("Skipping invocation of nonexisting method with annotation: {}", annot.getSimpleName());
@@ -93,15 +92,17 @@ public abstract class Reflectable extends Configurable {
             }
             try {
                 method.invoke(obj, args);
-                
-            } catch (IllegalAccessException | InvocationTargetException e) {
+
+            } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
+                
+            } catch (InvocationTargetException e) {
+                throwException(e.getCause());
             }
         }
     }
 
-    protected <A extends Annotation> Object invokeReturn(Class<A> annot, Object obj, Object... args) 
-            throws RuntimeException {
+    protected <A extends Annotation> Object invokeReturn(Class<A> annot, Object obj, Object... args) {
         List<Method> methods = getMethods(annot, obj.getClass());
         if (methods.size() > 1) {
             throw new RuntimeException(MessageFormat.format("More than one method present in {0} with annotation: {1}", 
@@ -110,9 +111,13 @@ public abstract class Reflectable extends Configurable {
         try {
             return methods.get(0).invoke(obj, args);
             
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
+            
+        } catch (InvocationTargetException e) {
+            throwException(e.getCause());
         }
+        return null;
     }
 
     public static <C extends Configurable> C newInstance(Class<C> configurable) throws RuntimeException {
@@ -124,6 +129,11 @@ public abstract class Reflectable extends Configurable {
             throw new RuntimeException(MessageFormat.format("Unable to instance {0}: {1}", 
                     configurable.getSimpleName(), e.getMessage()));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> void throwException(Throwable exception) throws T {
+        throw (T) exception;
     }
 
     public static boolean isAssignableTo(Class<?> targetClass, Class<?> parameterClass) {
