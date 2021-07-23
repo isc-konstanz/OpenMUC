@@ -42,7 +42,7 @@ mysql_column_data_value=$RET
 mysql_column_data_key="value_column"
 
 # Print some confirmation output to screen
-echo "Replacing existing OpenMUC MySQL configurations:"
+echo "Configuring OpenMUC MySQL Data Logger:"
 echo " - MySQL connection configuration: $mysql_user_value connecting to $mysql_database_value on $mysql_host_value:$mysql_port_value"
 echo " - MySQL database configuration:   Normalized table values read from $mysql_column_data_value, indexed by $mysql_column_index_value"
 
