@@ -59,7 +59,7 @@ sed -i "0,/$mysql_column_index_key = / s/$mysql_column_index_key =.*/$mysql_colu
 sed -i "0,/$mysql_column_data_key = / s/$mysql_column_data_key =.*/$mysql_column_data_key = $mysql_column_data_value/g"     $INSTALL_FILE
 
 if test -f $PASSWD_FILE && grep -Fxq "[MySQL]" $PASSWD_FILE; then
-    if grep -A3 -P '^\[MySQL\]' $PASSWD_FILE | grep -m1 -q "$mysql_user_value" $PASSWD_FILE; then
+    if grep -A3 -P '^\[MySQL\]' $PASSWD_FILE | grep -m1 -q "$mysql_user_value"; then
         sed -i "s/$mysql_user_value:.*/$mysql_user_value:$mysql_password_value/" $PASSWD_FILE
     else
         sed -i "/[MySQL]/!b;n;a$mysql_user_value:$mysql_password_value" $PASSWD_FILE
@@ -75,7 +75,7 @@ fi
 if ! mysql -uroot -p$mysql_root_password -e "USE $mysql_database_value" 2>/dev/null; then
     mysql -uroot -p$mysql_root_password -e "CREATE DATABASE $mysql_database_value DEFAULT CHARACTER SET utf8;"
 fi
-mysql --uroot -p$mysql_root_password -e "GRANT ALL ON $mysql_database_value.* TO '$mysql_user_value'@'localhost';FLUSH PRIVILEGES;"
+mysql -uroot -p$mysql_root_password -e "GRANT ALL ON $mysql_database_value.* TO '$mysql_user_value'@'localhost';FLUSH PRIVILEGES;"
 
 echo "To update OpenMUC MySQL Data Logger configurations, run 'dpkg-reconfigure --priority=low openmuc-datalogger-mysql'"
 

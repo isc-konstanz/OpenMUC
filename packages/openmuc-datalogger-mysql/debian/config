@@ -7,56 +7,54 @@ set -e
 PASSWD_FILE=/home/pi/.setup/passwd.conf
 INSTALL_FILE=/var/opt/openmuc/install/org.openmuc.framework.datalogger.sql.SqlLogger.cfg
 
-if [ -e $INSTALL_FILE ]; then
-
-    mysql_host_key="host"
-    mysql_host_value=`grep -m 1 "$mysql_host_key = " $INSTALL_FILE | sed "s/${mysql_host_key} = //g"`
-    db_set openmuc/mysql_host "$mysql_host_value"
-
-    mysql_port_key="port"
-    mysql_port_value=`grep -m 1 "$mysql_port_key = " $INSTALL_FILE | sed "s/${mysql_port_key} = //g"`
-    db_set openmuc/mysql_port "$mysql_port_value"
-
-    mysql_database_key="database"
-    mysql_database_value=`grep -m 1 "$mysql_database_key = " $INSTALL_FILE | sed "s/${mysql_database_key} = //g"`
-    db_set openmuc/mysql_database "$mysql_database_value"
-
-    mysql_user_key="user"
-    mysql_user_value=`grep -m 1 "$mysql_user_key = " $INSTALL_FILE | sed "s/${mysql_user_key} = //g"`
-
-    mysql_password_key="password"
-    mysql_password_value=`grep -m 1 "$mysql_password_key = " $INSTALL_FILE | sed "s/${mysql_password_key} = //g"`
-
-    if test -f $PASSWD_FILE && grep -A3 -P '^\[MySQL\]$' $PASSWD_FILE | grep -m1 -q "$mysql_user_value" $PASSWD_FILE; then
-        mysql_password_value=`grep -A3 -P "^\[MySQL\]$" $PASSWD_FILE | grep -m1 "$mysql_user_value:" |\
-                              sed "s/$mysql_user_value://g" | sed -r "s/\s+//g"`
-
-    elif dpkg -l | grep -e pwgen >/dev/null 2>&1; then
-        mysql_password_value="$(pwgen -s1 32)"
-    fi
-    db_set openmuc/mysql_user "$mysql_user_value"
-    db_set openmuc/mysql_password "$mysql_password_value"
-
-    mysql_column_index_key="index_column"
-    mysql_column_index_value=`grep -m 1 "$mysql_column_index_key = " $INSTALL_FILE | sed "s/${mysql_column_index_key} = //g"`
-    db_set openmuc/mysql_column_index "$mysql_column_index_value"
-
-    mysql_column_data_key="value_column"
-    mysql_column_data_value=`grep -m 1 "$mysql_column_data_key = " $INSTALL_FILE | sed "s/${mysql_column_data_key} = //g"`
-    db_set openmuc/mysql_column_data "$mysql_column_data_value"
-fi
-
-# Prompt questions
+mysql_host_key="host"
+mysql_host_value=`grep -m 1 "$mysql_host_key = " $INSTALL_FILE | sed "s/${mysql_host_key} = //g"`
+db_set openmuc/mysql_host "$mysql_host_value"
 db_input low openmuc/mysql_host || true
+
+mysql_port_key="port"
+mysql_port_value=`grep -m 1 "$mysql_port_key = " $INSTALL_FILE | sed "s/${mysql_port_key} = //g"`
+db_set openmuc/mysql_port "$mysql_port_value"
 db_input low openmuc/mysql_port || true
 
-db_input medium openmuc/mysql_database || true
+mysql_database_key="database"
+mysql_database_value=`grep -m 1 "$mysql_database_key = " $INSTALL_FILE | sed "s/${mysql_database_key} = //g"`
+db_set openmuc/mysql_database "$mysql_database_value"
+db_input high openmuc/mysql_database || true
 
-db_input medium openmuc/mysql_user || true
-db_input medium openmuc/mysql_password || true
+mysql_user_key="user"
+mysql_user_value=`grep -m 1 "$mysql_user_key = " $INSTALL_FILE | sed "s/${mysql_user_key} = //g"`
+db_set openmuc/mysql_user "$mysql_user_value"
+db_input high openmuc/mysql_user || true
+db_go || true
 
+mysql_password_key="password"
+mysql_password_value=`grep -m 1 "$mysql_password_key = " $INSTALL_FILE | sed "s/${mysql_password_key} = //g"`
+if test -f $PASSWD_FILE && grep -A3 -P '^\[MySQL\]$' $PASSWD_FILE | grep -m1 -q "$mysql_user_value"; then
+    mysql_password_value=`grep -A3 -P "^\[MySQL\]$" $PASSWD_FILE | grep -m1 "$mysql_user_value:" |\
+                          sed "s/$mysql_user_value://g" | sed -r "s/\s+//g"`
+
+elif dpkg -l | grep -e pwgen >/dev/null 2>&1; then
+    mysql_password_value="$(pwgen -s1 32)"
+fi
+db_set openmuc/mysql_password "$mysql_password_value"
+
+db_get openmuc/mysql_user
+if [ "$RET" = "openmuc" ]; then
+    db_input medium openmuc/mysql_password || true
+else
+    db_input high openmuc/mysql_password || true
+fi
+db_go || true
+
+mysql_column_index_key="index_column"
+mysql_column_index_value=`grep -m 1 "$mysql_column_index_key = " $INSTALL_FILE | sed "s/${mysql_column_index_key} = //g"`
+db_set openmuc/mysql_column_index "$mysql_column_index_value"
 db_input medium openmuc/mysql_column_index || true
+
+mysql_column_data_key="value_column"
+mysql_column_data_value=`grep -m 1 "$mysql_column_data_key = " $INSTALL_FILE | sed "s/${mysql_column_data_key} = //g"`
+db_set openmuc/mysql_column_data "$mysql_column_data_value"
 db_input medium openmuc/mysql_column_data || true
 
-# Show interface
 db_go || true
