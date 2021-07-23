@@ -4,6 +4,7 @@ set -e
 # Source debconf library.
 . /usr/share/debconf/confmodule
 
+PASSWD_FILE=/home/pi/.setup/passwd.conf
 INSTALL_FILE=/var/opt/openmuc/install/org.openmuc.framework.datalogger.sql.SqlLogger.cfg
 
 if [ -e $INSTALL_FILE ]; then
@@ -22,10 +23,18 @@ if [ -e $INSTALL_FILE ]; then
 
     mysql_user_key="user"
     mysql_user_value=`grep -m 1 "$mysql_user_key = " $INSTALL_FILE | sed "s/${mysql_user_key} = //g"`
-    db_set openmuc/mysql_user "$mysql_user_value"
 
     mysql_password_key="password"
     mysql_password_value=`grep -m 1 "$mysql_password_key = " $INSTALL_FILE | sed "s/${mysql_password_key} = //g"`
+
+    if test -f $PASSWD_FILE && grep -A3 -P '^\[MySQL\]$' $PASSWD_FILE | grep -m1 -q "$mysql_user_value" $PASSWD_FILE; then
+        mysql_password_value=`grep -A3 -P "^\[MySQL\]$" $PASSWD_FILE | grep -m1 "$mysql_user_value:" |\
+                              sed "s/$mysql_user_value://g" | sed -r "s/\s+//g"`
+
+    elif dpkg -l | grep -e pwgen >/dev/null 2>&1; then
+        mysql_password_value="$(pwgen -s1 32)"
+    fi
+    db_set openmuc/mysql_user "$mysql_user_value"
     db_set openmuc/mysql_password "$mysql_password_value"
 
     mysql_column_index_key="index_column"
@@ -41,10 +50,10 @@ fi
 db_input low openmuc/mysql_host || true
 db_input low openmuc/mysql_port || true
 
-db_input high openmuc/mysql_database || true
+db_input medium openmuc/mysql_database || true
 
-db_input high openmuc/mysql_user || true
-db_input high openmuc/mysql_password || true
+db_input medium openmuc/mysql_user || true
+db_input medium openmuc/mysql_password || true
 
 db_input medium openmuc/mysql_column_index || true
 db_input medium openmuc/mysql_column_data || true
