@@ -1,0 +1,2 @@
+#!/usr/bin/dh-exec
+/opt/openmuc/bin/openmuc /usr/bin
