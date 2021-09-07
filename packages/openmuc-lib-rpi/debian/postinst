@@ -4,6 +4,8 @@ set -e
 # Set permissions of the bundle jar
 chown muc:muc /opt/openmuc/bundle/pi4j-*.jar
 
+if grep -q gpio /etc/group; then usermod -a -G gpio muc; fi
+
 #DEBHELPER#
 
 exit 0

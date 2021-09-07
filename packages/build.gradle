@@ -5,6 +5,20 @@ project.ext {
     cfgPackageMaintainer = 'Adrian Minde <adrian.minde@isc-konstanz.de>'
 }
 
+String projectReplace(String line, String projectName, String projectDesc, projectDepends) {
+	return line.replaceAll('<package>', projectName)
+               .replaceAll('<description>', projectDesc)
+               .replaceAll('<depends>', projectDepends)
+               .replaceAll('<version>', cfgVersion)
+               .replaceAll('<maintainer>', cfgPackageMaintainer)
+               .replaceAll('<repository>', cfgPackageRepository)
+               .replaceAll('<homepage>', cfgPackageHomepage)
+}
+
+String projectReplace(String line, String projectName) {
+    return projectReplace(line, projectName, '', '')
+}
+
 task deletePackages(type: Delete) {
   delete Paths.get(rootDir.getPath(), 'build', 'dpkg')
   followSymlinks = true
@@ -42,13 +56,7 @@ task debianPackages {
                 from Paths.get(rootDir.getPath(), 'packages', 'debian')
                 into Paths.get(projectPackage, 'debian')
                 filter {
-                    line -> line.replaceAll('<package>', projectName)
-                                .replaceAll('<description>', projectDesc)
-                                .replaceAll('<depends>', projectDepends)
-                                .replaceAll('<version>', cfgVersion)
-                                .replaceAll('<maintainer>', cfgPackageMaintainer)
-                                .replaceAll('<repository>', cfgPackageRepository)
-                                .replaceAll('<homepage>', cfgPackageHomepage)
+                    line -> projectReplace(line, projectName, projectDesc, projectDepends)
                 }
             }
 			def packageDir = Paths.get(projectDir, 'pkg').toString()
@@ -57,13 +65,7 @@ task debianPackages {
                     from Paths.get(projectDir, 'pkg')
                     into Paths.get(projectPackage)
                     filter {
-                        line -> line.replaceAll('<package>', projectName)
-                                    .replaceAll('<description>', projectDesc)
-                                    .replaceAll('<depends>', projectDepends)
-                                    .replaceAll('<version>', cfgVersion)
-                                    .replaceAll('<maintainer>', cfgPackageMaintainer)
-                                    .replaceAll('<repository>', cfgPackageRepository)
-                                    .replaceAll('<homepage>', cfgPackageHomepage)
+                        line -> projectReplace(line, projectName, projectDesc, projectDepends)
                     }
                     exclude '*.gradle'
                 }
@@ -82,22 +84,14 @@ task debianPackages {
                     from Paths.get(rootDir.getPath(), 'packages', 'debian')
                     into Paths.get(projectPackage, 'debian')
                     filter {
-                        line -> line.replaceAll('<package>', projectName)
-                                    .replaceAll('<version>', cfgVersion)
-                                    .replaceAll('<maintainer>', cfgPackageMaintainer)
-                                    .replaceAll('<repository>', cfgPackageRepository)
-                                    .replaceAll('<homepage>', cfgPackageHomepage)
+                        line -> projectReplace(line, projectName)
                     }
                 }
                 copy {
                     from projectDir
                     into projectPackage
                     filter {
-                        line -> line.replaceAll('<package>', projectName)
-                                    .replaceAll('<version>', cfgVersion)
-                                    .replaceAll('<maintainer>', cfgPackageMaintainer)
-                                    .replaceAll('<repository>', cfgPackageRepository)
-                                    .replaceAll('<homepage>', cfgPackageHomepage)
+                        line -> projectReplace(line, projectName)
                     }
                     exclude '*.gradle'
                 }
