@@ -66,16 +66,18 @@ if test -f $PASSWD_FILE && grep -Fxq "[MySQL]" $PASSWD_FILE; then
     fi
     mysql_root_password=`grep -A3 -P "^\[MySQL\]$" $PASSWD_FILE | grep -m1 "root" | sed "s/root://g" | sed -r "s/\s+//g"`
 fi
-if [ ! $mysql_root_password ]; then
-    mysql_root_password=""
+
+mysql="mysql -uroot"
+if [ ! -z $mysql_root_password ]; then
+    mysql="$mysql -p$mysql_root_password"
 fi
-if ! mysql -uroot -p$mysql_root_password -e "USE mysql; SELECT user FROM user;" | grep -Fq "$mysql_user_value"; then
-    mysql -uroot -p$mysql_root_password -e "CREATE USER '$mysql_user_value'@'localhost' IDENTIFIED BY '$mysql_password_value';"
+if ! $mysql -e "USE mysql; SELECT user FROM user;" | grep -Fq "$mysql_user_value"; then
+    $mysql -e "CREATE USER '$mysql_user_value'@'localhost' IDENTIFIED BY '$mysql_password_value';"
 fi
-if ! mysql -uroot -p$mysql_root_password -e "USE $mysql_database_value" 2>/dev/null; then
-    mysql -uroot -p$mysql_root_password -e "CREATE DATABASE $mysql_database_value DEFAULT CHARACTER SET utf8;"
+if ! $mysql -e "USE $mysql_database_value" 2>/dev/null; then
+    $mysql -e "CREATE DATABASE $mysql_database_value DEFAULT CHARACTER SET utf8;"
 fi
-mysql -uroot -p$mysql_root_password -e "GRANT ALL ON $mysql_database_value.* TO '$mysql_user_value'@'localhost';FLUSH PRIVILEGES;"
+$mysql -e "GRANT ALL ON $mysql_database_value.* TO '$mysql_user_value'@'localhost';FLUSH PRIVILEGES;"
 
 echo "To update OpenMUC MySQL Data Logger configurations, run 'dpkg-reconfigure --priority=low openmuc-datalogger-mysql'"
 

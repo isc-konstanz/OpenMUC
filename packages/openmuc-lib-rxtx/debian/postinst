@@ -4,6 +4,9 @@ set -e
 # Set permissions of the bundle jar
 chown muc:muc /opt/openmuc/bundle/jrxtx*.jar
 
+if grep -q dialout /etc/group; then usermod -a -G dialout muc; fi
+if grep -q tty     /etc/group; then usermod -a -G tty     muc; fi
+
 if ! grep -q "\-Djava.library.path=\/usr\/lib\/jni -cp \/usr\/share\/java\/RXTXcomm.jar"                /opt/openmuc/bin/openmuc; then
     sed -i '/JVM_OPTS=/ s/"$//'                                                                         /opt/openmuc/bin/openmuc
     sed -i 's/JVM_OPTS=.*/& -Djava.library.path=\/usr\/lib\/jni -cp \/usr\/share\/java\/RXTXcomm.jar"/' /opt/openmuc/bin/openmuc
