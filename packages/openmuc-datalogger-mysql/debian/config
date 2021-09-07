@@ -53,12 +53,14 @@ if [ -f $PASSWD_FILE ] && grep -A3 -P '^\[MySQL\]$' $PASSWD_FILE | grep -m1 -q "
                           sed "s/$mysql_user_value://g" | sed -r "s/\s+//g"`
     db_set openmuc/mysql_password "$mysql_password_value"
 fi
-if [ -z $mysql_password_value ]; then
+if [ -z "$mysql_password_value" ] || [ "$mysql_password_value" = "openmuc" ]; then
     if dpkg -l | grep -e pwgen >/dev/null 2>&1; then
         mysql_password_value=`pwgen -s1 32`
         db_set openmuc/mysql_password "$mysql_password_value"
+        db_input medium openmuc/mysql_password || true
+    else
+        db_input high openmuc/mysql_password || true
     fi
-    db_input high openmuc/mysql_password || true
 else
     db_input medium openmuc/mysql_password || true
 fi
