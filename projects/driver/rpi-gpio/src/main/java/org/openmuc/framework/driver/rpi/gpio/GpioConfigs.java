@@ -43,7 +43,7 @@ public class GpioConfigs extends DriverDevice {
     @Option(id = PIN,
             type = ADDRESS,
              name = "Pin",
-             description = "The pin number, according to the <a href='http://pi4j.com/pin-numbering-scheme.html'>WiringPi Pin Numbering Scheme</a>."
+             description = "The pin number, according to the <a href='https://pi4j.com/1.4/pin-numbering-scheme.html'>WiringPi Pin Numbering Scheme</a>."
     )
     private int pin;
 
