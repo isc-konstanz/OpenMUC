@@ -135,8 +135,8 @@ public class DriverOptions extends DriverInfo {
                     
                     Document doc = docBFac.newDocumentBuilder().parse(is);
                     Node node = doc.getDocumentElement();
-                    if (!node.getNodeName().equals("options")) {
-                        logger.warn("Root node in driver \"{}\" options is not of type \"options\"", id);
+                    if (!node.getNodeName().equals("options") && !node.getNodeName().equals("configuration") ) {
+                        logger.warn("Root node in driver \"{}\" options is not of type \"configuration\"", id);
                         return;
                     }
                     
