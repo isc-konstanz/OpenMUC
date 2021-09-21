@@ -107,7 +107,7 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                 else if (childName.equals("address") || childName.equals("channelAddress")) {
                     config.setAddress(childNode.getTextContent());
                 }
-                else if (childName.equals("settings")) {
+                else if (childName.equals("settings") || childName.equals("channelSettings")) {
                     config.setSettings(childNode.getTextContent());
                 }
                 else if (childName.equals("serverMapping")) {
