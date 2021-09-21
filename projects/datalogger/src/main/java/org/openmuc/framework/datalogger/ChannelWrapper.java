@@ -111,7 +111,7 @@ public abstract class ChannelWrapper extends Reflectable {
         return channel.getLoggingInterval();
     }
 
-    public final int getLoggingTimeMax() {
+    public final int getLoggingDelayMaximum() {
         return channel.getLoggingDelayMaximum();
     }
 

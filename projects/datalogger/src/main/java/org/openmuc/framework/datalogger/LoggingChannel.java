@@ -78,11 +78,18 @@ public abstract class LoggingChannel extends ChannelWrapper {
         if (getRecord().getFlag() != record.getFlag()) {
             return true;
         }
-        if (getRecord().getTimestamp() >= record.getTimestamp()) {
+        if (getRecord().getTimestamp() != null && getRecord().getTimestamp() >= record.getTimestamp()) {
+            if (isLoggingDynamic() && 
+            		System.currentTimeMillis() - getRecord().getTimestamp() >= getLoggingDelayMaximum()) {
+            	return true;
+            }
             logger.trace("Skipped logging value with invalid timestamp: {}", record.getTimestamp());
             return false;
         }
         if (isLoggingDynamic()) {
+        	if (record.getTimestamp() - getRecord().getTimestamp() >= getLoggingDelayMaximum()) {
+        		return true;
+        	}
             switch(channel.getValueType()) {
             case INTEGER:
             case SHORT:
@@ -90,8 +97,7 @@ public abstract class LoggingChannel extends ChannelWrapper {
             case FLOAT:
             case DOUBLE:
                 double delta = Math.abs(record.getValue().asDouble() - getRecord().getValue().asDouble());
-                if (getLoggingTolerance() >= delta && 
-                        (record.getTimestamp() - getRecord().getTimestamp()) < getLoggingTimeMax()) {
+                if (getLoggingTolerance() >= delta) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Skipped logging value inside tolerance: {} -> {} <= {}",
                                 getRecord().getValue().asDouble(), record.getValue(), getLoggingTolerance());
@@ -106,11 +112,20 @@ public abstract class LoggingChannel extends ChannelWrapper {
     }
 
     void updateRecord(Record record) {
+        long timestamp = record.getTimestamp();
+        
+        if (isLoggingDynamic() && getRecord().getTimestamp() != null && 
+        		System.currentTimeMillis() - getRecord().getTimestamp() >= getLoggingDelayMaximum()) {
+            timestamp = System.currentTimeMillis();
+            
+            if (!isAveraging()) {
+                record = new Record(record.getValue(), timestamp);
+            }
+        }
         if (isAveraging() && records.size() > 0) {
             double average = records.stream().mapToDouble(c -> c.getValue().asDouble())
                     .average().getAsDouble();
             
-            long timestamp = record.getTimestamp();
             switch (getValueType()) {
             case SHORT:
                 record = new Record(new ShortValue((short) Math.round(average)), timestamp);
