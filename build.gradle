@@ -82,8 +82,8 @@ configure(subprojects) {
 
     jar {
         bnd('Bundle-Name': project.name,
-                'Bundle-Vendor': 'Fraunhofer ISE',
-                'Bundle-SymbolicName': project.group + '.' + project.name)
+            'Bundle-Vendor': 'Fraunhofer ISE',
+            'Bundle-SymbolicName': project.group + '.' + project.name)
 
         destinationDirectory = new File("$rootDir/build/libs-all")
     }
@@ -99,5 +99,12 @@ configure(subprojects) {
     javadoc {
         exclude "**/internal/**"
         exclude "**/java-gen/**"
+    }
+}
+
+configure(rootProject) {
+    jar {
+        // FIXME: Find better solution to avoid the root project beeing built
+        destinationDirectory = new File("$rootDir/build/tmp/")
     }
 }

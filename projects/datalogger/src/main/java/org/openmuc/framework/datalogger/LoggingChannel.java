@@ -33,6 +33,8 @@ import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ShortValue;
+import org.openmuc.framework.data.TypeConversionException;
+import org.openmuc.framework.data.Value;
 import org.openmuc.framework.datalogger.annotation.Read;
 import org.openmuc.framework.datalogger.annotation.Write;
 import org.openmuc.framework.datalogger.spi.LogChannel;
@@ -69,7 +71,7 @@ public abstract class LoggingChannel extends ChannelWrapper {
 
     boolean isUpdate(Record record) {
         if (Flag.VALID != record.getFlag()) {
-            logger.trace("Skipped logging value for unchanged flag: {}", record.getFlag());
+            logger.trace("Skipped logging value of channel \"{}\" for unchanged flag: {}", getId(), record.getFlag());
             return false;
         }
         if (getRecord() == null) {
@@ -80,16 +82,16 @@ public abstract class LoggingChannel extends ChannelWrapper {
         }
         if (getRecord().getTimestamp() != null && getRecord().getTimestamp() >= record.getTimestamp()) {
             if (isLoggingDynamic() && 
-            		System.currentTimeMillis() - getRecord().getTimestamp() >= getLoggingDelayMaximum()) {
-            	return true;
+                    System.currentTimeMillis() - getRecord().getTimestamp() >= getLoggingDelayMaximum()) {
+                return true;
             }
-            logger.trace("Skipped logging value with invalid timestamp: {}", record.getTimestamp());
+            logger.trace("Skipped logging value of channel \"{}\" with invalid timestamp: {}", getId(), record.getTimestamp());
             return false;
         }
         if (isLoggingDynamic()) {
-        	if (record.getTimestamp() - getRecord().getTimestamp() >= getLoggingDelayMaximum()) {
-        		return true;
-        	}
+            if (record.getTimestamp() - getRecord().getTimestamp() >= getLoggingDelayMaximum()) {
+                return true;
+            }
             switch(channel.getValueType()) {
             case INTEGER:
             case SHORT:
@@ -99,7 +101,7 @@ public abstract class LoggingChannel extends ChannelWrapper {
                 double delta = Math.abs(record.getValue().asDouble() - getRecord().getValue().asDouble());
                 if (getLoggingTolerance() >= delta) {
                     if (logger.isTraceEnabled()) {
-                        logger.trace("Skipped logging value inside tolerance: {} -> {} <= {}",
+                        logger.trace("Skipped logging value of channel \"{}\" inside tolerance: {} -> {} <= {}", getId(), 
                                 getRecord().getValue().asDouble(), record.getValue(), getLoggingTolerance());
                     }
                     return false;
@@ -115,7 +117,7 @@ public abstract class LoggingChannel extends ChannelWrapper {
         long timestamp = record.getTimestamp();
         
         if (isLoggingDynamic() && getRecord().getTimestamp() != null && 
-        		System.currentTimeMillis() - getRecord().getTimestamp() >= getLoggingDelayMaximum()) {
+                System.currentTimeMillis() - getRecord().getTimestamp() >= getLoggingDelayMaximum()) {
             timestamp = System.currentTimeMillis();
             
             if (!isAveraging()) {
@@ -152,7 +154,7 @@ public abstract class LoggingChannel extends ChannelWrapper {
     }
 
     boolean update(Record record) {
-        if (isValid() && isAveraging()) {
+        if (isValid(record) && isAveraging()) {
             records.add(record);
         }
         if (isUpdate(record)) {
@@ -167,10 +169,63 @@ public abstract class LoggingChannel extends ChannelWrapper {
     }
 
     public boolean isValid() {
-        if (record != null && record.getFlag() == Flag.VALID && record.getValue() != null) {
-            return true;
+        return isValid(getRecord());
+    }
+
+    protected boolean isValid(Record record) {
+        if (record == null) {
+            logger.trace("Invalid null record for channel \"{}\"", getId());
+            return false;
         }
-        return false;
+        if (!record.isValid()) {
+            logger.trace("Invalid record for channel \"{}\" with flag: {}", getId(), record.getFlag());
+            return false;
+        }
+        if (record.getValue() == null) {
+            logger.trace("Invalid record for channel \"{}\" with null value", getId());
+            return false;
+        }
+        Value value = record.getValue();
+        try {
+            switch (getValueType()) {
+            case BOOLEAN:
+                value.asBoolean();
+                break;
+            case BYTE:
+                value.asByte();
+                break;
+            case BYTE_ARRAY:
+                value.asByteArray();
+                break;
+            case SHORT:
+                value.asShort();
+                break;
+            case INTEGER:
+                value.asInt();
+                break;
+            case LONG:
+                value.asLong();
+                break;
+            case FLOAT:
+                value.asFloat();
+                break;
+            case DOUBLE:
+                Double doubleValue = value.asDouble();
+                if (doubleValue.isNaN()) {
+                    logger.trace("Invalid record for channel \"{}\" with NaN value", getId());
+                    return false;
+                }
+                break;
+            default:
+                break;
+            }
+        } catch (TypeConversionException e) {
+            logger.warn("Invalid record of channel \"{}\" for value type {}: {}", 
+                    getId(), getValueType(), getRecord());
+            
+            return false;
+        }
+        return true;
     }
 
     @Override

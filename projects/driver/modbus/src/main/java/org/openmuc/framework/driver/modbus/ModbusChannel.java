@@ -20,12 +20,10 @@
  */
 package org.openmuc.framework.driver.modbus;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class ModbusChannel {
 
-    private static final Logger logger = LoggerFactory.getLogger(ModbusDriver.class);
+    private static final boolean WRITE_SINGLE_REGISTER = Boolean.parseBoolean(System.getProperty(ModbusChannel.class.
+            getPackage().getName().toLowerCase() + ".write_single_register", "false"));
 
     /** Contains values to define the access method of the channel */
     public static enum EAccess {
@@ -147,7 +145,8 @@ public class ModbusChannel {
      * 
      * @throws Exception
      */
-    private void setFunctionCodeForReading() {
+    @SuppressWarnings("deprecation")
+	private void setFunctionCodeForReading() {
 
         switch (datatype) {
         case BOOLEAN:
@@ -199,13 +198,15 @@ public class ModbusChannel {
         case SHORT:
         case INT16:
         case UINT16:
-//            if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
-//                functionCode = EFunctionCode.FC_06_WRITE_SINGLE_REGISTER;
-//            }
-//            else {
-//                invalidWriteAddressParameterCombination();
-//            }
-//            break;
+        	if (WRITE_SINGLE_REGISTER) {
+                if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
+                    functionCode = EFunctionCode.FC_06_WRITE_SINGLE_REGISTER;
+                }
+                else {
+                    invalidWriteAddressParameterCombination();
+                }
+                break;
+        	}
         case INT32:
         case UINT32:
         case FLOAT:
