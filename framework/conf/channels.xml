@@ -1,83 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configuration>
-  <driver id="csv">
-    <samplingTimeout>10s</samplingTimeout>
-    <connectRetryInterval>1m</connectRetryInterval>
-    <device id="home1">
-      <description/>
-      <address>./csv/home1.csv</address>
-      <settings>samplingmode=hhmmss;rewind=true</settings>
-      <channel id="hhmmss">
-        <description>hhmmss</description>
-        <address>hhmmss</address>
-        <samplingInterval>5s</samplingInterval>
-      </channel>
-      <channel id="power_photovoltaics">
-        <description>PV Power Production</description>
-        <address>pv_power_production</address>
-        <settings>tilt=30:azimuth=0</settings>
-        <unit>W</unit>
-        <samplingInterval>5s</samplingInterval>
-        <loggingInterval>5s</loggingInterval>
-      </channel>
-      <channel id="power_grid">
-        <description>Grid Power</description>
-        <address>grid_power</address>
-        <unit>W</unit>
-        <samplingInterval>5s</samplingInterval>
-        <loggingInterval>5s</loggingInterval>
-      </channel>
-      <channel id="power_heatpump">
-        <description>Heat Pump Power Consumption</description>
-        <address>hp_power_consumption</address>
-        <unit>W</unit>
-        <samplingInterval>5s</samplingInterval>
-        <loggingInterval>5s</loggingInterval>
-      </channel>
-      <channel id="power_electric_vehicle">
-        <description>EV Power Consumption</description>
-        <address>ev_power_consumption</address>
-        <unit>W</unit>
-        <samplingInterval>5s</samplingInterval>
-        <loggingInterval>5s</loggingInterval>
-      </channel>
-    </device>
-  </driver>
-  <driver id="aggregator">
-    <device id="aggregationdevice">
-      <samplingTimeout>55s</samplingTimeout>
-      <connectRetryInterval>1m</connectRetryInterval>
-      <channel id="ev_power_aggr">
-        <channelAddress>power_electric_vehicle:avg:0.9</channelAddress>
-        <samplingInterval>5s</samplingInterval>
-        <samplingTimeOffset>5s</samplingTimeOffset>
-        <loggingInterval>5s</loggingInterval>
-      </channel>
-      <channel id="power_photovoltaics_aggr">
-        <channelAddress>power_photovoltaics:avg:0.9</channelAddress>
-        <samplingInterval>5s</samplingInterval>
-        <samplingTimeOffset>5s</samplingTimeOffset>
-        <loggingInterval>5s</loggingInterval>
-      </channel>
-    </device>
-  </driver>
   <driver id="virtual">
-    <device id="virtual">
-      <channel id="status_electric_vehicle">
-        <description>(calculated by demo app)</description>
-        <valueType length="20">STRING</valueType>
-        <loggingInterval>5s</loggingInterval>
-      </channel>
-      <channel id="energy_exported">
-        <description>(calculated by demo app)</description>
-        <unit>kWh</unit>
-        <loggingInterval>5s</loggingInterval>
-      </channel>
-      <channel id="energy_imported">
-        <description>(calculated by demo app)</description>
-        <unit>kWh</unit>
-        <loggingInterval>5s</loggingInterval>
-      </channel>
+    <device id="chp">
+      <channel id="chp_ctrl_enable"/>
+      <channel id="chp_ctrl_start"/>
+      <channel id="chp_ctrl_stop"/>
+      <channel id="chp_state"/>
+      <channel id="chp_stack_current_limit"/>
+      <channel id="chp_stack_temp"/>
+      <channel id="chp_circ_flow_power"/>
+      <channel id="chp_circ_flow_energy"/>
+      <channel id="chp_power"/>
+      <channel id="chp_energy"/>
+      <channel id="chp_ctrl_state"/>
+      <channel id="chp_circ_flow_counter"/>
+      <channel id="chp_circ_in_temp"/>
+      <channel id="chp_circ_out_temp"/>
+      <channel id="chp_circ_delta_temp"/>
+      <channel id="chp_circ_pump_state"/>
+    </device>
+    <device id="inv">
+      <channel id="inv_mode"/>
+      <channel id="inv_setpoint_export_current"/>
+      <channel id="inv_setpoint_import_current"/>
+      <channel id="inv_power"/>
+      <channel id="inv_current"/>
+      <channel id="inv_setpoint_power"/>
+      <channel id="inv_current_max"/>
+    </device>
+    <device id="ees">
+      <channel id="ees_setpoint_voltage"/>
+      <channel id="ees_power"/>
+      <channel id="ees_soc"/>
+      <channel id="ees_current"/>
+      <channel id="ees_voltage"/>
     </device>
   </driver>
 </configuration>
