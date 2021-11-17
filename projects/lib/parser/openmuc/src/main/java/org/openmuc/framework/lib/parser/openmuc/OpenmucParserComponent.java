@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
 @Component
-public class OpenMucParserComponent {
+public class OpenmucParserComponent {
 
     private ServiceRegistration<?> registration;
 

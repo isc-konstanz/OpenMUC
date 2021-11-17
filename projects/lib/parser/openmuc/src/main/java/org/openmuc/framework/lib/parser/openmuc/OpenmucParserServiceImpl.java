@@ -40,6 +40,7 @@ import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.openmuc.framework.parser.spi.ParserService;
+import org.openmuc.framework.parser.spi.SerializationContainer;
 import org.openmuc.framework.parser.spi.SerializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,25 +76,34 @@ public class OpenmucParserServiceImpl implements ParserService {
     }
 
     @Override
-    public byte[] serialize(LoggingRecord openMucRecord) {
-        String serializedString = gson.toJson(openMucRecord.getRecord());
-
-        return serializedString.getBytes();
+    public byte[] serialize(LoggingRecord record) {
+        return serialize(record.getRecord());
     }
 
     @Override
-    public byte[] serialize(List<LoggingRecord> openMucRecords) throws SerializationException {
+    public byte[] serialize(List<LoggingRecord> records) throws SerializationException {
         StringBuilder sb = new StringBuilder();
-        for (LoggingRecord openMucRecord : openMucRecords) {
-            sb.append(new String(serialize(openMucRecord)));
+        for (LoggingRecord record : records) {
+            sb.append(new String(serialize(record.getRecord())));
             sb.append('\n');
         }
         return sb.toString().getBytes();
     }
 
     @Override
-    public synchronized Record deserialize(byte[] byteArray, ValueType valueType) {
-        this.valueType = valueType;
+    public byte[] serialize(Record record, SerializationContainer container) {
+        return serialize(record);
+    }
+
+    public byte[] serialize(Record record) {
+        String serializedString = gson.toJson(record);
+
+        return serializedString.getBytes();
+    }
+
+    @Override
+    public synchronized Record deserialize(byte[] byteArray, SerializationContainer container) {
+        this.valueType = container.getValueType();
         return gson.fromJson(new String(byteArray), Record.class);
 
     }

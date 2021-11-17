@@ -100,8 +100,8 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
                 }
                 else if (hasMethod(Write.class, channelClass)) {
                     
-                    for (LoggingChannel loggingChannel : getChannels(containers)) {
-                        loggingChannel.invokeWrite(timestamp);
+                    for (LoggingChannel logChannel : getChannels(containers)) {
+                        logChannel.invokeWrite(timestamp);
                     }
                 }
                 else {
@@ -122,16 +122,16 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
     @SuppressWarnings("unchecked")
     public List<Record> getRecords(String id, long startTime, long endTime) throws IOException {
         synchronized(channels) {
-            LoggingChannel loggingChannel = getChannel(id);
-            if (loggingChannel == null) {
+            LoggingChannel logChannel = getChannel(id);
+            if (logChannel == null) {
                 logger.warn("Failed to retrieve records for unconfigured channel \"{}\"", id);
                 return null;
             }
             if (hasMethod(Read.class, this)) {
-                return (List<Record>) invokeReturn(Read.class, this, loggingChannel, startTime, endTime);
+                return (List<Record>) invokeReturn(Read.class, this, logChannel, startTime, endTime);
             }
             else if (hasMethod(Read.class, channelClass)) {
-                return loggingChannel.invokeRead(startTime, endTime);
+                return logChannel.invokeRead(startTime, endTime);
             }
         }
         throw new UnsupportedOperationException("Reading values unsupported for " + getClass().getSimpleName());

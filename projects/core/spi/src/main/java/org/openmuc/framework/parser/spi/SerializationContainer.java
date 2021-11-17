@@ -19,22 +19,18 @@
  *
  */
 
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.parser.spi;
 
-import org.openmuc.framework.dataaccess.ChannelContainer;
+import org.openmuc.framework.data.ValueType;
 
-public interface ChannelTaskContainer extends ChannelContainer {
+public interface SerializationContainer {
 
-    default String getChannelAddress() {
-        return getChannel().getAddress();
-    }
+    String getChannelAddress();
 
-    default String getChannelSettings() {
-        return getChannel().getSettings();
-    }
+    String getChannelSettings();
 
-    Object getChannelHandle();
+    ValueType getValueType();
 
-    void setChannelHandle(Object handle);
+    Integer getValueTypeLength();
 
 }

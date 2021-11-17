@@ -41,7 +41,7 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.annotation.Device;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
-import org.openmuc.framework.driver.spi.ChannelTaskContainer;
+import org.openmuc.framework.driver.spi.ChannelHandleContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,7 +161,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
     }
 
     @SuppressWarnings("unchecked")
-    final <C extends DriverChannel> C newChannel(ChannelTaskContainer container) 
+    final <C extends DriverChannel> C newChannel(ChannelHandleContainer container) 
             throws RuntimeException, ArgumentSyntaxException {
         
         Address address = Configurations.parseAddress(container.getChannelAddress(), channelClass);
@@ -177,7 +177,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return channel;
     }
 
-    final <C extends DriverChannel> C getChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
+    final <C extends DriverChannel> C getChannel(ChannelHandleContainer container) throws ArgumentSyntaxException {
         String id = container.getChannel().getId();
         C channel = getChannel(id);
         try {
@@ -205,9 +205,9 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return new ArrayList<C>((Collection<C>) channels.values());
     }
 
-    final <C extends DriverChannel> List<C> getChannels(List<? extends ChannelTaskContainer> containers) {
+    final <C extends DriverChannel> List<C> getChannels(List<? extends ChannelHandleContainer> containers) {
         List<C> channels = new ArrayList<C>();
-        for (ChannelTaskContainer container : containers) {
+        for (ChannelHandleContainer container : containers) {
             try {
                 channels.add(getChannel(container));
                 
@@ -220,9 +220,9 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return channels;
     }
 
-    final <C extends DriverChannel> List<C> newChannels(List<? extends ChannelTaskContainer> containers) {
+    final <C extends DriverChannel> List<C> newChannels(List<? extends ChannelHandleContainer> containers) {
         List<C> channels = new ArrayList<C>();
-        for (ChannelTaskContainer container : containers) {
+        for (ChannelHandleContainer container : containers) {
             C channel;
             try {
                 channel = newChannel(container);
@@ -238,7 +238,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
         return channels;
     }
 
-    private void setChannelContainerFlag(ChannelTaskContainer container, Flag flag) {
+    private void setChannelContainerFlag(ChannelHandleContainer container, Flag flag) {
         if (container instanceof ChannelRecordContainer) {
             setChannelContainerFlag((ChannelRecordContainer) container, flag);
         }

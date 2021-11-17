@@ -21,13 +21,30 @@
 
 package org.openmuc.framework.driver.spi;
 
-import org.openmuc.framework.data.Record;
-import org.openmuc.framework.dataaccess.ReadRecordContainer;
+import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.dataaccess.ChannelContainer;
+import org.openmuc.framework.parser.spi.SerializationContainer;
 
-public interface ChannelRecordContainer extends ReadRecordContainer, ChannelHandleContainer {
+public interface ChannelHandleContainer extends ChannelContainer, SerializationContainer {
 
-    void setRecord(Record record);
+    default String getChannelAddress() {
+        return getChannel().getAddress();
+    }
 
-    ChannelRecordContainer copy();
+    default String getChannelSettings() {
+        return getChannel().getSettings();
+    }
+
+    default ValueType getValueType() {
+        return getChannel().getValueType();
+    }
+
+    default Integer getValueTypeLength() {
+        return getChannel().getValueTypeLength();
+    }
+
+    Object getChannelHandle();
+
+    void setChannelHandle(Object handle);
 
 }

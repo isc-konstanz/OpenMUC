@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
@@ -37,9 +35,7 @@ import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -126,8 +122,9 @@ public class MqttDriverConnection implements Connection {
             return;
         }
         mqttReader.listen(topics, (topic, message) -> {
-            Channel channel = containers.get(topics.indexOf(topic)).getChannel();
-            Record record = getRecord(message, channel.getValueType());
+            ChannelRecordContainer container = containers.get(topics.indexOf(topic));
+            Channel channel = container.getChannel();
+            Record record = getRecord(message, container);
 
             if (recordIsOld(channel.getId(), record)) {
                 return;
@@ -169,10 +166,10 @@ public class MqttDriverConnection implements Connection {
         return false;
     }
 
-    private Record getRecord(byte[] message, ValueType valueType) {
+    private Record getRecord(byte[] message, ChannelRecordContainer container) {
         Record record;
         if (parsers.containsKey(settings.getProperty("parser"))) {
-            record = parsers.get(settings.getProperty("parser")).deserialize(message, valueType);
+            record = parsers.get(settings.getProperty("parser")).deserialize(message, container);
         }
         else {
             record = new Record(new ByteArrayValue(message), System.currentTimeMillis());
@@ -186,11 +183,10 @@ public class MqttDriverConnection implements Connection {
             throws UnsupportedOperationException, ConnectionException {
         for (ChannelValueContainer container : containers) {
             Record record = new Record(container.getValue(), System.currentTimeMillis());
-            LoggingRecord loggingRecord = new LoggingRecord(container.getChannelAddress(), record);
             if (parsers.containsKey(settings.getProperty("parser"))) {
                 byte[] message;
                 try {
-                    message = parsers.get(settings.getProperty("parser")).serialize(loggingRecord);
+                    message = parsers.get(settings.getProperty("parser")).serialize(record, container);
                 } catch (SerializationException e) {
                     logger.error(e.getMessage());
                     continue;

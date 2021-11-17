@@ -37,6 +37,7 @@ import org.openmuc.framework.data.Value;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.openmuc.framework.parser.spi.ParserService;
+import org.openmuc.framework.parser.spi.SerializationContainer;
 import org.openmuc.framework.parser.spi.SerializationException;
 
 /**
@@ -87,7 +88,7 @@ class OpenmucParserServiceImplTest {
         long timestamp = 1582722316;
         Flag flag = Flag.VALID;
         Record record = new Record(doubleValue, timestamp, flag);
-        byte[] serializedRecord = parserService.serialize(new LoggingRecord("test", record));
+        byte[] serializedRecord = parserService.serialize(record, new SerializationContainerTest());
         String serializedJson = new String(serializedRecord);
         assertEquals(controlString, serializedJson);
     }
@@ -100,7 +101,7 @@ class OpenmucParserServiceImplTest {
         Flag flag = Flag.VALID;
         Record record = new Record(doubleValue, timestamp, flag);
 
-        byte[] serializedRecord = parserService.serialize(new LoggingRecord("test", record));
+        byte[] serializedRecord = parserService.serialize(record, new SerializationContainerTest());
         String serializedJson = new String(serializedRecord);
         assertEquals(controlString, serializedJson);
     }
@@ -113,7 +114,7 @@ class OpenmucParserServiceImplTest {
         Flag flag = Flag.VALID;
         Record record = new Record(byteArrayValue, timestamp, flag);
 
-        byte[] serializedRecord = parserService.serialize(new LoggingRecord("test", record));
+        byte[] serializedRecord = parserService.serialize(record, new SerializationContainerTest());
         String serializedJson = new String(serializedRecord);
         assertEquals(controlString, serializedJson);
     }
@@ -122,7 +123,7 @@ class OpenmucParserServiceImplTest {
     void deserializeTestDoubleValue() {
         String inputString = "{\"timestamp\":1582722316,\"flag\":\"VALID\",\"value\":3.0}";
 
-        Record recordDes = parserService.deserialize(inputString.getBytes(), ValueType.DOUBLE);
+        Record recordDes = parserService.deserialize(inputString.getBytes(), new SerializationContainerTest(ValueType.DOUBLE));
         assertEquals(3.0, recordDes.getValue().asDouble());
     }
 
@@ -130,7 +131,7 @@ class OpenmucParserServiceImplTest {
     void deserializeByteArrayValue() {
         String inputString = "{\"timestamp\":1582722316,\"flag\":\"VALID\",\"value\":\"dGVzdA==\"}";
 
-        Record recordDes = parserService.deserialize(inputString.getBytes(), ValueType.BYTE_ARRAY);
+        Record recordDes = parserService.deserialize(inputString.getBytes(), new SerializationContainerTest(ValueType.BYTE_ARRAY));
         assertEquals("test", new String(recordDes.getValue().asByteArray()));
     }
 
@@ -138,7 +139,7 @@ class OpenmucParserServiceImplTest {
     void deserializeTimestamp() {
         String inputString = "{\"timestamp\":1582722316,\"flag\":\"VALID\",\"value\":3.0}";
 
-        Record recordDes = parserService.deserialize(inputString.getBytes(), ValueType.DOUBLE);
+        Record recordDes = parserService.deserialize(inputString.getBytes(), new SerializationContainerTest(ValueType.DOUBLE));
         assertEquals(1582722316, recordDes.getTimestamp().longValue());
     }
 
@@ -146,7 +147,41 @@ class OpenmucParserServiceImplTest {
     void deserializeFlag() {
         String inputString = "{\"timestamp\":1582722316,\"flag\":\"VALID\",\"value\":3.0}";
 
-        Record recordDes = parserService.deserialize(inputString.getBytes(), ValueType.DOUBLE);
+        Record recordDes = parserService.deserialize(inputString.getBytes(), new SerializationContainerTest(ValueType.DOUBLE));
         assertEquals("VALID", recordDes.getFlag().name());
     }
+
+    public class SerializationContainerTest implements SerializationContainer {
+    
+        private final ValueType valueType;
+    
+        public SerializationContainerTest(ValueType valueType) {
+            this.valueType = valueType;
+        }
+    
+        public SerializationContainerTest() {
+            this(ValueType.DOUBLE);
+        }
+    
+        @Override
+        public String getChannelAddress() {
+            return null;
+        }
+    
+        @Override
+        public String getChannelSettings() {
+            return null;
+        }
+    
+        @Override
+        public ValueType getValueType() {
+            return valueType;
+        }
+    
+        @Override
+        public Integer getValueTypeLength() {
+            return null;
+        }
+    }
+
 }

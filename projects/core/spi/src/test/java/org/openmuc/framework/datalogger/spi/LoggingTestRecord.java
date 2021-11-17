@@ -19,15 +19,14 @@
  *
  */
 
-package org.openmuc.framework.driver.spi;
+package org.openmuc.framework.datalogger.spi;
 
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.dataaccess.ReadRecordContainer;
 
-public interface ChannelRecordContainer extends ReadRecordContainer, ChannelHandleContainer {
+public class LoggingTestRecord extends LoggingRecord {
 
-    void setRecord(Record record);
-
-    ChannelRecordContainer copy();
+    public LoggingTestRecord(String channelId, Record record) {
+        super(channelId, null, null, null, null, record);
+    }
 
 }
