@@ -68,7 +68,7 @@ public class W1Driver extends DriverActivator implements DriverDeviceFactory, Dr
     }
 
     @Override
-	public W1Scanner newScanner(Settings settings) {
+    public W1Scanner newScanner(Settings settings) {
         return new W1Scanner(master.getDevices(), connected);
     }
 

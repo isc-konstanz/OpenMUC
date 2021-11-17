@@ -40,9 +40,9 @@ public abstract class DriverDeviceScanner extends Reflectable {
     }
 
     void invokeConfigure(DriverDeviceContext context, Settings settings) throws ArgumentSyntaxException {
-    	this.configure(settings);
+        this.configure(settings);
         this.context = context;
-    	
+        
         invokeMethod(Configure.class, this, context, settings);
         invokeMethod(Configure.class, this, context);
         invokeMethod(Configure.class, this);

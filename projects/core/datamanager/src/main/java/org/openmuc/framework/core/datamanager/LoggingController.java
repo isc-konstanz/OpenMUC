@@ -120,7 +120,9 @@ public class LoggingController {
         Record latestRecord = channel.getLatestRecord();
         logContainerMap.forEach((k, v) -> {
             if (loggerWithIdNotRequiresSettings(k)) {
-                v.add(new LoggingRecord(channel.getId(), latestRecord));
+                v.add(new LoggingRecord(channel.getId(),
+                        channel.getAddress(), channel.getSettings(),
+                        channel.getValueType(), channel.getValueTypeLength(), latestRecord));
             }
         });
     }
@@ -138,7 +140,9 @@ public class LoggingController {
         for (String definedLogger : definedLoggerInChannel) {
             if (logContainerMap.get(definedLogger) != null) {
                 Record latestRecord = channel.getLatestRecord();
-                logContainerMap.get(definedLogger).add(new LoggingRecord(channel.getId(), latestRecord));
+                logContainerMap.get(definedLogger).add(new LoggingRecord(channel.getId(),
+                        channel.getAddress(), channel.getSettings(),
+                        channel.getValueType(), channel.getValueTypeLength(), latestRecord));
             }
             else {
                 logger.warn("DataLoggerService with Id {} not found for channel {}", definedLogger,

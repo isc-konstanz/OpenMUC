@@ -51,18 +51,18 @@ public class ChannelRecordDeque extends ConcurrentLinkedDeque<Record> implements
     private int timeWindow;
 
     public ChannelRecordDeque(int timeWindow) {
-    	this.timeWindow = timeWindow;
+        this.timeWindow = timeWindow;
     }
 
     public void setTimeWindow(int timeWindow) {
-    	this.timeWindow = timeWindow;
+        this.timeWindow = timeWindow;
         while (size() > 0 && getFirst().getTimestamp() < System.currentTimeMillis() - timeWindow) {
-        	removeFirst();
-    	}
+            removeFirst();
+        }
     }
 
     public int getTimeWindow() {
-    	return this.timeWindow;
+        return this.timeWindow;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ChannelRecordDeque extends ConcurrentLinkedDeque<Record> implements
             addLast(record);
         }
         while (size() > 0 && getFirst().getTimestamp() < System.currentTimeMillis() - getTimeWindow()) {
-        	removeFirst();
+            removeFirst();
         }
     }
 

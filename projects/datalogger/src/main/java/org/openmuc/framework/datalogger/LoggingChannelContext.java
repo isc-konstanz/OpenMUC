@@ -52,7 +52,7 @@ public abstract class LoggingChannelContext extends Reflectable {
     abstract String getId();
 
     DataLogger getLoggerAnnotation() {
-    	DataLogger logger = getClass().getAnnotation(DataLogger.class);
+        DataLogger logger = getClass().getAnnotation(DataLogger.class);
         if (logger == null) {
             throw new RuntimeException("Implementation invalid without annotation");
         }
@@ -75,10 +75,10 @@ public abstract class LoggingChannelContext extends Reflectable {
     }
 
     @SuppressWarnings("unchecked")
-	final <C extends LoggingChannel> C newChannel(LogChannel configs) 
+    final <C extends LoggingChannel> C newChannel(LogChannel configs) 
             throws RuntimeException, ArgumentSyntaxException {
         
-    	C channel;
+        C channel;
         if (this instanceof LoggingChannelFactory) {
             channel = (C) ((LoggingChannelFactory) this).newChannel(parseSettings(channelClass, configs.getLoggingSettings()));
         }
@@ -88,7 +88,7 @@ public abstract class LoggingChannelContext extends Reflectable {
         return channel;
     }
 
-	final <C extends LoggingChannel> C getChannel(LogChannel configs) throws ArgumentSyntaxException {
+    final <C extends LoggingChannel> C getChannel(LogChannel configs) throws ArgumentSyntaxException {
         String id = configs.getId();
         C channel = getChannel(id);
         try {
@@ -109,23 +109,23 @@ public abstract class LoggingChannelContext extends Reflectable {
     }
 
     @SuppressWarnings("unchecked")
-	public <C extends LoggingChannel> C getChannel(String id) {
+    public <C extends LoggingChannel> C getChannel(String id) {
         return (C) channels.get(id);
     }
 
     @SuppressWarnings("unchecked")
-	public <C extends LoggingChannel> List<C> getChannels() {
+    public <C extends LoggingChannel> List<C> getChannels() {
         return new ArrayList<C>((Collection<C>) channels.values());
     }
 
-	final <C extends LoggingChannel> List<C> getChannels(List<? extends LoggingRecord> containers) {
+    final <C extends LoggingChannel> List<C> getChannels(List<? extends LoggingRecord> containers) {
         List<C> channels = new ArrayList<C>();
         if (containers == null || containers.isEmpty()) {
             logger.trace("Logger received empty container list");
             return channels;
         }
         for (LoggingRecord container : containers) {
-        	C channel = getChannel(container.getChannelId());
+            C channel = getChannel(container.getChannelId());
             if (channel == null) {
                 logger.trace("Failed to log record for unconfigured channel \"{}\"", container.getChannelId());
                 continue;
@@ -144,7 +144,7 @@ public abstract class LoggingChannelContext extends Reflectable {
     Settings parseSettings(Class<? extends LoggingChannel> channelClass, String settings) throws ArgumentSyntaxException {
         String loggerSettings = "";
         for (String loggerSegment : settings.split(";")) {
-        	String[] loggerSettingsPair = loggerSegment.split(":");
+            String[] loggerSettingsPair = loggerSegment.split(":");
             if (loggerSettingsPair[0].equals(getId()) && loggerSettingsPair.length == 2) {
                 loggerSettings = loggerSettingsPair[1];
                 break;

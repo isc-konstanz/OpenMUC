@@ -58,11 +58,11 @@ public abstract class Reflectable extends Configurable {
     }
 
     protected <A extends Annotation> boolean hasMethod(Class<A> annot, Class<?> type) throws RuntimeException {
-    	return getMethods(annot, type).size() > 0;
+        return getMethods(annot, type).size() > 0;
     }
 
     protected <A extends Annotation> boolean hasMethod(Class<A> annot, Object obj) throws RuntimeException {
-    	return hasMethod(annot, obj.getClass());
+        return hasMethod(annot, obj.getClass());
     }
 
     protected <A extends Annotation> void invokeMethod(Class<A> annot, Object obj, Object... args) {
@@ -80,15 +80,15 @@ public abstract class Reflectable extends Configurable {
                 continue methods;
             }
             else if (method.getParameterCount() > 0) {
-            	Class<?>[] parameterTypes = method.getParameterTypes();
-            	for (int i=0; i<args.length; i++) {
-            		if (!isAssignableTo(args[i].getClass(), parameterTypes[i])) {
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                for (int i=0; i<args.length; i++) {
+                    if (!isAssignableTo(args[i].getClass(), parameterTypes[i])) {
                         logger.trace("Skipping invocation of method \"{}\" with nonmatching arguments: {} != {}", method.getName(), 
-                        		args[i].getClass().getSimpleName(), parameterTypes[i].getSimpleName());
+                                args[i].getClass().getSimpleName(), parameterTypes[i].getSimpleName());
                         
                         continue methods;
-            		}
-            	}
+                    }
+                }
             }
             try {
                 method.invoke(obj, args);

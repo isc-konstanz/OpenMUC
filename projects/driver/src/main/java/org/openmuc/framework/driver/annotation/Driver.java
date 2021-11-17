@@ -36,9 +36,9 @@ import org.openmuc.framework.driver.DriverDeviceScanner;
 @Target(ElementType.TYPE)
 public @interface Driver {
 
-	String id();
-	String name()        default "";
-	String description() default "";
+    String id();
+    String name()        default "";
+    String description() default "";
 
     Class<? extends DriverDevice> device() 
             default DriverDevice.class;

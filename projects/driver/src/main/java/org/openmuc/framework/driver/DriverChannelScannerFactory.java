@@ -25,6 +25,6 @@ import org.openmuc.framework.config.Settings;
 
 public interface DriverChannelScannerFactory {
 
-	DriverChannelScanner newScanner(Settings settings) throws ArgumentSyntaxException;
+    DriverChannelScanner newScanner(Settings settings) throws ArgumentSyntaxException;
 
 }

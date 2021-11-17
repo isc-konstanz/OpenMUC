@@ -27,17 +27,17 @@ import org.openmuc.framework.config.option.annotation.Syntax;
 
 public class Address extends Configurations {
 
-	public Address(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
+    public Address(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
         this(configurable.getAnnotation(Syntax.class));
         parse(configuration, Options.parse(OptionType.ADDRESS, configurable));
     }
 
-	public Address(Syntax syntax) throws ArgumentSyntaxException {
-    	this(new OptionSyntax(OptionType.ADDRESS, syntax));
+    public Address(Syntax syntax) throws ArgumentSyntaxException {
+        this(new OptionSyntax(OptionType.ADDRESS, syntax));
     }
 
-	public Address(OptionSyntax syntax) {
-    	super(syntax);
+    public Address(OptionSyntax syntax) {
+        super(syntax);
     }
 
 }

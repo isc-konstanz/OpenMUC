@@ -24,7 +24,7 @@ package org.openmuc.framework.driver.spi;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.ReadRecordContainer;
 
-public interface ChannelRecordContainer extends ReadRecordContainer, ChannelTaskContainer {
+public interface ChannelRecordContainer extends ReadRecordContainer, ChannelHandleContainer {
 
     void setRecord(Record record);
 

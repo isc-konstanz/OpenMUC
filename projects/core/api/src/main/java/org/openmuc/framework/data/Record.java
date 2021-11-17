@@ -78,7 +78,7 @@ public class Record {
     }
 
     public boolean isValid() {
-    	return flag == Flag.VALID;
+        return flag == Flag.VALID;
     }
 
     @Override

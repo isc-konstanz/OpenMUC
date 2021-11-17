@@ -33,16 +33,16 @@ import org.openmuc.framework.config.option.annotation.Syntax;
 public class DeviceAddress extends Configurable {
 
     @Option(id = "t",
-    		type = ADDRESS,
-    		name = "Connection type",
+            type = ADDRESS,
+            name = "Connection type",
             description = "The connection type used. Currently, the DLMS/COSEM driver supports serial communication and TCP/IP.",
             valueSelection = "serial:Serial,tcp:TCP/IP"
     )
     private String connectionType = null;
 
     @Option(id = "sp",
-    		type = ADDRESS,
-    		name = "Serial Port",
+            type = ADDRESS,
+            name = "Serial Port",
             description = "<b>Example:</b>" +
                           "<ol>" +
                               "<li>sp=ttyS0</li>" +
@@ -55,8 +55,8 @@ public class DeviceAddress extends Configurable {
     private String serialPort = "";
 
     @Option(id = "bd",
-    		type = ADDRESS,
-    		name = "Baud rate",
+            type = ADDRESS,
+            name = "Baud rate",
             description = "<i>Only used for Serial connection types</i>",
             valueDefault = "9600",
             mandatory = false
@@ -64,8 +64,8 @@ public class DeviceAddress extends Configurable {
     private int baudrate = 9600;
 
     @Option(id = "h",
-    		type = ADDRESS,
-    		name = "Host name",
+            type = ADDRESS,
+            name = "Host name",
             description = "<b>Example:</b>" +
                           "<ol>" +
                               "<li>h=127.0.0.1</li>" +
@@ -78,8 +78,8 @@ public class DeviceAddress extends Configurable {
     private InetAddress hostAddress = null;
 
     @Option(id = "p",
-    		type = ADDRESS,
-    		name = "Port",
+            type = ADDRESS,
+            name = "Port",
             description = "<i>Only used for TCP/IP connection types</i>",
             valueDefault = "4059",
             mandatory = false
@@ -87,8 +87,8 @@ public class DeviceAddress extends Configurable {
     private int port = 4059;
 
     @Option(id = "hdlc",
-    		type = ADDRESS,
-    		name = "HDLC",
+            type = ADDRESS,
+            name = "HDLC",
             description = "Use HDLC (<a href='https://en.wikipedia.org/wiki/High-Level_Data_Link_Control'>High-Level Data Link Control</a>",
             valueDefault = "false",
             mandatory = false
@@ -96,8 +96,8 @@ public class DeviceAddress extends Configurable {
     private boolean useHdlc = false;
 
     @Option(id = "d",
-    		type = ADDRESS,
-    		name = "Baud rate change delay",
+            type = ADDRESS,
+            name = "Baud rate change delay",
             description = "The baud rate change delay in milliseconds",
             valueDefault = "0",
             mandatory = false
@@ -105,8 +105,8 @@ public class DeviceAddress extends Configurable {
     private long baudRateChangeDelay = 0;
 
     @Option(id = "eh",
-    		type = ADDRESS,
-    		name = "Handshake",
+            type = ADDRESS,
+            name = "Handshake",
             description = "Use initial handshake to negotiate baud rate",
             valueDefault = "false",
             mandatory = false
@@ -114,15 +114,15 @@ public class DeviceAddress extends Configurable {
     private boolean enableBaudRateHandshake = false;
 
     @Option(id = "iec",
-    		type = ADDRESS,
-    		name = "IEC 21 address",
+            type = ADDRESS,
+            name = "IEC 21 address",
             mandatory = false
     )
     private String iec21Address = "";
 
     @Option(id = "pd",
-    		type = ADDRESS,
-    		name = "Physical Device Address",
+            type = ADDRESS,
+            name = "Physical Device Address",
             valueDefault = "0",
             mandatory = false
     )

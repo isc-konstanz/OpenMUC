@@ -29,7 +29,7 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
-import org.openmuc.framework.driver.spi.ChannelTaskContainer;
+import org.openmuc.framework.driver.spi.ChannelHandleContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 
 public abstract class ChannelContainerWrapper extends Reflectable { //implements ChannelRecordContainer {
@@ -39,16 +39,16 @@ public abstract class ChannelContainerWrapper extends Reflectable { //implements
         READ;
     }
     ChannelTaskType containerType;
-    ChannelTaskContainer container;
+    ChannelHandleContainer container;
 
     protected ChannelContainerWrapper() {
     }
 
-    void invokeConfigure(DriverChannelContext context, ChannelTaskContainer container) 
-    		throws ArgumentSyntaxException {
-    	
+    void invokeConfigure(DriverChannelContext context, ChannelHandleContainer container) 
+            throws ArgumentSyntaxException {
+        
         if (!equals(container)) {
-        	Address address = Configurations.parseAddress(container.getChannelAddress(), getClass());
+            Address address = Configurations.parseAddress(container.getChannelAddress(), getClass());
             configure(address);
             
             Settings settings = Configurations.parseSettings(container.getChannelSettings(), getClass());
@@ -61,18 +61,18 @@ public abstract class ChannelContainerWrapper extends Reflectable { //implements
         setTaskContainer(container);
     }
 
-    void configure(ChannelTaskContainer container) throws ArgumentSyntaxException {
+    void configure(ChannelHandleContainer container) throws ArgumentSyntaxException {
     }
 
     public final ChannelTaskType getTaskType() {
-    	return containerType;
+        return containerType;
     }
 
-    public final ChannelTaskContainer getTaskContainer() {
+    public final ChannelHandleContainer getTaskContainer() {
         return container;
     }
 
-    final void setTaskContainer(ChannelTaskContainer container) throws ArgumentSyntaxException {
+    final void setTaskContainer(ChannelHandleContainer container) throws ArgumentSyntaxException {
         this.container = container;
         if (container instanceof ChannelRecordContainer) {
             containerType = ChannelTaskType.READ;
@@ -85,20 +85,20 @@ public abstract class ChannelContainerWrapper extends Reflectable { //implements
         }
     }
 
-//	@Override
-//	public Channel getChannel() {
-//		return container.getChannel();
-//	}
+//    @Override
+//    public Channel getChannel() {
+//        return container.getChannel();
+//    }
 //
-//	@Override
-//	public Object getChannelHandle() {
-//		return container.getChannelHandle();
-//	}
+//    @Override
+//    public Object getChannelHandle() {
+//        return container.getChannelHandle();
+//    }
 //
-//	@Override
-//	public void setChannelHandle(Object handle) {
-//		container.setChannelHandle(handle);
-//	}
+//    @Override
+//    public void setChannelHandle(Object handle) {
+//        container.setChannelHandle(handle);
+//    }
 
     public final Record getRecord() {
         switch (containerType) {
@@ -158,7 +158,7 @@ public abstract class ChannelContainerWrapper extends Reflectable { //implements
         container.setFlag(flag);
     }
 
-    public boolean equals(ChannelTaskContainer container) {
+    public boolean equals(ChannelHandleContainer container) {
         return this.container != null && container != null &&
                 this.container.getChannel().getId().equals(container.getChannel().getId()) &&
                 this.container.getChannelSettings().equals(container.getChannelSettings()) &&

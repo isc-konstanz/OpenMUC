@@ -183,10 +183,10 @@ public final class ChannelImpl implements Channel {
         return config.getLoggingInterval();
     }
 
-	@Override
-	public int getLoggingDelayMaximum() {
-		return config.getLoggingDelayMaximum();
-	}
+    @Override
+    public int getLoggingDelayMaximum() {
+        return config.getLoggingDelayMaximum();
+    }
 
     @Override
     public int getLoggingTimeOffset() {
@@ -198,15 +198,15 @@ public final class ChannelImpl implements Channel {
         return config.getLoggingSettings();
     }
 
-	@Override
-	public double getLoggingTolerance() {
-		return config.getLoggingTolerance();
-	}
+    @Override
+    public double getLoggingTolerance() {
+        return config.getLoggingTolerance();
+    }
 
-	@Override
-	public boolean isloggingAverage() {
-		return config.isloggingAverage();
-	}
+    @Override
+    public boolean isloggingAverage() {
+        return config.isloggingAverage();
+    }
 
     @Override
     public boolean isLoggingEvent() {

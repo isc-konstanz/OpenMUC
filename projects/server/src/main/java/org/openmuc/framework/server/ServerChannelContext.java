@@ -72,7 +72,7 @@ public class ServerChannelContext extends Reflectable {
     }
 
     @SuppressWarnings("unchecked")
-	final <C extends ServerChannel> C newChannel(ServerMappingContainer container) 
+    final <C extends ServerChannel> C newChannel(ServerMappingContainer container) 
             throws RuntimeException, ArgumentSyntaxException {
         
         Address address = Configurations.parseAddress(container.getServerMapping().getServerAddress(), channelClass);
@@ -87,7 +87,7 @@ public class ServerChannelContext extends Reflectable {
         return channel;
     }
 
-	final <C extends ServerChannel> C getChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
+    final <C extends ServerChannel> C getChannel(ServerMappingContainer container) throws ArgumentSyntaxException {
         String id = container.getChannel().getId();
         C channel = getChannel(id);
         try {
@@ -107,12 +107,12 @@ public class ServerChannelContext extends Reflectable {
     }
 
     @SuppressWarnings("unchecked")
-	public <C extends ServerChannel> C getChannel(String id) {
+    public <C extends ServerChannel> C getChannel(String id) {
         return (C) channels.get(id);
     }
 
     @SuppressWarnings("unchecked")
-	public <C extends ServerChannel> List<C> getChannels() {
+    public <C extends ServerChannel> List<C> getChannels() {
         return new ArrayList<C>((Collection<C>) channels.values());
     }
 

@@ -35,7 +35,7 @@ import org.openmuc.framework.datalogger.LoggingChannel;
 @Target(ElementType.TYPE)
 public @interface DataLogger {
 
-	String id();
+    String id();
 
     Class<? extends LoggingChannel> channel() 
             default LoggingChannel.class;

@@ -28,25 +28,25 @@ import org.openmuc.framework.config.option.annotation.OptionType;
 public class Settings extends Configurations {
 
     public Settings(String configuration, Class<? extends Configurable> configurable) 
-    		throws ArgumentSyntaxException {
-    	
+            throws ArgumentSyntaxException {
+        
         this(configurable.getAnnotation(Syntax.class));
         parse(configuration, Options.parse(OptionType.SETTING, configurable));
     }
 
     public Settings(String configuration, Class<? extends Configurable> configurable, OptionSyntax syntax) 
-    		throws ArgumentSyntaxException {
-    	
+            throws ArgumentSyntaxException {
+        
         this(syntax);
         parse(configuration, Options.parse(OptionType.SETTING, syntax, configurable));
     }
 
     private Settings(Syntax syntax) throws ArgumentSyntaxException {
-    	this(new OptionSyntax(OptionType.SETTING, syntax));
+        this(new OptionSyntax(OptionType.SETTING, syntax));
     }
 
     private Settings(OptionSyntax syntax) {
-    	super(syntax);
+        super(syntax);
     }
 
 }

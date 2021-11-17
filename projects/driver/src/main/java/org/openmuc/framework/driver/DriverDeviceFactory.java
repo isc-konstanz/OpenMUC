@@ -27,6 +27,6 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 
 public interface DriverDeviceFactory {
 
-	DriverDevice newDevice(Address address, Settings settings) throws ArgumentSyntaxException, ConnectionException;
+    DriverDevice newDevice(Address address, Settings settings) throws ArgumentSyntaxException, ConnectionException;
 
 }

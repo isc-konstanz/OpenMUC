@@ -121,8 +121,8 @@ public class Derivator implements DriverService, Connection {
         int derivativeTime = extractDerivativeTime(addressPartsLength, addressParts);
         String sourceChannelId = addressParts[ADDRESS_CHANNEL_ID_INDEX];
         if (derivatorChannels.containsKey(sourceChannelId)) {
-        	derivatorChannel = derivatorChannels.get(sourceChannelId);
-        	derivatorChannel.setDerivativeTime(derivativeTime);
+            derivatorChannel = derivatorChannels.get(sourceChannelId);
+            derivatorChannel.setDerivativeTime(derivativeTime);
         }
         else {
             Channel sourceChannel = dataAccessService.getChannel(sourceChannelId);

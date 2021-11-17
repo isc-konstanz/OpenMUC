@@ -21,9 +21,9 @@
 package org.openmuc.framework.driver.derivator;
 
 public class DerivationException extends Exception {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public DerivationException(String message) {
+    public DerivationException(String message) {
         super(message);
     }
 

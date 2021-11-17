@@ -30,5 +30,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public abstract @interface Configure {
-	// Marker annotation
+    // Marker annotation
 }

@@ -25,6 +25,6 @@ import org.openmuc.framework.config.Settings;
 
 public interface LoggingChannelFactory {
 
-	LoggingChannel newChannel(Settings settings) throws ArgumentSyntaxException;
+    LoggingChannel newChannel(Settings settings) throws ArgumentSyntaxException;
 
 }

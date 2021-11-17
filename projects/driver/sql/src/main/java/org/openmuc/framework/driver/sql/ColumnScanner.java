@@ -64,11 +64,11 @@ public class ColumnScanner extends DriverChannelScanner {
     }
 
     public String getTable() {
-    	return table;
+        return table;
     }
 
     public String getDatabase() {
-    	return database;
+        return database;
     }
 
     @Override

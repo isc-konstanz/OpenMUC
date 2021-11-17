@@ -1,6 +1,6 @@
 Template: openmuc/mysql_host
 Type: string
-Default: 3306
+Default: 127.0.0.1
 Description: MySQL host name:
  Enter the host name of the MySQL database
 

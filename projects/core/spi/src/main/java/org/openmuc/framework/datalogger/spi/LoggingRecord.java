@@ -21,15 +21,47 @@
 
 package org.openmuc.framework.datalogger.spi;
 
+import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.ValueType;
+import org.openmuc.framework.parser.spi.SerializationContainer;
 
-public class LoggingRecord {
+public class LoggingRecord implements SerializationContainer {
 
     private final String channelId;
+    private final String channelAddress;
+    private final String channelSettings;
+
+    private final ValueType valueType;
+    private final Integer valueTypeLength;
+    
     private final Record record;
 
+    public LoggingRecord(LogChannel channel, Record record) {
+        this(channel.getId(), 
+                channel.getAddress(), channel.getSettings(), 
+                channel.getValueType(), channel.getValueTypeLength(), record);
+    }
+
     public LoggingRecord(String channelId, Record record) {
+        this(channelId,
+                ChannelConfig.ADDRESS_DEFAULT,
+                ChannelConfig.SETTINGS_DEFAULT,
+                ChannelConfig.VALUE_TYPE_DEFAULT, null, record);
+    }
+
+    public LoggingRecord(String channelId, 
+            String channelAddress, String ChannelSettings, 
+            ValueType valueType, Integer ValueTypeLength, 
+            Record record) {
+
         this.channelId = channelId;
+        this.channelAddress = channelAddress;
+        this.channelSettings = ChannelSettings;
+        
+        this.valueType = valueType;
+        this.valueTypeLength = ValueTypeLength;
+        
         this.record = record;
     }
 
@@ -37,7 +69,28 @@ public class LoggingRecord {
         return channelId;
     }
 
+    @Override
+    public String getChannelAddress() {
+        return channelAddress;
+    }
+
+    @Override
+    public String getChannelSettings() {
+        return channelSettings;
+    }
+
+    @Override
+    public ValueType getValueType() {
+        return valueType;
+    }
+
+    @Override
+    public Integer getValueTypeLength() {
+        return valueTypeLength;
+    }
+
     public Record getRecord() {
         return record;
     }
+
 }

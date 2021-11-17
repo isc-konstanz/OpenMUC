@@ -35,7 +35,7 @@ import org.openmuc.framework.server.ServerChannel;
 @Target(ElementType.TYPE)
 public @interface Server {
 
-	String id();
+    String id();
 
     Class<? extends ServerChannel> channel() 
             default ServerChannel.class;
