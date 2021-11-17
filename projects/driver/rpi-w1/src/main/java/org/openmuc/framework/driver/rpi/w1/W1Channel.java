@@ -30,7 +30,7 @@ import com.pi4j.temperature.TemperatureScale;
 public class W1Channel extends DriverChannel {
 
     @Option(type = SETTING,
-    		name = "Unit",
+            name = "Unit",
             description = "The unit of the value, read from e.g. a 1-Wire temperature sensor.",
             valueSelection = 
                     "CELSIUS:Celsius," +

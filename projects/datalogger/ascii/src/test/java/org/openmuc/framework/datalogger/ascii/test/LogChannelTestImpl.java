@@ -161,10 +161,10 @@ public class LogChannelTestImpl implements LogChannel {
         return loggingInterval;
     }
 
-	@Override
-	public Integer getLoggingDelayMaximum() {
-		return -1;
-	}
+    @Override
+    public Integer getLoggingDelayMaximum() {
+        return -1;
+    }
 
     @Override
     public Integer getLoggingTimeOffset() {
@@ -177,15 +177,15 @@ public class LogChannelTestImpl implements LogChannel {
         return "default";
     }
 
-	@Override
-	public Double getLoggingTolerance() {
-		return 0.0;
-	}
+    @Override
+    public Double getLoggingTolerance() {
+        return 0.0;
+    }
 
-	@Override
-	public Boolean isloggingAverage() {
-		return false;
-	}
+    @Override
+    public Boolean isloggingAverage() {
+        return false;
+    }
 
     @Override
     public Boolean isLoggingEvent() {

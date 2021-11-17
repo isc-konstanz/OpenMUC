@@ -24,7 +24,7 @@ package org.openmuc.framework.driver.spi;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Value;
 
-public interface ChannelValueContainer extends ChannelTaskContainer {
+public interface ChannelValueContainer extends ChannelHandleContainer {
 
     Flag getFlag();
 

@@ -33,10 +33,6 @@ import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.dataaccess.WriteValueContainer;
-import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -97,7 +93,7 @@ public class AmqpDriverConnection implements Connection {
             byte[] message = reader.read(queue);
 
             if (message != null) {
-                Record record = getRecord(message, container.getChannel().getValueType());
+                Record record = getRecord(message, container);
                 container.setRecord(record);
             }
             else {
@@ -116,7 +112,7 @@ public class AmqpDriverConnection implements Connection {
 
             reader.listen(Collections.singleton(queue), (String receivedQueue, byte[] message) -> {
 
-                Record record = getRecord(message, container.getChannel().getValueType());
+                Record record = getRecord(message, container);
 
                 if (recordsIsOld(container.getChannel().getId(), record)) {
                     return;
@@ -164,15 +160,10 @@ public class AmqpDriverConnection implements Connection {
             throws UnsupportedOperationException {
         for (ChannelValueContainer container : containers) {
             Record record = new Record(container.getValue(), System.currentTimeMillis());
-
-            // ToDo: cleanup data structure
-            Channel channel = ((WriteValueContainer) container).getChannel();
-            LoggingRecord logRecordContainer = new LoggingRecord(channel.getId(), record);
-
             if (parsers.containsKey(setting.parser)) {
                 byte[] message = new byte[0];
                 try {
-                    message = parsers.get(setting.parser).serialize(logRecordContainer);
+                    message = parsers.get(setting.parser).serialize(record, container);
                 } catch (SerializationException e) {
                     logger.error(e.getMessage());
                 }
@@ -199,10 +190,10 @@ public class AmqpDriverConnection implements Connection {
         parsers.put(parserId, parser);
     }
 
-    private Record getRecord(byte[] message, ValueType valueType) {
+    private Record getRecord(byte[] message, ChannelRecordContainer container) {
         Record record;
         if (parsers.containsKey(setting.parser)) {
-            record = parsers.get(setting.parser).deserialize(message, valueType);
+            record = parsers.get(setting.parser).deserialize(message, container);
         }
         else {
             record = new Record(new ByteArrayValue(message), System.currentTimeMillis());

@@ -33,7 +33,7 @@ import org.openmuc.framework.driver.annotation.Configure;
 public abstract class RestConfigs extends DriverDevice {
 
     @Option(type = ADDRESS,
-    		name = "Prefix",
+            name = "Prefix",
             description = "The URL prefix, which specifies the protocol used to access the remote OpenMUC",
             valueSelection = "http:http,https:https",
             valueDefault = "https",
@@ -41,42 +41,42 @@ public abstract class RestConfigs extends DriverDevice {
     protected String prefix = "https";
 
     @Option(type = ADDRESS,
-    		name = "Host name",
+            name = "Host name",
             description = "The host name of the remote OpenMUC, e.g. 127.0.0.1")
     protected String host;
 
     @Option(type = ADDRESS,
-    		name = "Port",
+            name = "Port",
             description = "The port of the remote OpenMUC, e.g. 8888",
             mandatory = false)
     protected int port = 8888;
 
     @Option(type = SETTING,
-    		name = "Username",
+            name = "Username",
             description = "The username of the remote OpenMUC")
     protected String username;
 
     @Option(type = SETTING,
-    		name = "Password",
+            name = "Password",
             description = "The password of the remote OpenMUC")
     protected String password;
 
     @Option(type = SETTING,
-    		name = "Check timestamp",
+            name = "Check timestamp",
             description = "Flags the driver that it should check the remote timestamp, before reading the complete record",
             valueDefault = "false",
             mandatory = false)
     protected boolean checkTimestamp = false;
 
     @Option(type = SETTING,
-    		name = "Bulk reading",
+            name = "Bulk reading",
             description = "Flags the driver that it should read all available channels at once, instead of requesting them one by one",
             valueDefault = "false",
             mandatory = false)
     protected boolean bulkReading = false;
 
     @Option(type = SETTING,
-    		name = "Timeout",
+            name = "Timeout",
             description = "The timeout, after which the HTTP(S) call will be canceled.",
             valueDefault = "10000",
             mandatory = false)
@@ -87,56 +87,56 @@ public abstract class RestConfigs extends DriverDevice {
 
     @Configure
     public void configure() {
-    	while (host.startsWith("/")) {
-    		host = host.substring(1);
-    	}
-    	if (host.endsWith("/")) {
-    		host = host.substring(0, host.length()-1);
-    	}
-    	url = prefix + "://" + host + ":" + port + "/";
-    	
-    	String authorization = username + ":" + password;
-    	this.authorization = new String(Base64.encodeBase64(authorization.getBytes()));
+        while (host.startsWith("/")) {
+            host = host.substring(1);
+        }
+        if (host.endsWith("/")) {
+            host = host.substring(0, host.length()-1);
+        }
+        url = prefix + "://" + host + ":" + port + "/";
+        
+        String authorization = username + ":" + password;
+        this.authorization = new String(Base64.encodeBase64(authorization.getBytes()));
     }
 
-	public String getPrefix() {
-		return prefix;
-	}
+    public String getPrefix() {
+        return prefix;
+    }
 
-	public String getHost() {
-		return host;
-	}
+    public String getHost() {
+        return host;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public int getPort() {
+        return port;
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public boolean checkTimestamp() {
-		return checkTimestamp;
-	}
+    public boolean checkTimestamp() {
+        return checkTimestamp;
+    }
 
-	public boolean isBulkReading() {
-		return bulkReading;
-	}
+    public boolean isBulkReading() {
+        return bulkReading;
+    }
 
-	public int getTimeout() {
-		return timeout;
-	}
+    public int getTimeout() {
+        return timeout;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public String getAuthorization() {
-		return authorization;
-	}
+    public String getAuthorization() {
+        return authorization;
+    }
 
 }

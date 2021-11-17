@@ -28,7 +28,7 @@ import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.driver.annotation.Listen;
 import org.openmuc.framework.driver.annotation.Read;
 import org.openmuc.framework.driver.annotation.Write;
-import org.openmuc.framework.driver.spi.ChannelTaskContainer;
+import org.openmuc.framework.driver.spi.ChannelHandleContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 
@@ -39,7 +39,7 @@ public abstract class DriverChannel extends ChannelContainerWrapper {
     protected DriverChannel() {
     }
 
-    void invokeConfigure(DriverChannelContext context, ChannelTaskContainer container) 
+    void invokeConfigure(DriverChannelContext context, ChannelHandleContainer container) 
             throws ArgumentSyntaxException {
         
         this.context = context;

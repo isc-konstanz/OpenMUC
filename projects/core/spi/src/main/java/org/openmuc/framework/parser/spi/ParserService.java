@@ -24,7 +24,6 @@ package org.openmuc.framework.parser.spi;
 import java.util.List;
 
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.spi.LoggingRecord;
 
 /**
@@ -33,27 +32,43 @@ import org.openmuc.framework.datalogger.spi.LoggingRecord;
 public interface ParserService {
 
     /**
-     * Serializes a given java datatype to byte array. The needed datatype depends on the concrete implementation of
-     * this service.
+     * Serializes a list of {@link org.openmuc.framework.datalogger.spi.LoggingRecord}.
      *
-     * @param openMucRecord
-     *            logging record for serializing
-     * @return serialized record as byte array
-     * @throws SerializationException
-     *             when something goes wrong while serializing
-     */
-    byte[] serialize(LoggingRecord openMucRecord) throws SerializationException;
-
-    /**
-     * Serializes a list of LogRecordContainers.
-     *
-     * @param openMucRecords
-     *            list of logging records for serializing
+     * @param records
+     *            list of log records for serializing
      * @return serialized records as byte array
      * @throws SerializationException
      *             when something goes wrong while serializing
      */
-    byte[] serialize(List<LoggingRecord> openMucRecords) throws SerializationException;
+    byte[] serialize(List<LoggingRecord> records) throws SerializationException;
+
+    /**
+     * Serializes a given {@link org.openmuc.framework.datalogger.spi.LoggingRecord} to a byte array.
+     *
+     * @param container
+     *            record container for serializing
+     * @return serialized record as byte array
+     * @throws SerializationException
+     *             when something goes wrong while serializing
+     */
+    default byte[] serialize(LoggingRecord container) throws SerializationException {
+        return serialize(container.getRecord(), container);
+    }
+
+    /**
+     * Serializes a given {@link org.openmuc.framework.data.Record} to byte array.
+     * The needed datatype depends on the concrete implementation of this service.
+     *
+     * @param record
+     *            record for serializing
+     * @param container
+     *            contains details for the channel of the value, which is encapsulated in the received JSON-String
+     *            {@link org.openmuc.framework.parser.spi.SerializationContainer}
+     * @return serialized record as byte array
+     * @throws SerializationException
+     *             when something goes wrong while serializing
+     */
+    byte[] serialize(Record record, SerializationContainer container) throws SerializationException;
 
     /**
      * Deserializes a given JSON-String as byte array to {@link org.openmuc.framework.data.Record}. The format of the
@@ -61,10 +76,11 @@ public interface ParserService {
      *
      * @param byteArray
      *            received JSON-String
-     * @param valueType
-     *            defines the type of the value, which is encapsulated in the received JSON-String
-     *            {@link org.openmuc.framework.data.ValueType}
+     * @param container
+     *            contains details for the channel of the value, which is encapsulated in the received JSON-String
+     *            {@link org.openmuc.framework.parser.spi.SerializationContainer}
      * @return deserialized instance of {@link org.openmuc.framework.data.Record}
      */
-    Record deserialize(byte[] byteArray, ValueType valueType);
+    Record deserialize(byte[] byteArray, SerializationContainer container);
+
 }

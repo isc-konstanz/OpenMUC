@@ -26,6 +26,6 @@ import org.openmuc.framework.config.Settings;
 
 public interface DriverChannelFactory {
 
-	DriverChannel newChannel(Address address, Settings settings) throws ArgumentSyntaxException;
+    DriverChannel newChannel(Address address, Settings settings) throws ArgumentSyntaxException;
 
 }

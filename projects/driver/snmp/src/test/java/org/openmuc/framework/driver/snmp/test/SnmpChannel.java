@@ -115,11 +115,11 @@ public class SnmpChannel implements Channel {
         return samplingTimeOffset;
     }
 
-	@Override
-	public boolean isListening() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean isListening() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
     @Override
     public int getSamplingTimeout() {
@@ -131,10 +131,10 @@ public class SnmpChannel implements Channel {
         return 0;
     }
 
-	@Override
-	public int getLoggingDelayMaximum() {
-		return 0;
-	}
+    @Override
+    public int getLoggingDelayMaximum() {
+        return 0;
+    }
 
     @Override
     public int getLoggingTimeOffset() {
@@ -146,20 +146,20 @@ public class SnmpChannel implements Channel {
         return "";
     }
 
-	@Override
-	public double getLoggingTolerance() {
-		return 0;
-	}
+    @Override
+    public double getLoggingTolerance() {
+        return 0;
+    }
 
-	@Override
-	public boolean isloggingAverage() {
-		return false;
-	}
+    @Override
+    public boolean isloggingAverage() {
+        return false;
+    }
 
-	@Override
-	public boolean isLoggingEvent() {
-		return false;
-	}
+    @Override
+    public boolean isLoggingEvent() {
+        return false;
+    }
 
     @Override
     public String getDriverId() {

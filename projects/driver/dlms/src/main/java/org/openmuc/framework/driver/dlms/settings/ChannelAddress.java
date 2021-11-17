@@ -36,15 +36,15 @@ public class ChannelAddress extends Configurable {
     private static final String LOGICAL_NAME_FORMAT = "<Interface_Class_ID>/<Instance_ID>/<Object_Attribute_ID>";
 
     @Option(id = "a",
-    		type = ADDRESS,
-    		name = "Address",
+            type = ADDRESS,
+            name = "Address",
             description = "The Address in logical name format "+LOGICAL_NAME_FORMAT
     )
     private String address;
 
     @Option(id = "t",
-    		type = ADDRESS,
-    		name = "Data Object Type",
+            type = ADDRESS,
+            name = "Data Object Type",
             valueSelection = "NULL_DATA:Null," +
                              "ARRAY:Array," +
                              "STRUCTURE:Structure," +

@@ -66,9 +66,9 @@ public class OpcChannel extends DriverChannel {
 
     @Configure
     public void setNamespace(OpcConnection connection) {
-    	if (namespaceIndex < 0) {
-    		namespaceIndex = connection.getNamespaceIndex();
-    	}
+        if (namespaceIndex < 0) {
+            namespaceIndex = connection.getNamespaceIndex();
+        }
         nodeId = new NodeId(namespaceIndex, identifier);
     }
 

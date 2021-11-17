@@ -60,11 +60,11 @@ public class DerivatorChannel {
     public Record derive() throws DerivationException {
         Record newRecord = sourceChannel.getLatestRecord();
         if (lastRecord.getFlag() == Flag.NO_VALUE_RECEIVED_YET) {
-        	lastRecord = newRecord;
+            lastRecord = newRecord;
             return new Record(Flag.NO_VALUE_RECEIVED_YET);
         }
         if (lastRecord.getFlag() != Flag.VALID || lastRecord.getTimestamp() == null || lastRecord.getValue() == null) {
-        	lastRecord = newRecord;
+            lastRecord = newRecord;
             return new Record(Flag.DRIVER_ERROR_CHANNEL_TEMPORARILY_NOT_ACCESSIBLE);
         }
         if (newRecord.getFlag() != Flag.VALID || newRecord.getTimestamp() == null || newRecord.getValue() == null) {
@@ -74,7 +74,7 @@ public class DerivatorChannel {
             throw new DerivationException("Unable to derive for invalid record with decreasing time");
         }
         if (newRecord.getValue().asDouble() < lastRecord.getValue().asDouble()) {
-        	lastRecord = newRecord;
+            lastRecord = newRecord;
             throw new DerivationException("Unable to derive for invalid record with decreasing value");
         }
         double deltaTime = (newRecord.getTimestamp() - lastRecord.getTimestamp())/(double) getDerivativeTime();

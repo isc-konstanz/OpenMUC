@@ -37,14 +37,14 @@ public abstract class Configurations {
     private final OptionSyntax syntax;
 
     public static Configurations parse(OptionType type, String configuration, Class<? extends Configurable> configurable) 
-    		throws ArgumentSyntaxException {
-    	switch (type) {
-		case ADDRESS:
-			return parseAddress(configuration, configurable);
-		case SETTING:
-		default:
-			return parseSettings(configuration, configurable);
-    	}
+            throws ArgumentSyntaxException {
+        switch (type) {
+        case ADDRESS:
+            return parseAddress(configuration, configurable);
+        case SETTING:
+        default:
+            return parseSettings(configuration, configurable);
+        }
     }
 
     public static Address parseAddress(String configuration, Class<? extends Configurable> configurable) throws ArgumentSyntaxException {
@@ -56,8 +56,8 @@ public abstract class Configurations {
     }
 
     protected Configurations(OptionSyntax syntax) {
-    	super();
-    	this.syntax = syntax;
+        super();
+        this.syntax = syntax;
     }
 
     protected void parse(String parameterStr, Options options) throws ArgumentSyntaxException {
@@ -159,9 +159,9 @@ public abstract class Configurations {
     }
 
     public String getString(String key, String defaultValue) {
-    	if (!contains(key)) {
-    		return defaultValue;
-    	}
+        if (!contains(key)) {
+            return defaultValue;
+        }
         return configurations.get(key).asString();
     }
 
@@ -170,9 +170,9 @@ public abstract class Configurations {
     }
 
     public Double getDouble(String key, Double defaultValue) {
-    	if (!contains(key)) {
-    		return defaultValue;
-    	}
+        if (!contains(key)) {
+            return defaultValue;
+        }
         return configurations.get(key).asDouble();
     }
 
@@ -181,9 +181,9 @@ public abstract class Configurations {
     }
 
     public Float getFloat(String key, Float defaultValue) {
-    	if (!contains(key)) {
-    		return defaultValue;
-    	}
+        if (!contains(key)) {
+            return defaultValue;
+        }
         return configurations.get(key).asFloat();
     }
 
@@ -192,9 +192,9 @@ public abstract class Configurations {
     }
 
     public Long getLong(String key, Long defaultValue) {
-    	if (!contains(key)) {
-    		return defaultValue;
-    	}
+        if (!contains(key)) {
+            return defaultValue;
+        }
         return configurations.get(key).asLong();
     }
 
@@ -203,9 +203,9 @@ public abstract class Configurations {
     }
 
     public Integer getInteger(String key, Integer defaultValue) {
-    	if (!contains(key)) {
-    		return defaultValue;
-    	}
+        if (!contains(key)) {
+            return defaultValue;
+        }
         return configurations.get(key).asInt();
     }
 
@@ -214,9 +214,9 @@ public abstract class Configurations {
     }
 
     public Short getShort(String key, Short defaultValue) {
-    	if (!contains(key)) {
-    		return defaultValue;
-    	}
+        if (!contains(key)) {
+            return defaultValue;
+        }
         return configurations.get(key).asShort();
     }
 
@@ -225,9 +225,9 @@ public abstract class Configurations {
     }
 
     public Boolean getBoolean(String key, Boolean defaultValue) {
-    	if (!contains(key)) {
-    		return defaultValue;
-    	}
+        if (!contains(key)) {
+            return defaultValue;
+        }
         return configurations.get(key).asBoolean();
     }
 
@@ -236,9 +236,9 @@ public abstract class Configurations {
     }
 
     public Byte getByte(String key, Byte defaultValue) {
-    	if (!contains(key)) {
-    		return defaultValue;
-    	}
+        if (!contains(key)) {
+            return defaultValue;
+        }
         return configurations.get(key).asByte();
     }
 
@@ -247,9 +247,9 @@ public abstract class Configurations {
     }
 
     public byte[] getByteArray(String key, byte[] defaultValue) {
-    	if (!contains(key)) {
-    		return defaultValue;
-    	}
+        if (!contains(key)) {
+            return defaultValue;
+        }
         return configurations.get(key).asByteArray();
     }
 

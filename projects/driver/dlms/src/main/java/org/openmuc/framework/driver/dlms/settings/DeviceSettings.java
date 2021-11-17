@@ -39,7 +39,7 @@ public class DeviceSettings extends Configurable {
     private int logicalDeviceAddress = 1;
 
     @Option(id = "cid",
-    		type = SETTING,
+            type = SETTING,
             name = "Client ID",
             valueDefault = "16",
             mandatory = false
@@ -47,7 +47,7 @@ public class DeviceSettings extends Configurable {
     private int clientId = 16;
 
     @Option(id = "sn",
-    		type = SETTING,
+            type = SETTING,
             name = "SN referencing",
             valueDefault = "false",
             mandatory = false
@@ -55,7 +55,7 @@ public class DeviceSettings extends Configurable {
     private boolean useSn = false;
 
     @Option(id = "emech",
-    		type = SETTING,
+            type = SETTING,
             name = "Encryption Mechanism",
             valueDefault = "-1",
             mandatory = false
@@ -63,7 +63,7 @@ public class DeviceSettings extends Configurable {
     private int encryptionMechanism = -1;
 
     @Option(id = "amech",
-    		type = SETTING,
+            type = SETTING,
             name = "Authentication Mechanism",
             valueDefault = "0",
             mandatory = false
@@ -71,21 +71,21 @@ public class DeviceSettings extends Configurable {
     private int authenticationMechanism = 0;
 
     @Option(id = "ekey",
-    		type = SETTING,
+            type = SETTING,
             name = "Encryption Key",
             mandatory = false
     )
     private byte[] encryptionKey = {};
 
     @Option(id = "akey",
-    		type = SETTING,
+            type = SETTING,
             name = "Authentication Key",
             mandatory = false
     )
     private byte[] authenticationKey = {};
 
     @Option(id = "pass",
-    		type = SETTING,
+            type = SETTING,
             name = "Password",
             description = "Authorization password to access the smart meter device",
             mandatory = false
@@ -93,7 +93,7 @@ public class DeviceSettings extends Configurable {
     private String paswd = "";
 
     @Option(id = "cl",
-    		type = SETTING,
+            type = SETTING,
             name = "Challenge Length",
             valueDefault = "16",
             mandatory = false
@@ -101,7 +101,7 @@ public class DeviceSettings extends Configurable {
     private int challengeLength = 16;
 
     @Option(id = "rt",
-    		type = SETTING,
+            type = SETTING,
             name = "Response Timeout",
             valueDefault = "20000",
             mandatory = false
@@ -109,7 +109,7 @@ public class DeviceSettings extends Configurable {
     private int responseTimeout = 20000;
 
     @Option(id = "mid",
-    		type = SETTING,
+            type = SETTING,
             name = "Manufacturer Id",
             valueDefault = "MMM",
             mandatory = false
@@ -117,7 +117,7 @@ public class DeviceSettings extends Configurable {
     private String manufacturerId = "MMM";
 
     @Option(id = "did",
-    		type = SETTING,
+            type = SETTING,
             name = "Device Id",
             valueDefault = "1",
             mandatory = false

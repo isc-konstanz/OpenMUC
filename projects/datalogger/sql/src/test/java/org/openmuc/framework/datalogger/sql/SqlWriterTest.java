@@ -67,4 +67,5 @@ class SqlWriterTest {
 
         return Collections.nCopies(numOfElements, new LoggingRecord(channelId, record));
     }
+
 }

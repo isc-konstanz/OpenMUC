@@ -112,9 +112,9 @@ public class AmqpLogger implements DataLoggerService, ManagedService {
         writer.write(getQueueName(channelId), message);
     }
 
-    private byte[] parseMessage(LoggingRecord loggingRecord) {
+    private byte[] parseMessage(LoggingRecord logRecord) {
         try {
-            return parsers.get(propertyHandler.getString(Settings.PARSER)).serialize(loggingRecord);
+            return parsers.get(propertyHandler.getString(Settings.PARSER)).serialize(logRecord);
         } catch (SerializationException e) {
             logger.error(e.getMessage());
             return null;

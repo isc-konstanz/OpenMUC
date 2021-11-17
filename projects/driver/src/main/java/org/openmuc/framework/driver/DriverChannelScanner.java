@@ -33,7 +33,7 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 
 public abstract class DriverChannelScanner extends Reflectable {
 
-	DriverChannelContext context;
+    DriverChannelContext context;
 
     protected DriverChannelScanner() {
     }
@@ -48,7 +48,7 @@ public abstract class DriverChannelScanner extends Reflectable {
     }
 
     public DriverChannelContext getContext() {
-    	return context;
+        return context;
     }
 
     public List<ChannelScanInfo> scan() 

@@ -147,7 +147,7 @@ public class LogFileWriter {
 
                 if (isError32) {
                     recordBackup = logRecordContainer.get(i).getRecord();
-                    logRecordContainer.set(i, new LoggingRecord(channelId, new Record(Flag.DATA_LOGGING_NOT_ACTIVE)));
+                    logRecordContainer.set(i, new LoggingRecord(logChannel, new Record(Flag.DATA_LOGGING_NOT_ACTIVE)));
                 }
                 record = logRecordContainer.get(i).getRecord();
 
@@ -233,7 +233,7 @@ public class LogFileWriter {
                 }
 
                 if (isError32) {
-                    logRecordContainer.set(i, new LoggingRecord(channelId, recordBackup));
+                    logRecordContainer.set(i, new LoggingRecord(logChannel, recordBackup));
                 }
             }
             else {

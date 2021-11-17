@@ -48,8 +48,8 @@ public abstract class CsvChannel extends DriverChannel {
     public static final String COLUMN = "column";
 
     @Option(id = COLUMN,
-    		type = ADDRESS,
-    		name = "Column header",
+            type = ADDRESS,
+            name = "Column header",
             description = "The title of the header, defining the column."
     )
     private String column;

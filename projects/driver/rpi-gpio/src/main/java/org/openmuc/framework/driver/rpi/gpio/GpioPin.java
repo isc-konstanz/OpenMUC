@@ -49,7 +49,7 @@ public abstract class GpioPin extends GpioConfigs {
     }
 
     public GpioPinDigital getGpioPin() {
-    	return pin;
+        return pin;
     }
 
     @Listen

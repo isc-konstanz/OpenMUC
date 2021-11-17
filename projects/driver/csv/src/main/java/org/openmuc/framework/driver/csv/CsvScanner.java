@@ -46,7 +46,7 @@ public class CsvScanner extends DriverDeviceScanner {
             + SamplingMode.LINE.toString();
 
     @Option(type = SETTING,
-    		name = "CSV files directory path",
+            name = "CSV files directory path",
             description = "The systems path to the folder, containing the CSV files.<br><br>" + 
                           "<b>Example:</b> /home/usr/bin/openmuc/csv/"
     )
@@ -74,7 +74,7 @@ public class CsvScanner extends DriverDeviceScanner {
     }
 
     @Override
-	public void scan(DriverDeviceScanListener listener) 
+    public void scan(DriverDeviceScanListener listener) 
             throws ArgumentSyntaxException, ScanException, ScanInterruptedException {
         logger.info("Scan for CSV files in directory: {}", path);
         
@@ -109,7 +109,7 @@ public class CsvScanner extends DriverDeviceScanner {
     }
 
     @Override
-	public void interrupt() throws UnsupportedOperationException {
+    public void interrupt() throws UnsupportedOperationException {
         interrupt = true;
     }
 
