@@ -28,8 +28,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.ByteArrayValue;
@@ -115,7 +117,9 @@ public class MqttDriverConnection implements Connection {
             throws UnsupportedOperationException, ConnectionException {
         List<String> topics = new ArrayList<>();
         for (ChannelRecordContainer container : containers) {
-            topics.add(container.getChannelAddress());
+            String topic = Stream.of(container.getChannelAddress().split(";"))
+            		.findFirst().orElse(ChannelConfig.ADDRESS_DEFAULT);
+            topics.add(topic);
         }
 
         if (topics.isEmpty()) {
@@ -191,7 +195,9 @@ public class MqttDriverConnection implements Connection {
                     logger.error(e.getMessage());
                     continue;
                 }
-                mqttWriter.write(container.getChannelAddress(), message);
+                String topic = Stream.of(container.getChannelAddress().split(";"))
+                		.findFirst().orElse(ChannelConfig.ADDRESS_DEFAULT);
+                mqttWriter.write(topic, message);
                 container.setFlag(Flag.VALID);
             }
             else {
