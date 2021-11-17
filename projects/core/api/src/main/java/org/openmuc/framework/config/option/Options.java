@@ -96,7 +96,7 @@ public class Options extends ArrayList<OptionValue> {
     }
 
     public OptionSyntax getSyntax() {
-    	return syntax;
+        return syntax;
     }
 
     public String getSynopsis() {
@@ -159,7 +159,7 @@ public class Options extends ArrayList<OptionValue> {
     }
 
     public static Options parse(OptionType type, Class<? extends Configurable> configs) {
-    	return Options.parse(type, new OptionSyntax(type, configs), configs);
+        return Options.parse(type, new OptionSyntax(type, configs), configs);
     }
 
     public static Options parse(OptionType type, OptionSyntax syntax, Class<? extends Configurable> configs) {

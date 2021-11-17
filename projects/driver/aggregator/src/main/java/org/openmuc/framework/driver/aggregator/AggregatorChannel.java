@@ -208,7 +208,7 @@ public abstract class AggregatorChannel {
         String timeNumStr = timeMatcher.group(1);
         Long timeNum;
         try {
-        	timeNum = Long.parseLong(timeNumStr);
+            timeNum = Long.parseLong(timeNumStr);
             
         } catch (NumberFormatException e) {
             throw new AggregationException(e.getMessage());

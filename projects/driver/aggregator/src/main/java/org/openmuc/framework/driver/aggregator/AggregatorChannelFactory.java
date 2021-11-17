@@ -40,7 +40,7 @@ import org.openmuc.framework.driver.spi.ChannelRecordContainer;
  */
 public class AggregatorChannelFactory {
 
-	private static final ChannelRecordDeques channelRecords = new ChannelRecordDeques();
+    private static final ChannelRecordDeques channelRecords = new ChannelRecordDeques();
 
     public static AggregatorChannel createAggregatorChannel(ChannelRecordContainer container,
             DataAccessService dataAccessService) throws AggregationException {

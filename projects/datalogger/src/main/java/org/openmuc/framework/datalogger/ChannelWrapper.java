@@ -39,7 +39,7 @@ public abstract class ChannelWrapper extends Reflectable {
     void invokeConfigure(LoggingChannelContext context, LogChannel channel, Settings settings) 
             throws ArgumentSyntaxException {
         
-    	// TODO: verify equality only for logger specific settings
+        // TODO: verify equality only for logger specific settings
         if (!equals(channel)) {
             configure(settings);
             

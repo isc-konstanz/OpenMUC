@@ -33,7 +33,7 @@ public class OptionSyntax {
     protected boolean keyValue;
 
     public OptionSyntax(OptionType type) {
-    	setSyntaxDefault(type);
+        setSyntaxDefault(type);
     }
 
     public OptionSyntax(OptionType type, Class<? extends Configurable> configs) {
@@ -42,10 +42,10 @@ public class OptionSyntax {
 
     public OptionSyntax(OptionType type, Syntax syntax) {
         if (syntax != null) {
-        	setSyntax(type, syntax);
+            setSyntax(type, syntax);
         }
         else {
-        	setSyntaxDefault(type);
+            setSyntaxDefault(type);
         }
     }
 

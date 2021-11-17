@@ -59,7 +59,7 @@ public class AverageAggregation extends AggregatorChannel {
     protected void checkIntervals() throws AggregationException {
         String[] typeParams = channelAddress.getAggregationType().split(AggregatorConstants.TYPE_PARAM_SEPARATOR);
         if (typeParams.length < 1) {
-        	super.checkIntervals();
+            super.checkIntervals();
         }
         else if (typeParams.length > 2) {
             throw new AggregationException("Wrong parameters for AVG.");

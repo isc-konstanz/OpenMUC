@@ -144,7 +144,7 @@ public class RestRemote extends RestConfigs {
 
     private void readChannel(RestChannel channel,
             List<org.openmuc.framework.lib.rest.objects.RestChannel> records) throws ConnectionException {
-    	
+        
         // TODO: Move helper objects to library project and rename to JsonChannel
         for (org.openmuc.framework.lib.rest.objects.RestChannel record : records) {
             if (channel.equals(record)) {

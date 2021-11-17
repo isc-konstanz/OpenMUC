@@ -146,7 +146,7 @@ public class ModbusChannel {
      * @throws Exception
      */
     @SuppressWarnings("deprecation")
-	private void setFunctionCodeForReading() {
+    private void setFunctionCodeForReading() {
 
         switch (datatype) {
         case BOOLEAN:
@@ -198,7 +198,7 @@ public class ModbusChannel {
         case SHORT:
         case INT16:
         case UINT16:
-        	if (WRITE_SINGLE_REGISTER) {
+            if (WRITE_SINGLE_REGISTER) {
                 if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
                     functionCode = EFunctionCode.FC_06_WRITE_SINGLE_REGISTER;
                 }
@@ -206,7 +206,7 @@ public class ModbusChannel {
                     invalidWriteAddressParameterCombination();
                 }
                 break;
-        	}
+            }
         case INT32:
         case UINT32:
         case FLOAT:

@@ -96,36 +96,36 @@ public class SqlClient extends DriverDevice implements DriverChannelScannerFacto
     private final List<String> tables = new ArrayList<String>();
 
     @Option(type = SETTING,
-    		name = "Table union",
+            name = "Table union",
             description = "Enable the union of all found tables in the database, before queries.",
             valueDefault = "false",
             mandatory = false)
     protected boolean union = false;
 
     @Option(type = SETTING,
-    		name = "Database driver",
+            name = "Database driver",
             mandatory = false)
     protected String driver = SqlDriver.DB_DRIVER;
 
     @Option(type = SETTING,
-    		name = "Database type",
+            name = "Database type",
             mandatory = false)
     protected String type = SqlDriver.DB_TYPE;
 
     @Option(type = SETTING,
-    		name = "Username",
+            name = "Username",
             description = "Username to authorize the connection to the database.",
             mandatory = false)
     protected String user = SqlDriver.DB_USER;
 
     @Option(type = SETTING,
-    		name = "Password",
+            name = "Password",
             description = "Password to authenticate the connection to the database.",
             mandatory = false)
     protected String password = SqlDriver.DB_PWD;
 
     @Option(type = SETTING,
-    		name = "Time resolution",
+            name = "Time resolution",
             description = "The time resolution of stored time series.",
             valueSelection = "1:Milliseconds,1000:Seconds,60000:Minutes,3600000:Hours",
             valueDefault = "1000",
@@ -133,14 +133,14 @@ public class SqlClient extends DriverDevice implements DriverChannelScannerFacto
     protected int timeResolution = 1000;
 
     @Option(type = SETTING,
-    		name = "Time format",
+            name = "Time format",
             description = "The format of the stored time index.",
             valueDefault = "yyyy-MM-dd HH:mm:ss",
             mandatory = false)
     protected String timeFormat = "yyyy-MM-dd HH:mm:ss";
 
     @Option(type = SETTING,
-    		name = "Index type",
+            name = "Index type",
             description = "The type of the index.",
             valueSelection = "TIMESTAMP:Timestamp,TIMESTAMP_UNIX:Unix timestamp,TIMESTAMP_SPLIT:Split timestamp.",
             valueDefault = "TIMESTAMP_UNIX",
@@ -149,7 +149,7 @@ public class SqlClient extends DriverDevice implements DriverChannelScannerFacto
     protected IndexType indexType = IndexType.TIMESTAMP_UNIX;
 
     @Option(type = SETTING,
-    		name = "Index column",
+            name = "Index column",
             description = "The column name of the table primary key.",
             valueDefault = "time",
             mandatory = false)

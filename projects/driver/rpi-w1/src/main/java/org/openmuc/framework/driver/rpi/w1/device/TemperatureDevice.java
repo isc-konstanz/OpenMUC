@@ -92,9 +92,9 @@ public class TemperatureDevice extends W1Device {
         }
     }
 
-	@Write
-	protected void write(List<W1Channel> channels) throws UnsupportedOperationException, ConnectionException {
-		throw new UnsupportedOperationException("Unable to write to 1-Wire temperature sensors");
-	}
+    @Write
+    protected void write(List<W1Channel> channels) throws UnsupportedOperationException, ConnectionException {
+        throw new UnsupportedOperationException("Unable to write to 1-Wire temperature sensors");
+    }
 
 }

@@ -108,21 +108,21 @@ public class RestOptions {
         Boolean keyValue = null;
 
         RestOptionSyntax(OptionSyntax syntax) {
-        	this.separator = syntax.getSeparator();
-        	this.assignment = syntax.getAssignment();
-        	this.keyValue = syntax.hasKeyValuePairs();
+            this.separator = syntax.getSeparator();
+            this.assignment = syntax.getAssignment();
+            this.keyValue = syntax.hasKeyValuePairs();
         }
 
         RestOptionSyntax(String separator, String assignment, boolean keyValue) {
-        	this.separator = separator;
-        	this.assignment = assignment;
-        	this.keyValue = keyValue;
+            this.separator = separator;
+            this.assignment = assignment;
+            this.keyValue = keyValue;
         }
 
         RestOptionSyntax(String separator) {
-        	this.separator = separator;
-        	this.assignment = null;
-        	this.keyValue = false;
+            this.separator = separator;
+            this.assignment = null;
+            this.keyValue = false;
         }
 
         public void setSeparator(String separator) {

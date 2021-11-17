@@ -45,7 +45,7 @@ public class GpioScanner extends DriverDeviceScanner {
 
     @Option(id = GpioConfigs.MODE,
             type = SETTING,
-    		name = "I/O mode",
+            name = "I/O mode",
             valueSelection = "DIGITAL_INPUT:Input,DIGITAL_OUTPUT:Output"
     )
     private PinMode mode;

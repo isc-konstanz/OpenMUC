@@ -45,10 +45,10 @@ public abstract class ChannelContainerWrapper extends Reflectable { //implements
     }
 
     void invokeConfigure(DriverChannelContext context, ChannelTaskContainer container) 
-    		throws ArgumentSyntaxException {
-    	
+            throws ArgumentSyntaxException {
+        
         if (!equals(container)) {
-        	Address address = Configurations.parseAddress(container.getChannelAddress(), getClass());
+            Address address = Configurations.parseAddress(container.getChannelAddress(), getClass());
             configure(address);
             
             Settings settings = Configurations.parseSettings(container.getChannelSettings(), getClass());
@@ -65,7 +65,7 @@ public abstract class ChannelContainerWrapper extends Reflectable { //implements
     }
 
     public final ChannelTaskType getTaskType() {
-    	return containerType;
+        return containerType;
     }
 
     public final ChannelTaskContainer getTaskContainer() {
@@ -85,20 +85,20 @@ public abstract class ChannelContainerWrapper extends Reflectable { //implements
         }
     }
 
-//	@Override
-//	public Channel getChannel() {
-//		return container.getChannel();
-//	}
+//    @Override
+//    public Channel getChannel() {
+//        return container.getChannel();
+//    }
 //
-//	@Override
-//	public Object getChannelHandle() {
-//		return container.getChannelHandle();
-//	}
+//    @Override
+//    public Object getChannelHandle() {
+//        return container.getChannelHandle();
+//    }
 //
-//	@Override
-//	public void setChannelHandle(Object handle) {
-//		container.setChannelHandle(handle);
-//	}
+//    @Override
+//    public void setChannelHandle(Object handle) {
+//        container.setChannelHandle(handle);
+//    }
 
     public final Record getRecord() {
         switch (containerType) {

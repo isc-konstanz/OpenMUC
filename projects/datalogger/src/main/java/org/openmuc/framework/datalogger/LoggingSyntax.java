@@ -25,13 +25,13 @@ import org.openmuc.framework.config.option.annotation.OptionType;
 
 public class LoggingSyntax extends OptionSyntax {
 
-	public static String ASSIGNMENT = "=";
-	public static String SEPARATOR = ",";
+    public static String ASSIGNMENT = "=";
+    public static String SEPARATOR = ",";
 
     public LoggingSyntax() {
-    	super(OptionType.SETTING);
-    	this.assignment = ASSIGNMENT;
-    	this.separator = SEPARATOR;
+        super(OptionType.SETTING);
+        this.assignment = ASSIGNMENT;
+        this.separator = SEPARATOR;
     }
 
 }

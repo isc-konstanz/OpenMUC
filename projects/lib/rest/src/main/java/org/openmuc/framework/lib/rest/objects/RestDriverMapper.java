@@ -97,9 +97,9 @@ public class RestDriverMapper {
         restDriverInfo.setId(driverInfo.getId());
         restDriverInfo.setDescription(driverInfo.getDescription());
         
-    	if (driverInfo instanceof DriverOptions) {
-    		restDriverInfo.setName(((DriverOptions) driverInfo).getName());
-    	}
+        if (driverInfo instanceof DriverOptions) {
+            restDriverInfo.setName(((DriverOptions) driverInfo).getName());
+        }
         restDriverInfo.setDevice(RestDeviceOptions.getRestDeviceInfo(driverInfo));
         restDriverInfo.setChannel(RestChannelOptions.getRestChannelInfo(driverInfo));
         

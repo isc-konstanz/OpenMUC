@@ -26,11 +26,11 @@ import org.openmuc.framework.dataaccess.ChannelContainer;
 public interface ChannelTaskContainer extends ChannelContainer {
 
     default String getChannelAddress() {
-    	return getChannel().getAddress();
+        return getChannel().getAddress();
     }
 
-	default String getChannelSettings() {
-    	return getChannel().getSettings();
+    default String getChannelSettings() {
+        return getChannel().getSettings();
     }
 
     Object getChannelHandle();

@@ -47,15 +47,15 @@ public class CsvFile extends DriverDevice implements DriverChannelFactory {
     public static final String SAMPLING_MODE = "samplingmode";
 
     @Option(type = ADDRESS,
-    		name = "CSV file path",
+            name = "CSV file path",
             description = "The systems path to the CSV file.<br><br>" + 
                           "<b>Example:</b> /home/usr/bin/openmuc/csv/meter.csv"
     )
     private String filePath;
 
     @Option(id = SAMPLING_MODE,
-    		type = SETTING,
-    		name = "Sampling mode",
+            type = SETTING,
+            name = "Sampling mode",
             description = "The sampling mode configures the drivers method to read the CSV file:<br><br>" + 
                           "<b>Modes:</b>" + 
                           "<ol>" + 

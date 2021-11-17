@@ -161,7 +161,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
     }
 
     @SuppressWarnings("unchecked")
-	final <C extends DriverChannel> C newChannel(ChannelTaskContainer container) 
+    final <C extends DriverChannel> C newChannel(ChannelTaskContainer container) 
             throws RuntimeException, ArgumentSyntaxException {
         
         Address address = Configurations.parseAddress(container.getChannelAddress(), channelClass);
@@ -179,7 +179,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
 
     final <C extends DriverChannel> C getChannel(ChannelTaskContainer container) throws ArgumentSyntaxException {
         String id = container.getChannel().getId();
-		C channel = getChannel(id);
+        C channel = getChannel(id);
         try {
             if (channel == null) {
                 channel = newChannel(container);
@@ -196,12 +196,12 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
     }
 
     @SuppressWarnings("unchecked")
-	public final <C extends DriverChannel> C getChannel(String id) {
+    public final <C extends DriverChannel> C getChannel(String id) {
         return (C) channels.get(id);
     }
 
     @SuppressWarnings("unchecked")
-	public final <C extends DriverChannel> List<C> getChannels() {
+    public final <C extends DriverChannel> List<C> getChannels() {
         return new ArrayList<C>((Collection<C>) channels.values());
     }
 
@@ -223,7 +223,7 @@ public class DriverChannelContext extends Reflectable implements ChannelOptions 
     final <C extends DriverChannel> List<C> newChannels(List<? extends ChannelTaskContainer> containers) {
         List<C> channels = new ArrayList<C>();
         for (ChannelTaskContainer container : containers) {
-        	C channel;
+            C channel;
             try {
                 channel = newChannel(container);
                 channel.invokeConfigure(this, container);
