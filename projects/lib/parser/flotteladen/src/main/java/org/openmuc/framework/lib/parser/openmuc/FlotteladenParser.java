@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -72,20 +73,18 @@ public class FlotteladenParser implements ParserService {
 
     @Override
     public synchronized Record deserialize(byte[] byteArray, SerializationContainer container) {
-        
-        //{"source":"mainPowerMeter","register":"power","units":{"P1":-1.336044,"P2":-0.232656,"P3":-1.4713321}}
         JsonObject json = gson.fromJson(new String(byteArray), JsonObject.class);
         JsonObject units = json.getAsJsonObject("units");
         String unit = Stream.of(container.getChannelAddress().split(";")).skip(1).collect(Collectors.joining(";"));
+
+        logger.debug("Received unit \"{}\" from register \"{}\" source \"{}\": {}", unit,
+                json.get("register").getAsString(), json.get("source").getAsString(), units.get(unit).getAsString());
         
-        logger.info("Received {1} units from register \"{2}\" source \"{3}\": {0}", units, units.size(),
-                json.get("register"), json.get("source"));
-        
-        Value value = deserializeValue(json.getAsJsonObject(unit), container.getValueType());
+        Value value = deserializeValue(units.get(unit), container.getValueType());
         return new Record(value, System.currentTimeMillis());
     }
 
-    private Value deserializeValue(JsonObject json, ValueType valueType) {
+    private Value deserializeValue(JsonElement json, ValueType valueType) {
         switch (valueType) {
         case BOOLEAN:
             return new BooleanValue(json.getAsBoolean());

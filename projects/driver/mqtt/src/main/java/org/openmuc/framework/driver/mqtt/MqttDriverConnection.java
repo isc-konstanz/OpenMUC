@@ -126,15 +126,23 @@ public class MqttDriverConnection implements Connection {
             return;
         }
         mqttReader.listen(topics, (topic, message) -> {
-            ChannelRecordContainer container = containers.get(topics.indexOf(topic));
-            Channel channel = container.getChannel();
-            Record record = getRecord(message, container);
-
-            if (recordIsOld(channel.getId(), record)) {
-                return;
-            }
-
-            addMessageToContainerList(record, containers.get(topics.indexOf(topic)));
+        	if (!topics.contains(topic)) {
+        		logger.warn("Unable to find received topic \"{}\" in subscribed list", topic);
+        		return;
+        	}
+        	for (ChannelRecordContainer container : containers) {
+        		if (!Stream.of(container.getChannelAddress().split(";")).findFirst()
+        				.orElse(ChannelConfig.ADDRESS_DEFAULT).equals(topic)) {
+        			continue;
+        		}
+                Channel channel = container.getChannel();
+                Record record = getRecord(message, container);
+                
+                if (recordIsOld(channel.getId(), record)) {
+                	continue;
+                }
+                addMessageToContainerList(record, container);
+        	}
             if (recordContainerList.size() >= Integer.parseInt(settings.getProperty("recordCollectionSize", "1"))) {
                 notifyListenerAndPurgeList(listener);
             }
