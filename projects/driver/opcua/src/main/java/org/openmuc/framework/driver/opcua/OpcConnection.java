@@ -180,10 +180,8 @@ public class OpcConnection extends DriverDevice {
         try {
             for (OpcChannel channel : channels) {
                 DataValue value = channel.encode();
-
                 try {
-                    StatusCode status = client.writeValue(channel.getNodeId(),
-                            new DataValue(value.getValue(), value.getStatusCode(), null)).get();
+                    StatusCode status = client.writeValue(channel.getNodeId(), value).get();
 
                     if (status.isGood()) {
                         channel.setFlag(Flag.VALID);

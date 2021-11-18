@@ -1,5 +1,13 @@
 <package> (<version>) stable; urgency=medium
 
-  * Initial release
+  * Add SerializationContainer and generalize ParserService structure
+  * Add Flotteladen ParserService for MQTT
+  * Fix MQTT driver to read several channels with identical topic
 
  -- <maintainer>  <date>
+
+<package> (0.20.0) stable; urgency=medium
+
+  * Initial release
+
+ -- Adrian Minde <adrian.minde@isc-konstanz.de>  Wed, 30 Sep 2021 14:24:54 +0200
