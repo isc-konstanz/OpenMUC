@@ -52,7 +52,7 @@ project.ext {
                 it.getPath() == ":openmuc-driver-sql" ||
                 it.getPath() == ":openmuc-driver-wmbus" ||
                 it.getPath() == ":openmuc-lib-amqp" ||
-                it.getPath() == ":openmuc-lib-filePersistence" ||
+                it.getPath() == ":openmuc-lib-persistence" ||
                 it.getPath() == ":openmuc-lib-mqtt" ||
                 it.getPath() == ":openmuc-lib-osgi" ||
                 it.getPath() == ":openmuc-lib-parser-openmuc" ||
