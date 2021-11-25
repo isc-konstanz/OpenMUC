@@ -19,11 +19,12 @@
  *
  */
 
-package org.openmuc.framework.lib.filePersistence;
+package org.openmuc.framework.lib.persistence;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openmuc.framework.lib.persistence.FilePersistence;
 
 import java.io.File;
 import java.io.IOException;

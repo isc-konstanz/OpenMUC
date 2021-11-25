@@ -19,7 +19,7 @@
  *
  */
 
-package org.openmuc.framework.lib.filePersistence;
+package org.openmuc.framework.lib.persistence;
 
 import java.io.File;
 import java.io.FileInputStream;

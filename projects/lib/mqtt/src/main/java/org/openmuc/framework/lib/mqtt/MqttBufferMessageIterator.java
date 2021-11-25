@@ -23,7 +23,7 @@ package org.openmuc.framework.lib.mqtt;
 
 import java.util.Iterator;
 
-import org.openmuc.framework.lib.filePersistence.FilePersistence;
+import org.openmuc.framework.lib.persistence.FilePersistence;
 
 public class MqttBufferMessageIterator implements Iterator<MessageTuple> {
 

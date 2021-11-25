@@ -10,7 +10,7 @@ configurations.create('embed')
 dependencies {
     implementation project(':openmuc-core-spi')
     implementation project(':openmuc-lib-ssl')
-    implementation project(':openmuc-lib-filePersistence')
+    implementation project(':openmuc-lib-persistence')
     implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: hivemqVersion
     embed group: 'com.hivemq', name: 'hivemq-mqtt-client', version: hivemqVersion
 
