@@ -84,10 +84,8 @@ public class LoggingController {
 
     public void deliverLogsToEventBasedLogServices(List<ChannelRecordContainerImpl> channelRecordContainerList) {
         initLoggingRecordMap();
-        channelRecordContainerList.stream().forEach(channelRecord -> {
-            channelRecord.getChannel().setNewRecord(channelRecord.getRecord());
-            fillLoggingRecordMapWithChannel(channelRecord.getChannel());
-        });
+        channelRecordContainerList.stream()
+                .forEach(channelRecord -> fillLoggingRecordMapWithChannel(channelRecord.getChannel()));
 
         for (DataLoggerService dataLogger : activeDataLoggers) {
             List<LoggingRecord> logContainers = logContainerMap.get(dataLogger.getId());

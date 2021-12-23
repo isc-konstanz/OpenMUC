@@ -27,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.lib.osgi.deployment.RegistrationHandler;
 import org.openmuc.framework.parser.spi.ParserService;
+import org.openmuc.framework.security.SslManagerInterface;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
@@ -53,6 +54,14 @@ public class AmqpComponent {
         String serviceName = ParserService.class.getName();
         registrationHandler.subscribeForServiceServiceEvent(serviceName, (event) -> {
             handleServiceRegistrationEvent(event, context);
+        });
+
+        // subscribe for SSLManager
+        serviceName = SslManagerInterface.class.getName();
+        registrationHandler.subscribeForService(serviceName, instance -> {
+            if (instance != null) {
+                amqpLogger.setSslManager((SslManagerInterface) instance);
+            }
         });
 
         String pid = AmqpLogger.class.getName();

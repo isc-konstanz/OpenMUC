@@ -25,8 +25,6 @@ import org.openmuc.framework.dataaccess.Channel;
 
 /**
  * Class that contains the mapping between a server-address/configuration and channel.
- * 
- * @author sfey
  *
  */
 public class ServerMappingContainer {

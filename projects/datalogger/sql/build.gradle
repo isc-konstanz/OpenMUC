@@ -1,4 +1,5 @@
 def projectName = "OpenMUC Data Logger - SQL"
+def projectDescription = "SQL data logger for the OpenMUC framework."
 
 configurations.create('embed')
 
@@ -30,7 +31,7 @@ publishing {
         mavenJava(MavenPublication) {
             pom {
                 name = projectName
-                description "SQL data logger for the OpenMUC framework."
+                description = projectDescription
             }
         }
     }

@@ -103,7 +103,7 @@ public abstract class GenericSetting {
      * Example Option Enum
      */
     @SuppressWarnings("unused")
-    private static enum Option implements OptionI {
+    private enum Option implements OptionI {
         EXAMPLE0("ex0", Integer.class, false),
         EXAMPLE1("ex1", String.class, true);
 

@@ -106,12 +106,9 @@ public class PropertyFileValidator {
     }
 
     private void checkForDeprecatedProperties() {
-
         for (String existingProp : existingProperties) {
-            if (!existingProp.contains("#") && serviceProperties.keySet()
-                    .stream()
-                    .map(prop -> prop.toString())
-                    .noneMatch(key -> key.contains(existingProp.split("=")[0]))) {
+            if (!existingProp.contains("#") && !existingProp.isEmpty()
+                    && serviceProperties.keySet().stream().noneMatch(key -> existingProp.contains(key))) {
                 logger.warn("{} in {} is deprecated", existingProp, filename);
             }
         }

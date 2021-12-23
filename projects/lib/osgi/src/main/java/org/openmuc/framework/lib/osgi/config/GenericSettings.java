@@ -21,13 +21,13 @@
 
 package org.openmuc.framework.lib.osgi.config;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Should be inherited by your own settings class.<br>
  * <b>Example:</b>
- * 
+ *
  * <pre>
  * public class Settings extends GenericSettings {
  *
@@ -48,7 +48,7 @@ public class GenericSettings {
     protected Map<String, ServiceProperty> properties;
 
     protected GenericSettings() {
-        properties = new HashMap<>();
+        properties = new LinkedHashMap<>();
     }
 
     public Map<String, ServiceProperty> getProperties() {

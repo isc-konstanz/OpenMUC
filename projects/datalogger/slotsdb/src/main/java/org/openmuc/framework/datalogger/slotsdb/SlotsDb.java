@@ -125,6 +125,11 @@ public final class SlotsDb implements DataLoggerService {
     }
 
     @Override
+    public Record getLatestLogRecord(String channelId) throws IOException {
+        return fileObjectProxy.readLatest(channelId);
+    }
+
+    @Override
     public void setChannelsToLog(List<LogChannel> channels) {
         loggingIntervalsById.clear();
         for (LogChannel channel : channels) {

@@ -105,7 +105,10 @@ public class UserServlet extends GenericServlet {
 
         setServices();
         String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
-        FromJson json = new FromJson(ServletLib.getJsonText(request));
+        FromJson json = ServletLib.getFromJson(request, logger, response);
+        if (json == null) {
+            return;
+        }
 
         if (pathInfo.equals("/")) {
             RestUserConfig userConfig = json.getRestUserConfig();
@@ -138,7 +141,10 @@ public class UserServlet extends GenericServlet {
 
             setServices();
             String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
-            FromJson json = new FromJson(ServletLib.getJsonText(request));
+            FromJson json = ServletLib.getFromJson(request, logger, response);
+            if (json == null) {
+                return;
+            }
 
             if (pathInfo.equals("/")) {
                 RestUserConfig userConfig = json.getRestUserConfig();
@@ -184,7 +190,10 @@ public class UserServlet extends GenericServlet {
             setServices();
             String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
 
-            FromJson json = new FromJson(ServletLib.getJsonText(request));
+            FromJson json = ServletLib.getFromJson(request, logger, response);
+            if (json == null) {
+                return;
+            }
 
             if (pathInfo.equals("/")) {
 

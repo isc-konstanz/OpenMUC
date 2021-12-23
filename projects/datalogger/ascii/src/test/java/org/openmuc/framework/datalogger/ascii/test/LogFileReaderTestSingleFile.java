@@ -200,8 +200,8 @@ public class LogFileReaderTestSingleFile {
         int wrong = 0;
         int ok = 0;
 
-        for (int i = 0; records.size() > i; i++) {
-            if (records.get(i).getFlag().equals(Flag.NO_VALUE_RECEIVED_YET)) {
+        for (Record record : records) {
+            if (record.getFlag().equals(Flag.NO_VALUE_RECEIVED_YET)) {
                 ++ok;
             }
             else {

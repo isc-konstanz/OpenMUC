@@ -214,8 +214,7 @@ public class ModbusChannelGroup {
     }
 
     private ChannelRecordContainer searchContainer(String channelAddress, List<ChannelRecordContainer> containers) {
-        for (int i = 0, n = containers.size(); i < n; i++) {
-            ChannelRecordContainer container = containers.get(i);
+        for (ChannelRecordContainer container : containers) {
             if (container.getChannelAddress().equalsIgnoreCase(channelAddress)) {
                 return container;
             }

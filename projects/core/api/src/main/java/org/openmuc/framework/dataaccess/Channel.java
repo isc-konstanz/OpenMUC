@@ -137,7 +137,7 @@ public interface Channel {
      * @return the parent's device's configured sampling timeout in milliseconds.
      */
     int getSamplingTimeout();
-    
+
     /**
      * Returns the channel's configured logging interval in milliseconds. Returns -1 if not configured.
      *

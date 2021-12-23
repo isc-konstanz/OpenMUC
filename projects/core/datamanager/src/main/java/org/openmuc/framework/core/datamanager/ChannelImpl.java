@@ -59,6 +59,7 @@ import org.openmuc.framework.dataaccess.ReadRecordContainer;
 import org.openmuc.framework.dataaccess.RecordListener;
 import org.openmuc.framework.dataaccess.WriteValueContainer;
 import org.openmuc.framework.datalogger.spi.LogChannel;
+import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,7 +157,7 @@ public final class ChannelImpl implements Channel {
     public int getSamplingTimeOffset() {
         return config.getSamplingTimeOffset();
     }
-    
+
     @Override
     public int getSamplingTimeout() {
         return config.deviceParent.getSamplingTimeout();
@@ -401,8 +402,15 @@ public final class ChannelImpl implements Channel {
     public Flag write(Value value) {
 
         if (config.deviceParent.driverParent.getId().equals("virtual")) {
-            setLatestRecord(new Record(value, System.currentTimeMillis()));
-            return Flag.VALID;
+            Record record = new Record(value, System.currentTimeMillis());
+            setLatestRecord(record);
+            List<ChannelRecordContainer> recordContainers = new ArrayList<>();
+            ChannelRecordContainer recordContainer = new ChannelRecordContainerImpl(this);
+            recordContainer.setRecord(record);
+            recordContainers.add(recordContainer);
+            dataManager.newRecords(recordContainers);
+            dataManager.interrupt();
+            return record.getFlag();
         }
 
         CountDownLatch writeTaskFinishedSignal = new CountDownLatch(1);

@@ -73,7 +73,7 @@ public class DeviceScanSettings extends GenericSetting {
 
         if (addressLength == 0) {
             logger.info(MessageFormat.format(
-                    "No device address setted in configuration, default values will be used: host address = localhost; port = {0}",
+                    "No device address set in configuration, default values will be used: host address = localhost; port = {0}",
                     port));
         }
         if (host_address == null) {

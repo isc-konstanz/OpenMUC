@@ -19,7 +19,7 @@
  *
  */
 
-package org.openmuc.framework.lib.ssl;
+package org.openmuc.framework.security;
 
 public interface SslConfigChangeListener {
     void configChanged();
