@@ -140,6 +140,25 @@ public final class ChannelImpl implements Channel {
 
     @Override
     public int getValueTypeLength() {
+        if (config.getValueTypeLength() == null) {
+        	switch (getValueType()) {
+			case BYTE_ARRAY:
+				return ChannelConfig.BYTE_ARRAY_SIZE_DEFAULT;
+			case STRING:
+				return ChannelConfig.STRING_SIZE_DEFAULT;
+			case DOUBLE:
+			case LONG:
+				return 8;
+			case FLOAT:
+			case INTEGER:
+				return 4;
+			case SHORT:
+				return 2;
+			case BYTE:
+			case BOOLEAN:
+				return 1;
+        	}
+        }
         return config.getValueTypeLength();
     }
 
