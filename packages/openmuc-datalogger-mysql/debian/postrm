@@ -1,0 +1,39 @@
+#!/bin/sh
+set -e
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+PASSWD_FILE=/home/pi/.setup/passwd.conf
+INSTALL_FILE=/var/opt/openmuc/install/org.openmuc.framework.datalogger.sql.SqlLogger.cfg
+
+# Fetching configuration from debconf
+db_get openmuc/mysql_database
+mysql_database_value=$RET
+
+db_get openmuc/mysql_user
+mysql_user_value=$RET
+
+db_get openmuc/mysql_password
+mysql_password_value=$RET
+
+case "$1" in
+    purge)
+        if test -f $PASSWD_FILE && grep -Fxq "[MySQL]" $PASSWD_FILE; then
+            mysql_root_password=`grep -A3 -P "^\[MySQL\]$" $PASSWD_FILE | grep -m1 "root" | sed "s/root://g" | sed -r "s/\s+//g"`
+        fi
+
+        mysql="mysql -uroot"
+        if [ ! -z $mysql_root_password ]; then
+            mysql="$mysql -p$mysql_root_password"
+        fi
+        $mysql -e "DROP DATABASE IF EXISTS $mysql_database_value;"
+        $mysql -e "DROP USER IF EXISTS '$mysql_user_value'@'localhost';"
+        ;;
+    *)
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0
