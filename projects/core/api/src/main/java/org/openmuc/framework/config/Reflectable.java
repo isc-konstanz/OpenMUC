@@ -103,21 +103,23 @@ public abstract class Reflectable extends Configurable {
     }
 
     protected <A extends Annotation> Object invokeReturn(Class<A> annot, Object obj, Object... args) {
+        Class<?>[] argTypes = List.of(args).stream().map(a -> a.getClass()).toArray(Class<?>[]::new);
         List<Method> methods = getMethods(annot, obj.getClass());
-        if (methods.size() > 1) {
-            throw new RuntimeException(MessageFormat.format("More than one method present in {0} with annotation: {1}", 
-                    obj.getClass().getSimpleName(), annot.getSimpleName()));
+        for (Method method : methods) {
+        	if (Arrays.equals(method.getParameterTypes(), argTypes)) {
+                try {
+                    return method.invoke(obj, args);
+                    
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                    
+                } catch (InvocationTargetException e) {
+                    throwException(e.getCause());
+                }
+        	}
         }
-        try {
-            return methods.get(0).invoke(obj, args);
-            
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-            
-        } catch (InvocationTargetException e) {
-            throwException(e.getCause());
-        }
-        return null;
+        throw new UnsupportedOperationException(MessageFormat.format("Unable to find {0} method \"{1}\" for arguments: {2}", 
+        		annot.getSimpleName(), obj.getClass().getSimpleName(), argTypes));
     }
 
     public static <C extends Configurable> C newInstance(Class<C> configurable) throws RuntimeException {

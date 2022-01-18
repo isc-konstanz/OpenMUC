@@ -137,4 +137,22 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
         throw new UnsupportedOperationException("Reading values unsupported for " + getClass().getSimpleName());
     }
 
+	@Override
+	public Record getLatestLogRecord(String id) throws IOException {
+        synchronized(channels) {
+            LoggingChannel logChannel = getChannel(id);
+            if (logChannel == null) {
+                logger.warn("Failed to retrieve latest record for unconfigured channel \"{}\"", id);
+                return null;
+            }
+            if (hasMethod(Read.class, this)) {
+                return (Record) invokeReturn(Read.class, this, logChannel);
+            }
+            else if (hasMethod(Read.class, channelClass)) {
+                return logChannel.invokeRead();
+            }
+        }
+        throw new UnsupportedOperationException("Reading values unsupported for " + getClass().getSimpleName());
+	}
+
 }
