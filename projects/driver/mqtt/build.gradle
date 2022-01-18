@@ -6,6 +6,7 @@ project.ext {
 dependencies {
     implementation project(':openmuc-core-spi')
     implementation project(':openmuc-lib-mqtt')
+    implementation project(':openmuc-lib-osgi')
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
 }

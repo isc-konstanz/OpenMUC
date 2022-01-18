@@ -21,7 +21,6 @@
 
 package org.openmuc.framework.datalogger.sql.init;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -56,11 +55,12 @@ class TableSetupTest {
     private TableSetup tableSetup;
     private MetaBuilder metaBuilder;
     private DbAccess accessMock;
+    private List<LogChannel> channelList;
 
     @BeforeEach
     void setupInitializer() throws SQLException {
         accessMock = mock(DbAccess.class);
-        List<LogChannel> channelList = new ArrayList<>();
+        channelList = new ArrayList<>();
         channelList.add(getMockedChannel("gridPower"));
         channelList.add(getMockedChannel("pvPower"));
         ResultSet resultMocked = mock(ResultSet.class);
@@ -111,8 +111,9 @@ class TableSetupTest {
         List<StringBuilder> returnedBuilder = sqlCaptor.getAllValues();
         List<String> expectedConstrains = AssertData.getOpenmucTableConstraints();
 
-        for (int i = 0; i < expectedConstrains.size(); i++) {
-            assertEquals(expectedConstrains.get(i), returnedBuilder.get(i).toString());
+        for (int i = 0; i < channelList.size(); i++) {
+            String channelId = channelList.get(i).getId();
+            assertTrue(returnedBuilder.get(i).toString().contains(channelId));
         }
 
     }

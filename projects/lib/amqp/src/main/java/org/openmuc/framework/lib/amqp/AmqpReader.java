@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,20 +102,20 @@ public class AmqpReader {
                 }
             };
 
-            try {
-                connection.declareQueue(queue);
-            } catch (IOException e) {
-                e.printStackTrace();
-                logger.error("Declaring queue failed: {}", e.getMessage());
-                e.printStackTrace();
-                continue;
-            }
+            if (connection.isConnected()) {
+                try {
+                    connection.declareQueue(queue);
+                } catch (IOException e) {
+                    logger.error("Declaring queue failed: {}", e.getMessage());
+                    continue;
+                }
 
-            try {
-                connection.getRabbitMqChannel().basicConsume(queue, true, deliverCallback, consumerTag -> {
-                });
-            } catch (IOException e) {
-                logger.error("Could not subscribe for messages: {}", e.getMessage());
+                try {
+                    connection.getRabbitMqChannel().basicConsume(queue, true, deliverCallback, consumerTag -> {
+                    });
+                } catch (IOException e) {
+                    logger.error("Could not subscribe for messages: {}", e.getMessage());
+                }
             }
         }
     }

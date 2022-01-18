@@ -27,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 import org.openmuc.framework.datalogger.spi.DataLoggerService;
 import org.openmuc.framework.lib.osgi.deployment.RegistrationHandler;
 import org.openmuc.framework.parser.spi.ParserService;
+import org.openmuc.framework.security.SslManagerInterface;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
@@ -56,9 +57,23 @@ public class MqttLoggerComponent {
             handleServiceRegistrationEvent(event, context);
         });
 
-        // provide DataLoggerService and MangedService
+        // subscribe for SSLManager
+        serviceName = SslManagerInterface.class.getName();
+        registrationHandler.subscribeForService(serviceName, instance -> {
+            if (instance != null) {
+                mqttLogger.setSslManager((SslManagerInterface) instance);
+            }
+        });
+
+        // provide ManagedService
         String pid = MqttLogger.class.getName();
-        registrationHandler.provideInFramework(DataLoggerService.class.getName(), mqttLogger, pid);
+        registrationHandler.provideInFrameworkAsManagedService(mqttLogger, pid);
+
+        registerDataLoggerService();
+    }
+
+    private void registerDataLoggerService() {
+        registrationHandler.provideInFrameworkWithoutConfiguration(DataLoggerService.class.getName(), mqttLogger);
     }
 
     private void handleServiceRegistrationEvent(Object event, BundleContext context) {

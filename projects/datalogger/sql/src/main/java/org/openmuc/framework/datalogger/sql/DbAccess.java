@@ -37,6 +37,7 @@ import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.StringValue;
+import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.sql.utils.PropertyHandlerProvider;
 import org.openmuc.framework.datalogger.sql.utils.Settings;
 import org.openmuc.framework.lib.osgi.config.PropertyHandler;
@@ -139,59 +140,40 @@ public class DbAccess {
     /**
      * Retrieves data from database and adds it to records
      *
-     * @param sb
-     *            StringBuilder for all numeric data types
-     * @param sbString
-     *            StringBuilder for string data type
-     * @param sbByteArray
-     *            StringBuilder for byte array data type
-     * @param sbBoolean
-     *            StringBuilder for boolean data type
-     * @return List of Record objects containing the data retrieved from the data base
      */
-    public List<Record> queryRecords(StringBuilder sb, StringBuilder sbString, StringBuilder sbByteArray,
-            StringBuilder sbBoolean) {
+
+    public List<Record> queryRecords(StringBuilder sb, ValueType valuetype) {
         // retrieve numeric values from database and add them to the records list
         List<Record> records = new ArrayList<>();
         String sql = sb.toString();
         try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sql);) {
             while (resultSet.next()) {
-                records.add(new Record(new DoubleValue(resultSet.getDouble(VALUE)),
-                        resultSet.getTimestamp("time").getTime(), Flag.VALID));
+
+                if (valuetype == ValueType.STRING) {
+                    Record rc = new Record(new StringValue(resultSet.getString(VALUE)),
+                            resultSet.getTimestamp("time").getTime(), Flag.VALID);
+                    records.add(rc);
+                }
+                else if (valuetype == ValueType.BYTE_ARRAY) {
+                    Record rc = new Record(new ByteArrayValue(resultSet.getBytes(VALUE)),
+                            resultSet.getTimestamp("time").getTime(), Flag.VALID);
+                    records.add(rc);
+                }
+                else if (valuetype == ValueType.BOOLEAN) {
+                    Record rc = new Record(new BooleanValue(resultSet.getBoolean(VALUE)),
+                            resultSet.getTimestamp("time").getTime(), Flag.VALID);
+                    records.add(rc);
+                }
+                else {
+                    Record rc = new Record(new DoubleValue(resultSet.getDouble(VALUE)),
+                            resultSet.getTimestamp("time").getTime(), Flag.VALID);
+                    records.add(rc);
+                }
             }
         } catch (SQLException e) {
             logger.error(MessageFormat.format("Error executing SQL: \n{0}", sql), e.getMessage());
         }
-        // retrieve string values from database and add them to the records list
-        String sqlString = sbString.toString();
-        try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sqlString);) {
-            while (resultSet.next()) {
-                records.add(new Record(new StringValue(resultSet.getString(VALUE)),
-                        resultSet.getTimestamp("time").getTime(), Flag.VALID));
-            }
-        } catch (SQLException e) {
-            logger.error(MessageFormat.format("Error executing SQL: \n{0}", sqlString), e.getMessage());
-        }
-        // retrieve byte array values from database and add them to the records list
-        String sqlByteArray = sbByteArray.toString();
-        try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sqlByteArray);) {
-            while (resultSet.next()) {
-                records.add(new Record(new ByteArrayValue(resultSet.getBytes(VALUE)),
-                        resultSet.getTimestamp("time").getTime(), Flag.VALID));
-            }
-        } catch (SQLException e) {
-            logger.error(MessageFormat.format("Error executing SQL: \n{0}", sqlByteArray), e.getMessage());
-        }
-        // retrieve boolean values from database and add them to the records list
-        String sqlBoolean = sbBoolean.toString();
-        try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sqlBoolean);) {
-            while (resultSet.next()) {
-                records.add(new Record(new BooleanValue(resultSet.getBoolean(VALUE)),
-                        resultSet.getTimestamp("time").getTime(), Flag.VALID));
-            }
-        } catch (SQLException e) {
-            logger.error(MessageFormat.format("Error executing SQL: \n{0}", sqlBoolean), e.getMessage());
-        }
+
         return records;
     }
 }
