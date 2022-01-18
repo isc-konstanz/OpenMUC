@@ -26,7 +26,7 @@ package org.openmuc.framework.driver.modbus.util;
  * receiving messages from a hardware or sending messages to a hardware respectively.
  * 
  */
-public class DatatypeConversion {
+public class DataTypeConverter {
 
     private static final int INT64_BYTE_LENGTH = 8;
     private static final int INT32_BYTE_LENGTH = 4;
@@ -94,7 +94,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return bytes as singed int 64
      */
-    public static long bytes_To_SignedInt64(byte[] bytes, EndianInput endian) {
+    public static long bytesToSignedInt64(byte[] bytes, EndianInput endian) {
         if (bytes.length > 0 && bytes.length <= INT64_BYTE_LENGTH) {
             long returnValue = 0;
             int length = bytes.length - 1;
@@ -125,7 +125,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return 8 bytes where the most significant byte is byte[0] and the least significant byte is byte[7]
      */
-    public static byte[] singedInt64_To_Bytes(long value, EndianOutput endian) {
+    public static byte[] singedInt64ToBytes(long value, EndianOutput endian) {
         byte[] bytes = new byte[INT64_BYTE_LENGTH];
         bytes[0] = (byte) ((value & 0xFF00000000000000L) >> 56);
         bytes[1] = (byte) ((value & 0x00FF000000000000L) >> 48);
@@ -152,7 +152,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return bytes as signed int 32
      */
-    public static int bytes_To_SignedInt32(byte[] bytes, EndianInput endian) {
+    public static int bytesToSignedInt32(byte[] bytes, EndianInput endian) {
         if (bytes.length == INT32_BYTE_LENGTH) {
             int returnValue = 0;
             int length = bytes.length - 1;
@@ -183,7 +183,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return unsigned Int32 as long
      */
-    public static long bytes_To_UnsignedInt32(byte[] bytes, EndianInput endian) {
+    public static long bytesToUnsignedInt32(byte[] bytes, EndianInput endian) {
         if (bytes.length == INT32_BYTE_LENGTH) {
             if (endian.equals(EndianInput.BYTES_ARE_LITTLE_ENDIAN)) {
                 reverseByteOrder(bytes);
@@ -210,7 +210,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return 4 bytes where the most significant byte is byte[0] and the least significant byte is byte[3]
      */
-    public static byte[] unsingedInt32_To_Bytes(long value, EndianOutput endian) {
+    public static byte[] unsingedInt32ToBytes(long value, EndianOutput endian) {
 
         if (value < 0) {
             throw new IllegalArgumentException("Invalid value: " + value + " Only positive values are allowed!");
@@ -238,7 +238,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return 4 bytes where the most significant byte is byte[0] and the least significant byte is byte[3]
      */
-    public static byte[] singedInt32_To_Bytes(int value, EndianOutput endian) {
+    public static byte[] singedInt32ToBytes(int value, EndianOutput endian) {
 
         byte[] bytes = new byte[INT32_BYTE_LENGTH];
         bytes[0] = (byte) ((value & 0xFF000000L) >> 24);
@@ -262,7 +262,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return signed Int16
      */
-    public static int bytes_To_SignedInt16(byte[] bytes, EndianInput endian) {
+    public static int bytesToSignedInt16(byte[] bytes, EndianInput endian) {
         if (bytes.length == INT16_BYTE_LENGTH) {
             short returnValue = 0;
             int length = bytes.length - 1;
@@ -292,7 +292,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return unsigned Int16
      */
-    public static int bytes_To_UnsignedInt16(byte[] bytes, EndianInput endian) {
+    public static int bytesToUnsignedInt16(byte[] bytes, EndianInput endian) {
         if (bytes.length == INT16_BYTE_LENGTH) {
             if (endian.equals(EndianInput.BYTES_ARE_LITTLE_ENDIAN)) {
                 reverseByteOrder(bytes);
@@ -320,7 +320,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return 2 bytes where the most significant byte is byte[0] and the least significant byte is byte[1]
      */
-    public static byte[] unsingedInt16_To_Bytes(int value, EndianOutput endian) {
+    public static byte[] unsingedInt16ToBytes(int value, EndianOutput endian) {
 
         if (value < 0) {
             throw new IllegalArgumentException("Invalid value: " + value + " Only positive values are allowed!");
@@ -346,7 +346,7 @@ public class DatatypeConversion {
      *            endian byte order
      * @return 2 bytes where the most significant byte is byte[0] and the least significant byte is byte[1]
      */
-    public static byte[] singedInt16_To_Bytes(int value, EndianOutput endian) {
+    public static byte[] singedInt16ToBytes(int value, EndianOutput endian) {
 
         byte[] bytes = new byte[INT16_BYTE_LENGTH];
         bytes[0] = (byte) ((value & 0x0000FF00) >> 8);
@@ -366,7 +366,7 @@ public class DatatypeConversion {
      *            1 byte
      * @return signed Int8
      */
-    public static int bytes_To_SignedInt8(byte[] bytes) {
+    public static int bytesToSignedInt8(byte[] bytes) {
         if (bytes.length == INT8_BYTE_LENGTH) {
             byte returnValue = 0;
             int length = bytes.length - 1;
@@ -393,7 +393,7 @@ public class DatatypeConversion {
      *            endian support.
      * @return bytes as unsigned int 8
      */
-    public static int bytes_To_UnsignedInt8(byte[] data, int index) {
+    public static int bytesToUnsignedInt8(byte[] data, int index) {
 
         if (index < 0) {
             throw new IndexOutOfBoundsException("Negative index. Index must be >= 0");
@@ -403,7 +403,7 @@ public class DatatypeConversion {
             throw new IndexOutOfBoundsException("Negative index. Index must be >= 0");
         }
 
-        return bytes_To_UnsignedInt8(data[index]);
+        return bytesToUnsignedInt8(data[index]);
 
     }
 
@@ -415,7 +415,7 @@ public class DatatypeConversion {
      * 
      * @return unsigned Int8
      */
-    public static int bytes_To_UnsignedInt8(byte singleByte) {
+    public static int bytesToUnsignedInt8(byte singleByte) {
         int value = 0x000000FF & (singleByte);
         return value;
     }
@@ -427,7 +427,7 @@ public class DatatypeConversion {
      *            unsigned Int8
      * @return 1 byte
      */
-    public static byte[] unsingedInt8_To_Bytes(int value) {
+    public static byte[] unsingedInt8ToBytes(int value) {
 
         if (value < 0) {
             throw new IllegalArgumentException("Invalid value: " + value + " Only positive values are allowed!");
@@ -445,7 +445,7 @@ public class DatatypeConversion {
      *            signed Int8
      * @return 1 byte
      */
-    public static byte[] singedInt8_To_Bytes(int value) {
+    public static byte[] singedInt8ToBytes(int value) {
 
         byte[] bytes = new byte[INT8_BYTE_LENGTH];
         bytes[0] = (byte) ((value & 0x000000FF));

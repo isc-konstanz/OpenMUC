@@ -22,12 +22,11 @@
 package org.openmuc.framework.driver.modbus;
 
 /**
- * Matching from Java Datatyp to Modbus Register
+ * Matching from Java Datatype to Modbus Register
  * 
  * One modbus register has the size of two Bytes
  */
-
-public enum EDatatype {
+public enum DataType {
 
     /** 1 Bit */
     BOOLEAN(1),
@@ -95,7 +94,7 @@ public enum EDatatype {
 
     private final int registerSize;
 
-    private EDatatype(int registerSize) {
+    private DataType(int registerSize) {
         this.registerSize = registerSize;
     }
 
@@ -103,25 +102,25 @@ public enum EDatatype {
         return registerSize;
     }
 
-    public static EDatatype getEnum(String string) {
-        EDatatype returnValue = null;
+    public static DataType getEnum(String string) {
+        DataType returnValue = null;
 
         if (string != null) {
             string = string.toUpperCase();
 
-            for (EDatatype type : EDatatype.values()) {
+            for (DataType type : DataType.values()) {
                 if (string.equals(type.toString())) {
                     returnValue = type;
                     break;
                 }
-                else if (string.toUpperCase().matches(EDatatype.BYTEARRAY + "\\[\\d+\\]")) {
+                else if (string.toUpperCase().matches(DataType.BYTEARRAY + "\\[\\d+\\]")) {
                     // Special check for BYTEARRAY[n] datatyp
-                    returnValue = EDatatype.BYTEARRAY;
+                    returnValue = DataType.BYTEARRAY;
                     break;
                 }
-                else if (string.toUpperCase().matches(EDatatype.BYTEARRAYLONG + "\\[\\d+\\]")) {
+                else if (string.toUpperCase().matches(DataType.BYTEARRAYLONG + "\\[\\d+\\]")) {
                     // Special check for BYTEARRAYLONG[n] datatyp
-                    returnValue = EDatatype.BYTEARRAYLONG;
+                    returnValue = DataType.BYTEARRAYLONG;
                     break;
                 }
             }
@@ -143,7 +142,7 @@ public enum EDatatype {
 
         String supported = "";
 
-        for (EDatatype type : EDatatype.values()) {
+        for (DataType type : DataType.values()) {
             supported += type.toString() + ", ";
         }
 

@@ -57,7 +57,6 @@ import com.ghgande.j2mod.modbus.msg.WriteSingleRegisterRequest;
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.procimg.Register;
 import com.ghgande.j2mod.modbus.procimg.SimpleInputRegister;
-import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 import com.ghgande.j2mod.modbus.util.BitVector;
 
 public abstract class ModbusConnection implements Connection {
@@ -275,7 +274,8 @@ public abstract class ModbusConnection implements Connection {
     // request. the jamod increases the transaction id again to 31 but then it receives the response for id 30. From the
     // time a timeout happened the response id will be always smaller than the request id, since the jamod doesn't
     // provide a method to read a response without sending a request.
-    private ModbusResponse performModbusTCPReadTransactionWithRetry() throws ModbusException {
+    @SuppressWarnings("unused")
+	private ModbusResponse performModbusTCPReadTransactionWithRetry() throws ModbusException {
 
         ModbusResponse response = null;
 

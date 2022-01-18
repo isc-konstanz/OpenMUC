@@ -18,24 +18,46 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openmuc.framework.server.modbus.register;
 
-import org.openmuc.framework.dataaccess.Channel;
+package org.openmuc.framework.server.modbus;
 
-public class BooleanMappingInputRegister extends MappingInputRegister {
+/**
+ * Matching from Java Datatype to Modbus Register
+ * 
+ * One modbus register has the size of two Bytes
+ */
+public enum DataType {
 
-    public BooleanMappingInputRegister(Channel channel, int byteHigh, int byteLow) {
-        super(channel, byteHigh, byteLow);
+    /** 1 Bit */
+    BOOLEAN(1),
+
+    /** 1 Register, 2 bytes */
+    SHORT(1),
+    INT16(1),
+    UINT16(1),
+
+    /** 2 Register, 4 bytes */
+    INT32(2),
+    UINT32(2),
+    INTEGER(2),
+    FLOAT(2),
+
+    /** 4 Register, 8 bytes */
+    LONG(4),
+    DOUBLE(4),
+
+    /** n Registers, n*2 bytes. */
+    BYTE_ARRAY(0),
+	STRING(0);
+
+    private final int registerSize;
+
+    private DataType(int registerSize) {
+        this.registerSize = registerSize;
     }
 
-    @Override
-    public byte[] toBytes() {
-        if (channel.getLatestRecord().getValue().asBoolean()) {
-            return new byte[] { 0x01b };
-        }
-        else {
-            return new byte[] { 0x00b };
-        }
+    public int getRegisterSize() {
+        return registerSize;
     }
 
 }

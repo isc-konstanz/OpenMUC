@@ -28,8 +28,8 @@ import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.modbus.util.DatatypeConversion;
-import org.openmuc.framework.driver.modbus.util.DatatypeConversion.EndianInput;
+import org.openmuc.framework.driver.modbus.util.DataTypeConverter;
+import org.openmuc.framework.driver.modbus.util.DataTypeConverter.EndianInput;
 
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.procimg.Register;
@@ -71,12 +71,13 @@ public class ModbusDriverUtil {
      * @return the corresponding Value Object
      */
 
-    public static Value getRegistersValue(InputRegister[] registers, EDatatype datatype) {
+    public static Value getRegistersValue(InputRegister[] registers, DataType datatype) {
         byte[] registerAsByteArray = inputRegisterToByteArray(registers);
         return getValueFromByteArray(registerAsByteArray, datatype);
     }
 
-    public static Value getValueFromByteArray(byte[] registerAsByteArray, EDatatype datatype) {
+    @SuppressWarnings("deprecation")
+	public static Value getValueFromByteArray(byte[] registerAsByteArray, DataType datatype) {
 
         Value registerValue = null;
 
@@ -111,7 +112,7 @@ public class ModbusDriverUtil {
             break;
         case UINT32:
             // TODO might need both: big/little endian support in settings
-            long uint32 = DatatypeConversion.bytes_To_UnsignedInt32(registerAsByteArray,
+            long uint32 = DataTypeConverter.bytesToUnsignedInt32(registerAsByteArray,
                     EndianInput.BYTES_ARE_BIG_ENDIAN);
             registerValue = new LongValue(uint32);
             break;
@@ -129,7 +130,7 @@ public class ModbusDriverUtil {
             break;
         case BYTEARRAYLONG:
             registerValue = new LongValue(
-                    DatatypeConversion.bytes_To_SignedInt64(registerAsByteArray, EndianInput.BYTES_ARE_LITTLE_ENDIAN));
+                    DataTypeConverter.bytesToSignedInt64(registerAsByteArray, EndianInput.BYTES_ARE_LITTLE_ENDIAN));
             break;
         // case BYTE_HIGH:
         // registerValue = new IntValue(registerAsByteArray[1] & 0xFF);
@@ -144,12 +145,12 @@ public class ModbusDriverUtil {
         return registerValue;
     }
 
-    public static Register[] valueToRegisters(Value value, EDatatype datatype) {
+    @SuppressWarnings("deprecation")
+	public static Register[] valueToRegisters(Value value, DataType datatype) {
 
         Register[] registers;
 
         switch (datatype) {
-
         case SHORT:
         case INT16:
             registers = byteArrayToRegister(ModbusUtil.shortToRegister(value.asShort()));
@@ -158,13 +159,13 @@ public class ModbusDriverUtil {
             registers = byteArrayToRegister(ModbusUtil.intToRegisters(value.asInt()));
             break;
         case UINT16:
-            byte[] registerBytesUint16 = DatatypeConversion.unsingedInt16_To_Bytes(value.asInt(),
-                    DatatypeConversion.EndianOutput.BYTES_AS_BIG_ENDIAN);
+            byte[] registerBytesUint16 = DataTypeConverter.unsingedInt16ToBytes(value.asInt(),
+                    DataTypeConverter.EndianOutput.BYTES_AS_BIG_ENDIAN);
             registers = byteArrayToRegister(registerBytesUint16);
             break;
         case UINT32:
-            byte[] registerBytesUint32 = DatatypeConversion.unsingedInt32_To_Bytes(value.asLong(),
-                    DatatypeConversion.EndianOutput.BYTES_AS_BIG_ENDIAN);
+            byte[] registerBytesUint32 = DataTypeConverter.unsingedInt32ToBytes(value.asLong(),
+                    DataTypeConverter.EndianOutput.BYTES_AS_BIG_ENDIAN);
             registers = byteArrayToRegister(registerBytesUint32);
             break;
         case DOUBLE:

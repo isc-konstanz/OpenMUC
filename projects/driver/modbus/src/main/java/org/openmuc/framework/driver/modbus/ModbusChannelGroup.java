@@ -43,7 +43,7 @@ public class ModbusChannelGroup {
 
     private static final int INVALID = -1;
 
-    private EPrimaryTable primaryTable;
+    private PrimaryTable primaryTable;
     private final ArrayList<ModbusChannel> channels;
 
     /** Start address to read from */
@@ -53,7 +53,7 @@ public class ModbusChannelGroup {
     private int count;
 
     private int unitId;
-    private EFunctionCode functionCode;
+    private FunctionCode functionCode;
     private final String samplingGroup;
 
     public ModbusChannelGroup(String samplingGroup, ArrayList<ModbusChannel> channels) {
@@ -77,7 +77,7 @@ public class ModbusChannelGroup {
     private void setFunctionCode() {
 
         boolean init = false;
-        EFunctionCode tempFunctionCode = null;
+        FunctionCode tempFunctionCode = null;
 
         for (ModbusChannel channel : channels) {
             if (!init) {
@@ -102,7 +102,7 @@ public class ModbusChannelGroup {
     private void setPrimaryTable() {
 
         boolean init = false;
-        EPrimaryTable tempPrimaryTable = null;
+        PrimaryTable tempPrimaryTable = null;
 
         for (ModbusChannel channel : channels) {
             if (!init) {
@@ -231,7 +231,7 @@ public class ModbusChannelGroup {
         return result;
     }
 
-    public EPrimaryTable getPrimaryTable() {
+    public PrimaryTable getPrimaryTable() {
         return primaryTable;
     }
 
@@ -247,7 +247,7 @@ public class ModbusChannelGroup {
         return unitId;
     }
 
-    public EFunctionCode getFunctionCode() {
+    public FunctionCode getFunctionCode() {
         return functionCode;
     }
 
