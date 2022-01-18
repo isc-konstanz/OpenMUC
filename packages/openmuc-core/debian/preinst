@@ -1,12 +1,20 @@
 #!/bin/sh
 set -e
 
-# Add the Multi Utility Communication user, if it does not exist and create necessary directories
-if ! id "muc" >/dev/null 2>&1; then
-    useradd --system --no-create-home --comment="Multi Utility Communication" "muc"
-fi
-mkdir -p /var/opt/openmuc /var/log/openmuc /var/tmp/openmuc
-
 #DEBHELPER#
+
+case "$1" in
+    install)
+		# Add the Multi Utility Communication user, if it does not exist
+        if ! grep -E "^muc:" /etc/passwd > /dev/null 2>&1; then
+		    useradd --system --no-create-home --comment="Multi Utility Communication" "muc"
+        fi
+        ;;
+    *)
+        ;;
+esac
+
+# Make sure 
+mkdir -p /var/opt/openmuc /var/log/openmuc /var/tmp/openmuc
 
 exit 0

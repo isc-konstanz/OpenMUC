@@ -3,6 +3,17 @@ set -e
 
 #DEBHELPER#
 
+case "$1" in
+    install)
+		# Add the Multi Utility Communication user, if it does not exist
+        if ! grep -E "^muc:" /etc/passwd > /dev/null 2>&1; then
+		    useradd --system --no-create-home --comment="Multi Utility Communication" "muc"
+        fi
+        ;;
+    *)
+        ;;
+esac
+
 # Stop service if still running
 if systemctl is-active --quiet openmuc; then
     systemctl stop openmuc
