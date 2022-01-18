@@ -132,9 +132,9 @@ task packages {
 task distribute(type: Tar) {
     dependsOn(distributionProjects.build)
 
-    archiveName = project.name + "-" + cfgVersion + ".tar.gz"
+    archiveFileName = project.name + "-" + cfgVersion + ".tar.gz"
+    destinationDirectory = file("build/dist/")
     compression = Compression.GZIP
-    destinationDir = file("build/dist/")
 
     into(project.name) {
         from("build") {

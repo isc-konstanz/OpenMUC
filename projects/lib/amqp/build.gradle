@@ -18,7 +18,7 @@ jar {
     bnd('Bundle-Name': projectName,
         'Bundle-Description': projectDescription,
         'Bundle-ClassPath': '.,lib/amqp-client-' + rabbitmqVersion + '.jar',
-        'Import-Package': '!com.rabbitmq.*,org.openmuc.framework.security,org.openmuc.framework.lib.filePersistence,org.slf4j,javax.net,javax.net.ssl,;resolution:=optional,*' + jarDefaultImportPackageVersion,
+        'Import-Package': '!com.rabbitmq.*,org.openmuc.framework.security,org.openmuc.framework.lib.persistence,org.slf4j,javax.net,javax.net.ssl,;resolution:=optional,*' + jarDefaultImportPackageVersion,
         'Export-Package': 'org.openmuc.framework.lib.amqp')
 
     into('lib') {

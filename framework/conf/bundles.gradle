@@ -21,13 +21,13 @@ dependencies {
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-osgi",                      version: cfgVersion
 
     //add your database engine specific bundle for h2 or postgresql here:
-    //osgibundles group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
+    osgibundles group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
     osgibundles group: 'com.h2database', name: 'h2', version: '1.4.200'
 
     osgibundles group: "org.openmuc.framework", name: "openmuc-driver-amqp",                   version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-amqp",                      version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-parser-openmuc",            version: cfgVersion
-    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-filePersistence",           version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-persistence",               version: cfgVersion
                                                                      
     osgibundles group: "org.openmuc.framework", name: "openmuc-core-api",                      version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-core-spi",                      version: cfgVersion
@@ -42,18 +42,19 @@ dependencies {
     osgibundles group: "org.openmuc.framework", name: "openmuc-webui-dataexporter",            version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-webui-dataplotter",             version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-webui-mediaviewer",             version: cfgVersion
-    osgibundles group: "org.openmuc.framework", name: "openmuc-webui-apacheconsole",           version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-webui-simpledemovisualisation", version: cfgVersion
 
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-osgi",                      version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-ssl",                       version: cfgVersion
-    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-rest1",                     version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-rest",                      version: cfgVersion
 
     osgibundles group: "org.openmuc.framework", name: "openmuc-server-restws",                 version: cfgVersion
 
-    osgibundles group: "org.openmuc.framework", name: "openmuc-app-simpledemo",                version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-driver",                        version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv",                    version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-driver-aggregator",             version: cfgVersion
+
+    osgibundles group: "org.openmuc.framework", name: "openmuc-app-simpledemo",                version: cfgVersion
 
     //------------------------------------------------------------------------------------------------------
     // Bundles which have to be added since JDK 11

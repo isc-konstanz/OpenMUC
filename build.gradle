@@ -19,7 +19,7 @@ project.ext {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 apply from: "configuration.gradle"
