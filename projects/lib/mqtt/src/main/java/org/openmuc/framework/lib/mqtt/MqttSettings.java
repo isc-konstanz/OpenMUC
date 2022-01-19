@@ -38,18 +38,38 @@ public class MqttSettings {
     private final boolean lastWillAlways;
     private final String firstWillTopic;
     private final byte[] firstWillPayload;
+    private final int recoveryChunkSize;
+    private final int recoveryDelay;
+    private final boolean webSocket;
 
     public MqttSettings(String host, int port, String username, String password, boolean ssl, long maxBufferSize,
             long maxFileSize, int maxFileCount, int connectionRetryInterval, int connectionAliveInterval,
             String persistenceDirectory) {
         this(host, port, username, password, ssl, maxBufferSize, maxFileSize, maxFileCount, connectionRetryInterval,
-                connectionAliveInterval, persistenceDirectory, "", "".getBytes(), false, "", "".getBytes());
+                connectionAliveInterval, persistenceDirectory, "", "".getBytes(), false, "", "".getBytes(), false);
     }
 
     public MqttSettings(String host, int port, String username, String password, boolean ssl, long maxBufferSize,
-                        long maxFileSize, int maxFileCount, int connectionRetryInterval, int connectionAliveInterval,
-                        String persistenceDirectory, String lastWillTopic, byte[] lastWillPayload,
-                        boolean lastWillAlways, String firstWillTopic, byte[] firstWillPayload) {
+            long maxFileSize, int maxFileCount, int connectionRetryInterval, int connectionAliveInterval,
+            String persistenceDirectory, boolean webSocket) {
+        this(host, port, username, password, ssl, maxBufferSize, maxFileSize, maxFileCount, connectionRetryInterval,
+                connectionAliveInterval, persistenceDirectory, "", "".getBytes(), false, "", "".getBytes(), webSocket);
+    }
+
+    public MqttSettings(String host, int port, String username, String password, boolean ssl, long maxBufferSize,
+            long maxFileSize, int maxFileCount, int connectionRetryInterval, int connectionAliveInterval,
+            String persistenceDirectory, String lastWillTopic, byte[] lastWillPayload, boolean lastWillAlways,
+            String firstWillTopic, byte[] firstWillPayload, boolean webSocket) {
+        this(host, port, username, password, ssl, maxBufferSize, maxFileSize, maxFileCount, connectionRetryInterval,
+                connectionAliveInterval, persistenceDirectory, lastWillTopic, lastWillPayload, lastWillAlways,
+                firstWillTopic, firstWillPayload, 0, 0, webSocket);
+    }
+
+    public MqttSettings(String host, int port, String username, String password, boolean ssl, long maxBufferSize,
+            long maxFileSize, int maxFileCount, int connectionRetryInterval, int connectionAliveInterval,
+            String persistenceDirectory, String lastWillTopic, byte[] lastWillPayload, boolean lastWillAlways,
+            String firstWillTopic, byte[] firstWillPayload, int recoveryChunkSize, int recoveryDelay,
+            boolean webSocket) {
         this.host = host;
         this.port = port;
         this.username = username;
@@ -66,6 +86,9 @@ public class MqttSettings {
         this.lastWillAlways = lastWillAlways;
         this.firstWillTopic = firstWillTopic;
         this.firstWillPayload = firstWillPayload;
+        this.recoveryChunkSize = recoveryChunkSize;
+        this.recoveryDelay = recoveryDelay;
+        this.webSocket = webSocket;
     }
 
     public String getHost() {
@@ -164,5 +187,21 @@ public class MqttSettings {
 
     public boolean isFirstWillSet() {
         return !firstWillTopic.equals("") && lastWillPayload.length != 0;
+    }
+
+    public boolean isRecoveryLimitSet() {
+        return recoveryChunkSize > 0 && recoveryDelay > 0;
+    }
+
+    public int getRecoveryChunkSize() {
+        return recoveryChunkSize;
+    }
+
+    public int getRecoveryDelay() {
+        return recoveryDelay;
+    }
+
+    public boolean isWebSocket() {
+        return webSocket;
     }
 }

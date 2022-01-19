@@ -1,5 +1,5 @@
 project.ext {
-    cfgVersion = "0.20.1"
+    cfgVersion = "0.20.2"
 
     cfgGroup = "org.openmuc.framework"
 
@@ -52,10 +52,11 @@ project.ext {
                 it.getPath() == ":openmuc-driver-sql" ||
                 it.getPath() == ":openmuc-driver-wmbus" ||
                 it.getPath() == ":openmuc-lib-amqp" ||
-                it.getPath() == ":openmuc-lib-filePersistence" ||
+                it.getPath() == ":openmuc-lib-persistence" ||
                 it.getPath() == ":openmuc-lib-mqtt" ||
                 it.getPath() == ":openmuc-lib-osgi" ||
                 it.getPath() == ":openmuc-lib-parser-openmuc" ||
+                it.getPath() == ":openmuc-lib-parser-flotteladen" ||
                 it.getPath() == ":openmuc-lib-rest" ||
                 it.getPath() == ":openmuc-lib-ssl" ||
                 it.getPath() == ":openmuc-lib-sql" ||
@@ -82,12 +83,23 @@ project.ext {
 
     if (cfgVersion.matches(cfgSnapshotPattern)) {
         repositoryProjects = javaProjects
+        isReleaseVersion = false
     } else {
         repositoryProjects = distributionProjects
+        isReleaseVersion = true
+        cfgSignPom = true
     }
 }
 
 configure(javaProjects) {
+    version = cfgVersion 
+    if (project.hasProperty('argBranchName')) {
+        version += '-' + argBranchName
+    }
+    if (project.hasProperty('argCommitDate')) {
+        version += '-' + argCommitDate
+    }
+
     apply plugin: "java"
     apply plugin: "maven-publish"
 
@@ -121,9 +133,9 @@ task packages {
 task distribute(type: Tar) {
     dependsOn(distributionProjects.build)
 
-    archiveName = project.name + "-" + cfgVersion + ".tar.gz"
+    archiveFileName = project.name + "-" + cfgVersion + ".tar.gz"
+    destinationDirectory = file("build/dist/")
     compression = Compression.GZIP
-    destinationDir = file("build/dist/")
 
     into(project.name) {
         from("build") {

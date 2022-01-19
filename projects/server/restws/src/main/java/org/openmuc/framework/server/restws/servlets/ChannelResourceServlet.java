@@ -355,8 +355,11 @@ public class ChannelResourceServlet extends GenericServlet {
 
         String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
         String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-        FromJson json = new FromJson(ServletLib.getJsonText(request));
-
+        FromJson json = ServletLib.getFromJson(request, logger, response);
+        if (json == null) {
+            return;
+        }
+        
         if (pathInfoArray.length == 1) {
             String channelId = pathInfoArray[0];
 
@@ -379,8 +382,11 @@ public class ChannelResourceServlet extends GenericServlet {
 
             String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
             String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            FromJson json = new FromJson(ServletLib.getJsonText(request));
-
+            FromJson json = ServletLib.getFromJson(request, logger, response);
+            if (json == null) {
+                return;
+            }
+            
             if (pathInfoArray.length < 1) {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
                         REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
@@ -526,11 +532,11 @@ public class ChannelResourceServlet extends GenericServlet {
 
         if (record.getFlag() == null) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_ACCEPTABLE, logger,
-                    "No flag setted.");
+                    "No flag set.");
         }
         else if (record.getValue() == null) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_ACCEPTABLE, logger,
-                    "No value setted.");
+                    "No value set.");
         }
         else {
             Long timestamp = record.getTimestamp();

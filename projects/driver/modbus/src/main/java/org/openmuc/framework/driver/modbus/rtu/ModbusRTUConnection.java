@@ -28,7 +28,7 @@ import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.modbus.EDatatype;
+import org.openmuc.framework.driver.modbus.DataType;
 import org.openmuc.framework.driver.modbus.ModbusChannel;
 import org.openmuc.framework.driver.modbus.ModbusChannel.EAccess;
 import org.openmuc.framework.driver.modbus.ModbusConnection;
@@ -296,7 +296,7 @@ public class ModbusRTUConnection extends ModbusConnection {
     }
 
     private void printResponseValue(ModbusChannel channel, Value value) {
-        if (channel.getDatatype().equals(EDatatype.BYTEARRAY)) {
+        if (channel.getDatatype().equals(DataType.BYTEARRAY)) {
             final StringBuilder sb = new StringBuilder();
             for (byte b : value.asByteArray()) {
                 sb.append(String.format("%02x ", b));

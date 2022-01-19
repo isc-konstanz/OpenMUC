@@ -26,8 +26,8 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmuc.framework.driver.modbus.EDatatype;
-import org.openmuc.framework.driver.modbus.EPrimaryTable;
+import org.openmuc.framework.driver.modbus.DataType;
+import org.openmuc.framework.driver.modbus.PrimaryTable;
 import org.openmuc.framework.driver.modbus.ModbusChannel;
 import org.openmuc.framework.driver.modbus.ModbusChannel.EAccess;
 
@@ -139,7 +139,7 @@ public class ModbusTcpChannelTest {
         }
     }
 
-    private String concatenate(EAccess a, EPrimaryTable p, EDatatype d) {
+    private String concatenate(EAccess a, PrimaryTable p, DataType d) {
         return a.toString() + ":" + p.toString() + ":" + d.toString();
     }
 

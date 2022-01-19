@@ -180,8 +180,7 @@ public abstract class SnmpDevice implements Connection {
             PDU responsePDU = response.getResponse();
             @SuppressWarnings("rawtypes")
             List<? extends VariableBinding> vbs = responsePDU.getVariableBindings();
-            for (int i = 0; i < vbs.size(); i++) {
-                VariableBinding vb = vbs.get(i);
+            for (VariableBinding vb : vbs) {
                 result.put(vb.getOid().toString(), vb.getVariable().toString());
             }
         } catch (IOException e) {

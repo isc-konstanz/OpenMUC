@@ -22,22 +22,12 @@
 package org.openmuc.framework.datalogger.sql;
 
 import static org.openmuc.framework.lib.sql.Table.AND;
-import static org.openmuc.framework.lib.sql.Table.BOOLEAN_VALUE;
-import static org.openmuc.framework.lib.sql.Table.BYTE_ARRAY_VALUE;
-import static org.openmuc.framework.lib.sql.Table.BYTE_VALUE;
-import static org.openmuc.framework.lib.sql.Table.DOUBLE_VALUE;
-import static org.openmuc.framework.lib.sql.Table.FLOAT_VALUE;
-import static org.openmuc.framework.lib.sql.Table.INT_VALUE;
-import static org.openmuc.framework.lib.sql.Table.LONG_VALUE;
-import static org.openmuc.framework.lib.sql.Table.SHORT_VALUE;
-import static org.openmuc.framework.lib.sql.Table.STRING_VALUE;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.ValueType;
 
 public class SqlReader {
 
@@ -47,29 +37,32 @@ public class SqlReader {
         this.dbAccess = dbAccess;
     }
 
-    public List<Record> readRecordListFromDb(String channelId, long startTime, long endTime) {
+    public List<Record> readRecordListFromDb(String channelId, ValueType valuetype, long startTime, long endTime) {
         Timestamp startTimestamp = new Timestamp(startTime);
         Timestamp endTimestamp = new Timestamp(endTime);
+        StringBuilder sbTable = new StringBuilder();
+        selectFromTable(channelId, startTimestamp, endTimestamp, sbTable);
+        return dbAccess.queryRecords(sbTable, valuetype);
 
-        ArrayList<String> tableNameList = new ArrayList<>();
-        Collections.addAll(tableNameList, DOUBLE_VALUE, FLOAT_VALUE, INT_VALUE, LONG_VALUE, BYTE_VALUE, SHORT_VALUE);
+    }
 
-        StringBuilder sbNumeric = new StringBuilder();
-        StringBuilder sbString = new StringBuilder();
-        StringBuilder sbByteArray = new StringBuilder();
-        StringBuilder sbBoolean = new StringBuilder();
-
-        // All numeric datatypes can be retrieved from the database with one query
-        for (String tableName : tableNameList) {
-            selectFromTable(channelId, startTimestamp, endTimestamp, tableName, sbNumeric);
-            sbNumeric.replace(sbNumeric.length() - 1, sbNumeric.length(), " UNION ALL ");
+    /**
+     * Get the latest Record by retrieving records in descending order - ordered by time - and limiting to 1 result
+     * 
+     * @param channelId
+     *            ID of the channel
+     * @param valuetype
+     *            {@link ValueType}
+     * @return latest Record with the highest timestamp
+     */
+    public Record readLatestRecordFromDb(String channelId, ValueType valuetype) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT time,value FROM ").append(channelId).append(" ORDER BY time DESC LIMIT 1;");
+        List<Record> records = dbAccess.queryRecords(sb, valuetype);
+        if (records.size() == 1) {
+            return records.get(0);
         }
-        sbNumeric.replace(sbNumeric.length() - 11, sbNumeric.length(), ";");
-        selectFromTable(channelId, startTimestamp, endTimestamp, STRING_VALUE, sbString);
-        selectFromTable(channelId, startTimestamp, endTimestamp, BYTE_ARRAY_VALUE, sbByteArray);
-        selectFromTable(channelId, startTimestamp, endTimestamp, BOOLEAN_VALUE, sbBoolean);
-
-        return dbAccess.queryRecords(sbNumeric, sbString, sbByteArray, sbBoolean);
+        return null;
     }
 
     /**
@@ -86,14 +79,21 @@ public class SqlReader {
      * @param sb
      *            StringBuilder for the Query
      */
-    private void selectFromTable(String channelId, Timestamp startTimestamp, Timestamp endTimestamp, String tableName,
-            StringBuilder sb) {
+    private void selectFromTable(String channelId, Timestamp startTimestamp, Timestamp endTimestamp, StringBuilder sb) {
+
+        // sb.append("SELECT time,value FROM ")
+        // .append(tableName)
+        // .append(" WHERE channelId = '")
+        // .append(channelId)
+        // .append("' AND time BETWEEN '")
+        // .append(startTimestamp)
+        // .append(AND)
+        // .append(endTimestamp)
+        // .append("';");
 
         sb.append("SELECT time,value FROM ")
-                .append(tableName)
-                .append(" WHERE channelId = '")
                 .append(channelId)
-                .append("' AND time BETWEEN '")
+                .append(" WHERE time BETWEEN '")
                 .append(startTimestamp)
                 .append(AND)
                 .append(endTimestamp)

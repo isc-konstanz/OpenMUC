@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.openmuc.framework.driver.modbus.EDatatype;
+import org.openmuc.framework.driver.modbus.DataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class EDatatypTest {
     @Test
     public void getSupportedDatatypesTest() {
 
-        logger.info("Supported Datatyps: " + EDatatype.getSupportedDatatypes());
+        logger.info("Supported Datatyps: " + DataType.getSupportedDatatypes());
         assertTrue(true);
     }
 
@@ -50,12 +50,12 @@ public class EDatatypTest {
     public void isValidDatatypTest() {
 
         // valid
-        assertTrue(EDatatype.isValid("int32"));
-        assertTrue(EDatatype.isValid("INT32"));
+        assertTrue(DataType.isValid("int32"));
+        assertTrue(DataType.isValid("INT32"));
 
         // invalid
-        assertFalse(EDatatype.isValid("INT30"));
-        assertFalse(EDatatype.isValid("shorts"));
+        assertFalse(DataType.isValid("INT30"));
+        assertFalse(DataType.isValid("shorts"));
     }
 
     // @Test

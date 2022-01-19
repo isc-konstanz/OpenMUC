@@ -11,7 +11,7 @@ if(rootProject.tasks.findByName("codeCoverageReport"))
 dependencies {
     implementation project(':openmuc-driver')
     implementation project(':openmuc-lib-rest')
-    implementation 'commons-codec:commons-codec:1.13'
+    implementation 'commons-codec:commons-codec:1.15'
 }
 
 jar {

@@ -20,10 +20,12 @@
  */
 package org.openmuc.framework.lib.mqtt;
 
-import org.junit.jupiter.api.*;
-
 import java.io.File;
 import java.nio.file.FileSystems;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class MqttBufferHandlerTest {
     private static final String DIRECTORY = "/tmp/openmuc/buffer_handler_test";
@@ -38,7 +40,8 @@ class MqttBufferHandlerTest {
         for (File child : directory.listFiles()) {
             if (child.isDirectory()) {
                 deleteDirectory(child);
-            } else {
+            }
+            else {
                 child.delete();
             }
         }
@@ -122,8 +125,10 @@ class MqttBufferHandlerTest {
         bufferHandler.add("test", LOREM_IPSUM_1_KB.substring(512).getBytes());
 
         // Oldest message is returned first
-        Assertions.assertArrayEquals(LOREM_IPSUM_1_KB.substring(0, 512).getBytes(), bufferHandler.removeNextMessage().message);
-        Assertions.assertArrayEquals(LOREM_IPSUM_1_KB.substring(512).getBytes(), bufferHandler.removeNextMessage().message);
+        Assertions.assertArrayEquals(LOREM_IPSUM_1_KB.substring(0, 512).getBytes(),
+                bufferHandler.removeNextMessage().message);
+        Assertions.assertArrayEquals(LOREM_IPSUM_1_KB.substring(512).getBytes(),
+                bufferHandler.removeNextMessage().message);
 
         bufferHandler.add("test", LOREM_IPSUM_1_KB.substring(0, 341).getBytes());
         bufferHandler.add("test", LOREM_IPSUM_1_KB.substring(341, 682).getBytes());
@@ -131,8 +136,10 @@ class MqttBufferHandlerTest {
         bufferHandler.add("test_2", LOREM_IPSUM_1_KB.substring(0, 341).getBytes());
 
         // Oldest message is overriden
-        Assertions.assertArrayEquals(LOREM_IPSUM_1_KB.substring(341, 682).getBytes(), bufferHandler.removeNextMessage().message);
-        Assertions.assertArrayEquals(LOREM_IPSUM_1_KB.substring(682).getBytes(), bufferHandler.removeNextMessage().message);
+        Assertions.assertArrayEquals(LOREM_IPSUM_1_KB.substring(341, 682).getBytes(),
+                bufferHandler.removeNextMessage().message);
+        Assertions.assertArrayEquals(LOREM_IPSUM_1_KB.substring(682).getBytes(),
+                bufferHandler.removeNextMessage().message);
         Assertions.assertEquals("test_2", bufferHandler.removeNextMessage().topic);
     }
 }

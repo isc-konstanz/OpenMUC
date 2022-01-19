@@ -1068,6 +1068,7 @@ public final class Iec61850Connection implements Connection {
                 ((BdaBitString) bda).setValue(container.getValue().asByteArray());
             }
         };
+
         public abstract ChannelScanInfo getScanInfo(String channelAddress, BasicDataAttribute bda);
 
         public abstract String bda2String(BasicDataAttribute bda);

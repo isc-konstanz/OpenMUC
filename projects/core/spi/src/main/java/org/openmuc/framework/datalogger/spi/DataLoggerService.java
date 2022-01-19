@@ -65,4 +65,16 @@ public interface DataLoggerService {
      */
     List<Record> getRecords(String channelId, long startTime, long endTime) throws IOException;
 
+    /**
+     * Returns the Record with the highest timestamp available in all logged data for the channel with the given
+     * <code>channelId</code>. If there are multiple Records with the same timestamp, results may not be consistent.
+     * Null if no Record was found.
+     * 
+     * @param channelId
+     *            the channel ID.
+     * @return the Record with the highest timestamp available in all logged data for the channel with the given
+     *         <code>channelId</code>
+     * @throws IOException
+     */
+    Record getLatestLogRecord(String channelId) throws IOException;
 }

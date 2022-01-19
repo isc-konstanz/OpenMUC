@@ -54,7 +54,7 @@ class SqlWriterTest {
 
         List<LoggingRecord> recordList = buildLoggingRecordList(5);
         sqlWriter.writeEventBasedContainerToDb(recordList);
-        verify(dbAccessMock, times(1)).executeSQL(argument.capture());
+        verify(dbAccessMock, times(5)).executeSQL(argument.capture());
 
         System.out.println(argument.getValue().toString());
     }

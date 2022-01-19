@@ -1917,7 +1917,7 @@ For information only (info can be accessed by an app or driver)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">time*</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Time difference until this channel is logged again. -1 or omitting loggingInterval disables logging.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time difference until this channel is logged again. Omitting loggingInterval disables logging in intervals. Setting loggingInterval disables loggingEvent.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">loggingTimeOffset</p></td>
@@ -1932,7 +1932,7 @@ For information only (info can be accessed by an app or driver)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>boolean</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">If true, immediately logs latest record on value change.
-Only supported by some data loggers.
+Only supported by some data loggers. Disabled if loggingInterval is set.
 See <a href="#anchor-dataloggers">data logger description</a> for more information.</p></td>
 </tr>
 <tr>
@@ -4408,7 +4408,7 @@ It also uses firstWill and lastWill for sending connection status messages.</p>
     <span class="tag">&lt;device</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Smart Meter</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
        <span class="tag">&lt;deviceAddress&gt;</span>myMqttBroker.de<span class="tag">&lt;/deviceAddress&gt;</span>
         <span class="tag">&lt;settings&gt;</span>
-        port=1883;user=openmuc;password=Password123
+        port=1883;username=openmuc;password=Password123
         parser=openmuc;bufferSize=2;ssl=true
         lastWillTopic=my/topic;lastWillPayload=Offline;lastWillAlways=true
         firstWillTopic=my/topic;firstWillPayload=Online
@@ -6177,7 +6177,7 @@ For additional functionality you can add further apache felix web console plugin
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-05 18:06:25 +0100
+Last updated 2021-12-14 11:01:34 +0100
 </div>
 </div>
 <style>

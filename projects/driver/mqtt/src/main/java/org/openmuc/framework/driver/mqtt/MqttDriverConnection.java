@@ -49,6 +49,7 @@ import org.openmuc.framework.lib.mqtt.MqttSettings;
 import org.openmuc.framework.lib.mqtt.MqttWriter;
 import org.openmuc.framework.parser.spi.ParserService;
 import org.openmuc.framework.parser.spi.SerializationException;
+import org.openmuc.framework.security.SslManagerInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,11 +65,14 @@ public class MqttDriverConnection implements Connection {
     private final Properties settings = new Properties();
 
     public MqttDriverConnection(String host, String settings) throws ArgumentSyntaxException {
-        mqttConnection = new MqttConnection(getMqttSettings(host, settings));
+        MqttSettings mqttSettings = getMqttSettings(host, settings);
+        mqttConnection = new MqttConnection(mqttSettings);
         String pid = "mqttdriver";
         mqttWriter = new MqttWriter(mqttConnection, pid);
         mqttReader = new MqttReader(mqttConnection, pid);
-        mqttConnection.connect();
+        if (!mqttSettings.isSsl()) {
+            mqttConnection.connect();
+        }
     }
 
     private MqttSettings getMqttSettings(String host, String settings) throws ArgumentSyntaxException {
@@ -94,10 +98,11 @@ public class MqttDriverConnection implements Connection {
         boolean lastWillAlways = Boolean.parseBoolean(this.settings.getProperty("lastWillAlways", "false"));
         String firstWillTopic = this.settings.getProperty("firstWillTopic", "");
         byte[] firstWillPayload = this.settings.getProperty("firstWillPayload", "").getBytes();
+        boolean webSocket = Boolean.parseBoolean(this.settings.getProperty("webSocket", "false"));
 
         return new MqttSettings(host, port, username, password, ssl, maxBufferSize, maxFileSize, maxFileCount,
                 connectionRetryInterval, connectionAliveInterval, persistenceDirectory, lastWillTopic, lastWillPayload,
-                lastWillAlways, firstWillTopic, firstWillPayload);
+                lastWillAlways, firstWillTopic, firstWillPayload, webSocket);
     }
 
     @Override
@@ -209,7 +214,8 @@ public class MqttDriverConnection implements Connection {
                 container.setFlag(Flag.VALID);
             }
             else {
-                throw new UnsupportedOperationException("A parser is needed to write messages");
+                logger.error("A parser is needed to write messages and none have been registered.");
+                throw new UnsupportedOperationException();
             }
         }
         return null;
@@ -217,6 +223,7 @@ public class MqttDriverConnection implements Connection {
 
     @Override
     public void disconnect() {
+        mqttWriter.shutdown();
         mqttConnection.disconnect();
     }
 
@@ -237,6 +244,16 @@ public class MqttDriverConnection implements Connection {
                 sb.append("record: " + container.getRecord().toString());
             }
             logger.trace(sb.toString());
+        }
+    }
+
+    public void setSslManager(SslManagerInterface instance) {
+        if (mqttConnection.getSettings().isSsl()) {
+            logger.debug("SSLManager registered in driver");
+            mqttConnection.setSslManager(instance);
+            if (instance.isLoaded()) {
+                mqttConnection.connect();
+            }
         }
     }
 }

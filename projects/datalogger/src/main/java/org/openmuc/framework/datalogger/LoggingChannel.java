@@ -69,6 +69,11 @@ public abstract class LoggingChannel extends ChannelWrapper {
         return records;
     }
 
+    final Record invokeRead() throws IOException {
+        Record record = (Record) invokeReturn(Read.class, this);
+        return record;
+    }
+
     boolean isUpdate(Record record) {
         if (Flag.VALID != record.getFlag()) {
             logger.trace("Skipped logging value of channel \"{}\" for unchanged flag: {}", getId(), record.getFlag());

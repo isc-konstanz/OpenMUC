@@ -122,11 +122,11 @@ public class OpenmucParserServiceImpl implements ParserService {
         public JsonElement serialize(Record record, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject obj = new JsonObject();
             Value value = record.getValue();
+            obj.addProperty("timestamp", record.getTimestamp());
+            obj.addProperty("flag", record.getFlag().toString());
 
             if (value != null && record.getFlag() == Flag.VALID) {
                 String valueString = "value";
-                obj.addProperty("timestamp", record.getTimestamp());
-                obj.addProperty("flag", record.getFlag().toString());
 
                 switch (value.getValueType()) {
                 case BOOLEAN:
