@@ -23,19 +23,19 @@ package org.openmuc.framework.driver.modbus;
 /**
  * Modbus defines four different address areas called primary tables.
  */
-public enum EPrimaryTable {
+public enum PrimaryTable {
 
     COILS,
     DISCRETE_INPUTS,
     INPUT_REGISTERS,
     HOLDING_REGISTERS;
 
-    public static EPrimaryTable getEnumfromString(String enumAsString) {
-        EPrimaryTable returnValue = null;
+    public static PrimaryTable getEnumfromString(String enumAsString) {
+        PrimaryTable returnValue = null;
         if (enumAsString != null) {
-            for (EPrimaryTable value : EPrimaryTable.values()) {
+            for (PrimaryTable value : PrimaryTable.values()) {
                 if (enumAsString.toUpperCase().equals(value.toString())) {
-                    returnValue = EPrimaryTable.valueOf(enumAsString.toUpperCase());
+                    returnValue = PrimaryTable.valueOf(enumAsString.toUpperCase());
                     break;
                 }
             }
@@ -52,7 +52,7 @@ public enum EPrimaryTable {
      */
     public static String getSupportedValues() {
         String supported = "";
-        for (EPrimaryTable value : EPrimaryTable.values()) {
+        for (PrimaryTable value : PrimaryTable.values()) {
             supported += value.toString() + ", ";
         }
         return supported;
@@ -60,7 +60,7 @@ public enum EPrimaryTable {
 
     public static boolean isValidValue(String enumAsString) {
         boolean returnValue = false;
-        for (EPrimaryTable type : EPrimaryTable.values()) {
+        for (PrimaryTable type : PrimaryTable.values()) {
             if (type.toString().toLowerCase().equals(enumAsString.toLowerCase())) {
                 returnValue = true;
                 break;

@@ -14,7 +14,7 @@ dependencies {
     implementation files('../../../dependencies/j2mod/j2mod-r100.jar')
     embed files('../../../dependencies/j2mod/j2mod-r100.jar')
 
-    testImplementation 'commons-codec:commons-codec:1.13'
+    testImplementation 'commons-codec:commons-codec:1.15'
 }
 
 jar {

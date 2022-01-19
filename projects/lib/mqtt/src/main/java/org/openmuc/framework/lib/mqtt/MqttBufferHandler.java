@@ -221,4 +221,15 @@ public class MqttBufferHandler {
         return new MqttBufferMessageIterator(buffer, filePersistence);
     }
 
+    public void persist() {
+        if (isFileBufferEnabled()) {
+            try {
+                filePersistence.restructure();
+                addToFilePersistence();
+            } catch (IOException e) {
+                logger.error("Buffer file restructuring error: {}", e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
 }

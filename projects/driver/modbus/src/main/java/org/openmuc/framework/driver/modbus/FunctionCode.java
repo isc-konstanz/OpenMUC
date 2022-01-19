@@ -24,7 +24,7 @@ package org.openmuc.framework.driver.modbus;
 /**
  * Supported modbuss function codes
  */
-public enum EFunctionCode {
+public enum FunctionCode {
     FC_01_READ_COILS, //
     FC_02_READ_DISCRETE_INPUTS, //
     FC_03_READ_HOLDING_REGISTERS, //

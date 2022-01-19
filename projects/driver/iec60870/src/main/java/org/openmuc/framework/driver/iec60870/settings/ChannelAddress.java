@@ -32,7 +32,7 @@ public class ChannelAddress extends GenericSetting {
     protected int multiple = 1;
     protected boolean select = false;
 
-    protected static enum Option implements OptionI {
+    protected enum Option implements OptionI {
         COMMON_ADDRESS("ca", Integer.class, true),
         TYPE_ID("t", Integer.class, true),
         IOA("ioa", Integer.class, true),

@@ -20,8 +20,11 @@
  */
 package org.openmuc.framework.lib.rest.objects;
 
+import java.util.List;
+
 import org.openmuc.framework.config.ChannelConfig;
 import org.openmuc.framework.config.IdCollisionException;
+import org.openmuc.framework.config.ServerMapping;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
@@ -105,6 +108,7 @@ public class RestChannelMapper {
         rcc.setDescription(cc.getDescription());
         rcc.setAddress(cc.getAddress());
         rcc.setSettings(cc.getSettings());
+        rcc.setServerMappings(cc.getServerMappings());
         rcc.setUnit(cc.getUnit());
         rcc.setValueType(cc.getValueType());
         rcc.setValueTypeLength(cc.getValueTypeLength());
@@ -122,7 +126,6 @@ public class RestChannelMapper {
         rcc.setloggingAverage(cc.isloggingAverage());
         rcc.setLoggingEvent(cc.isLoggingEvent());
         rcc.setDisabled(cc.isDisabled());
-        // rcc.setServerMappings(cc.getServerMappings());
         return rcc;
     }
 
@@ -142,6 +145,15 @@ public class RestChannelMapper {
         cc.setDescription(rcc.getDescription());
         cc.setAddress(rcc.getAddress());
         cc.setSettings(rcc.getSettings());
+        List<ServerMapping> serverMappings = rcc.getServerMappings();
+        if (serverMappings != null) {
+            for (ServerMapping serverMapping : cc.getServerMappings()) {
+                cc.deleteServerMappings(serverMapping.getId());
+            }
+            for (ServerMapping restServerMapping : serverMappings) {
+                cc.addServerMapping(restServerMapping);
+            }
+        }
         cc.setUnit(rcc.getUnit());
         cc.setValueType(rcc.getValueType());
         cc.setValueTypeLength(rcc.getValueTypeLength());
@@ -159,7 +171,6 @@ public class RestChannelMapper {
         cc.setloggingAverage(rcc.isloggingAverage());
         cc.setLoggingEvent(rcc.isLoggingEvent());
         cc.setDisabled(rcc.isDisabled());
-        // cc.setServerMappings(rcc.getServerMappings());
     }
 
 }

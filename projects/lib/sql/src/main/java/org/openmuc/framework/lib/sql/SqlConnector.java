@@ -183,6 +183,16 @@ public class SqlConnector {
         return hasTable(table.getName());
     }
 
+    public Record read(Connection connection, SqlData data)
+            throws SQLException, ArgumentSyntaxException {
+
+        Table table = createTable(data);
+        if (!hasTable(table)) {
+            throw new SqlTableUnavalableException("Unable to find table: " + table.getName());
+        }
+        return table.read(connection, data);
+    }
+
     public List<Record> read(Connection connection, SqlData data, long startTime, long endTime)
             throws SQLException, ArgumentSyntaxException {
 

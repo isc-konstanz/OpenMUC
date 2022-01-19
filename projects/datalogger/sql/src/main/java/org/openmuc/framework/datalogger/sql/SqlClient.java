@@ -78,6 +78,15 @@ public class SqlClient extends SqlConnector {
         channels.add(channel);
     }
 
+    public Record readLatest(SqlChannel channel) throws IOException {
+        try (Connection connection = connect()) {
+            return read(connection, channel);
+            
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
     public List<Record> read(SqlChannel channel, long startTime, long endTime) throws IOException {
         try (Connection connection = connect()) {
             return read(connection, channel, startTime, endTime);

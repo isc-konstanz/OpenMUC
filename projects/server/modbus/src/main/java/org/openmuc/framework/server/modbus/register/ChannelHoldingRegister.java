@@ -20,11 +20,8 @@
  */
 package org.openmuc.framework.server.modbus.register;
 
-import java.nio.ByteBuffer;
-
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.ByteArrayValue;
-import org.openmuc.framework.data.ByteValue;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.FloatValue;
@@ -35,11 +32,15 @@ import org.openmuc.framework.data.ShortValue;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.TypeConversionException;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.dataaccess.Channel;
+import org.openmuc.framework.server.modbus.DataType;
+import org.openmuc.framework.server.modbus.util.DataTypeConverter;
+import org.openmuc.framework.server.modbus.util.DataTypeConverter.EndianInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.procimg.Register;
+import com.ghgande.j2mod.modbus.util.ModbusUtil;
 
 /**
  * This Class implements a linked holding register for Modbus server. The reason behind this class is to collect the
@@ -55,82 +56,84 @@ import com.ghgande.j2mod.modbus.procimg.Register;
  * 
  * The behavior of submission is safe against the order the registers are written.
  * 
- * @author sfey
  */
-public class LinkedMappingHoldingRegister extends MappingInputRegister implements Register {
+public class ChannelHoldingRegister extends ChannelInputRegister implements Register {
 
-    private final LinkedMappingHoldingRegister nextRegister;
+	private final static Logger logger = LoggerFactory.getLogger(ChannelHoldingRegister.class);
+
+    private final ChannelHoldingRegister nextRegister;
+    private boolean hasLeadingRegister = false;
     private byte[] leadingBytes;
-    private byte[] thisRegisterContent;
-    private boolean hasLeadingRegister;
-    private final ValueType valueType;
-    private final InputRegister inputRegister;
+    private byte[] fromBytes;
 
-    public LinkedMappingHoldingRegister(MappingInputRegister inputRegister, Channel channel,
-            LinkedMappingHoldingRegister nextRegister, ValueType valueType, int byteHigh, int byteLow) {
-        super(channel, byteHigh, byteLow);
+    public ChannelHoldingRegister(Channel channel, DataType dataType, int byteHigh, int byteLow, 
+    		ChannelHoldingRegister nextRegister) {
+        super(channel, dataType, byteHigh, byteLow);
+        
         this.nextRegister = nextRegister;
-        this.valueType = valueType;
-        this.inputRegister = inputRegister;
-
         if (nextRegister != null) {
             nextRegister.hasLeadingRegister = true;
         }
     }
 
+    public ChannelHoldingRegister(Channel channel, DataType dataType, int byteHigh, int byteLow) {
+        super(channel, dataType, byteHigh, byteLow);
+        this.nextRegister = null;
+    }
+
+    public int getLowByte() {
+        return highByte;
+    }
+
+    public int getHighByte() {
+        return lowByte;
+    }
+
     @Override
     public void setValue(int v) {
-        byte[] fromBytes = { (byte) ((v >> 24) & 0xFF), (byte) ((v >> 16) & 0xFF), (byte) ((v >> 8) & 0xFF),
-                (byte) (v & 0xFF) };
-
-        setValue(fromBytes);
+        setValue(ModbusUtil.unsignedShortToRegister(v));
     }
 
     @Override
     public void setValue(short s) {
-        byte[] fromBytes = { (byte) ((s >> 8) & 0xFF), (byte) (s & 0xFF) };
-
-        setValue(fromBytes);
+        setValue(ModbusUtil.shortToRegister(s));
     }
 
     @Override
     public void setValue(byte[] bytes) {
-        this.thisRegisterContent = bytes;
+    	// TODO: Make word endianess configurable
+        this.fromBytes = DataTypeConverter.reverseByteOrder(bytes);
         if (nextRegister != null) {
             if (hasLeadingRegister) {
                 if (leadingBytes != null) {
-                    nextRegister.submit(concatenate(leadingBytes, thisRegisterContent));
+                    nextRegister.submit(concatenate(leadingBytes, fromBytes));
                 }
             }
             else {
-                nextRegister.submit(thisRegisterContent);
+                nextRegister.submit(fromBytes);
             }
         }
         else {
             if (hasLeadingRegister) {
                 if (leadingBytes != null) {
-                    writeChannel(newValue(valueType, concatenate(leadingBytes, thisRegisterContent)));
+                    writeChannel(newValue(dataType, concatenate(leadingBytes, fromBytes)));
                 } /* else wait for leadingBytes from submit */
             }
             else {
-                writeChannel(newValue(valueType, thisRegisterContent));
+                writeChannel(newValue(dataType, fromBytes));
             }
         }
     }
 
-    public void submit(byte[] leading) {
-        this.leadingBytes = leading;
-        if (thisRegisterContent != null) {
-            if (nextRegister != null) {
-                nextRegister.submit(concatenate(leadingBytes, thisRegisterContent));
-            }
-            else {
-                writeChannel(newValue(valueType, concatenate(leadingBytes, thisRegisterContent)));
-            }
-        } /* else wait for thisRegisterContent from setValue */
-    }
-
-    public static Value newValue(ValueType fromType, byte[] fromBytes) throws TypeConversionException {
+    public static Value newValue(DataType fromType, byte[] fromBytes) throws TypeConversionException {
+//    	byte[] registerBytes = DataTypeConverter.reverseByteOrder(fromBytes);
+		if (logger.isDebugEnabled()) {
+			StringBuilder fromBytesHex = new StringBuilder();
+			for(byte b: fromBytes) {
+				fromBytesHex.append(String.format("%02x", b&0xff));
+			}
+	    	logger.debug("Received byte values: {}}", fromBytesHex);
+		}
         switch (fromType) {
         case BOOLEAN:
             if (fromBytes[0] == 0x00) {
@@ -139,28 +142,43 @@ public class LinkedMappingHoldingRegister extends MappingInputRegister implement
             else {
                 return new BooleanValue(true);
             }
-        case DOUBLE:
-            return new DoubleValue(ByteBuffer.wrap(fromBytes).getDouble());
-        case FLOAT:
-            return new FloatValue(ByteBuffer.wrap(fromBytes).getFloat());
-        case LONG:
-            return new LongValue(ByteBuffer.wrap(fromBytes).getLong());
-        case INTEGER:
-            return new IntValue(ByteBuffer.wrap(fromBytes).getInt());
         case SHORT:
-            return new ShortValue(ByteBuffer.wrap(fromBytes).getShort());
-        case BYTE:
-            return new ByteValue(fromBytes[0]);
+        case INT16:
+            return new ShortValue(ModbusUtil.registerToShort(fromBytes));
+        case INT32:
+            return new IntValue(ModbusUtil.registersToInt(fromBytes));
+        case UINT16:
+            return new IntValue(ModbusUtil.registerToUnsignedShort(fromBytes));
+        case UINT32:
+        	return new LongValue(DataTypeConverter.bytesToUnsignedInt32(fromBytes, EndianInput.BYTES_ARE_BIG_ENDIAN));
+        case FLOAT:
+            return new FloatValue(ModbusUtil.registersToFloat(fromBytes));
+        case DOUBLE:
+            return new DoubleValue(ModbusUtil.registersToDouble(fromBytes));
+        case LONG:
+            return new LongValue(ModbusUtil.registersToLong(fromBytes));
         case BYTE_ARRAY:
             return new ByteArrayValue(fromBytes);
         case STRING:
             return new StringValue(new String(fromBytes));
         default:
-            return null;
+            throw new TypeConversionException("Data type " + fromType.toString() + " not supported yet");
         }
     }
 
-    private byte[] concatenate(byte[] one, byte[] two) {
+    protected void submit(byte[] leading) {
+        this.leadingBytes = leading;
+        if (fromBytes != null) {
+            if (nextRegister != null) {
+                nextRegister.submit(concatenate(leadingBytes, fromBytes));
+            }
+            else {
+                writeChannel(newValue(dataType, concatenate(leadingBytes, fromBytes)));
+            }
+        } /* else wait for thisRegisterContent from setValue */
+    }
+
+    private static byte[] concatenate(byte[] one, byte[] two) {
         if (one == null) {
             return two;
         }
@@ -178,12 +196,8 @@ public class LinkedMappingHoldingRegister extends MappingInputRegister implement
         return combined;
     }
 
-    @Override
-    public byte[] toBytes() {
-        return inputRegister.toBytes();
-    }
-
     private void writeChannel(Value value) {
+    	logger.debug("Writing value: {}", value);
         if (value != null) {
             if (useUnscaledValues) {
                 channel.write(new DoubleValue(value.asDouble() * channel.getScalingFactor()));
@@ -192,6 +206,9 @@ public class LinkedMappingHoldingRegister extends MappingInputRegister implement
                 channel.write(value);
             }
         }
-        channel.setLatestRecord(new Record(Flag.CANNOT_WRITE_NULL_VALUE));
+        else {
+            channel.setLatestRecord(new Record(Flag.CANNOT_WRITE_NULL_VALUE));
+        }
     }
+
 }

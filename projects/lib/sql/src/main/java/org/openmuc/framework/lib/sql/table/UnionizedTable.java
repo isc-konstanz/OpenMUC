@@ -65,6 +65,23 @@ public class UnionizedTable extends Table {
         throw new UnsupportedOperationException("Unable to write to table union");
     }
 
+    @Override
+    public Record read(Connection connection, SqlData data) 
+            throws SQLException, ArgumentSyntaxException {
+        
+        Record record = new Record(Flag.NO_VALUE_RECEIVED_YET);
+        
+        StringBuilder query = new StringBuilder();
+        appendSelect(query, data);
+        appendLatest(query);
+        
+        List<Record> records = read(connection, data, query.toString());
+        if (records.size() > 0) {
+            record = records.get(records.size() - 1);
+        }
+        return record;
+    }
+
     @Override 
     public List<Record> read(Connection connection, SqlData data, long startTime, long endTime) 
             throws SQLException, ArgumentSyntaxException {

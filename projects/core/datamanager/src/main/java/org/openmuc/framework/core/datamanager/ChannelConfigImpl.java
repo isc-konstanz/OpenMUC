@@ -140,9 +140,8 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
                             throw new ParseException(
                                     "length of " + config.valueType.toString() + " value type was not specified");
                         }
-                        config.valueTypeLength = timeStringToMillis(valueTypeLengthString);
+                        config.valueTypeLength = Integer.parseInt(valueTypeLengthString);
                     }
-
                 }
                 else if (childName.equals("scalingFactor")) {
                     config.setScalingFactor(Double.parseDouble(childNode.getTextContent()));

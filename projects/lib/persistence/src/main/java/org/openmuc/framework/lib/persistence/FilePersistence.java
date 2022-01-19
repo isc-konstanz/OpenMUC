@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,8 +54,6 @@ public class FilePersistence {
     public static final String DEFAULT_FILENAME = "buffer.0.log";
     public static final String DEFAULT_FILE_PREFIX = "buffer";
     public static final String DEFAULT_FILE_SUFFIX = "log";
-
-    private final int MAX_FILE_COUNT_SUPPORTED_YET = 2; // FilePersistence still under Construction
 
     /**
      * @param directory
@@ -179,8 +178,7 @@ public class FilePersistence {
     }
 
     private void handleSingleFile(String filePath, byte[] payload, File file) {
-        throw new UnsupportedOperationException(
-                "right now only maxFileCount = " + MAX_FILE_COUNT_SUPPORTED_YET + " supported");
+        throw new UnsupportedOperationException("right now only maxFileCount >= 2 supported");
     }
 
     private void handleMultipleFiles(String buffer, byte[] payload, File file) throws IOException {
@@ -308,5 +306,35 @@ public class FilePersistence {
             }
         }
         return oldestFile;
+    }
+
+    public void restructure() throws IOException {
+        for (String buffer : getBuffers()) {
+            Path bufferPath = getOldestFilePath(buffer);
+            Long position = getFilePosition(bufferPath.toString());
+            if (position.equals(0L)) {
+                continue;
+            }
+            Path temp = bufferPath.getParent();
+            temp = Paths.get(temp.toString(), "temp");
+            try {
+                Files.move(bufferPath, temp, StandardCopyOption.REPLACE_EXISTING);
+            } catch (DirectoryNotEmptyException e) {
+                logger.error(bufferPath.toString() + " -> " + temp.toString());
+            }
+            Files.createFile(bufferPath);
+            FileInputStream inputStream = new FileInputStream(temp.toFile());
+            inputStream.skip(position);
+            FileOutputStream outputStream = new FileOutputStream(bufferPath.toFile(), true);
+            int nextChar = inputStream.read();
+            while (nextChar != -1) {
+                outputStream.write(nextChar);
+                nextChar = inputStream.read();
+            }
+            inputStream.close();
+            outputStream.close();
+            temp.toFile().delete();
+            setFilePosition(bufferPath.toString(), 0L);
+        }
     }
 }

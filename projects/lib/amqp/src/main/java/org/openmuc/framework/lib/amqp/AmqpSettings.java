@@ -32,6 +32,11 @@ public class AmqpSettings {
     private final String password;
     private final boolean ssl;
     private final String exchange;
+    private final String persistenceDirectory;
+    private final int maxFileCount;
+    private final long maxFileSize;
+    private final long maxBufferSize;
+    private final int connectionAliveInterval;
 
     /**
      * @param host
@@ -47,8 +52,35 @@ public class AmqpSettings {
      * @param ssl
      *            whether connecting with ssl
      * @param exchange
-     *            the exchange to use when publishing
+     *            the exchange to publish to
+     * @param persistenceDirectory
+     *            directory being used by FilePersistence
+     * @param maxFileCount
+     *            maximum file count per buffer created by FilePersistence
+     * @param maxFileSize
+     *            maximum file size per FilePersistence buffer file
+     * @param maxBufferSize
+     *            maximum RAM buffer size
+     * @param connectionAliveInterval
+     *            checks every given seconds if connection is alive
      */
+    public AmqpSettings(String host, int port, String virtualHost, String username, String password, boolean ssl,
+            String exchange, String persistenceDirectory, int maxFileCount, long maxFileSize, long maxBufferSize,
+            int connectionAliveInterval) {
+        this.host = host;
+        this.port = port;
+        this.virtualHost = virtualHost;
+        this.username = username;
+        this.password = password;
+        this.ssl = ssl;
+        this.exchange = exchange;
+        this.persistenceDirectory = persistenceDirectory;
+        this.maxFileCount = maxFileCount;
+        this.maxFileSize = maxFileSize;
+        this.maxBufferSize = maxBufferSize;
+        this.connectionAliveInterval = connectionAliveInterval;
+    }
+
     public AmqpSettings(String host, int port, String virtualHost, String username, String password, boolean ssl,
             String exchange) {
         this.host = host;
@@ -58,6 +90,11 @@ public class AmqpSettings {
         this.password = password;
         this.ssl = ssl;
         this.exchange = exchange;
+        this.persistenceDirectory = "";
+        this.maxFileCount = 0;
+        this.maxFileSize = 0;
+        this.maxBufferSize = 0;
+        this.connectionAliveInterval = 0;
     }
 
     public String getHost() {
@@ -86,5 +123,44 @@ public class AmqpSettings {
 
     public String getExchange() {
         return exchange;
+    }
+
+    public String getPersistenceDirectory() {
+        return persistenceDirectory;
+    }
+
+    public int getMaxFileCount() {
+        return maxFileCount;
+    }
+
+    public long getMaxFileSize() {
+        return maxFileSize;
+    }
+
+    public long getMaxBufferSize() {
+        return maxBufferSize;
+    }
+
+    public int getConnectionAliveInterval() {
+        return connectionAliveInterval;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("host = " + host + "\n");
+        sb.append("port = " + port + "\n");
+        sb.append("vHost = " + virtualHost + "\n");
+        sb.append("username = " + username + "\n");
+        sb.append("passwort = " + password + "\n");
+        sb.append("ssl = " + ssl + "\n");
+        sb.append("exchange = " + exchange + "\n");
+        sb.append("persistenceDirectory = " + persistenceDirectory + "\n");
+        sb.append("maxFileCount = " + maxFileCount + "\n");
+        sb.append("maxFileSize = " + maxFileSize + "\n");
+        sb.append("maxBufferSize = " + maxBufferSize + "\n");
+        sb.append("connectionAliveInterval = " + connectionAliveInterval + "\n");
+
+        return sb.toString();
     }
 }
