@@ -83,6 +83,9 @@ public abstract class Table {
         return false;
     }
 
+    public abstract Record read(Connection connection, SqlData data) 
+            throws SQLException, ArgumentSyntaxException;
+
     public abstract List<Record> read(Connection connection, SqlData data, long startTime, long endTime) 
             throws SQLException, ArgumentSyntaxException;
 

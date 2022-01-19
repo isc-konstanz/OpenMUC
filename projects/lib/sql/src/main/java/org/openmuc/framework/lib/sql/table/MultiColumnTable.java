@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.lib.sql.Index;
 import org.openmuc.framework.lib.sql.SqlData;
@@ -50,6 +51,23 @@ public class MultiColumnTable extends Table {
     @Override
     public String getName() {
         return table;
+    }
+
+    @Override
+    public Record read(Connection connection, SqlData data) 
+            throws SQLException, ArgumentSyntaxException {
+        
+        Record record = new Record(Flag.NO_VALUE_RECEIVED_YET);
+        
+        StringBuilder query = new StringBuilder();
+        appendSelect(query, data);
+        appendLatest(query);
+        
+        List<Record> records = read(connection, data, query.toString());
+        if (records.size() > 0) {
+            record = records.get(records.size() - 1);
+        }
+        return record;
     }
 
     @Override 
@@ -81,7 +99,7 @@ public class MultiColumnTable extends Table {
         // TODO: check if this should be configurable
         dataList.removeIf(d -> !d.isValid());
         if (dataList.size() < 1) {
-        	return;
+            return;
         }
         StringBuilder query = new StringBuilder();
         appendInsert(query, dataList);
