@@ -37,8 +37,10 @@ dependencies {
 
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-osgi",                      version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-ssl",                       version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-sql",                       version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-rest",                      version: cfgVersion
 
+    osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger",                    version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger-sql",                version: cfgVersion
 
     osgibundles group: "org.openmuc.framework", name: "openmuc-server-restws",                 version: cfgVersion
@@ -53,9 +55,9 @@ dependencies {
     //------------------------------------------------------------------------------------------------------
     // Add your database engine specific bundle for h2, jdbc or postgresql here
     //------------------------------------------------------------------------------------------------------
-    osgibundles group: 'org.postgresql', name: 'postgresql',                                   version: '42.2.14'
-    osgibundles group: 'com.h2database', name: 'h2',                                           version: '1.4.200'
-    //osgibundles group: 'mysql',          name: 'mysql-connector-java',                         version: "8.0.17"
+    //osgibundles group: 'org.postgresql', name: 'postgresql',                                   version: '42.2.14'
+    //osgibundles group: 'com.h2database', name: 'h2',                                           version: '1.4.200'
+    osgibundles group: 'mysql',          name: 'mysql-connector-java',                         version: "8.0.17"
 
     //------------------------------------------------------------------------------------------------------
     // Bundles which have to be added since JDK 11
