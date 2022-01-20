@@ -1,7 +1,7 @@
 repositories {
     mavenCentral()
     flatDir {
-        dirs rootDir.getPath() + "/build/libs-all/"
+        dirs rootDir.getPath() + "/build/libs/"
     }
 }
 
@@ -17,22 +17,9 @@ dependencies {
     //------------------------------------------------------------------------------------------------------
     // OpenMUC bundles
     //------------------------------------------------------------------------------------------------------
-    osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger-sql",                version: cfgVersion
-    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-osgi",                      version: cfgVersion
-
-    //add your database engine specific bundle for h2 or postgresql here:
-    osgibundles group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
-    osgibundles group: 'com.h2database', name: 'h2', version: '1.4.200'
-
-    osgibundles group: "org.openmuc.framework", name: "openmuc-driver-amqp",                   version: cfgVersion
-    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-amqp",                      version: cfgVersion
-    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-parser-openmuc",            version: cfgVersion
-    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-persistence",               version: cfgVersion
-                                                                     
     osgibundles group: "org.openmuc.framework", name: "openmuc-core-api",                      version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-core-spi",                      version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-core-datamanager",              version: cfgVersion
-    //osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger-ascii",              version: cfgVersion
 
     osgibundles group: "org.openmuc.framework", name: "openmuc-webui-spi",                     version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-webui-base",                    version: cfgVersion
@@ -44,28 +31,38 @@ dependencies {
     osgibundles group: "org.openmuc.framework", name: "openmuc-webui-mediaviewer",             version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-webui-simpledemovisualisation", version: cfgVersion
 
+    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-amqp",                      version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-parser-openmuc",            version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-persistence",               version: cfgVersion
+
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-osgi",                      version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-ssl",                       version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-lib-sql",                       version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-lib-rest",                      version: cfgVersion
+
+    osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger",                    version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-datalogger-sql",                version: cfgVersion
 
     osgibundles group: "org.openmuc.framework", name: "openmuc-server-restws",                 version: cfgVersion
 
     osgibundles group: "org.openmuc.framework", name: "openmuc-driver",                        version: cfgVersion
-    osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv",                    version: cfgVersion
     osgibundles group: "org.openmuc.framework", name: "openmuc-driver-aggregator",             version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-driver-amqp",                   version: cfgVersion
+    osgibundles group: "org.openmuc.framework", name: "openmuc-driver-csv",                    version: cfgVersion
 
     osgibundles group: "org.openmuc.framework", name: "openmuc-app-simpledemo",                version: cfgVersion
+
+    //------------------------------------------------------------------------------------------------------
+    // Add your database engine specific bundle for h2, jdbc or postgresql here
+    //------------------------------------------------------------------------------------------------------
+    //osgibundles group: 'org.postgresql', name: 'postgresql',                                   version: '42.2.14'
+    //osgibundles group: 'com.h2database', name: 'h2',                                           version: '1.4.200'
+    osgibundles group: 'mysql',          name: 'mysql-connector-java',                         version: "8.0.17"
 
     //------------------------------------------------------------------------------------------------------
     // Bundles which have to be added since JDK 11
     //------------------------------------------------------------------------------------------------------
     osgibundles group: "com.sun.activation",  name: "javax.activation",                        version: "1.2.0"
-
-    //------------------------------------------------------------------------------------------------------
-    // The official JDBC driver for MySQL.
-    // Only necessary if the default configurations with the SQL DataLogger is used.
-    //------------------------------------------------------------------------------------------------------
-    //osgibundles group: 'mysql',                  name: 'mysql-connector-java',                  version: "8.0.17"
 
     //------------------------------------------------------------------------------------------------------
     // The Apache Felix Gogo standard shell for OSGi (http://felix.apache.org/site/apache-felix-gogo.html)
@@ -90,9 +87,9 @@ dependencies {
     // Logback is a message logger implementation that implements SLF4J
     // natively
     //------------------------------------------------------------------------------------------------------
-    osgibundles group: "org.slf4j",            name: "slf4j-api",                              version: "1.7.32"
-    osgibundles group: "ch.qos.logback",       name: "logback-classic",                        version: "1.2.8"
-    osgibundles group: "ch.qos.logback",       name: "logback-core",                           version: "1.2.8"
+    osgibundles group: "org.slf4j",            name: "slf4j-api",                              version: "1.7.33"
+    osgibundles group: "ch.qos.logback",       name: "logback-classic",                        version: "1.2.10"
+    osgibundles group: "ch.qos.logback",       name: "logback-core",                           version: "1.2.10"
 
     //------------------------------------------------------------------------------------------------------
     // Apache Felix Service Component Runtime that implements the OSGi Declarative Services Specification
@@ -149,6 +146,8 @@ dependencies {
 }
 
 task syncOSGiBundles(type: Sync) {
+    dependsOn javaProjects.build
+
     from configurations.osgibundles;
     into rootDir.getPath() + "/framework/bundle"
 }

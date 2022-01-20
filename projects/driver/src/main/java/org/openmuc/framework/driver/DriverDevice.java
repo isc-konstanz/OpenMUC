@@ -89,12 +89,13 @@ public abstract class DriverDevice extends DriverChannelContext implements Conne
             RecordsReceivedListener listener) throws UnsupportedOperationException, ConnectionException {
         
         synchronized(channels) {
-            if (hasMethod(Listen.class, this)) {
-                invokeMethod(Listen.class, this, newChannels(containers), listener);
+            List<DriverChannel> channels = newChannels(containers);
+            
+            if (hasMethod(Listen.class, this, channels, listener)) {
+                invokeMethod(Listen.class, this, channels, listener);
             }
-            else if (hasMethod(Listen.class, channelClass)) {
-                
-                for (DriverChannel driverChannel : newChannels(containers)) {
+            else if (hasMethod(Listen.class, channelClass, listener)) {
+                for (DriverChannel driverChannel : channels) {
                     driverChannel.invokeListening(listener);
                 }
             }
@@ -107,16 +108,17 @@ public abstract class DriverDevice extends DriverChannelContext implements Conne
     @Override
     public final Object read(List<ChannelRecordContainer> containers, Object containerListHandle, String samplingGroup)
             throws UnsupportedOperationException, ConnectionException {
-        
+
         long timestamp = System.currentTimeMillis();
 
         synchronized(channels) {
-            if (hasMethod(Read.class, this)) {
-                invokeMethod(Read.class, this, getChannels(containers), samplingGroup);
+            List<DriverChannel> channels = getChannels(containers);
+            
+            if (hasMethod(Read.class, this, channels, samplingGroup)) {
+                invokeMethod(Read.class, this, channels, samplingGroup);
             }
-            else if (hasMethod(Read.class, channelClass)) {
-                
-                for (DriverChannel driverChannel : getChannels(containers)) {
+            else if (hasMethod(Read.class, channelClass, timestamp)) {
+                for (DriverChannel driverChannel : channels) {
                     driverChannel.invokeRead(timestamp);
                 }
             }
@@ -132,12 +134,13 @@ public abstract class DriverDevice extends DriverChannelContext implements Conne
             throws UnsupportedOperationException, ConnectionException {
 
         synchronized(channels) {
+            List<DriverChannel> channels = getChannels(containers);
+            
             if (hasMethod(Write.class, this)) {
-                invokeMethod(Write.class, this, getChannels(containers));
+                invokeMethod(Write.class, this, channels);
             }
             else if (hasMethod(Write.class, channelClass)) {
-                
-                for (DriverChannel driverChannel : getChannels(containers)) {
+                for (DriverChannel driverChannel : channels) {
                     driverChannel.invokeWrite();
                 }
             }
