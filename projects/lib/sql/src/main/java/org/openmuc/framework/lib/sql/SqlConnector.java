@@ -80,7 +80,7 @@ public class SqlConnector {
 
     public Connection connect() throws SQLException {
         if (source == null) {
-            throw new SQLException("Connection to database not open: " + source.getJdbcUrl());
+            throw new SQLException("Connection to database not open: " + settings.getDatabaseUrl());
         }
         return source.getConnection();
     }
