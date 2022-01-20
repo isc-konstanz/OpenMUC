@@ -95,11 +95,12 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
     public final void log(List<LoggingRecord> containers, long timestamp) {
         try {
             synchronized(channels) {
-                if (hasMethod(Write.class, this)) {
-                    invokeMethod(Write.class, this, getChannels(containers), timestamp);
+            	List<LoggingChannel> channels = getChannels(containers);
+            	
+                if (hasMethod(Write.class, this, channels, timestamp)) {
+                    invokeMethod(Write.class, this, channels, timestamp);
                 }
-                else if (hasMethod(Write.class, channelClass)) {
-                    
+                else if (hasMethod(Write.class, channelClass, timestamp)) {
                     for (LoggingChannel logChannel : getChannels(containers)) {
                         logChannel.invokeWrite(timestamp);
                     }
@@ -127,10 +128,10 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
                 logger.warn("Failed to retrieve records for unconfigured channel \"{}\"", id);
                 return null;
             }
-            if (hasMethod(Read.class, this)) {
+            if (hasMethod(Read.class, this, logChannel, startTime, endTime)) {
                 return (List<Record>) invokeReturn(Read.class, this, logChannel, startTime, endTime);
             }
-            else if (hasMethod(Read.class, channelClass)) {
+            else if (hasMethod(Read.class, channelClass, startTime, endTime)) {
                 return logChannel.invokeRead(startTime, endTime);
             }
         }
@@ -145,7 +146,7 @@ public abstract class DataLoggerActivator extends LoggingChannelContext implemen
                 logger.warn("Failed to retrieve latest record for unconfigured channel \"{}\"", id);
                 return null;
             }
-            if (hasMethod(Read.class, this)) {
+            if (hasMethod(Read.class, this, logChannel)) {
                 return (Record) invokeReturn(Read.class, this, logChannel);
             }
             else if (hasMethod(Read.class, channelClass)) {
