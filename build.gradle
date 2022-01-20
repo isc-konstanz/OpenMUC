@@ -73,8 +73,8 @@ configure(subprojects) {
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
         testImplementation 'org.mockito:mockito-core:2.21.0'
 
-        implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
-        implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.8'
+        implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.33'
+        implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
     }
 
     jar {
@@ -82,7 +82,7 @@ configure(subprojects) {
             'Bundle-Vendor': 'Fraunhofer ISE',
             'Bundle-SymbolicName': project.group + '.' + project.name)
 
-        destinationDirectory = new File("$rootDir/build/libs-all")
+        destinationDirectory = new File("$rootDir/build/libs")
     }
 
     test {
@@ -102,6 +102,6 @@ configure(subprojects) {
 configure(rootProject) {
     jar {
         // FIXME: Find better solution to avoid the root project beeing built
-        destinationDirectory = new File("$rootDir/build/tmp/")
+        destinationDirectory = new File("$rootDir/build/tmp/libs")
     }
 }

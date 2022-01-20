@@ -138,33 +138,27 @@ task distribute(type: Tar) {
 
     into(project.name) {
         from("build") {
-          include "libs/**"
+			for (Project dist : distributionProjects) {
+				include "libs/" + dist.getName() + "*.jar"
+			}
         }
         from("./") {
-          include "LICENSE"
-          include "dependencies/**"
+            include "LICENSE"
+            include "dependencies/**"
 
         }
         if (name.equals("tar") ){
-          exclude "**/dependencies/**/src"
+            exclude "**/dependencies/**/src"
         }
-    }
-
-    into(project.name + "/libs/") {
-		from("./build/libs-all/") {
-			for (Project dist : distributionProjects) {
-				include dist.getName() + "**"
-			}
-		}
     }
 
     into(project.name + "/docs/") {
         from("./doc/") {
-          include "CHANGELOG.txt"
-          include "user-guide/**"
+            include "CHANGELOG.txt"
+            include "user-guide/**"
         }
         from("./build/docs/") {
-          include "javadoc/**"
+            include "javadoc/**"
         }
     }
 }
