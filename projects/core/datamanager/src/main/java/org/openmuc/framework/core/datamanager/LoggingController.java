@@ -142,10 +142,9 @@ public class LoggingController {
                         channel.getAddress(), channel.getSettings(),
                         channel.getValueType(), channel.getValueTypeLength(), latestRecord));
             }
-            else {
-                logger.warn("DataLoggerService with Id {} not found for channel {}", definedLogger,
-                        channel.config.getId());
-                logger.warn("Correct configuration in channel.xml?");
+            else if (activeDataLoggers.size() > 0) {
+                logger.warn("DataLoggerService with ID \"{}\" not found for channel: {}", 
+                		definedLogger, channel.config.getId());
             }
         }
     }

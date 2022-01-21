@@ -57,7 +57,7 @@ dependencies {
     //------------------------------------------------------------------------------------------------------
     //osgibundles group: 'org.postgresql', name: 'postgresql',                                   version: '42.2.14'
     //osgibundles group: 'com.h2database', name: 'h2',                                           version: '1.4.200'
-    osgibundles group: 'mysql',          name: 'mysql-connector-java',                         version: "8.0.17"
+    osgibundles group: 'mysql',          name: 'mysql-connector-java',                         version: "8.0.22"
 
     //------------------------------------------------------------------------------------------------------
     // Bundles which have to be added since JDK 11
