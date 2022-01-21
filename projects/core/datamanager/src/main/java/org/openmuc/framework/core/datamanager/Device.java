@@ -62,12 +62,10 @@ public final class Device {
         }
         else if (deviceConfig.driverParent.activeDriver == null) {
             state = DeviceState.DRIVER_UNAVAILABLE;
-            logger.warn("No driver bundle available for configured driver: '{}'.", deviceConfig.getDriver().getId());
             for (ChannelConfigImpl channelConfig : deviceConfig.channelConfigsById.values()) {
                 channelConfig.channel = new ChannelImpl(dataManager, channelConfig, ChannelState.DRIVER_UNAVAILABLE,
                         Flag.DRIVER_UNAVAILABLE, currentTime, logChannels);
             }
-
         }
         else {
             state = DeviceState.CONNECTING;
