@@ -188,10 +188,12 @@ public class MqttDriverConnection implements Connection {
         if (parsers.containsKey(settings.getProperty("parser"))) {
             record = parsers.get(settings.getProperty("parser")).deserialize(message, container);
         }
-        else {
+        else if (container.getChannel().getScalingFactor() == 1.0) {
             record = new Record(new ByteArrayValue(message), System.currentTimeMillis());
         }
-
+        else {
+        	record = new Record(Flag.DRIVER_ERROR_DECODING_RESPONSE_FAILED);
+        }
         return record;
     }
 
