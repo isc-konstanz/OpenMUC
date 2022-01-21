@@ -494,9 +494,12 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 recordContainers.stream()
                         .map(recContainer -> (ChannelRecordContainerImpl) recContainer)
                         .filter(containerImpl -> containerImpl.getChannel().getChannelState() == ChannelState.LISTENING
-                                || containerImpl.getChannel().getDriverId().equals(DriverOptionsFactory.VIRTUAL))
-                        .filter(containerImpl -> containerImpl.getChannel().isLoggingEvent())
-                        .forEach(containerImpl -> channelRecordContainerList.add(containerImpl));
+                        		|| containerImpl.getChannel().getDriverId().equals(DriverOptionsFactory.VIRTUAL))
+                        .forEach(containerImpl -> {
+                            containerImpl.getChannel().setNewRecord(containerImpl.getRecord());
+                            if (containerImpl.getChannel().isLoggingEvent())
+                                channelRecordContainerList.add(containerImpl);
+                        });
             }
             loggingController.deliverLogsToEventBasedLogServices(channelRecordContainerList);
         }
