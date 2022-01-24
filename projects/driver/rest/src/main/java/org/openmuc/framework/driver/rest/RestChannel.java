@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,47 +20,49 @@
  */
 package org.openmuc.framework.driver.rest;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
+import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.driver.Channel;
+import org.openmuc.framework.driver.DriverChannel;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.lib.json.Const;
-import org.openmuc.framework.lib.json.FromJson;
-import org.openmuc.framework.lib.json.ToJson;
-import org.openmuc.framework.lib.json.rest.objects.RestRecord;
-import org.openmuc.framework.options.Address;
+import org.openmuc.framework.lib.rest.Const;
+import org.openmuc.framework.lib.rest.FromJson;
+import org.openmuc.framework.lib.rest.ToJson;
+import org.openmuc.framework.lib.rest.objects.RestRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
-public class RestChannel extends Channel {
+public class RestChannel extends DriverChannel {
     private static final Logger logger = LoggerFactory.getLogger(RestRemote.class);
 
-    @Address(id = "id",
+    @Option(type = ADDRESS,
             name = "Channel ID",
             description = "The ID of the remote OpenMUC channel")
     private String id;
     private String uri;
 
-    @Override
-    protected void onConfigure() throws ArgumentSyntaxException {
+    private Record record = new Record(Flag.NO_VALUE_RECEIVED_YET);
+
+    @Configure
+    public void configure() throws ArgumentSyntaxException {
         try {
-			uri = URLEncoder.encode(id, RestDriver.CHARSET.toString());
-			
-		} catch (UnsupportedEncodingException e) {
-			throw new ArgumentSyntaxException(e.getMessage());
-		}
+            uri = URLEncoder.encode(id, RestDriver.CHARSET.toString());
+            
+        } catch (UnsupportedEncodingException e) {
+            throw new ArgumentSyntaxException(e.getMessage());
+        }
     }
 
     public boolean checkTimestamp(RestConnection connection) throws ConnectionException {
-        @SuppressWarnings("deprecation")
-        Record record = getChannel().getLatestRecord();
-        
         if (record.getTimestamp() == null || record.getFlag() != Flag.VALID
                 || record.getTimestamp() < readTimestamp(connection)) {
             
@@ -72,10 +74,10 @@ public class RestChannel extends Channel {
     }
 
     public long readTimestamp(RestConnection connection) throws ConnectionException {
-    	String jsonStr = connection.get(uri + '/' + Const.TIMESTAMP);
+        String jsonStr = connection.get(uri + '/' + Const.TIMESTAMP);
         FromJson json = new FromJson(jsonStr);
-    	logger.debug("Received json string: {}", jsonStr);
-    	
+        logger.debug("Received json string: {}", jsonStr);
+        
         JsonElement timestamp = json.getJsonObject().get(Const.TIMESTAMP);
         if (timestamp == null) {
             return -1;
@@ -84,9 +86,9 @@ public class RestChannel extends Channel {
     }
 
     public void read(RestConnection connection) throws ConnectionException {
-    	String jsonStr = connection.get(uri);
+        String jsonStr = connection.get(uri);
         FromJson json = new FromJson(jsonStr);
-    	logger.debug("Received json string: {}", jsonStr);
+        logger.debug("Received json string: {}", jsonStr);
         
         Record record = json.getRecord(getValueType());
         if (record != null) {
@@ -98,13 +100,13 @@ public class RestChannel extends Channel {
     }
 
     public void setRecord(RestRecord record) {
-        if (record != null) {
-            setRecord(FromJson.convertRecord(record, getValueType()));
+        if (record == null) {
+            setRecord(this.record = FromJson.convertRecord(record, getValueType()));
         }
     }
 
-    public void write(RestConnection connection, long timestamp) throws ConnectionException {
-        Record record = new Record(getValue(), timestamp, Flag.VALID);
+    public void write(RestConnection connection) throws ConnectionException {
+        Record record = getRecord();
         ToJson json = new ToJson();
         json.addRecord(record, getValueType());
         
@@ -112,8 +114,8 @@ public class RestChannel extends Channel {
         setFlag(flag);
     }
 
-    public boolean equals(org.openmuc.framework.lib.json.rest.objects.RestChannel channel) {
-    	return id.equals(channel.getId());
+    public boolean equals(org.openmuc.framework.lib.rest.objects.RestChannel channel) {
+        return id.equals(channel.getId());
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -22,14 +22,14 @@ package org.openmuc.framework.server.spi;
 
 import org.openmuc.framework.config.ServerMapping;
 import org.openmuc.framework.dataaccess.Channel;
+import org.openmuc.framework.dataaccess.ChannelContainer;
 
 /**
  * Class that contains the mapping between a server-address/configuration and channel.
- * 
- * @author sfey
  *
  */
-public class ServerMappingContainer {
+public class ServerMappingContainer implements ChannelContainer {
+
     private final Channel channel;
     private final ServerMapping serverMapping;
 
@@ -52,6 +52,7 @@ public class ServerMappingContainer {
      * 
      * @return the channel
      */
+    @Override
     public Channel getChannel() {
         return this.channel;
     }

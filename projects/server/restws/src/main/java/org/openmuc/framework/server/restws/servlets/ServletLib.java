@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,6 +28,7 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openmuc.framework.lib.rest.FromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +54,19 @@ public class ServletLib {
         return text.toString();
     }
 
+    protected static FromJson getFromJson(HttpServletRequest request, Logger logger, HttpServletResponse response) {
+        FromJson json = null;
+        try {
+            json = new FromJson(ServletLib.getJsonText(request));
+        } catch (Exception e) {
+            ServletLib.sendHTTPErrorAndLogWarn(response, HttpServletResponse.SC_BAD_REQUEST, logger,
+                    "Malformed JSON message: ", e.getMessage());
+        }
+        return json;
+    }
+
     /**
-     * Only the first String will be sended over HTTP response.
+     * Send HTTP Error and log as warning. Only the first String will be sent over HTTP response.
      * 
      * @param response
      *            HttpServletResponse response
@@ -76,11 +88,22 @@ public class ServletLib {
         for (String m : msg) {
             warnMessage.append(m);
         }
-        logger.warn(warnMessage.toString());
+        if (logger.isWarnEnabled()) {
+            logger.warn(warnMessage.toString());
+        }
     }
 
-    /*
-     * Only the first String will be sended over HTTP response.
+    /**
+     * Send HTTP Error and log as debug. Only the first String will be sent over HTTP response.
+     * 
+     * @param response
+     *            HttpServletResponse response
+     * @param errorCode
+     *            error code
+     * @param logger
+     *            logger
+     * @param msg
+     *            message array
      */
     protected static void sendHTTPErrorAndLogDebug(HttpServletResponse response, int errorCode, Logger logger,
             String... msg) {
@@ -93,11 +116,22 @@ public class ServletLib {
         for (String m : msg) {
             warnMessage.append(m);
         }
-        logger.debug(warnMessage.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug(warnMessage.toString());
+        }
     }
 
-    /*
-     * Logger and HTTP response are the same message.
+    /**
+     * Send HTTP Error and log as error. Logger and HTTP response are the same message.
+     * 
+     * @param response
+     *            HttpServletResponse response
+     * @param errorCode
+     *            error code
+     * @param logger
+     *            logger
+     * @param msg
+     *            message array
      */
     protected static void sendHTTPErrorAndLogErr(HttpServletResponse response, int errorCode, Logger logger,
             String... msg) {
@@ -112,7 +146,6 @@ public class ServletLib {
         } catch (IOException e) {
             logger.error(COULD_NOT_SEND_HTTP_ERROR_MESSAGE, e);
         }
-
     }
 
     protected static String getJsonText(HttpServletRequest request) throws IOException {
@@ -120,19 +153,19 @@ public class ServletLib {
     }
 
     protected static String[] getPathInfoArray(String pathInfo) {
-    	String[] pathInfoArray;
+        String[] pathInfoArray;
         if (pathInfo.length() > 1) {
-        	pathInfoArray = pathInfo.replaceFirst("/", "").split("/");
-        	for (int i=0; i<pathInfoArray.length; i++) {
-        		try {
-					pathInfoArray[i] = URLDecoder.decode(pathInfoArray[i], "UTF-8");
-					
-				} catch (UnsupportedEncodingException e) {
-				}
-        	}
+            pathInfoArray = pathInfo.replaceFirst("/", "").split("/");
+            for (int i=0; i<pathInfoArray.length; i++) {
+                try {
+                    pathInfoArray[i] = URLDecoder.decode(pathInfoArray[i], "UTF-8");
+                    
+                } catch (UnsupportedEncodingException e) {
+                }
+            }
         }
         else {
-        	pathInfoArray = new String[] { "/" };
+            pathInfoArray = new String[] { "/" };
         }
         return pathInfoArray;
     }

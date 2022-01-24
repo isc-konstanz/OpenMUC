@@ -1,25 +1,26 @@
-
-def projectName = "OpenMUC Data Logger - ASCII"
+project.ext {
+    projectName = "OpenMUC Data Logger - ASCII"
+    projectDescription = "ASCII data logger for the OpenMUC framework."
+}
 
 dependencies {
-  implementation project(':openmuc-core-spi')
-  implementation project(':openmuc-core-datamanager')
+    implementation project(':openmuc-core-spi')
+    implementation project(':openmuc-core-datamanager')
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Export-Package', ''
-  }
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description "ASCII data logger for the OpenMUC framework."
-      }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
     }
-  }
 }

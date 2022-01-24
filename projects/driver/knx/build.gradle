@@ -1,6 +1,7 @@
-
-def projectName = "OpenMUC Driver - KNX"
-def projectDescription = "KNX driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - KNX"
+    projectDescription = "KNX driver for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
@@ -8,35 +9,32 @@ def calimerovers = '2.3'
 def jrxtxversion = '1.0.1'
 
 dependencies {
-  implementation project(':openmuc-core-spi')
-  implementation group: 'org.openmuc', name: 'jrxtx', version: jrxtxversion
+    implementation project(':openmuc-core-spi')
+    implementation group: 'org.openmuc', name: 'jrxtx', version: jrxtxversion
 
-  implementation group: 'com.github.calimero', name: 'calimero-core', version: calimerovers
-  embed  group: 'com.github.calimero', name: 'calimero-core', version: calimerovers
+    implementation group: 'com.github.calimero', name: 'calimero-core', version: calimerovers
+    embed group: 'com.github.calimero', name: 'calimero-core', version: calimerovers
+    embed group: 'org.microemu', name: 'midpapi20', version: '2.0.4'
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Bundle-ClassPath', '.,lib/calimero-core-' + calimerovers + '.jar'
-    instruction 'Import-Package', '!tuwien.auto.calimero*,*' + jarDefaultImportPackageVersion
-    instruction 'Export-Package', ''
-  }
-}
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/calimero-core-' + calimerovers + '.jar,lib/midpapi20-2.0.4.jar,lib/cldcapi11-2.0.4.jar',
+        'Import-Package': '!tuwien.auto.calimero*,*' + jarDefaultImportPackageVersion)
 
-jar {
-  into('lib') {
-    from configurations.embed
-  }
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description projectDescription
-      }
+    into('lib') {
+        from configurations.embed
     }
-  }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
 }

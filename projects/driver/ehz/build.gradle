@@ -1,43 +1,37 @@
-
-def projectName = "OpenMUC Driver - eHZ"
-def projectDescription = "eHZ driver for the OpenMUC framework."
+project.ext {
+    projectName = "OpenMUC Driver - eHZ"
+    projectDescription = "eHZ driver for the OpenMUC framework."
+}
 
 configurations.create('embed')
 
 def jsmlversion = '1.1.2'
-def jrxtxversion = '1.0.1'
 
 dependencies {
-  implementation project(':openmuc-core-spi')
-  
-  implementation group: 'org.openmuc', name: 'jsml',  version: jsmlversion
-  embed   group: 'org.openmuc', name: 'jsml',  version: jsmlversion
-  
-  embed   group: 'org.openmuc', name: 'jrxtx', version: jrxtxversion
+    implementation project(':openmuc-core-spi')
+
+    implementation group: 'org.openmuc', name: 'jsml', version: jsmlversion
+    embed group: 'org.openmuc', name: 'jsml', version: jsmlversion
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Bundle-ClassPath', '.,lib/jsml-' + jsmlversion + '.jar,lib/jrxtx-' + jrxtxversion + '.jar'
-    instruction 'Import-Package', '!org.openmuc.jsml*,*' + jarDefaultImportPackageVersion 
-    instruction 'Export-Package', ''
-  }
-}
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,lib/jsml-' + jsmlversion + '.jar',
+        'Import-Package': '!org.openmuc.jsml*,*' + jarDefaultImportPackageVersion)
 
-jar {
-  into('lib') {
-    from configurations.embed
-  }
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description projectDescription
-      }
+    into('lib') {
+        from configurations.embed
     }
-  }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
 }

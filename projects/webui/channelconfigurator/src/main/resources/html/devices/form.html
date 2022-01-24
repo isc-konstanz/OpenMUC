@@ -5,7 +5,7 @@
     <br />
     
     <div class="form-group">
-      <label for="id" class="col-md-2 control-label">
+      <label for="id" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'DEVICE_ID_HINT' | translate}}"></span>
         {{'DEVICE_ID' | translate}} *
       </label>
@@ -20,7 +20,7 @@
     </div>
 
     <div class="form-group">
-      <label for="description" class="col-md-2 control-label">
+      <label for="description" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'DEVICE_DESCRIPTION_HINT' | translate}}"></span>        
         {{'DEVICE_DESCRIPTION' | translate}}
       </label>
@@ -31,18 +31,18 @@
     </div>
 
     <div class="form-group">
-      <label for="address" class="col-md-2 control-label">
+      <label for="address" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="dummy/device/address/[0-9]"></span>
         {{'DEVICE_ADDRESS' | translate}}
       </label>
       <div class="col-md-6">
-        <input type="text" class="form-control" id="address" ng-model="device.configs.deviceAddress">
+        <input type="text" class="form-control" id="address" ng-model="device.configs.address">
         <p class="help-block">{{driverInfo.deviceAddressSyntax}} </p>
       </div>
     </div>
 
     <div class="form-group">
-      <label for="settings" class="col-md-2 control-label">
+      <label for="settings" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="N.A."></span>
         {{'DEVICE_SETTINGS' | translate}}
       </label>
@@ -53,14 +53,14 @@
     </div>
 
     <div class="form-group">
-      <label for="samplingTimeout" class="col-md-2 control-label">
+      <label for="samplingTimeout" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'DEVICE_SAMPLING_TIMEOUT_HINT' | translate}}"></span>
         {{'DEVICE_SAMPLING_TIMEOUT' | translate}}
       </label>
       <div class="col-md-6">
         <div class="input-group">
           <input type="text" class="form-control" id="samplingTimeout" name="samplingTimeout" ng-model="device.configs.samplingTimeout" ng-pattern="/^[0-9]{1,10}$/">
-          <div class="input-group-addon">ms</div>
+          <div class="input-group-append"><span class="input-group-text">ms</span></div>
         </div>
         <div class="form-error-container" ng-show="(deviceForm.samplingTimeout.$dirty && deviceForm.samplingTimeout.$invalid) || (deviceForm.submitted && deviceForm.samplingTimeout.$invalid)">
           <div class="form-error-message" ng-show="deviceForm.samplingTimeout.$error.pattern">{{'SHOULD_BE_INTEGER' | translate}}</div>
@@ -70,14 +70,14 @@
     </div>
 
     <div class="form-group">
-      <label for="connectRetryInterval" class="col-md-2 control-label">
+      <label for="connectRetryInterval" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'DEVICE_CONNECT_RETRY_INTERVAL_HINT' | translate}}"></span>
         {{'DEVICE_CONNECT_RETRY_INTERVAL' | translate}}
       </label>
       <div class="col-md-6">
         <div class="input-group">
           <input type="text" class="form-control" id="connectRetryInterval" name="connectRetryInterval" ng-model="device.configs.connectRetryInterval" ng-pattern="/^[0-9]{1,10}$/">
-          <div class="input-group-addon">ms</div>
+          <div class="input-group-append"><span class="input-group-text">ms</span></div>
         </div>
         <div class="form-error-container" ng-show="(deviceForm.connectRetryInterval.$dirty && deviceForm.connectRetryInterval.$invalid) || (deviceForm.submitted && deviceForm.connectRetryInterval.$invalid)">
           <div class="form-error-message" ng-show="deviceForm.connectRetryInterval.$error.pattern">{{'SHOULD_BE_INTEGER' | translate}}</div>
@@ -87,7 +87,7 @@
     </div>
 
     <div class="form-group">
-      <label for="disabled" class="col-md-2 control-label">
+      <label for="disabled" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'DEVICE_DISABLED_HINT' | translate}}"></span>
         {{'DEVICE_DISABLED' | translate}}
       </label>
@@ -98,7 +98,7 @@
     </div>
     
     <div class="row">
-      <div class="col-md-8">
+      <div class="col-md-6">
         <div class="alert alert-md alert-warning">
           <b class="small">* {{'REQUIRED_FIELDS' | translate}}</b><br />
           <b class="small">** {{'DEFAULT_LEFT_BLANK' | translate}}</b>
@@ -106,7 +106,7 @@
       </div>
     </div>
     
-    <div class="col-md-8 text-right">
+    <div class="col-md-6 text-right">
       <input type="submit" ng-click="setTabIndex(1)" class="btn btn-primary" value="{{'SUBMIT' | translate}}">
     </div>
 

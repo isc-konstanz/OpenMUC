@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,12 +28,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+//import javax.xml.bind.DatatypeConverter;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.LongValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.StringValue;
-import org.openmuc.framework.data.TypeConverter;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -74,7 +76,7 @@ public class WMBusInterface {
         @Override
         public void discardedBytes(byte[] bytes) {
             if (logger.isDebugEnabled()) {
-                String bytesAsHexStr = TypeConverter.bytesToHex(bytes);
+                String bytesAsHexStr = Hex.encodeHexString(bytes);
                 logger.debug("received bytes that will be discarded: {}", bytesAsHexStr);
             }
         }
@@ -129,8 +131,8 @@ public class WMBusInterface {
 
                 int i = 0;
                 for (DataRecord dataRecord : dataRecords) {
-                    String dibHexStr = TypeConverter.bytesToHex(dataRecord.getDib());
-                    String vibHexStr = TypeConverter.bytesToHex(dataRecord.getVib());
+                    String dibHexStr = Hex.encodeHexString(dataRecord.getDib());
+                    String vibHexStr = Hex.encodeHexString(dataRecord.getVib());
                     dibvibs[i++] = MessageFormat.format("{0}:{1}", dibHexStr, vibHexStr);
                 }
 
@@ -333,7 +335,8 @@ public class WMBusInterface {
         }
     }
 
-    public Connection connect(SecondaryAddress secondaryAddress, String keyString) throws ArgumentSyntaxException {
+    public Connection connect(SecondaryAddress secondaryAddress, String keyString)
+            throws ArgumentSyntaxException, DecoderException {
         DriverConnection connection = new DriverConnection(con, secondaryAddress, keyString, this);
         if (logger.isTraceEnabled()) {
             logger.trace("WMBus: connect device with ID {} and HashCode {}", secondaryAddress.getDeviceId(),

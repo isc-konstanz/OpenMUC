@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<configuration>
+<options>
   <driver id="mbus">
     <name>M-Bus (wired)</name>
     <description><![CDATA[
@@ -58,7 +58,12 @@
           <item value="9600">9600</item>
           <item value="14400">14400</item>
           <item value="19200">19200</item>
-          <item value="38400">38400</item>
+          <item value="38400">115200</item>
+          <item value="57600">57600</item>
+          <item value="115200">115200</item>
+          <item value="230400">230400</item>
+          <item value="460800">460800</item>
+          <item value="921600">921600</item>
         </selection>
       </option>
       <option id="timeout">
@@ -143,4 +148,4 @@
       </option>
     </channelAddress>
   </driver>
-</configuration>
+</options>

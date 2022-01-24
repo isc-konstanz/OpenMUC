@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,12 +20,10 @@
  */
 package org.openmuc.framework.driver.modbus;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class ModbusChannel {
 
-    private static final Logger logger = LoggerFactory.getLogger(ModbusDriver.class);
+    private static final boolean WRITE_SINGLE_REGISTER = Boolean.parseBoolean(System.getProperty(ModbusChannel.class.
+            getPackage().getName().toLowerCase() + ".write_single_register", "false"));
 
     /** Contains values to define the access method of the channel */
     public static enum EAccess {
@@ -55,16 +53,16 @@ public class ModbusChannel {
     private int count;
 
     /** Used to determine the register/coil count */
-    private EDatatype datatype;
+    private DataType datatype;
 
     /** Used to determine the appropriate transaction method */
-    private EFunctionCode functionCode;
+    private FunctionCode functionCode;
 
     /** Specifies whether the channel should be read or written */
     private EAccess accessFlag;
 
     /** */
-    private EPrimaryTable primaryTable;
+    private PrimaryTable primaryTable;
 
     private String channelAddress;
 
@@ -126,8 +124,8 @@ public class ModbusChannel {
     private boolean checkAddressParams(String[] params) {
         boolean returnValue = false;
         if ((params[UNITID].matches("\\d+?") || params[UNITID].equals(""))
-                && EPrimaryTable.isValidValue(params[PRIMARYTABLE]) && params[ADDRESS].matches("\\d+?")
-                && EDatatype.isValid(params[DATATYPE])) {
+                && PrimaryTable.isValidValue(params[PRIMARYTABLE]) && params[ADDRESS].matches("\\d+?")
+                && DataType.isValid(params[DATATYPE])) {
             returnValue = true;
         }
         return returnValue;
@@ -147,15 +145,16 @@ public class ModbusChannel {
      * 
      * @throws Exception
      */
+    @SuppressWarnings("deprecation")
     private void setFunctionCodeForReading() {
 
         switch (datatype) {
         case BOOLEAN:
-            if (primaryTable.equals(EPrimaryTable.COILS)) {
-                functionCode = EFunctionCode.FC_01_READ_COILS;
+            if (primaryTable.equals(PrimaryTable.COILS)) {
+                functionCode = FunctionCode.FC_01_READ_COILS;
             }
-            else if (primaryTable.equals(EPrimaryTable.DISCRETE_INPUTS)) {
-                functionCode = EFunctionCode.FC_02_READ_DISCRETE_INPUTS;
+            else if (primaryTable.equals(PrimaryTable.DISCRETE_INPUTS)) {
+                functionCode = FunctionCode.FC_02_READ_DISCRETE_INPUTS;
             }
             else {
                 invalidReadAddressParameterCombination();
@@ -170,11 +169,11 @@ public class ModbusChannel {
         case DOUBLE:
         case LONG:
         case BYTEARRAY:
-            if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
-                functionCode = EFunctionCode.FC_03_READ_HOLDING_REGISTERS;
+            if (primaryTable.equals(PrimaryTable.HOLDING_REGISTERS)) {
+                functionCode = FunctionCode.FC_03_READ_HOLDING_REGISTERS;
             }
-            else if (primaryTable.equals(EPrimaryTable.INPUT_REGISTERS)) {
-                functionCode = EFunctionCode.FC_04_READ_INPUT_REGISTERS;
+            else if (primaryTable.equals(PrimaryTable.INPUT_REGISTERS)) {
+                functionCode = FunctionCode.FC_04_READ_INPUT_REGISTERS;
             }
             else {
                 invalidReadAddressParameterCombination();
@@ -186,11 +185,11 @@ public class ModbusChannel {
     }
 
     @SuppressWarnings("deprecation")
-	private void setFunctionCodeForWriting() {
+    private void setFunctionCodeForWriting() {
         switch (datatype) {
         case BOOLEAN:
-            if (primaryTable.equals(EPrimaryTable.COILS)) {
-                functionCode = EFunctionCode.FC_05_WRITE_SINGLE_COIL;
+            if (primaryTable.equals(PrimaryTable.COILS)) {
+                functionCode = FunctionCode.FC_05_WRITE_SINGLE_COIL;
             }
             else {
                 invalidWriteAddressParameterCombination();
@@ -199,21 +198,23 @@ public class ModbusChannel {
         case SHORT:
         case INT16:
         case UINT16:
-            if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
-                functionCode = EFunctionCode.FC_06_WRITE_SINGLE_REGISTER;
+            if (WRITE_SINGLE_REGISTER) {
+                if (primaryTable.equals(PrimaryTable.HOLDING_REGISTERS)) {
+                    functionCode = FunctionCode.FC_06_WRITE_SINGLE_REGISTER;
+                }
+                else {
+                    invalidWriteAddressParameterCombination();
+                }
+                break;
             }
-            else {
-                invalidWriteAddressParameterCombination();
-            }
-            break;
         case INT32:
         case UINT32:
         case FLOAT:
         case DOUBLE:
         case LONG:
         case BYTEARRAY:
-            if (primaryTable.equals(EPrimaryTable.HOLDING_REGISTERS)) {
-                functionCode = EFunctionCode.FC_16_WRITE_MULTIPLE_REGISTERS;
+            if (primaryTable.equals(PrimaryTable.HOLDING_REGISTERS)) {
+                functionCode = FunctionCode.FC_16_WRITE_MULTIPLE_REGISTERS;
             }
             else {
                 invalidWriteAddressParameterCombination();
@@ -239,7 +240,7 @@ public class ModbusChannel {
     }
 
     private void setDatatype(String datatype) {
-        this.datatype = EDatatype.getEnum(datatype);
+        this.datatype = DataType.getEnum(datatype);
     }
 
     private void setUnitId(String unitId) {
@@ -252,15 +253,15 @@ public class ModbusChannel {
     }
 
     private void setPrimaryTable(String primaryTable) {
-        this.primaryTable = EPrimaryTable.getEnumfromString(primaryTable);
+        this.primaryTable = PrimaryTable.getEnumfromString(primaryTable);
     }
 
-    public EPrimaryTable getPrimaryTable() {
+    public PrimaryTable getPrimaryTable() {
         return primaryTable;
     }
 
     private void setCount(String addressParamDatatyp) {
-        if (datatype.equals(EDatatype.BYTEARRAY)) {
+        if (datatype.equals(DataType.BYTEARRAY)) {
             // TODO check syntax first? bytearray[n]
 
             // special handling of the BYTEARRAY datatyp
@@ -287,11 +288,11 @@ public class ModbusChannel {
         return count;
     }
 
-    public EDatatype getDatatype() {
+    public DataType getDatatype() {
         return datatype;
     }
 
-    public EFunctionCode getFunctionCode() {
+    public FunctionCode getFunctionCode() {
         return functionCode;
     }
 

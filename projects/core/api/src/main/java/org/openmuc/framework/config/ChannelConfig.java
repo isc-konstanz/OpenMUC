@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -27,21 +27,26 @@ import org.openmuc.framework.data.ValueType;
 
 public interface ChannelConfig {
 
-    static final Boolean DISABLED_DEFAULT = false;
-    static final String DESCRIPTION_DEFAULT = "";
-    static final String CHANNEL_ADDRESS_DEFAULT = "";
-    static final String CHANNEL_SETTINGS_DEFAULT = "";
-    static final String UNIT_DEFAULT = "";
-    static final ValueType VALUE_TYPE_DEFAULT = ValueType.DOUBLE;
-    static final int BYTE_ARRAY_SIZE_DEFAULT = 10;
-    static final int STRING_SIZE_DEFAULT = 10;
-    static final boolean LISTENING_DEFAULT = false;
-    static final int SAMPLING_INTERVAL_DEFAULT = -1;
-    static final int SAMPLING_TIME_OFFSET_DEFAULT = 0;
-    static final String SAMPLING_GROUP_DEFAULT = "";
-    static final int LOGGING_INTERVAL_DEFAULT = -1;
-    static final int LOGGING_TIME_OFFSET_DEFAULT = 0;
-	static final String LOGGING_SETTINGS_DEFAULT = "";
+    Boolean DISABLED_DEFAULT = false;
+    String DESCRIPTION_DEFAULT = "";
+    String ADDRESS_DEFAULT = "";
+    String SETTINGS_DEFAULT = "";
+    String UNIT_DEFAULT = "";
+    ValueType VALUE_TYPE_DEFAULT = ValueType.DOUBLE;
+    int BYTE_ARRAY_SIZE_DEFAULT = 10;
+    int STRING_SIZE_DEFAULT = 10;
+    boolean LISTENING_DEFAULT = false;
+    int SAMPLING_INTERVAL_DEFAULT = -1;
+    int SAMPLING_TIME_OFFSET_DEFAULT = 0;
+    String SAMPLING_GROUP_DEFAULT = "";
+    int LOGGING_INTERVAL_DEFAULT = -1;
+    int LOGGING_DELAY_MAX_DEFAULT = 0;
+    int LOGGING_TIME_OFFSET_DEFAULT = 0;
+    boolean LOGGING_AVERAGING_DEFAULT = false;
+    boolean LOGGING_EVENT_DEFAULT = false;
+    Double LOGGING_TOLERANCE_DEFAULT = 0.0;
+    String LOGGING_SETTINGS_DEFAULT = "";
+    String LOGGING_READER_DEFAULT = "";
 
     String getId();
 
@@ -51,13 +56,13 @@ public interface ChannelConfig {
 
     void setDescription(String description);
 
-    String getChannelAddress();
+    String getAddress();
 
-    void setChannelAddress(String address);
+    void setAddress(String address);
 
-    String getChannelSettings();
+    String getSettings();
 
-    void setChannelSettings(String settings);
+    void setSettings(String settings);
 
     String getUnit();
 
@@ -71,13 +76,13 @@ public interface ChannelConfig {
 
     void setValueTypeLength(Integer maxLength);
 
-    Double getScalingFactor();
-
-    void setScalingFactor(Double factor);
-
     Double getValueOffset();
 
     void setValueOffset(Double offset);
+
+    Double getScalingFactor();
+
+    void setScalingFactor(Double factor);
 
     Boolean isListening();
 
@@ -99,13 +104,33 @@ public interface ChannelConfig {
 
     void setLoggingInterval(Integer interval);
 
+    Integer getLoggingDelayMaximum();
+
+    void setLoggingDelayMaximum(Integer maximum);
+
     Integer getLoggingTimeOffset();
 
     void setLoggingTimeOffset(Integer offset);
 
-	String getLoggingSettings();
+    String getLoggingSettings();
 
-	void setLoggingSettings(String settings);
+    void setLoggingSettings(String settings);
+
+    Double getLoggingTolerance();
+
+    void setLoggingTolerance(Double tolerance);
+
+    Boolean isloggingAverage();
+
+    void setloggingAverage(Boolean averaging);
+
+    Boolean isLoggingEvent();
+
+    void setLoggingEvent(Boolean loggingEvent);
+
+    String getReader();
+
+    void setReader(String reader);
 
     Boolean isDisabled();
 

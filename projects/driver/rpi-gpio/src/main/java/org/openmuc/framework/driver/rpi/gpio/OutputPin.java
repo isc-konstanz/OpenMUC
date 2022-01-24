@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -23,8 +23,9 @@ package org.openmuc.framework.driver.rpi.gpio;
 import java.util.List;
 
 import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
+import org.openmuc.framework.driver.annotation.Write;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,17 +35,19 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 
 public class OutputPin extends InputPin {
-	private final static Logger logger = LoggerFactory.getLogger(OutputPin.class);
+    private final static Logger logger = LoggerFactory.getLogger(OutputPin.class);
 
     public OutputPin(GpioPinDigital pin) {
-		super(pin);
-	}
+        super(pin);
+    }
 
-    @Override
-    public Object onWrite(List<GpioChannel> channels, Object containerListHandle) throws ConnectionException {
+    @Write
+    public void write(List<GpioChannel> channels) throws ConnectionException {
         for (GpioChannel channel : channels) {
-            Value value = channel.getValue();
-            if (value != null) {
+            Record record = channel.getRecord();
+            Value value;
+            if (record.isValid()) {
+                value = record.getValue();
                 logger.debug("Write value to output pin {}: {}", pin.getName(), value);
                 
                 PinState state;
@@ -62,7 +65,6 @@ public class OutputPin extends InputPin {
                 logger.warn("No value received to write to GPIO pin {}", pin.getName());
             }
         }
-        return null;
     }
 
 }

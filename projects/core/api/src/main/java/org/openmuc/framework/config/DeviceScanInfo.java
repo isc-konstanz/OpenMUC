@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -28,26 +28,26 @@ package org.openmuc.framework.config;
 public class DeviceScanInfo {
 
     private final String id;
-    private final String deviceAddress;
+    private final String address;
     private final String settings;
     private final String description;
 
-    public DeviceScanInfo(String deviceAddress, String settings, String description) {
-        this("", deviceAddress, settings, description);
+    public DeviceScanInfo(String address, String settings, String description) {
+        this("", address, settings, description);
     }
 
-    public DeviceScanInfo(String id, String deviceAddress, String settings, String description) {
-        if (deviceAddress == null) {
-            throw new IllegalArgumentException("deviceAddress must not be null.");
+    public DeviceScanInfo(String id, String address, String settings, String description) {
+        if (address == null) {
+            throw new IllegalArgumentException("Device address must not be null.");
         }
         if (id == null || id.isEmpty()) {
-            this.id = deviceAddress.replaceAll("[^a-zA-Z0-9]+", "");
+            this.id = address.replaceAll("[^a-zA-Z0-9]+", "");
         }
         else {
             this.id = id;
         }
 
-        this.deviceAddress = deviceAddress;
+        this.address = address;
 
         if (settings == null) {
             this.settings = "";
@@ -88,8 +88,8 @@ public class DeviceScanInfo {
      * 
      * @return the device address
      */
-    public String getDeviceAddress() {
-        return deviceAddress;
+    public String getAddress() {
+        return address;
     }
 
     /**
@@ -106,8 +106,8 @@ public class DeviceScanInfo {
         StringBuilder sb = new StringBuilder();
         sb.append("\nDeviceScanInfo:\n  ID: ")
                 .append(id)
-                .append("\n  DeviceAddress: ")
-                .append(deviceAddress)
+                .append("\n  Address: ")
+                .append(address)
                 .append("\n  Settings: ")
                 .append(settings)
                 .append("\n  Description: ")

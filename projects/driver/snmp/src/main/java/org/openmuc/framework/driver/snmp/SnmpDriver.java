@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -27,6 +27,7 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.option.DriverOptionsFactory;
 import org.openmuc.framework.driver.snmp.implementation.SnmpDevice;
 import org.openmuc.framework.driver.snmp.implementation.SnmpDevice.SNMPVersion;
 import org.openmuc.framework.driver.snmp.implementation.SnmpDeviceV1V2c;
@@ -35,14 +36,13 @@ import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
 import org.openmuc.framework.driver.spi.DriverService;
-import org.openmuc.framework.options.DriverInfoFactory;
 import org.osgi.service.component.annotations.Component;
 
 @Component
 public final class SnmpDriver implements DriverService {
 //    private static final Logger logger = LoggerFactory.getLogger(SnmpDriver.class);
 
-    private static final DriverInfo info = DriverInfoFactory.readInfo(SnmpDriver.class);
+    private static final DriverInfo info = DriverOptionsFactory.readInfo(SnmpDriver.class);
 
     // AUTHENTICATIONPASSPHRASE is the same COMMUNITY word in SNMP V2c
     public enum SnmpDriverSettingVariableNames {

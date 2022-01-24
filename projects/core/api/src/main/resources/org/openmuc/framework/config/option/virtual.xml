@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<options>
+  <driver id="virtual">
+    <name>Virtual</name>
+    <description><![CDATA[
+        Virtual driver, potentially used by applications, without implementing a protocol on its own.
+      ]]>
+    </description>
+  </driver>
+</options>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<options>
+  <option id="samplingTimeout">
+    <name>Sampling timeout</name>
+    <description>
+      Default time waited for a read operation of any Device to complete, 
+      if the Device doesn’t set a sampling timeout on its own.
+    </description>
+    <mandatory>false</mandatory>
+    <type>INTEGER</type>
+    <default>0</default>
+    <selection>
+      <default>time</default>
+    </selection>
+  </option>
+  <option id="connectRetryInterval">
+    <name>Connect retry interval</name>
+    <description>
+      Default time waited until a failed connection attempt of any Device is repeated, 
+      if the Device doesn’t set a connect retry interval on its own.
+    </description>
+    <mandatory>false</mandatory>
+    <type>INTEGER</type>
+    <default>60000</default>
+    <selection>
+      <default>time</default>
+    </selection>
+  </option>
+</options>

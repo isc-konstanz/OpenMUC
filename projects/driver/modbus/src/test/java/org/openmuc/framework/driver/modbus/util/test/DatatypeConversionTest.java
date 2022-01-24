@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,16 +20,19 @@
  */
 package org.openmuc.framework.driver.modbus.util.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.openmuc.framework.data.TypeConverter;
-import org.openmuc.framework.driver.modbus.util.DatatypeConversion;
-import org.openmuc.framework.driver.modbus.util.DatatypeConversion.EndianInput;
-import org.openmuc.framework.driver.modbus.util.DatatypeConversion.EndianOutput;
+//import javax.xml.bind.DatatypeConverter;
+
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.junit.jupiter.api.Test;
+import org.openmuc.framework.driver.modbus.util.DataTypeConverter;
+import org.openmuc.framework.driver.modbus.util.DataTypeConverter.EndianInput;
+import org.openmuc.framework.driver.modbus.util.DataTypeConverter.EndianOutput;
 
 /**
  * This test case test the datatype conversion. It covers tests from datatype to byte[] and vice versa
@@ -41,53 +44,53 @@ public class DatatypeConversionTest {
     // BE = BigEndian;
     // LE = LittleEndian
 
-    byte[] bytes8_Value_MaxPositive_BE = TypeConverter.hexToBytes("7FFFFFFFFFFFFFFF");
-    byte[] bytes8_Value_2_BE = TypeConverter.hexToBytes("0000000000000002");
-    byte[] bytes8_Value_1_BE = TypeConverter.hexToBytes("0000000000000001");
-    byte[] bytes8_Value_0_BE = TypeConverter.hexToBytes("0000000000000000");
-    byte[] bytes8_Value_Minus_1_BE = TypeConverter.hexToBytes("FFFFFFFFFFFFFFFF");
-    byte[] bytes8_Value_Minus_2_BE = TypeConverter.hexToBytes("FFFFFFFFFFFFFFFE");
-    byte[] bytes8_Value_MaxNegative_BE = TypeConverter.hexToBytes("8000000000000000");
+    byte[] bytes8_Value_MaxPositive_BE = Hex.decodeHex("7FFFFFFFFFFFFFFF");
+    byte[] bytes8_Value_2_BE = Hex.decodeHex("0000000000000002");
+    byte[] bytes8_Value_1_BE = Hex.decodeHex("0000000000000001");
+    byte[] bytes8_Value_0_BE = Hex.decodeHex("0000000000000000");
+    byte[] bytes8_Value_Minus_1_BE = Hex.decodeHex("FFFFFFFFFFFFFFFF");
+    byte[] bytes8_Value_Minus_2_BE = Hex.decodeHex("FFFFFFFFFFFFFFFE");
+    byte[] bytes8_Value_MaxNegative_BE = Hex.decodeHex("8000000000000000");
 
-    byte[] bytes4_Value_MaxPositive_BE = TypeConverter.hexToBytes("7FFFFFFF");
-    byte[] bytes4_Value_2_BE = TypeConverter.hexToBytes("00000002");
-    byte[] bytes4_Value_1_BE = TypeConverter.hexToBytes("00000001");
-    byte[] bytes4_Value_0_BE = TypeConverter.hexToBytes("00000000");
-    byte[] bytes4_Value_Minus_1_BE = TypeConverter.hexToBytes("FFFFFFFF");
-    byte[] bytes4_Value_Minus_2_BE = TypeConverter.hexToBytes("FFFFFFFE");
-    byte[] bytes4_Value_MaxNegative_BE = TypeConverter.hexToBytes("80000000");
+    byte[] bytes4_Value_MaxPositive_BE = Hex.decodeHex("7FFFFFFF");
+    byte[] bytes4_Value_2_BE = Hex.decodeHex("00000002");
+    byte[] bytes4_Value_1_BE = Hex.decodeHex("00000001");
+    byte[] bytes4_Value_0_BE = Hex.decodeHex("00000000");
+    byte[] bytes4_Value_Minus_1_BE = Hex.decodeHex("FFFFFFFF");
+    byte[] bytes4_Value_Minus_2_BE = Hex.decodeHex("FFFFFFFE");
+    byte[] bytes4_Value_MaxNegative_BE = Hex.decodeHex("80000000");
 
-    byte[] bytes2_Value_MaxPositive_BE = TypeConverter.hexToBytes("7FFF");
-    byte[] bytes2_Value_2_BE = TypeConverter.hexToBytes("0002");
-    byte[] bytes2_Value_1_BE = TypeConverter.hexToBytes("0001");
-    byte[] bytes2_Value_0_BE = TypeConverter.hexToBytes("0000");
-    byte[] bytes2_Value_Minus_1_BE = TypeConverter.hexToBytes("FFFF");
-    byte[] bytes2_Value_Minus_2_BE = TypeConverter.hexToBytes("FFFE");
-    byte[] bytes2_Value_MaxNegative_BE = TypeConverter.hexToBytes("8000");
+    byte[] bytes2_Value_MaxPositive_BE = Hex.decodeHex("7FFF");
+    byte[] bytes2_Value_2_BE = Hex.decodeHex("0002");
+    byte[] bytes2_Value_1_BE = Hex.decodeHex("0001");
+    byte[] bytes2_Value_0_BE = Hex.decodeHex("0000");
+    byte[] bytes2_Value_Minus_1_BE = Hex.decodeHex("FFFF");
+    byte[] bytes2_Value_Minus_2_BE = Hex.decodeHex("FFFE");
+    byte[] bytes2_Value_MaxNegative_BE = Hex.decodeHex("8000");
 
-    byte[] bytes8_Value_MaxPositive_LE = DatatypeConversion.reverseByteOrderNewArray(bytes8_Value_MaxPositive_BE);
-    byte[] bytes8_Value_2_LE = DatatypeConversion.reverseByteOrderNewArray(bytes8_Value_2_BE);
-    byte[] bytes8_Value_1_LE = DatatypeConversion.reverseByteOrderNewArray(bytes8_Value_1_BE);
-    byte[] bytes8_Value_0_LE = DatatypeConversion.reverseByteOrderNewArray(bytes8_Value_0_BE);
-    byte[] bytes8_Value_Minus_1_LE = DatatypeConversion.reverseByteOrderNewArray(bytes8_Value_Minus_1_BE);
-    byte[] bytes8_Value_Minus_2_LE = DatatypeConversion.reverseByteOrderNewArray(bytes8_Value_Minus_2_BE);
-    byte[] bytes8_Value_MaxNegative_LE = DatatypeConversion.reverseByteOrderNewArray(bytes8_Value_MaxNegative_BE);
+    byte[] bytes8_Value_MaxPositive_LE = DataTypeConverter.reverseByteOrderNewArray(bytes8_Value_MaxPositive_BE);
+    byte[] bytes8_Value_2_LE = DataTypeConverter.reverseByteOrderNewArray(bytes8_Value_2_BE);
+    byte[] bytes8_Value_1_LE = DataTypeConverter.reverseByteOrderNewArray(bytes8_Value_1_BE);
+    byte[] bytes8_Value_0_LE = DataTypeConverter.reverseByteOrderNewArray(bytes8_Value_0_BE);
+    byte[] bytes8_Value_Minus_1_LE = DataTypeConverter.reverseByteOrderNewArray(bytes8_Value_Minus_1_BE);
+    byte[] bytes8_Value_Minus_2_LE = DataTypeConverter.reverseByteOrderNewArray(bytes8_Value_Minus_2_BE);
+    byte[] bytes8_Value_MaxNegative_LE = DataTypeConverter.reverseByteOrderNewArray(bytes8_Value_MaxNegative_BE);
 
-    byte[] bytes4_Value_MaxPositive_LE = DatatypeConversion.reverseByteOrderNewArray(bytes4_Value_MaxPositive_BE);
-    byte[] bytes4_Value_2_LE = DatatypeConversion.reverseByteOrderNewArray(bytes4_Value_2_BE);
-    byte[] bytes4_Value_1_LE = DatatypeConversion.reverseByteOrderNewArray(bytes4_Value_1_BE);
-    byte[] bytes4_Value_0_LE = DatatypeConversion.reverseByteOrderNewArray(bytes4_Value_0_BE);
-    byte[] bytes4_Value_Minus_1_LE = DatatypeConversion.reverseByteOrderNewArray(bytes4_Value_Minus_1_BE);
-    byte[] bytes4_Value_Minus_2_LE = DatatypeConversion.reverseByteOrderNewArray(bytes4_Value_Minus_2_BE);
-    byte[] bytes4_Value_MaxNegative_LE = DatatypeConversion.reverseByteOrderNewArray(bytes4_Value_MaxNegative_BE);
+    byte[] bytes4_Value_MaxPositive_LE = DataTypeConverter.reverseByteOrderNewArray(bytes4_Value_MaxPositive_BE);
+    byte[] bytes4_Value_2_LE = DataTypeConverter.reverseByteOrderNewArray(bytes4_Value_2_BE);
+    byte[] bytes4_Value_1_LE = DataTypeConverter.reverseByteOrderNewArray(bytes4_Value_1_BE);
+    byte[] bytes4_Value_0_LE = DataTypeConverter.reverseByteOrderNewArray(bytes4_Value_0_BE);
+    byte[] bytes4_Value_Minus_1_LE = DataTypeConverter.reverseByteOrderNewArray(bytes4_Value_Minus_1_BE);
+    byte[] bytes4_Value_Minus_2_LE = DataTypeConverter.reverseByteOrderNewArray(bytes4_Value_Minus_2_BE);
+    byte[] bytes4_Value_MaxNegative_LE = DataTypeConverter.reverseByteOrderNewArray(bytes4_Value_MaxNegative_BE);
 
-    byte[] bytes2_Value_MaxPositive_LE = DatatypeConversion.reverseByteOrderNewArray(bytes2_Value_MaxPositive_BE);
-    byte[] bytes2_Value_2_LE = DatatypeConversion.reverseByteOrderNewArray(bytes2_Value_2_BE);
-    byte[] bytes2_Value_1_LE = DatatypeConversion.reverseByteOrderNewArray(bytes2_Value_1_BE);
-    byte[] bytes2_Value_0_LE = DatatypeConversion.reverseByteOrderNewArray(bytes2_Value_0_BE);
-    byte[] bytes2_Value_Minus_1_LE = DatatypeConversion.reverseByteOrderNewArray(bytes2_Value_Minus_1_BE);
-    byte[] bytes2_Value_Minus_2_LE = DatatypeConversion.reverseByteOrderNewArray(bytes2_Value_Minus_2_BE);
-    byte[] bytes2_Value_MaxNegative_LE = DatatypeConversion.reverseByteOrderNewArray(bytes2_Value_MaxNegative_BE);
+    byte[] bytes2_Value_MaxPositive_LE = DataTypeConverter.reverseByteOrderNewArray(bytes2_Value_MaxPositive_BE);
+    byte[] bytes2_Value_2_LE = DataTypeConverter.reverseByteOrderNewArray(bytes2_Value_2_BE);
+    byte[] bytes2_Value_1_LE = DataTypeConverter.reverseByteOrderNewArray(bytes2_Value_1_BE);
+    byte[] bytes2_Value_0_LE = DataTypeConverter.reverseByteOrderNewArray(bytes2_Value_0_BE);
+    byte[] bytes2_Value_Minus_1_LE = DataTypeConverter.reverseByteOrderNewArray(bytes2_Value_Minus_1_BE);
+    byte[] bytes2_Value_Minus_2_LE = DataTypeConverter.reverseByteOrderNewArray(bytes2_Value_Minus_2_BE);
+    byte[] bytes2_Value_MaxNegative_LE = DataTypeConverter.reverseByteOrderNewArray(bytes2_Value_MaxNegative_BE);
 
     byte[] bytes1_Value_MaxPositive = new byte[] { (byte) 0x7F };
     byte[] bytes1_Value_2 = new byte[] { (byte) 0x02 };
@@ -106,16 +109,19 @@ public class DatatypeConversionTest {
     final int MAX_SIGNED_INT8 = 127;
     final int MIN_SIGNED_INT8 = -128;
 
+    public DatatypeConversionTest() throws DecoderException {
+    }
+
     @Test
-    public void test_reverseByteOrder() {
-        byte[] array1 = TypeConverter.hexToBytes("00000002");
-        byte[] array1Reverse = TypeConverter.hexToBytes("02000000");
-        DatatypeConversion.reverseByteOrder(array1);
+    public void test_reverseByteOrder() throws DecoderException {
+        byte[] array1 = Hex.decodeHex("00000002");
+        byte[] array1Reverse = Hex.decodeHex("02000000");
+        DataTypeConverter.reverseByteOrder(array1);
         assertTrue(Arrays.equals(array1, array1Reverse));
 
-        byte[] array2 = TypeConverter.hexToBytes("00000002");
-        byte[] array2Reverse = TypeConverter.hexToBytes("02000000");
-        assertTrue(Arrays.equals(array2Reverse, DatatypeConversion.reverseByteOrderNewArray(array2)));
+        byte[] array2 = Hex.decodeHex("00000002");
+        byte[] array2Reverse = Hex.decodeHex("02000000");
+        assertTrue(Arrays.equals(array2Reverse, DataTypeConverter.reverseByteOrderNewArray(array2)));
     }
 
     @Test
@@ -123,28 +129,28 @@ public class DatatypeConversionTest {
 
         long signedInt64;
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_MaxPositive_BE,
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_MaxPositive_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(Long.MAX_VALUE, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(2, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(1, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(0, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_Minus_1_BE,
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_Minus_1_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(-1, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_Minus_2_BE,
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_Minus_2_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(-2, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_MaxNegative_BE,
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_MaxNegative_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(Long.MIN_VALUE, signedInt64);
 
@@ -154,28 +160,28 @@ public class DatatypeConversionTest {
 
         long signedInt64;
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_MaxPositive_LE,
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_MaxPositive_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(Long.MAX_VALUE, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_2_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_2_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(2, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_1_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_1_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(1, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_0_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_0_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(0, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_Minus_1_LE,
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_Minus_1_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(-1, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_Minus_2_LE,
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_Minus_2_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(-2, signedInt64);
 
-        signedInt64 = DatatypeConversion.bytes_To_SignedInt64(bytes8_Value_MaxNegative_LE,
+        signedInt64 = DataTypeConverter.bytesToSignedInt64(bytes8_Value_MaxNegative_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(Long.MIN_VALUE, signedInt64);
 
@@ -186,25 +192,25 @@ public class DatatypeConversionTest {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(Long.MAX_VALUE, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(Long.MAX_VALUE, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_MaxPositive_BE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(2L, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(2L, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_2_BE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(1L, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(1L, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_1_BE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(0L, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(0L, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_0_BE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(-1L, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(-1L, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_Minus_1_BE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(-2L, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(-2L, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_Minus_2_BE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(Long.MIN_VALUE, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(Long.MIN_VALUE, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_MaxNegative_BE));
     }
 
@@ -213,25 +219,25 @@ public class DatatypeConversionTest {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(Long.MAX_VALUE, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(Long.MAX_VALUE, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_MaxPositive_LE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(2L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(2L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_2_LE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(1L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(1L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_1_LE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(0L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(0L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_0_LE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(-1L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(-1L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_Minus_1_LE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(-2L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(-2L, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_Minus_2_LE));
 
-        bytes = DatatypeConversion.singedInt64_To_Bytes(Long.MIN_VALUE, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt64ToBytes(Long.MIN_VALUE, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes8_Value_MaxNegative_LE));
     }
 
@@ -240,28 +246,28 @@ public class DatatypeConversionTest {
 
         int signedInt32;
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_MaxPositive_BE,
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_MaxPositive_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(Integer.MAX_VALUE, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(2, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(1, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(0, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_Minus_1_BE,
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_Minus_1_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(-1, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_Minus_2_BE,
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_Minus_2_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(-2, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_MaxNegative_BE,
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_MaxNegative_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(Integer.MIN_VALUE, signedInt32);
 
@@ -272,28 +278,28 @@ public class DatatypeConversionTest {
 
         int signedInt32;
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_MaxPositive_LE,
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_MaxPositive_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(Integer.MAX_VALUE, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_2_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_2_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(2, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_1_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_1_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(1, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_0_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_0_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(0, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_Minus_1_LE,
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_Minus_1_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(-1, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_Minus_2_LE,
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_Minus_2_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(-2, signedInt32);
 
-        signedInt32 = DatatypeConversion.bytes_To_SignedInt32(bytes4_Value_MaxNegative_LE,
+        signedInt32 = DataTypeConverter.bytesToSignedInt32(bytes4_Value_MaxNegative_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(Integer.MIN_VALUE, signedInt32);
 
@@ -304,28 +310,28 @@ public class DatatypeConversionTest {
 
         long unsignedInt32;
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_MaxPositive_BE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_MaxPositive_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x7FFFFFFF"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x00000002"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x00000001"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x00000000"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_Minus_1_BE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_Minus_1_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0xFFFFFFFF"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_Minus_2_BE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_Minus_2_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0xFFFFFFFE"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_MaxNegative_BE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_MaxNegative_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x80000000"), unsignedInt32);
 
@@ -336,31 +342,31 @@ public class DatatypeConversionTest {
 
         long unsignedInt32;
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_MaxPositive_LE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_MaxPositive_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x7FFFFFFF"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_2_LE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_2_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x00000002"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_1_LE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_1_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x00000001"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_0_LE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_0_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x00000000"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_Minus_1_LE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_Minus_1_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0xFFFFFFFF"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_Minus_2_LE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_Minus_2_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0xFFFFFFFE"), unsignedInt32);
 
-        unsignedInt32 = DatatypeConversion.bytes_To_UnsignedInt32(bytes4_Value_MaxNegative_LE,
+        unsignedInt32 = DataTypeConverter.bytesToUnsignedInt32(bytes4_Value_MaxNegative_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x80000000"), unsignedInt32);
 
@@ -371,25 +377,25 @@ public class DatatypeConversionTest {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(Integer.MAX_VALUE, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(Integer.MAX_VALUE, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_MaxPositive_BE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_2_BE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(1, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(1, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_1_BE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(0, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(0, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_0_BE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(-1, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(-1, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_Minus_1_BE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(-2, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(-2, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_Minus_2_BE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(Integer.MIN_VALUE, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(Integer.MIN_VALUE, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_MaxNegative_BE));
     }
 
@@ -398,61 +404,61 @@ public class DatatypeConversionTest {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(Integer.MAX_VALUE, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(Integer.MAX_VALUE, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_MaxPositive_LE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_2_LE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_1_LE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(0, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(0, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_0_LE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(-1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(-1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_Minus_1_LE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(-2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(-2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_Minus_2_LE));
 
-        bytes = DatatypeConversion.singedInt32_To_Bytes(Integer.MIN_VALUE, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt32ToBytes(Integer.MIN_VALUE, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_MaxNegative_LE));
     }
 
     @Test
-    public void test_unsignedInt32_To_Bytes_BigEndian() {
+    public void test_unsignedInt32_To_Bytes_BigEndian() throws DecoderException {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.unsingedInt32_To_Bytes(MAX_UNSIGNED_INT32, EndianOutput.BYTES_AS_BIG_ENDIAN);
-        assertTrue(Arrays.equals(bytes, TypeConverter.hexToBytes("FFFFFFFF")));
+        bytes = DataTypeConverter.unsingedInt32ToBytes(MAX_UNSIGNED_INT32, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        assertTrue(Arrays.equals(bytes, Hex.decodeHex("FFFFFFFF")));
 
-        bytes = DatatypeConversion.unsingedInt32_To_Bytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt32ToBytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_2_BE));
 
-        bytes = DatatypeConversion.unsingedInt32_To_Bytes(1, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt32ToBytes(1, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_1_BE));
 
-        bytes = DatatypeConversion.unsingedInt32_To_Bytes(0, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt32ToBytes(0, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_0_BE));
     }
 
     @Test
-    public void test_unsignedInt32_To_Bytes_LittleEndian() {
+    public void test_unsignedInt32_To_Bytes_LittleEndian() throws DecoderException {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.unsingedInt32_To_Bytes(MAX_UNSIGNED_INT32, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
-        assertTrue(Arrays.equals(bytes, TypeConverter.hexToBytes("FFFFFFFF")));
+        bytes = DataTypeConverter.unsingedInt32ToBytes(MAX_UNSIGNED_INT32, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        assertTrue(Arrays.equals(bytes, Hex.decodeHex("FFFFFFFF")));
 
-        bytes = DatatypeConversion.unsingedInt32_To_Bytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt32ToBytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_2_LE));
 
-        bytes = DatatypeConversion.unsingedInt32_To_Bytes(1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt32ToBytes(1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_1_LE));
 
-        bytes = DatatypeConversion.unsingedInt32_To_Bytes(0, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt32ToBytes(0, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes4_Value_0_LE));
     }
 
@@ -461,28 +467,28 @@ public class DatatypeConversionTest {
 
         int signedInt16;
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_MaxPositive_BE,
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_MaxPositive_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(32767, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(2, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(1, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(0, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_Minus_1_BE,
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_Minus_1_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(-1, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_Minus_2_BE,
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_Minus_2_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(-2, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_MaxNegative_BE,
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_MaxNegative_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals(-32768, signedInt16);
 
@@ -493,28 +499,28 @@ public class DatatypeConversionTest {
 
         int signedInt16;
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_MaxPositive_LE,
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_MaxPositive_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(32767, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_2_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_2_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(2, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_1_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_1_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(1, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_0_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_0_LE, EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(0, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_Minus_1_LE,
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_Minus_1_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(-1, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_Minus_2_LE,
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_Minus_2_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(-2, signedInt16);
 
-        signedInt16 = DatatypeConversion.bytes_To_SignedInt16(bytes2_Value_MaxNegative_LE,
+        signedInt16 = DataTypeConverter.bytesToSignedInt16(bytes2_Value_MaxNegative_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals(-32768, signedInt16);
 
@@ -525,28 +531,28 @@ public class DatatypeConversionTest {
 
         long unsignedInt16;
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_MaxPositive_BE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_MaxPositive_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x7FFF"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_2_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x0002"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_1_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x0001"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_0_BE, EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x0000"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_Minus_1_BE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_Minus_1_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0xFFFF"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_Minus_2_BE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_Minus_2_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0xFFFE"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_MaxNegative_BE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_MaxNegative_BE,
                 EndianInput.BYTES_ARE_BIG_ENDIAN);
         assertEquals((long) Long.decode("0x8000"), unsignedInt16);
 
@@ -557,31 +563,31 @@ public class DatatypeConversionTest {
 
         long unsignedInt16;
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_MaxPositive_LE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_MaxPositive_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x7FFF"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_2_LE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_2_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x0002"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_1_LE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_1_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x0001"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_0_LE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_0_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x0000"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_Minus_1_LE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_Minus_1_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0xFFFF"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_Minus_2_LE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_Minus_2_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0xFFFE"), unsignedInt16);
 
-        unsignedInt16 = DatatypeConversion.bytes_To_UnsignedInt16(bytes2_Value_MaxNegative_LE,
+        unsignedInt16 = DataTypeConverter.bytesToUnsignedInt16(bytes2_Value_MaxNegative_LE,
                 EndianInput.BYTES_ARE_LITTLE_ENDIAN);
         assertEquals((long) Long.decode("0x8000"), unsignedInt16);
 
@@ -592,25 +598,25 @@ public class DatatypeConversionTest {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(MAX_SIGNED_INT16, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(MAX_SIGNED_INT16, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_MaxPositive_BE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_2_BE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(1, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(1, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_1_BE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(0, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(0, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_0_BE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(-1, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(-1, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_Minus_1_BE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(-2, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(-2, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_Minus_2_BE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(MIN_SIGNED_INT16, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(MIN_SIGNED_INT16, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_MaxNegative_BE));
     }
 
@@ -619,61 +625,61 @@ public class DatatypeConversionTest {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(MAX_SIGNED_INT16, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(MAX_SIGNED_INT16, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_MaxPositive_LE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_2_LE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_1_LE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(0, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(0, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_0_LE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(-1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(-1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_Minus_1_LE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(-2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(-2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_Minus_2_LE));
 
-        bytes = DatatypeConversion.singedInt16_To_Bytes(MIN_SIGNED_INT16, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.singedInt16ToBytes(MIN_SIGNED_INT16, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_MaxNegative_LE));
     }
 
     @Test
-    public void test_unsignedInt16_To_Bytes_BigEndian() {
+    public void test_unsignedInt16_To_Bytes_BigEndian() throws DecoderException {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.unsingedInt16_To_Bytes(MAX_UNSIGNED_INT16, EndianOutput.BYTES_AS_BIG_ENDIAN);
-        assertTrue(Arrays.equals(bytes, TypeConverter.hexToBytes("FFFF")));
+        bytes = DataTypeConverter.unsingedInt16ToBytes(MAX_UNSIGNED_INT16, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        assertTrue(Arrays.equals(bytes, Hex.decodeHex("FFFF")));
 
-        bytes = DatatypeConversion.unsingedInt16_To_Bytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt16ToBytes(2, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_2_BE));
 
-        bytes = DatatypeConversion.unsingedInt16_To_Bytes(1, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt16ToBytes(1, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_1_BE));
 
-        bytes = DatatypeConversion.unsingedInt16_To_Bytes(0, EndianOutput.BYTES_AS_BIG_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt16ToBytes(0, EndianOutput.BYTES_AS_BIG_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_0_BE));
     }
 
     @Test
-    public void test_unsignedInt16_To_Bytes_LittleEndian() {
+    public void test_unsignedInt16_To_Bytes_LittleEndian() throws DecoderException {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.unsingedInt16_To_Bytes(MAX_UNSIGNED_INT16, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
-        assertTrue(Arrays.equals(bytes, TypeConverter.hexToBytes("FFFF")));
+        bytes = DataTypeConverter.unsingedInt16ToBytes(MAX_UNSIGNED_INT16, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        assertTrue(Arrays.equals(bytes, Hex.decodeHex("FFFF")));
 
-        bytes = DatatypeConversion.unsingedInt16_To_Bytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt16ToBytes(2, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_2_LE));
 
-        bytes = DatatypeConversion.unsingedInt16_To_Bytes(1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt16ToBytes(1, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_1_LE));
 
-        bytes = DatatypeConversion.unsingedInt16_To_Bytes(0, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
+        bytes = DataTypeConverter.unsingedInt16ToBytes(0, EndianOutput.BYTES_AS_LITTLE_ENDIAN);
         assertTrue(Arrays.equals(bytes, bytes2_Value_0_LE));
     }
 
@@ -682,25 +688,25 @@ public class DatatypeConversionTest {
 
         int signedInt8;
 
-        signedInt8 = DatatypeConversion.bytes_To_SignedInt8(bytes1_Value_MaxPositive);
+        signedInt8 = DataTypeConverter.bytesToSignedInt8(bytes1_Value_MaxPositive);
         assertEquals(127, signedInt8);
 
-        signedInt8 = DatatypeConversion.bytes_To_SignedInt8(bytes1_Value_2);
+        signedInt8 = DataTypeConverter.bytesToSignedInt8(bytes1_Value_2);
         assertEquals(2, signedInt8);
 
-        signedInt8 = DatatypeConversion.bytes_To_SignedInt8(bytes1_Value_1);
+        signedInt8 = DataTypeConverter.bytesToSignedInt8(bytes1_Value_1);
         assertEquals(1, signedInt8);
 
-        signedInt8 = DatatypeConversion.bytes_To_SignedInt8(bytes1_Value_0);
+        signedInt8 = DataTypeConverter.bytesToSignedInt8(bytes1_Value_0);
         assertEquals(0, signedInt8);
 
-        signedInt8 = DatatypeConversion.bytes_To_SignedInt8(bytes1_Value_Minus_1);
+        signedInt8 = DataTypeConverter.bytesToSignedInt8(bytes1_Value_Minus_1);
         assertEquals(-1, signedInt8);
 
-        signedInt8 = DatatypeConversion.bytes_To_SignedInt8(bytes1_Value_Minus_2);
+        signedInt8 = DataTypeConverter.bytesToSignedInt8(bytes1_Value_Minus_2);
         assertEquals(-2, signedInt8);
 
-        signedInt8 = DatatypeConversion.bytes_To_SignedInt8(bytes1_Value_MaxNegative);
+        signedInt8 = DataTypeConverter.bytesToSignedInt8(bytes1_Value_MaxNegative);
         assertEquals(-128, signedInt8);
 
     }
@@ -738,25 +744,25 @@ public class DatatypeConversionTest {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.singedInt8_To_Bytes(MAX_SIGNED_INT8);
+        bytes = DataTypeConverter.singedInt8ToBytes(MAX_SIGNED_INT8);
         assertTrue(Arrays.equals(bytes, bytes1_Value_MaxPositive));
 
-        bytes = DatatypeConversion.singedInt8_To_Bytes(2);
+        bytes = DataTypeConverter.singedInt8ToBytes(2);
         assertTrue(Arrays.equals(bytes, bytes1_Value_2));
 
-        bytes = DatatypeConversion.singedInt8_To_Bytes(1);
+        bytes = DataTypeConverter.singedInt8ToBytes(1);
         assertTrue(Arrays.equals(bytes, bytes1_Value_1));
 
-        bytes = DatatypeConversion.singedInt8_To_Bytes(0);
+        bytes = DataTypeConverter.singedInt8ToBytes(0);
         assertTrue(Arrays.equals(bytes, bytes1_Value_0));
 
-        bytes = DatatypeConversion.singedInt8_To_Bytes(-1);
+        bytes = DataTypeConverter.singedInt8ToBytes(-1);
         assertTrue(Arrays.equals(bytes, bytes1_Value_Minus_1));
 
-        bytes = DatatypeConversion.singedInt8_To_Bytes(-2);
+        bytes = DataTypeConverter.singedInt8ToBytes(-2);
         assertTrue(Arrays.equals(bytes, bytes1_Value_Minus_2));
 
-        bytes = DatatypeConversion.singedInt8_To_Bytes(MIN_SIGNED_INT8);
+        bytes = DataTypeConverter.singedInt8ToBytes(MIN_SIGNED_INT8);
         assertTrue(Arrays.equals(bytes, bytes1_Value_MaxNegative));
     }
 
@@ -768,16 +774,16 @@ public class DatatypeConversionTest {
 
         byte[] bytes;
 
-        bytes = DatatypeConversion.unsingedInt8_To_Bytes(UNSIGNED_INT8_MAX);
+        bytes = DataTypeConverter.unsingedInt8ToBytes(UNSIGNED_INT8_MAX);
         assertTrue(Arrays.equals(bytes, MAX_UNSINGND_INT8_BYTE));
 
-        bytes = DatatypeConversion.unsingedInt8_To_Bytes(2);
+        bytes = DataTypeConverter.unsingedInt8ToBytes(2);
         assertTrue(Arrays.equals(bytes, bytes1_Value_2));
 
-        bytes = DatatypeConversion.unsingedInt8_To_Bytes(1);
+        bytes = DataTypeConverter.unsingedInt8ToBytes(1);
         assertTrue(Arrays.equals(bytes, bytes1_Value_1));
 
-        bytes = DatatypeConversion.unsingedInt8_To_Bytes(0);
+        bytes = DataTypeConverter.unsingedInt8ToBytes(0);
         assertTrue(Arrays.equals(bytes, bytes1_Value_0));
     }
 

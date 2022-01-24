@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,15 +20,18 @@
  */
 package org.openmuc.framework.datalogger.ascii.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.ascii.LogFileReader;
+import org.openmuc.framework.datalogger.ascii.utils.LoggerUtils;
 
 public class LogFileReaderTestBrokenFile {
 
@@ -39,8 +42,8 @@ public class LogFileReaderTestBrokenFile {
     static int loggingTimeOffset = 0; // ms
     private static final String Channel0Name = "power";
 
-    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "Comment", "W", ValueType.DOUBLE,
-            loggingInterval, loggingTimeOffset);
+    LogChannelTestImpl channelTestImpl = new LogChannelTestImpl(Channel0Name, "", "Comment", "W", ValueType.DOUBLE, 0.0,
+            0.0, false, 1000, 0, "", loggingInterval, loggingTimeOffset, false, false);
 
     @Test
     public void tc200_logfile_does_not_exist() {
@@ -68,7 +71,7 @@ public class LogFileReaderTestBrokenFile {
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
 
         System.out.println("tearing down");
@@ -143,5 +146,11 @@ public class LogFileReaderTestBrokenFile {
     // assertTrue(false);
     // }
     // }
+
+    @Test
+    public void tc203_no_file_in_directory() {
+        List<File> files = LoggerUtils.getAllDataFiles(TestUtils.TESTFOLDERPATH);
+        assertNull(files);
+    }
 
 }

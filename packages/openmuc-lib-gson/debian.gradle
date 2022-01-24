@@ -1,0 +1,18 @@
+def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-lib-gson-' + cfgVersion
+
+configurations.create("openmuc_lib_gson")
+configurations.openmuc_lib_gson.transitive = false;
+	
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs rootDir.getPath() + '/build/libs-all'
+    }
+}
+dependencies {
+    openmuc_lib_gson group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+}
+copy {
+    from project.configurations.openmuc_lib_gson
+    into projectPackage + '/bundle'
+}

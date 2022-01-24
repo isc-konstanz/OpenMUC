@@ -1,0 +1,108 @@
+import java.nio.file.Paths
+project.ext {
+    cfgPackageHomepage = 'https://openmuc.org'
+    cfgPackageRepository = 'https://github.com/isc-konstanz/OpenMUC'
+    cfgPackageMaintainer = 'Adrian Minde <adrian.minde@isc-konstanz.de>'
+    cfgPackageTimeZone = 'Europe/Berlin'
+}
+
+String projectReplace(String line, String date, String projectName, String projectDesc, projectDepends) {
+    return line.replaceAll('<date>', date)
+               .replaceAll('<package>', projectName)
+               .replaceAll('<description>', projectDesc)
+               .replaceAll('<depends>', projectDepends)
+               .replaceAll('<version>', cfgVersion)
+               .replaceAll('<maintainer>', cfgPackageMaintainer)
+               .replaceAll('<repository>', cfgPackageRepository)
+               .replaceAll('<homepage>', cfgPackageHomepage)
+}
+
+String projectReplace(String line, String date, String projectName) {
+    return projectReplace(line, date, projectName, '', '')
+}
+
+task deletePackages(type: Delete) {
+  delete Paths.get(rootDir.getPath(), 'build', 'dpkg')
+  followSymlinks = true
+}
+
+task debianPackages {
+    dependsOn(distributionProjects.build)
+    dependsOn(deletePackages)
+    doLast {
+        def date = new Date().format("EEE, dd MMM yyyy HH:mm:ss ZZZZ", TimeZone.getTimeZone(cfgPackageTimeZone))
+        for (Project project: distributionProjects) {
+            if (project.getProjectDir().equals(getProjectDir())) {
+                continue
+            }
+            // TODO: Build packages for simpledemo?
+            if (['openmuc-core', 'simpledemo'].any { project.name.contains(it) }) {
+                continue
+            }
+            def projectName = project.name.toLowerCase()
+            def projectDesc = project.ext.projectDescription
+            def projectDir = project.getProjectDir().getPath()
+            def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', projectName + '-' + cfgVersion).toString()
+            def projectBundles = Paths.get(projectPackage, 'bundle').toString()
+            
+            def projectDepends = project.configurations.runtimeClasspath { transitive = false }
+                                                       .findAll { it.getName().startsWith('openmuc') }
+                                                       .collect { it.getName().replaceAll('openmuc-core-.*', 'openmuc-core')
+                                                                              .replaceAll('-' + cfgVersion + '.*', '') }.unique().join(', ')
+            
+            copy {
+                //from project.configurations.default
+                from project.configurations.default.getAllArtifacts().getFiles()
+                into Paths.get(projectPackage, 'bundle').toString()
+            }
+            copy {
+                from Paths.get(rootDir.getPath(), 'packages', 'debian')
+                into Paths.get(projectPackage, 'debian')
+                filter {
+                    line -> projectReplace(line, date, projectName, projectDesc, projectDepends)
+                }
+            }
+            def packageDir = Paths.get(projectDir, 'pkg').toString()
+            if (new File(packageDir).exists()) {
+                copy {
+                    from Paths.get(projectDir, 'pkg')
+                    into Paths.get(projectPackage)
+                    filter {
+                        line -> projectReplace(line, date, projectName, projectDesc, projectDepends)
+                    }
+                    exclude '*.gradle'
+                }
+                def gradleFile = new File(packageDir, 'debian.gradle')
+                if (gradleFile.exists()) {
+                    apply from: gradleFile.getPath()
+                }
+            }
+        }
+        new File(rootDir.getPath(), 'packages').eachDir { dir ->
+            def projectName = dir.getName()
+            def projectDir = dir.getPath()
+            def projectPackage = Paths.get(rootDir.getPath(), 'build', 'dpkg', projectName + '-' + cfgVersion).toString()
+            if (new File(projectDir, 'debian').exists()) {
+                copy {
+                    from Paths.get(rootDir.getPath(), 'packages', 'debian')
+                    into Paths.get(projectPackage, 'debian')
+                    filter {
+                        line -> projectReplace(line, date, projectName)
+                    }
+                }
+                copy {
+                    from projectDir
+                    into projectPackage
+                    filter {
+                        line -> projectReplace(line, date, projectName)
+                    }
+                    exclude '*.gradle'
+                }
+                def gradleFile = new File(projectDir, 'debian.gradle')
+                if (gradleFile.exists()) {
+                    apply from: gradleFile.getPath()
+                }
+            }
+        }
+    }
+}

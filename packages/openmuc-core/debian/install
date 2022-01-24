@@ -1,0 +1,8 @@
+#!/usr/bin/dh-exec
+bin    /opt/openmuc
+bundle /opt/openmuc
+cert   /opt/openmuc
+conf   /opt/openmuc
+
+tmpfiles.d/openmuc.conf /usr/lib/tmpfiles.d/
+logrotate.d/openmuc /etc/logrotate.d/

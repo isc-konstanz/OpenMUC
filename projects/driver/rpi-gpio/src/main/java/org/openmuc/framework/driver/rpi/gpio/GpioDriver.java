@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,15 +20,19 @@
  */
 package org.openmuc.framework.driver.rpi.gpio;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.Driver;
-import org.openmuc.framework.driver.DriverContext;
-import org.openmuc.framework.driver.rpi.gpio.configs.GpioConfigs;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.driver.DriverActivator;
+import org.openmuc.framework.driver.DriverDeviceFactory;
+import org.openmuc.framework.driver.annotation.Disconnect;
+import org.openmuc.framework.driver.annotation.Driver;
 import org.openmuc.framework.driver.rpi.gpio.count.EdgeCounter;
-import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,33 +43,25 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.wiringpi.GpioUtil;
 
-@Component
-public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
+@Component(service = DriverService.class)
+@Driver(id = GpioDriver.ID,
+        name = GpioDriver.NAME, description = GpioDriver.DESCRIPTION,
+        device = GpioPin.class, scanner = GpioScanner.class)
+public class GpioDriver extends DriverActivator implements DriverDeviceFactory {
+
     private static final Logger logger = LoggerFactory.getLogger(GpioDriver.class);
 
-    private static final String ID = "rpi-gpio";
-    private static final String NAME = "GPIO (Raspberry Pi)";
-    private static final String DESCRIPTION = 
-    		"This driver enables the access to the variety of pins of the Raspberry Pi platform. " +
+    public static final String ID = "rpi-gpio";
+    public static final String NAME = "GPIO (Raspberry Pi)";
+    public static final String DESCRIPTION = 
+            "This driver enables the access to the variety of pins of the Raspberry Pi platform. " +
             "Devices represent the General-Purpose Inputs/Outputs (GPIOs) of the Raspberry Pi, " +
             "generic pins to be used either as input or output.";
 
     private GpioController gpio;
 
-	@Override
-    public String getId() {
-    	return ID;
-    }
-
-	@Override
-	protected void onCreate(DriverContext context) {
-		context.setName(NAME)
-				.setDescription(DESCRIPTION)
-				.setDeviceScanner(GpioScanner.class);
-	}
-
-	@Override
-    public void onActivate() {
+    @Activate
+    public void activate() {
         // Check if privileged access is required on the running system and enable non-
         // privileged GPIO access if not.
         if (!GpioUtil.isPrivilegedAccessRequired()) {
@@ -77,18 +73,20 @@ public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
         gpio = GpioFactory.getInstance();
     }
 
-    @Override
-    public void onDeactivate() {
+    @Deactivate
+    public void deactivate() {
         // Stop all GPIO activity/threads by shutting down the GPIO controller
         // (this method will forcefully shutdown all GPIO monitoring threads and scheduled tasks)
         gpio.shutdown();
     }
 
     @Override
-	protected GpioPin onCreateConnection(GpioConfigs configs) throws ArgumentSyntaxException, ConnectionException {
-        logger.trace("Connect Raspberry Pi {} pin {}", configs.getPinMode().getName(), configs.getPin());
+    public GpioPin newDevice(Address address, Settings settings) throws ArgumentSyntaxException, ConnectionException {
         try {
+            GpioConfigs configs = new GpioConfigs(address, settings);
             GpioPin connection;
+            
+            logger.trace("Connect Raspberry Pi {} pin {}", configs.getPinMode().getName(), configs.getPin());
             
             Pin p = RaspiPin.getPinByAddress(configs.getPin());
             if (p == null) {
@@ -124,9 +122,9 @@ public class GpioDriver extends Driver<GpioConfigs> implements DriverService {
         }
     }
 
-    @Override
-	protected void onDisconnect(Connection connection) {
-    	gpio.unprovisionPin(((GpioPin) connection).getPin());
-	}
+    @Disconnect
+    public void disconnect(GpioPin pin) {
+        this.gpio.unprovisionPin(pin.getGpioPin());
+    }
 
 }

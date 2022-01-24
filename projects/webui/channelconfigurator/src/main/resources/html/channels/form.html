@@ -5,7 +5,7 @@
     <br />
 
     <div class="form-group">
-      <label for="id" class="col-md-2 control-label">
+      <label for="id" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_ID_HINT' | translate}}"></span>
         {{'CHANNEL_ID' | translate}} * 
       </label>
@@ -20,7 +20,7 @@
     </div>
 
     <div class="form-group">
-      <label for="description" class="col-md-2 control-label">
+      <label for="description" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_DESCRIPTION_HINT' | translate}}"></span>
         {{'CHANNEL_DESCRIPTION' | translate}}
       </label>
@@ -31,23 +31,34 @@
     </div>
 
     <div class="form-group">
-      <label for="address" class="col-md-2 control-label">
+      <label for="settings" class="col-md-3 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_SETTINGS_HINT' | translate}}"></span>
+        {{'CHANNEL_SETTINGS' | translate}}
+      </label>
+      <div class="col-md-6">
+        <input type="text" class="form-control" ng-disabled="selectedChannels.length > 1" id="settings" name="settings" ng-model="channel.configs.settings" >
+        <p class="help-block">N.A. **</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="address" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="dummy/channel/address/[a-z A-Z]"></span>
         {{'CHANNEL_ADDRESS' | translate}}
       </label>
       <div class="col-md-6">
-        <input type="text" class="form-control" ng-disabled="selectedChannels.length > 1" id="address" name="address" ng-model="channel.configs.channelAddress" >
+        <input type="text" class="form-control" ng-disabled="selectedChannels.length > 1" id="address" name="address" ng-model="channel.configs.address" >
         <p class="help-block">{{driverInfo.channelAddressSyntax}} </p>
       </div>    
     </div>
 
     <div class="form-group">
-      <label for="valueType" class="col-md-2 control-label">
+      <label for="valueType" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_VALUE_TYPE_HINT' | translate}}"></span>
         {{'CHANNEL_VALUE_TYPE' | translate}}
       </label>
       <div class="col-md-6">
-        <select class="form-control" id="value_type" name="valueType" ng-class="{discrepancy: !compareChannels('valueType')}" ng-model="channel.configs.valueType" >
+        <select class="form-control" id="valueType" name="valueType" ng-class="{discrepancy: !compareChannels('valueType')}" ng-model="channel.configs.valueType" >
           <option></option>
           <option value="DOUBLE">DOUBLE</option>
           <option value="FLOAT">FLOAT</option>
@@ -64,7 +75,7 @@
     </div>
 
     <div class="form-group">
-      <label for="valueLength" class="col-md-2 control-label">
+      <label for="valueLength" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_VALUE_LENGTH_HINT' | translate}}"></span>
         {{'CHANNEL_VALUE_LENGTH' | translate}}
       </label>
@@ -78,7 +89,7 @@
     </div>
 
     <div class="form-group">
-      <label for="scalingFactor" class="col-md-2 control-label">
+      <label for="scalingFactor" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_SCALING_FACTOR_HINT' | translate}}"></span>
         {{'CHANNEL_SCALING_FACTOR' | translate}}
       </label>
@@ -92,7 +103,7 @@
     </div>
 
     <div class="form-group">
-      <label for="valueOffset" class="col-md-2 control-label">
+      <label for="valueOffset" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_VALUE_OFFSET_HINT' | translate}}"></span>
         {{'CHANNEL_VALUE_OFFSET' | translate}}
       </label>
@@ -106,7 +117,7 @@
     </div>
 
     <div class="form-group">
-      <label for="unit" class="col-md-2 control-label">
+      <label for="unit" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_UNIT_HINT' | translate}}"></span>
         {{'CHANNEL_UNIT' | translate}}
       </label>
@@ -117,7 +128,7 @@
     </div>
     
     <div class="form-group">
-      <label for="loggingInterval" class="col-md-2 control-label">
+      <label for="loggingInterval" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_INTERVAL_HINT' | translate}}"></span>
         {{'CHANNEL_LOGGING_INTERVAL' | translate}}
       </label>
@@ -132,9 +143,26 @@
         <p class="help-block">-1 ({{'DISABLED' | translate}}) **</p>        
       </div>    
     </div>
+    
+    <div class="form-group">
+      <label for="loggingDelayMaximum" class="col-md-3 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_DELAY_MAX_HINT' | translate}}"></span>
+        {{'CHANNEL_LOGGING_DELAY_MAX' | translate}}
+      </label>
+      <div class="col-md-6">
+        <div class="input-group">
+	        <input type="text" class="form-control" id=loggingDelayMaximum name="loggingDelayMaximum" ng-class="{discrepancy: !compareChannels('loggingDelayMaximum')}" ng-model="channel.configs.loggingDelayMaximum" ng-pattern="/^-1$|^[0-9]{1,10}$/">
+	        <div class="input-group-append"><span class="input-group-text">ms</span></div>
+	      </div>
+        <div class="form-error-container" ng-show="(channelForm.loggingDelayMaximum.$dirty && channelForm.loggingDelayMaximum.$invalid) || (channelForm.submitted && channelForm.loggingDelayMaximum.$invalid)">
+          <div class="form-error-message" ng-show="channelForm.loggingDelayMaximum.$error.pattern">{{'SHOULD_BE_INTEGER' | translate}}</div>
+        </div>
+        <p class="help-block">0 **</p>
+      </div>
+    </div>
 
     <div class="form-group">
-      <label for="loggingTimeOffset" class="col-md-2 control-label">
+      <label for="loggingTimeOffset" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_TIME_OFFSET_HINT' | translate}}"></span>
         {{'CHANNEL_LOGGING_TIME_OFFSET' | translate}}
       </label>
@@ -142,16 +170,74 @@
         <div class="input-group">
           <input type="text" class="form-control" id="loggingTimeOffset" name="loggingTimeOffset" ng-class="{discrepancy: !compareChannels('loggingTimeOffset')}" ng-model="channel.configs.loggingTimeOffset" ng-pattern="/^[0-9]{1,10}$/">
           <div class="input-group-append"><span class="input-group-text">ms</span></div>
-        </div>          
+        </div>
         <div class="form-error-container" ng-show="(channelForm.loggingTimeOffset.$dirty && channelForm.loggingTimeOffset.$invalid) || (channelForm.submitted && channelForm.loggingTimeOffset.$invalid)">
           <div class="form-error-message" ng-show="channelForm.loggingTimeOffset.$error.pattern">{{'SHOULD_BE_INTEGER' | translate}}</div>
-        </div>                                
+        </div>
         <p class="help-block">0 **</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="loggingSettings" class="col-md-3 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_SETTINGS_HINT' | translate}}"></span>
+        {{'CHANNEL_LOGGING_SETTINGS' | translate}}
+      </label>
+      <div class="col-md-6">
+        <input type="text" class="form-control" ng-disabled="selectedChannels.length > 1" id="loggingSettings" name="loggingSettings" ng-model="channel.configs.loggingSettings" >
+        <p class="help-block">&lt;loggerId_A&gt;[:&lt;param_A&gt;=&lt;value_A&gt;][,…​][;&lt;loggerId_B&gt;[:&lt;param_B&gt;=&lt;value_B&gt;]]</p>
       </div>    
     </div>
 
     <div class="form-group">
-      <label for="listening" class="col-md-2 control-label">
+      <label for="loggingTolerance" class="col-md-3 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_TOLERANCE_HINT' | translate}}"></span>
+        {{'CHANNEL_LOGGING_TOLERANCE' | translate}}
+      </label>
+      <div class="col-md-6">
+        <input type="text" class="form-control" id="loggingTolerance" name="loggingTolerance" ng-class="{discrepancy: !compareChannels('loggingTolerance')}" ng-model="channel.configs.loggingTolerance" ng-pattern="/^[0-9]{1,10}(\.[0-9]+)?$/">
+        <div class="form-error-container" ng-show="(channelForm.loggingTolerance.$dirty && channelForm.loggingTolerance.$invalid) || (channelForm.submitted && channelForm.loggingTolerance.$invalid)">
+          <div class="form-error-message" ng-show="channelForm.loggingTolerance.$error.pattern">{{'SHOULD_BE_INTEGER' | translate}}</div>
+        </div>
+        <p class="help-block">0.0 **</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="loggingAverage" class="col-md-3 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_AVERAGE_HINT' | translate}}"></span>
+        {{'CHANNEL_LOGGING_AVERAGE' | translate}}
+      </label>
+      <div class="col-md-6">
+        <input type="checkbox" id="loggingAverage" ng-class="{discrepancy: !compareChannels('loggingAverage')}" ng-model="channel.configs.loggingAverage">
+        <p class="help-block">{{'FALSE' | translate}} **</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="loggingEvent" class="col-md-3 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_EVENT_HINT' | translate}}"></span>
+        {{'CHANNEL_LOGGING_EVENT' | translate}}
+      </label>
+      <div class="col-md-6">
+        <input type="checkbox" id="loggingEvent" ng-class="{discrepancy: !compareChannels('loggingEvent')}" ng-model="channel.configs.loggingEvent">
+        <p class="help-block">{{'FALSE' | translate}} **</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="loggingEvent" class="col-md-3 control-label">
+        <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LOGGING_EVENT_HINT' | translate}}"></span>
+        {{'CHANNEL_LOGGING_EVENT' | translate}}
+      </label>
+      <div class="col-md-6">
+        <input type="checkbox" id="loggingEvent" ng-class="{discrepancy: !compareChannels('loggingEvent')}" ng-model="channel.configs.loggingEvent">
+        <p class="help-block">{{'FALSE' | translate}} **</p>
+      </div>    
+    </div>
+
+    <div class="form-group">
+      <label for="listening" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_LISTENING_FOR_DATA_HINT' | translate}}"></span>
         {{'CHANNEL_LISTENING_FOR_DATA' | translate}}
       </label>
@@ -162,7 +248,7 @@
     </div>
 
     <div class="form-group">
-      <label for="samplingInterval" class="col-md-2 control-label">
+      <label for="samplingInterval" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_SAMPLING_INTERVAL_HINT' | translate}}"></span>
         {{'CHANNEL_SAMPLING_INTERVAL' | translate}}
       </label>
@@ -179,7 +265,7 @@
     </div>
 
     <div class="form-group">
-      <label for="samplingTimeOffset" class="col-md-2 control-label">
+      <label for="samplingTimeOffset" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_SAMPLING_TIME_OFFSET_HINT' | translate}}"></span>
         {{'CHANNEL_SAMPLING_TIME_OFFSET' | translate}}
       </label>
@@ -196,7 +282,7 @@
     </div>
 
     <div class="form-group">
-      <label for="sampling_group" class="col-md-2 control-label">
+      <label for="sampling_group" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_SAMPLING_GROUP_HINT' | translate}}"></span>
         {{'CHANNEL_SAMPLING_GROUP' | translate}}
       </label>
@@ -207,7 +293,7 @@
     </div>
 
     <div class="form-group">
-      <label for="disabled" class="col-md-2 control-label">
+      <label for="disabled" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'CHANNEL_DISABLED_HINT' | translate}}"></span>
         {{'CHANNEL_DISABLED' | translate}}
       </label>
@@ -218,7 +304,7 @@
     </div>
     
     <div class="row">
-      <div class="col-md-8">
+      <div class="col-md-6">
         <div class="alert alert-md alert-warning">
           <b class="small">* {{'REQUIRED_FIELDS' | translate}}</b><br />
           <b class="small">** {{'DEFAULT_LEFT_BLANK' | translate}}</b>
@@ -226,7 +312,7 @@
       </div>
     </div>
 
-    <div class="col-md-8 text-right">
+    <div class="col-md-6 text-right">
       <input type="submit" ng-click="setTabIndex(2)" ng-disabled="checkTypeLength()" class="btn btn-primary" value="{{'SUBMIT' | translate}}">
     </div>
 

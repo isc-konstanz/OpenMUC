@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,36 +20,41 @@
  */
 package org.openmuc.framework.driver.csv;
 
+import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
+import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.Device;
+import org.openmuc.framework.config.Settings;
+import org.openmuc.framework.config.option.annotation.Option;
+import org.openmuc.framework.driver.DriverChannelFactory;
+import org.openmuc.framework.driver.DriverDevice;
+import org.openmuc.framework.driver.annotation.Connect;
+import org.openmuc.framework.driver.annotation.Device;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.channel.CsvChannelHHMMSS;
 import org.openmuc.framework.driver.csv.channel.CsvChannelLine;
 import org.openmuc.framework.driver.csv.channel.CsvChannelUnixtimestamp;
-import org.openmuc.framework.driver.spi.ChannelContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
-import org.openmuc.framework.options.Address;
-import org.openmuc.framework.options.AddressSyntax;
-import org.openmuc.framework.options.Setting;
-import org.openmuc.framework.options.SettingsSyntax;
 
-@AddressSyntax(separator = ";")
-@SettingsSyntax(separator = ";", assignmentOperator = "=")
-public class CsvFile extends Device<CsvChannel> {
+@Device(scanner = ColumnScanner.class)
+public class CsvFile extends DriverDevice implements DriverChannelFactory {
 
-	public static final String SAMPLING_MODE = "samplingmode";
+    public static final String SAMPLING_MODE = "samplingmode";
 
-    @Address(id = "filePath",
-             name = "CSV file path",
-             description = "The systems path to the CSV file.<br><br>" + 
+    @Option(type = ADDRESS,
+            name = "CSV file path",
+            description = "The systems path to the CSV file.<br><br>" + 
                           "<b>Example:</b> /home/usr/bin/openmuc/csv/meter.csv"
     )
     private String filePath;
 
-    @Setting(id = SAMPLING_MODE,
+    @Option(id = SAMPLING_MODE,
+            type = SETTING,
             name = "Sampling mode",
             description = "The sampling mode configures the drivers method to read the CSV file:<br><br>" + 
                           "<b>Modes:</b>" + 
@@ -63,7 +68,7 @@ public class CsvFile extends Device<CsvChannel> {
     )
     private SamplingMode samplingMode;
 
-    @Setting(id = "rewind",
+    @Option(type = SETTING,
             name = "Rewind",
             description = "Start from the beginning of the file again, when the end was reached.",
             valueDefault = "false",
@@ -74,41 +79,44 @@ public class CsvFile extends Device<CsvChannel> {
     /** Map containing 'column name' as key and 'list of all column data' as value */
     protected Map<String, List<String>> data;
 
-    @Override
-    protected void onConnect() throws ArgumentSyntaxException, ConnectionException {
+    public Map<String, List<String>> getData() {
+        return data;
+    }
+
+    public List<String> getColumns() {
+        return new ArrayList<String>(data.keySet());
+    }
+
+    @Connect
+    public void connect() throws ArgumentSyntaxException, ConnectionException {
         data = CsvFileReader.readCsvFile(filePath);
         switch (samplingMode) {
         case UNIXTIMESTAMP:
-        	if (!data.containsKey(CsvChannelUnixtimestamp.INDEX) || 
-        			data.get(CsvChannelUnixtimestamp.INDEX).isEmpty()) {
+            if (!data.containsKey(CsvChannelUnixtimestamp.INDEX) || 
+                    data.get(CsvChannelUnixtimestamp.INDEX).isEmpty()) {
                 throw new ArgumentSyntaxException("unixtimestamp column not availiable in file or empty");
-        	}
+            }
         case HHMMSS:
-        	if (!data.containsKey(CsvChannelHHMMSS.INDEX) || 
-        			data.get(CsvChannelHHMMSS.INDEX).isEmpty()) {
+            if (!data.containsKey(CsvChannelHHMMSS.INDEX) || 
+                    data.get(CsvChannelHHMMSS.INDEX).isEmpty()) {
                 throw new ArgumentSyntaxException("hhmmss column not availiable in file or empty");
-        	}
+            }
         default:
-        	break;
+            break;
         }
     }
 
-	@Override
-    protected ColumnScanner onCreateScanner(String settings) {
-		return new ColumnScanner(data);
-	}
-
-	@Override
-    protected CsvChannel onCreateChannel(ChannelContainer container) throws ArgumentSyntaxException {
+    @Override
+    public CsvChannel newChannel(Address address, Settings settings) throws ArgumentSyntaxException {
         switch (samplingMode) {
         case UNIXTIMESTAMP:
-            return new CsvChannelUnixtimestamp(container, data, rewind);
+            return new CsvChannelUnixtimestamp(address.toString(), data, rewind);
 
         case HHMMSS:
-            return new CsvChannelHHMMSS(container, data, rewind);
+            return new CsvChannelHHMMSS(address.toString(), data, rewind);
 
         case LINE:
-            return new CsvChannelLine(container, data, rewind);
+            return new CsvChannelLine(address.toString(), data, rewind);
 
         default:
             throw new ArgumentSyntaxException("Invalid sampling mode " + samplingMode);

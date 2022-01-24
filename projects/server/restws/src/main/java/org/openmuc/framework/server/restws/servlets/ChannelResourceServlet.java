@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -42,12 +42,12 @@ import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
 import org.openmuc.framework.dataaccess.DataLoggerNotAvailableException;
-import org.openmuc.framework.lib.json.Const;
-import org.openmuc.framework.lib.json.FromJson;
-import org.openmuc.framework.lib.json.ToJson;
-import org.openmuc.framework.lib.json.exceptions.MissingJsonObjectException;
-import org.openmuc.framework.lib.json.exceptions.RestConfigIsNotCorrectException;
-import org.openmuc.framework.lib.json.rest.objects.RestChannelWrapper;
+import org.openmuc.framework.lib.rest.Const;
+import org.openmuc.framework.lib.rest.FromJson;
+import org.openmuc.framework.lib.rest.ToJson;
+import org.openmuc.framework.lib.rest.exceptions.MissingJsonObjectException;
+import org.openmuc.framework.lib.rest.exceptions.RestConfigIsNotCorrectException;
+import org.openmuc.framework.lib.rest.objects.RestChannelWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,14 +56,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 public class ChannelResourceServlet extends GenericServlet {
+    private static final long serialVersionUID = -702876016040151438L;
+
+    private static final Logger logger = LoggerFactory.getLogger(ChannelResourceServlet.class);
 
     private static final String REQUESTED_REST_PATH_IS_NOT_AVAILABLE = "Requested rest path is not available";
     private static final String REQUESTED_ID_IS_NOT_AVAILABLE = "Requested channel is not available";
     private static final String REST_PATH = " Rest Path = ";
     private static final String REST_ID = " Channel ID = ";
-    private static final String APPLICATION_JSON = "application/json";
-    private static final long serialVersionUID = -702876016040151438L;
-    private static final Logger logger = LoggerFactory.getLogger(ChannelResourceServlet.class);
 
     private DataAccessService dataAccess;
     private ConfigService configService;
@@ -73,7 +73,6 @@ public class ChannelResourceServlet extends GenericServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -347,7 +346,6 @@ public class ChannelResourceServlet extends GenericServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString == null) {
             return;
@@ -357,8 +355,11 @@ public class ChannelResourceServlet extends GenericServlet {
 
         String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
         String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-        FromJson json = new FromJson(ServletLib.getJsonText(request));
-
+        FromJson json = ServletLib.getFromJson(request, logger, response);
+        if (json == null) {
+            return;
+        }
+        
         if (pathInfoArray.length == 1) {
             String channelId = pathInfoArray[0];
 
@@ -374,7 +375,6 @@ public class ChannelResourceServlet extends GenericServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -382,8 +382,11 @@ public class ChannelResourceServlet extends GenericServlet {
 
             String pathInfo = pathAndQueryString[ServletLib.PATH_ARRAY_NR];
             String[] pathInfoArray = ServletLib.getPathInfoArray(pathInfo);
-            FromJson json = new FromJson(ServletLib.getJsonText(request));
-
+            FromJson json = ServletLib.getFromJson(request, logger, response);
+            if (json == null) {
+                return;
+            }
+            
             if (pathInfoArray.length < 1) {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
                         REQUESTED_REST_PATH_IS_NOT_AVAILABLE, REST_PATH, request.getPathInfo());
@@ -529,11 +532,11 @@ public class ChannelResourceServlet extends GenericServlet {
 
         if (record.getFlag() == null) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_ACCEPTABLE, logger,
-                    "No flag setted.");
+                    "No flag set.");
         }
         else if (record.getValue() == null) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_ACCEPTABLE, logger,
-                    "No value setted.");
+                    "No value set.");
         }
         else {
             Long timestamp = record.getTimestamp();
@@ -564,7 +567,6 @@ public class ChannelResourceServlet extends GenericServlet {
             throws ServletException, IOException {
         response.setContentType(APPLICATION_JSON);
         String[] pathAndQueryString = checkIfItIsACorrectRest(request, response, logger);
-        java.util.Date time = new java.util.Date(request.getSession().getLastAccessedTime());
 
         if (pathAndQueryString != null) {
 
@@ -613,7 +615,7 @@ public class ChannelResourceServlet extends GenericServlet {
         
         if (channel == null) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, channelId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, channelId);
         }
         return channel;
     }
@@ -622,7 +624,7 @@ public class ChannelResourceServlet extends GenericServlet {
         ChannelConfig channelConfig = rootConfig.getChannel(channelId);
         if (channelConfig == null) {
             ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_NOT_FOUND, logger,
-            		REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, channelId);
+                    REQUESTED_ID_IS_NOT_AVAILABLE, REST_ID, channelId);
         }
         return channelConfig;
     }

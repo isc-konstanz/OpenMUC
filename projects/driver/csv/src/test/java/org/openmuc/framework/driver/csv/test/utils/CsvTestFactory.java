@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -33,7 +33,7 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 
 public class CsvTestFactory {
 
-	private static CsvDriver driver = new CsvDriver();
+    private static CsvDriver driver = new CsvDriver();
 
     public static CsvFile newConnection(String address, String settings) throws ArgumentSyntaxException, ConnectionException {
         return (CsvFile) driver.connect(address, settings);
@@ -41,24 +41,24 @@ public class CsvTestFactory {
 
     public static CsvChannelUnixtimestamp newChannelUnixtimestamp(List<String> data, long[] timestamps, boolean rewind) {
         try {
-			return new CsvChannelUnixtimestamp(newRecodContainer("test"), timestamps, Collections.singletonMap("test", data), rewind);
-		
+            return new CsvChannelUnixtimestamp("test", timestamps, Collections.singletonMap("test", data), rewind);
+        
         } catch (ArgumentSyntaxException e) {
-        	return null;
+            return null;
         }
     }
 
     public static CsvChannelHHMMSS newChannelHHMMSS(List<String> data, long[] timestamps, boolean rewind) {
         try {
-        	return new CsvChannelHHMMSS(newRecodContainer("test"), timestamps, Collections.singletonMap("test", data), rewind);
-		
+            return new CsvChannelHHMMSS("test", timestamps, Collections.singletonMap("test", data), rewind);
+        
         } catch (ArgumentSyntaxException e) {
-        	return null;
+            return null;
         }
     }
 
     public static ChannelRecordContainer newRecodContainer(String address) {
-    	return (ChannelRecordContainer) new CsvTestChannel(address).getReadContainer();
+        return (ChannelRecordContainer) new CsvTestChannel(address).getReadContainer();
     }
 
 }

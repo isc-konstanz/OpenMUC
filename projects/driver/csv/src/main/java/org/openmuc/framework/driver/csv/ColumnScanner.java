@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,38 +20,36 @@
  */
 package org.openmuc.framework.driver.csv;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.ChannelScanInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.data.ValueType;
-import org.openmuc.framework.driver.ChannelScanner;
+import org.openmuc.framework.driver.DriverChannelScanner;
+import org.openmuc.framework.driver.annotation.Configure;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ColumnScanner extends ChannelScanner {
+public class ColumnScanner extends DriverChannelScanner {
 
-	private static final Logger logger = LoggerFactory.getLogger(ColumnScanner.class);
+    private static final Logger logger = LoggerFactory.getLogger(ColumnScanner.class);
 
-	private final List<String> columns;
+    private CsvFile file;
 
-	public ColumnScanner(Map<String, List<String>> data) {
-		columns = new ArrayList<String>(data.keySet());
-	}
+    @Configure
+    public void configure(CsvFile file) throws ArgumentSyntaxException, ConnectionException {
+        this.file = file;
+    }
 
-	@Override
-	public List<ChannelScanInfo> doScan() throws ArgumentSyntaxException, ScanException, ConnectionException {
+    @Override
+    public void scan(List<ChannelScanInfo> channels) throws ArgumentSyntaxException, ScanException, ConnectionException {
         logger.info("Scan for columns in CSV file");
         
-        List<ChannelScanInfo> channels = new ArrayList<>();
-        for (String channelId : columns) {
+        for (String channelId : file.getColumns()) {
             channels.add(new ChannelScanInfo(channelId, channelId, ValueType.DOUBLE, null));
         }
-        return channels;
-	}
+    }
 
 }

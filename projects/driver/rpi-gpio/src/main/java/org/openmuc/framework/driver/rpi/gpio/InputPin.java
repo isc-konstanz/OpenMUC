@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -26,7 +26,7 @@ import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.Value;
-import org.openmuc.framework.driver.rpi.gpio.configs.GpioChannel;
+import org.openmuc.framework.driver.annotation.Read;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
 import com.pi4j.io.gpio.GpioPinDigital;
@@ -35,13 +35,13 @@ import com.pi4j.io.gpio.PinState;
 public class InputPin extends GpioPin {
 
     public InputPin(GpioPinDigital pin) {
-		super(pin);
-	}
+        super(pin);
+    }
 
-    @Override
-    public Object onRead(List<GpioChannel> channels, Object containerListHandle, String samplingGroup)
+    @Read
+    public void read(List<GpioChannel> channels, String samplingGroup)
             throws ConnectionException {
-    	
+        
         long samplingTime = System.currentTimeMillis();
         
         for (GpioChannel channel : channels) {
@@ -55,7 +55,6 @@ public class InputPin extends GpioPin {
             }
             channel.setRecord(new Record(value, samplingTime, Flag.VALID));
         }
-        return null;
     }
 
 }

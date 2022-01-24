@@ -1,27 +1,24 @@
-
-def projectName = "OpenMUC WebUI - Channel Configurator"
-def projectDescription = "Channel Configurator plug-in for the WebUI of the OpenMUC framework."
-
+project.ext {
+    projectName = "OpenMUC WebUI - Channel Configurator"
+    projectDescription = "Channel Configurator plug-in for the WebUI of the OpenMUC framework."
+}
 
 dependencies {
-  implementation project(':openmuc-core-api')
-  implementation project(':openmuc-webui-spi')
+    implementation project(':openmuc-webui-spi')
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Export-Package', ''
-  }
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name projectName
-        description projectDescription
-      }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
     }
-  }
 }

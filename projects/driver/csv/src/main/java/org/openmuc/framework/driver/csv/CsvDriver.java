@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,8 +20,8 @@
  */
 package org.openmuc.framework.driver.csv;
 
-import org.openmuc.framework.driver.Driver;
-import org.openmuc.framework.driver.DriverContext;
+import org.openmuc.framework.driver.DriverActivator;
+import org.openmuc.framework.driver.annotation.Driver;
 import org.openmuc.framework.driver.spi.DriverService;
 import org.osgi.service.component.annotations.Component;
 
@@ -37,26 +37,15 @@ import org.osgi.service.component.annotations.Component;
  * </ul>
  */
 @Component
-public class CsvDriver extends Driver<CsvFile> implements DriverService {
+@Driver(id = CsvDriver.ID, 
+        name = CsvDriver.NAME, description = CsvDriver.DESCRIPTION,
+        device = CsvFile.class, scanner = CsvScanner.class)
+public class CsvDriver extends DriverActivator implements DriverService {
 
-	private static final String ID = "csv";
-    private static final String NAME = "CSV";
-    private static final String DESCRIPTION = 
-                    "The CSV Driver reads out values from configured files. Each device represents a specific file " + 
-                    "which may contain several columns, addressed by their headers. Rows in those columns are read " + 
-                    "either line by line or by a defined index.";
-
-	@Override
-    public String getId() {
-    	return ID;
-    }
-
-	@Override
-	protected void onCreate(DriverContext context) {
-		context.setName(NAME)
-				.setDescription(DESCRIPTION)
-				.setDeviceScanner(CsvScanner.class)
-				.setChannelScanner(ColumnScanner.class);
-	}
+    public static final String ID = "csv";
+    public static final String NAME = "CSV";
+    public static final String DESCRIPTION = "The CSV Driver reads out values from configured files. "
+            + "Each device represents a specific file which may contain several columns, addressed by their headers. "
+            + "Rows in those columns are read either line by line or by a defined index.";
 
 }

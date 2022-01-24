@@ -5,7 +5,7 @@
     <br />
     
     <div class="form-group">
-      <label for="id" class="col-md-2 control-label">
+      <label for="id" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'DRIVER_ID_HINT' | translate}}"></span>
         {{'DRIVER_ID' | translate}} * 
       </label>
@@ -20,14 +20,14 @@
     </div>
 
     <div class="form-group">
-      <label for="samplingTimeout" class="col-md-2 control-label">
+      <label for="samplingTimeout" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'DRIVER_SAMPLING_TIMEOUT_HINT' | translate}}"></span>
         {{'DRIVER_SAMPLING_TIMEOUT' | translate}}
       </label>
       <div class="col-md-6">
         <div class="input-group">
           <input type="text" class="form-control" id="samplingTimeout" name="samplingTimeout" ng-model="driver.configs.samplingTimeout" ng-pattern="/^[0-9]{1,10}$/">
-          <div class="input-group-addon">ms</div>
+          <div class="input-group-append"><span class="input-group-text">ms</span></div>
         </div>
         <div class="form-error-container" ng-show="(driverForm.samplingTimeout.$dirty && driverForm.samplingTimeout.$invalid) || (driverForm.submitted && driverForm.samplingTimeout.$invalid)">
           <div class="form-error-message" ng-show="driverForm.samplingTimeout.$error.pattern">{{'SHOULD_BE_INTEGER' | translate}}</div>
@@ -37,14 +37,14 @@
     </div>
 
     <div class="form-group">
-      <label for="connectRetryInterval" class="col-md-2 control-label">
+      <label for="connectRetryInterval" class="col-md-3 control-label">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'DRIVER_CONNECT_RETRY_INTERVAL_HINT' | translate}}"></span>
         {{'DRIVER_CONNECT_RETRY_INTERVAL' | translate}}
       </label>
       <div class="col-md-6">
         <div class="input-group">
           <input type="text" class="form-control" id="connectRetryInterval" name="connectRetryInterval" ng-model="driver.configs.connectRetryInterval" ng-pattern="/^[0-9]{1,10}$/">
-          <div class="input-group-addon">ms</div>
+          <div class="input-group-append"><span class="input-group-text">ms</span></div>
         </div>
         <div class="form-error-container" ng-show="(driverForm.connectRetryInterval.$dirty && driverForm.connectRetryInterval.$invalid) || (driverForm.submitted && driverForm.connectRetryInterval.$invalid)">
           <div class="form-error-message" ng-show="driverForm.connectRetryInterval.$error.pattern">{{'SHOULD_BE_INTEGER' | translate}}</div>
@@ -54,7 +54,7 @@
     </div>
 
     <div class="form-group">
-      <label for="disabled" class="col-md-2">
+      <label for="disabled" class="col-md-3">
         <span class="item-icon fa fa-info-circle" aria-hidden="true" data-placement="right" data-container="body" uib-tooltip="{{'DRIVER_DISABLED_HINT' | translate}}"></span>      
         {{'DRIVER_DISABLED' | translate}}
       </label>
@@ -65,7 +65,7 @@
     </div>
     
     <div class="row">
-	    <div class="col-md-8">
+	    <div class="col-md-6">
 	      <div class="alert alert-md alert-warning">
           <b class="mdall">* {{'REQUIRED_FIELDS' | translate}}</b><br />
 	        <b class="mdall">** {{'DEFAULT_LEFT_BLANK' | translate}}</b>
@@ -73,7 +73,7 @@
 	    </div>
     </div>
     
-    <div class="col-md-8 text-right">
+    <div class="col-md-6 text-right">
       <input type="submit" ng-click="setTabIndex(0)" class="btn btn-primary" value="{{'SUBMIT' | translate}}">
     </div>
 

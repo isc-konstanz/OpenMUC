@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -31,10 +31,14 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,10 +47,11 @@ import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 import org.openmuc.framework.data.Flag;
+import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.datalogger.ascii.LogFileHeader;
 import org.openmuc.framework.datalogger.spi.LogChannel;
-import org.openmuc.framework.datalogger.spi.LogRecordContainer;
+import org.openmuc.framework.datalogger.spi.LoggingRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +60,12 @@ public class LoggerUtils {
     private static final Logger logger = LoggerFactory.getLogger(LoggerUtils.class);
     private static final char[] hexArray = "0123456789ABCDEF".toCharArray();
 
+    private LoggerUtils() {
+    }
+
     /**
      * Returns all filenames of the given time span defined by the two dates
-     * 
+     *
      * @param loggingInterval
      *            logging interval
      * @param logTimeOffset
@@ -95,7 +103,7 @@ public class LoggerUtils {
 
     /**
      * Returns the filename, with the help of the timestamp and the interval.
-     * 
+     *
      * @param loggingInterval
      *            logging interval
      * @param logTimeOffset
@@ -113,7 +121,7 @@ public class LoggerUtils {
 
     /**
      * Builds the Logfile name from logging interval, logging time offset and the date of the calendar
-     * 
+     *
      * @param loggingInterval
      *            logging interval
      * @param logTimeOffset
@@ -139,7 +147,7 @@ public class LoggerUtils {
 
     /**
      * Builds the Logfile name from string interval_timeOffset and the date of the calendar
-     * 
+     *
      * @param intervalTimeOffset
      *            the IntervallTimeOffset
      * @param calendar
@@ -159,14 +167,14 @@ public class LoggerUtils {
 
     /**
      * Checks if it has a next container entry.
-     * 
+     *
      * @param containers
      *            a list with LogRecordContainer
      * @param i
-     *            the current possition of the list
+     *            the current position of the list
      * @return true if it has a next container entry, if not else.
      */
-    public static boolean hasNext(List<LogRecordContainer> containers, int i) {
+    public static boolean hasNext(List<LoggingRecord> containers, int i) {
 
         boolean result = false;
         if (i <= containers.size() - 2) {
@@ -177,7 +185,7 @@ public class LoggerUtils {
 
     /**
      * This method rename all *.dat files with the date from today in directoryPath into a *.old0, *.old1, ...
-     * 
+     *
      * @param directoryPath
      *            directory path
      * @param calendar
@@ -222,7 +230,7 @@ public class LoggerUtils {
     /**
      * This method renames a singel &lt;date&gt;_&lt;loggerInterval&gt;_&lt;loggerTimeOffset&gt;.dat file into a *.old0,
      * *.old1, ...
-     * 
+     *
      * @param directoryPath
      *            directory path
      * @param loggerIntervalLoggerTimeOffset
@@ -236,6 +244,10 @@ public class LoggerUtils {
 
         if (file.exists()) {
             String currentName = file.getName();
+
+            if (logger.isTraceEnabled()) {
+                logger.trace(MessageFormat.format("Header not identical. Rename file {0} to old.", currentName));
+            }
 
             String newName = currentName.substring(0, currentName.length() - Const.EXTENSION.length());
             newName += Const.EXTENSION_OLD;
@@ -255,7 +267,7 @@ public class LoggerUtils {
 
     /**
      * Returns the calendar from today with the first hour, minute, second and millisecond.
-     * 
+     *
      * @param today
      *            the current calendar
      * @return the calendar from today with the first hour, minute, second and millisecond
@@ -271,7 +283,7 @@ public class LoggerUtils {
 
     /**
      * This method adds a blank spaces to a StringBuilder object.
-     * 
+     *
      * @param length
      *            length of the value to add the spaces
      * @param size
@@ -290,7 +302,7 @@ public class LoggerUtils {
 
     /**
      * This method adds a string value up with blank spaces from left to right.
-     * 
+     *
      * @param sb
      *            StringBuilder in wich the spaces will appended
      * @param number
@@ -305,7 +317,7 @@ public class LoggerUtils {
 
     /**
      * Construct a error value with standard error prefix and the flag as number.
-     * 
+     *
      * @param flag
      *            the wished error flag
      * @param sbValue
@@ -318,7 +330,7 @@ public class LoggerUtils {
 
     /**
      * Get the column number by name.
-     * 
+     *
      * @param line
      *            the line to search
      * @param name
@@ -329,7 +341,7 @@ public class LoggerUtils {
 
         int channelColumn = -1;
 
-        // erst Zeile ohne Kommentar finden, dann den Spaltennamen suchen und dessen Possitionsnummer zurückgeben.
+        // erst Zeile ohne Kommentar finden, dann den Spaltennamen suchen und dessen Possitionsnummer zurueckgeben.
         if (!line.startsWith(Const.COMMENT_SIGN)) {
             String[] columns = line.split(Const.SEPARATOR);
             for (int i = 0; i < columns.length; i++) {
@@ -344,7 +356,7 @@ public class LoggerUtils {
 
     /**
      * Get the columns number by names.
-     * 
+     *
      * @param line
      *            the line to search
      * @param names
@@ -373,7 +385,7 @@ public class LoggerUtils {
     /**
      * Get the column number by name, in comments. It searches the line by his self. The BufferdReader has to be on the
      * begin of the file.
-     * 
+     *
      * @param name
      *            the name to search
      * @param br
@@ -406,7 +418,7 @@ public class LoggerUtils {
 
     /**
      * Get the value which is coded in the comment
-     * 
+     *
      * @param colNumber
      *            the number of the channel
      * @param column
@@ -434,7 +446,7 @@ public class LoggerUtils {
 
     /**
      * Identifies the ValueType of a logger value on a specific col_no
-     * 
+     *
      * @param columnNumber
      *            column number
      * @param dataFile
@@ -477,7 +489,7 @@ public class LoggerUtils {
 
     /**
      * Returns the predefined size of a ValueType.
-     * 
+     *
      * @param valueType
      *            the type to get the predefined size
      * @return predefined size of a ValueType as int.
@@ -508,7 +520,7 @@ public class LoggerUtils {
 
     /**
      * Converts a byte array to an hexadecimal string
-     * 
+     *
      * @param sb
      *            to add hex string
      * @param byteArray
@@ -526,7 +538,7 @@ public class LoggerUtils {
 
     /**
      * Constructs the timestamp for every log value into a StringBuilder.
-     * 
+     *
      * @param sb
      *            the StringBuilder to add the logger timestamp
      * @param calendar
@@ -546,7 +558,7 @@ public class LoggerUtils {
 
     /**
      * Constructs the timestamp for every log value into a StringBuilder.
-     * 
+     *
      * @param sb
      *            the StringBuilder to add the logger timestamp
      * @param unixTimeStamp
@@ -603,16 +615,16 @@ public class LoggerUtils {
 
     /**
      * Returns a RandomAccessFile of the specified file.
-     * 
+     *
      * @param file
      *            file get the RandomAccessFile
-     * @param accesMode
+     * @param accessMode
      *            access mode
      * @return the RandomAccessFile of the specified file, {@code null} if an error occured.
      */
-    public static RandomAccessFile getRandomAccessFile(File file, String accesMode) {
+    public static RandomAccessFile getRandomAccessFile(File file, String accessMode) {
         try {
-            return new RandomAccessFile(file, accesMode);
+            return new RandomAccessFile(file, accessMode);
         } catch (FileNotFoundException e) {
             logger.warn("Requested logfile: '{}' not found.", file.getAbsolutePath());
         }
@@ -678,7 +690,7 @@ public class LoggerUtils {
 
     /**
      * * fills a AsciiLogg file up.
-     * 
+     *
      * @param out
      *            the output stream to write on
      * @param unixTimeStamp
@@ -721,7 +733,7 @@ public class LoggerUtils {
 
     /**
      * Returns the error value as a StringBuilder.
-     * 
+     *
      * @param lineArray
      *            a ascii line as a array with error code
      * @return StringBuilder with appended error
@@ -754,7 +766,7 @@ public class LoggerUtils {
 
     /**
      * Get the length from a type+length tuple. Example: "Byte_String,95"
-     * 
+     *
      * @param string
      *            has to be a string with ByteType and length.
      * @param dataFile
@@ -773,7 +785,98 @@ public class LoggerUtils {
         return Const.VALUE_SIZE_MINIMAL;
     }
 
-    private LoggerUtils() {
+    /**
+     * Attempt to find the latest record within the given map of records
+     * 
+     * @param recordsMap
+     *            map as given by {@link org.openmuc.framework.datalogger.ascii.LogFileReader#getValues(long, long)}
+     * @return Map of channelId and latest Record for that channel, empty map if non-existent
+     */
+    public static Map<String, Record> findLatestValue(Map<String, List<Record>> recordsMap) {
+        Map<String, Record> recordMap = new HashMap<>();
+
+        for (Entry<String, List<Record>> entries : recordsMap.entrySet()) {
+            List<Record> records = entries.getValue();
+            // find the latest record
+            long latestTimestamp = 0;
+            Record latestRecord = null;
+            for (Record record : records) {
+                if (record.getTimestamp() > latestTimestamp) {
+                    latestRecord = record;
+                    latestTimestamp = record.getTimestamp();
+                }
+            }
+            // only add the latest Record to the map
+            if (latestRecord != null) {
+                recordMap.put(entries.getKey(), latestRecord);
+            }
+        }
+        return recordMap;
     }
 
+    /**
+     * Gets all files with the .dat extension from this folder
+     * 
+     * @return list of all data files in the folder
+     */
+    public static List<File> getAllDataFiles(String directoryPath) {
+        File dir = new File(directoryPath);
+        File[] allFiles = dir.listFiles();
+        List<File> files = new LinkedList<>();
+        if (allFiles == null || allFiles.length == 0) {
+            logger.error("No file found in " + directoryPath);
+            return null;
+        }
+        for (File file : allFiles) {
+            String fileName = file.getName();
+            if (fileName.endsWith(Const.EXTENSION)) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
+
+    /**
+     * Get the date of the file with given fileName by parsing. The file name must start with the date in YYYYMMDD
+     * format.
+     * 
+     * @param fileName
+     *            of the file to be parsed. Must start with the date in "YYYYMMDD" format
+     * @return parsed Date
+     * @throws ParseException
+     *             when parsing of the file fails.
+     */
+    public static Date getDateOfFile(String fileName) throws ParseException {
+        String dateString = fileName.substring(0, 8);
+        String pattern = "yyyyMMdd";
+        Date date = new SimpleDateFormat(pattern).parse(dateString);
+        return date;
+    }
+
+    /**
+     * Get the latest file of a list of files by comparing file names The file name must start with the date in YYYYMMDD
+     * format.
+     * 
+     * @param files
+     * @return file with the latest date
+     */
+    public static File getLatestFile(List<File> files) {
+        long latestTimestamp = 0;
+        File latestFile = null;
+        for (File file : files) {
+            long timestamp = 0;
+            try {
+                String fileName = file.getName();
+                timestamp = getDateOfFile(fileName).getTime();
+            } catch (ParseException ex) {
+                logger.error("Data file could not be parsed... continuing with next");
+                continue;
+            }
+            if (timestamp > latestTimestamp) {
+                latestTimestamp = timestamp;
+                latestFile = file;
+            }
+        }
+        return latestFile;
+    }
 }

@@ -1,0 +1,66 @@
+project.ext {
+    projectName = "OpenMUC Driver - OPC UA"
+    projectDescription = "OPC UA driver for the OpenMUC framework."
+}
+
+def miloVersion = '0.4.3'
+
+configurations.create('embed')
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':openmuc-driver')
+
+    implementation group: 'org.eclipse.milo', name: 'sdk-server', version: miloVersion
+    embed          group: 'org.eclipse.milo', name: 'sdk-server', version: miloVersion
+
+    implementation group: 'org.eclipse.milo', name: 'sdk-client', version: miloVersion
+    embed          group: 'org.eclipse.milo', name: 'sdk-client', version: miloVersion
+}
+
+def embed = configurations.embed.findAll {
+    it.getName().matches("(stack|sdk|strict|netty|bc).*")
+}
+
+jar {
+    bnd('Bundle-Name':        projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath':   '.,' + embed.collect { 'lib/'+it.getName() }.join(','),
+        'Import-Package':     '!org.eclipse.*,' +
+                              '!io.netty.*,' +
+                              '!org.jboss.*,' +
+                              '!org.bouncycastle.*,' +
+                              '!org.apache.log*,' +
+                              '!org.apache.commons.log*,' +
+                              '!com.google.protobuf.nano.*,' +
+                              '!com.oracle.svm.*,' +
+                              '!com.digitalpetri.*,' +
+                              '!org.conscrypt.*,' +
+                              '!lzma.sdk.*,' +
+                              '!net.jpountz.*,' +
+                              '!com.jcraft.*,' +
+                              '!com.ning.*,' +
+                              '!com.sun.xml*,' +
+                              '!sun.security.*,' +
+                              '!sun.security.util.*,' +
+                              '!reactor.blockhound.*,' +
+                              '*'+jarDefaultImportPackageVersion)
+
+    into('lib') {
+        from embed
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
+}

@@ -1,0 +1,24 @@
+<package> (<version>) stable; urgency=medium
+
+  * Use official OpenMUC v0.19.1
+  * Implement SQL read latest method
+  * Improve MySQL datalogger database creation and remove it if purged
+  * Fix NullPointerException for not yet connected SQL database requests
+  * Fix Modbus TCP Server to use byteorder as big- and wordorder as little endian
+  * Reduce ModbusIOException stacktrace log level
+
+ -- <maintainer>  <date>
+
+<package> (0.20.1) stable; urgency=medium
+
+  * Add SerializationContainer and generalize ParserService structure
+  * Add Flotteladen ParserService for MQTT
+  * Fix MQTT driver to read several channels with identical topic
+
+ -- Adrian Minde <adrian.minde@isc-konstanz.de>  Fri, 26 Nov 2021 14:20:10 +0100
+
+<package> (0.20.0) stable; urgency=medium
+
+  * Initial release
+
+ -- Adrian Minde <adrian.minde@isc-konstanz.de>  Wed, 30 Sep 2021 14:24:54 +0200

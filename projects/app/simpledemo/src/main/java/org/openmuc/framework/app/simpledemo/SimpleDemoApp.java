@@ -11,6 +11,8 @@ package org.openmuc.framework.app.simpledemo;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
@@ -19,7 +21,6 @@ import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.Value;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
-import org.openmuc.framework.dataaccess.RecordListener;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -28,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(service = {})
-public final class SimpleDemoApp extends Thread {
+public final class SimpleDemoApp {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleDemoApp.class);
     private static final DecimalFormatSymbols DFS = DecimalFormatSymbols.getInstance(Locale.US);
@@ -37,6 +38,7 @@ public final class SimpleDemoApp extends Thread {
     // ChannelIDs, see conf/channel.xml
     private static final String ID_POWER_ELECTIC_VEHICLE = "power_electric_vehicle";
     private static final String ID_POWER_GRID = "power_grid";
+    private static final String ID_POWER_PHOTOVOLTAICS = "power_photovoltaics";
     private static final String ID_STATUS_ELECTRIC_VEHICLE = "status_electric_vehicle";
     private static final String ID_ENERGY_EXPORTED = "energy_exported";
     private static final String ID_ENERGY_IMPORTED = "energy_imported";
@@ -47,8 +49,7 @@ public final class SimpleDemoApp extends Thread {
     private static final double SECONDS_PER_HOUR = 3600.0;
     private static final double SECONDS_PER_INTERVAL = 5.0;
     private static final double HOUR_BASED_INTERVAL_TIME = SECONDS_PER_INTERVAL / SECONDS_PER_HOUR;
-
-    private volatile boolean deactivatedSignal;
+    int printCounter; // for slowing down the output of the console
 
     // With the dataAccessService you can access to your measured and control data of your devices.
     @Reference
@@ -56,67 +57,49 @@ public final class SimpleDemoApp extends Thread {
 
     // Channel for accessing data of a channel.
     private Channel chPowerElecticVehicle;
+    private Channel chPowerPhotovoltaics;
     private Channel chPowerGrid;
     private Channel chEvStatus;
     private Channel chEnergyExported;
     private Channel chEnergyImported;
-
     private double energyExportedKWh = 0;
     private double energyImportedKWh = 0;
-
-    int printCounter; // for slowing down the output of the console
+    private Timer updateTimer;
 
     /**
      * Every app needs one activate method. Is is called at begin. Here you can configure all you need at start of your
      * app. The Activate method can block the start of your OpenMUC, f.e. if you use Thread.sleep().
-     * 
-     * @param context
      */
     @Activate
     private void activate() {
         logger.info("Activating Demo App");
-        setName("OpenMUC Simple Demo App");
-        start();
+        init();
     }
 
     /**
      * Every app needs one deactivate method. It handles the shutdown of your app e.g. closing open streams.
-     * 
-     * @param context
      */
     @Deactivate
     private void deactivate() {
         logger.info("Deactivating Demo App");
-        deactivatedSignal = true;
-
-        interrupt();
-        try {
-            this.join();
-        } catch (InterruptedException e) {
-        }
+        logger.info("DemoApp thread interrupted: will stop");
+        updateTimer.cancel();
+        updateTimer.purge();
     }
 
     /**
      * application logic
      */
-    @Override
-    public void run() {
-
+    private void init() {
         logger.info("Demo App started running...");
 
-        if (deactivatedSignal) {
-            logger.info("DemoApp thread interrupted: will stop");
-            return;
-        }
-
         initializeChannels();
+
+        // Example to demonstrate the possibility of individual settings of each channel
+        logger.info("Settings of the PV system: {}", chPowerPhotovoltaics.getSettings());
+
         applyListener();
-
-        while (!deactivatedSignal) {
-            updateEvStatusChannel();
-            sleepMs(5000);
-        }
-
+        initUpdateTimer();
     }
 
     /**
@@ -125,6 +108,7 @@ public final class SimpleDemoApp extends Thread {
     private void initializeChannels() {
         chPowerElecticVehicle = dataAccessService.getChannel(ID_POWER_ELECTIC_VEHICLE);
         chPowerGrid = dataAccessService.getChannel(ID_POWER_GRID);
+        chPowerPhotovoltaics = dataAccessService.getChannel(ID_POWER_PHOTOVOLTAICS);
         chEvStatus = dataAccessService.getChannel(ID_STATUS_ELECTRIC_VEHICLE);
         chEnergyExported = dataAccessService.getChannel(ID_ENERGY_EXPORTED);
         chEnergyImported = dataAccessService.getChannel(ID_ENERGY_IMPORTED);
@@ -134,20 +118,29 @@ public final class SimpleDemoApp extends Thread {
      * Apply a RecordListener to get notified if a new value is available for a channel
      */
     private void applyListener() {
-        chPowerGrid.addListener(new RecordListener() {
-            @Override
-            public void newRecord(Record record) {
-                if (record.getValue() != null) {
-                    updateEnergyChannels(record);
-                }
+        chPowerGrid.addListener(record -> {
+            if (record.getValue() != null) {
+                updateEnergyChannels(record);
             }
         });
+    }
+
+    private void initUpdateTimer() {
+        updateTimer = new Timer("EV-Status Update");
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                updateEvStatusChannel();
+            }
+        };
+        updateTimer.scheduleAtFixedRate(task, (long) SECONDS_PER_INTERVAL * 1000, (long) SECONDS_PER_INTERVAL * 1000);
     }
 
     /**
      * Calculate energy imported and exported from current grid power. (Demonstrates how to access the latest record of
      * a channel and how to set it.)
-     * 
+     *
      * @param gridPowerRecord
      */
     private void updateEnergyChannels(Record gridPowerRecord) {
@@ -196,13 +189,6 @@ public final class SimpleDemoApp extends Thread {
                 Record newRecord = new Record(new StringValue(status), System.currentTimeMillis(), Flag.VALID);
                 chEvStatus.setLatestRecord(newRecord);
             }
-        }
-    }
-
-    private void sleepMs(long timeInMs) {
-        try {
-            Thread.sleep(timeInMs);
-        } catch (InterruptedException e) {
         }
     }
 }

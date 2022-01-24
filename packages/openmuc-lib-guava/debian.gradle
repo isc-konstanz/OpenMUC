@@ -1,0 +1,18 @@
+def projectPackage = rootDir.getPath() + '/build/dpkg/openmuc-lib-guava-' + cfgVersion
+
+configurations.create("openmuc_lib_guava")
+configurations.openmuc_lib_guava.transitive = false;
+	
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs rootDir.getPath() + '/build/libs-all'
+    }
+}
+dependencies {
+    openmuc_lib_guava group: 'com.google.guava', name: 'guava', version: '26.0-jre'
+}
+copy {
+    from project.configurations.openmuc_lib_guava
+    into projectPackage + '/bundle'
+}

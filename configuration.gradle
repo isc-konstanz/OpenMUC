@@ -1,138 +1,166 @@
-
 project.ext {
+    cfgVersion = "0.20.2"
 
-  cfgVersion = "0.18.2"
-  
-  cfgGroup = "org.openmuc.framework"
+    cfgGroup = "org.openmuc.framework"
 
-  cfgCopyDependencies = false
+    cfgCopyDependencies = false
 
-  cfgCopyToRoot = true
+    cfgSignPom = false
 
-  cfgSignPom = true
+    cfgSnapshotPattern = ~/\d+\.\d+\.\d+.*SNAPSHOT.*/
 
-  cfgRepository = project.properties.sonatypeRepository
+    cfgRepository = project.properties.sonatypeRepository
 
-  cfgSnapshotRepository = project.properties.sonatypeSnapshotRepository
+    cfgRepositoryUser = project.properties.sonatypeUser
 
-  cfgRepositoryUser = project.properties.sonatypeUser
+    cfgRepositoryPass = project.properties.sonatypePass
 
-  cfgRepositoryPass = project.properties.sonatypePass
+    javaProjects = subprojects
 
-  javaProjects = subprojects
+    jarDefaultImportPackageVersion = ";version=0"
 
-  jarDefaultImportPackageVersion = ";version=0"
+    distributionProjects = javaProjects.findAll {
+        it.getPath() == ":openmuc-app-household" ||
+                it.getPath() == ":openmuc-app-simpledemo" ||
+                it.getPath() == ":openmuc-app-node" ||
+                it.getPath() == ":openmuc-core-api" ||
+                it.getPath() == ":openmuc-core-datamanager" ||
+                it.getPath() == ":openmuc-core-spi" ||
+                it.getPath() == ":openmuc-datalogger" ||
+                it.getPath() == ":openmuc-datalogger-amqp" ||
+                it.getPath() == ":openmuc-datalogger-ascii" ||
+                it.getPath() == ":openmuc-datalogger-mqtt" ||
+                it.getPath() == ":openmuc-datalogger-slotsdb" ||
+                it.getPath() == ":openmuc-datalogger-sql" ||
+                it.getPath() == ":openmuc-driver" ||
+                it.getPath() == ":openmuc-driver-aggregator" ||
+                it.getPath() == ":openmuc-driver-amqp" ||
+                it.getPath() == ":openmuc-driver-csv" ||
+                it.getPath() == ":openmuc-driver-derivator" ||
+                it.getPath() == ":openmuc-driver-dlms" ||
+                it.getPath() == ":openmuc-driver-ehz" ||
+                it.getPath() == ":openmuc-driver-iec60870" ||
+                it.getPath() == ":openmuc-driver-iec61850" ||
+                it.getPath() == ":openmuc-driver-iec62056p21" ||
+                it.getPath() == ":openmuc-driver-knx" ||
+                it.getPath() == ":openmuc-driver-mbus" ||
+                it.getPath() == ":openmuc-driver-modbus" ||
+                it.getPath() == ":openmuc-driver-mqtt" ||
+                it.getPath() == ":openmuc-driver-opcua" ||
+                it.getPath() == ":openmuc-driver-rest" ||
+                it.getPath() == ":openmuc-driver-rpi-gpio" ||
+                it.getPath() == ":openmuc-driver-rpi-w1" ||
+                it.getPath() == ":openmuc-driver-snmp" ||
+                it.getPath() == ":openmuc-driver-sql" ||
+                it.getPath() == ":openmuc-driver-wmbus" ||
+                it.getPath() == ":openmuc-lib-amqp" ||
+                it.getPath() == ":openmuc-lib-persistence" ||
+                it.getPath() == ":openmuc-lib-mqtt" ||
+                it.getPath() == ":openmuc-lib-osgi" ||
+                it.getPath() == ":openmuc-lib-parser-openmuc" ||
+                it.getPath() == ":openmuc-lib-parser-flotteladen" ||
+                it.getPath() == ":openmuc-lib-rest" ||
+                it.getPath() == ":openmuc-lib-ssl" ||
+                it.getPath() == ":openmuc-server" ||
+                it.getPath() == ":openmuc-server-modbus" ||
+                it.getPath() == ":openmuc-server-opcua" ||
+                it.getPath() == ":openmuc-server-restws" ||
+                it.getPath() == ":openmuc-webui-base" ||
+                it.getPath() == ":openmuc-webui-channelaccesstool" ||
+                it.getPath() == ":openmuc-webui-channelconfigurator" ||
+                it.getPath() == ":openmuc-webui-dataexporter" ||
+                it.getPath() == ":openmuc-webui-dataplotter" ||
+                it.getPath() == ":openmuc-webui-mediaviewer" ||
+                it.getPath() == ":openmuc-webui-simpledemovisualisation" ||
+                it.getPath() == ":openmuc-webui-spi" ||
+                it.getPath() == ":openmuc-webui-userconfigurator"
+    }
 
-  distributionProjects = javaProjects.findAll {
-    it.getPath() == ":openmuc-app-household" ||
-    it.getPath() == ":openmuc-app-simpledemo" ||
-    it.getPath() == ":openmuc-app-node" ||
-    it.getPath() == ":openmuc-core-api" ||
-    it.getPath() == ":openmuc-core-datamanager" ||
-    it.getPath() == ":openmuc-core-spi" ||
-    it.getPath() == ":openmuc-datalogger-ascii" ||
-    it.getPath() == ":openmuc-datalogger-slotsdb" ||
-    it.getPath() == ":openmuc-datalogger-sql" ||
-    it.getPath() == ":openmuc-driver-aggregator" ||
-    it.getPath() == ":openmuc-driver-csv" ||
-    it.getPath() == ":openmuc-driver-dlms" ||
-    it.getPath() == ":openmuc-driver-ehz" ||
-    it.getPath() == ":openmuc-driver-iec60870" ||
-    it.getPath() == ":openmuc-driver-iec61850" ||
-    it.getPath() == ":openmuc-driver-iec62056p21" ||
-    it.getPath() == ":openmuc-driver-knx" ||
-    it.getPath() == ":openmuc-driver-mbus" ||
-    it.getPath() == ":openmuc-driver-modbus" ||
-    it.getPath() == ":openmuc-driver-rest" ||
-    it.getPath() == ":openmuc-driver-rpi-gpio" ||
-    it.getPath() == ":openmuc-driver-rpi-w1" ||
-    it.getPath() == ":openmuc-driver-snmp" ||
-    it.getPath() == ":openmuc-driver-sql" ||
-    it.getPath() == ":openmuc-driver-wmbus" ||
-    it.getPath() == ":openmuc-server-modbus" ||
-    it.getPath() == ":openmuc-server-opcua" ||
-    it.getPath() == ":openmuc-server-restws" ||
-    it.getPath() == ":openmuc-webui-base" ||
-    it.getPath() == ":openmuc-webui-channelaccesstool" ||
-    it.getPath() == ":openmuc-webui-channelconfigurator" ||
-    it.getPath() == ":openmuc-webui-dataexporter" ||
-    it.getPath() == ":openmuc-webui-dataplotter" ||
-    it.getPath() == ":openmuc-webui-mediaviewer" ||
-    it.getPath() == ":openmuc-webui-simpledemovisualisation" ||
-    it.getPath() == ":openmuc-webui-spi" ||
-    it.getPath() == ":openmuc-webui-userconfigurator"
-  }
+    docProjects = distributionProjects.findAll {
+        it.getPath() == ":openmuc-core-api" ||
+                it.getPath() == ":openmuc-core-spi" ||
+                it.getPath() == ":openmuc-webui-spi"
+    }
 
-  docProjects = distributionProjects.findAll {
-    it.getPath() == ":openmuc-core-api" ||
-    it.getPath() == ":openmuc-core-spi" ||
-    it.getPath() == ":openmuc-webui-spi"
-  }
-
-  repositoryProjects = distributionProjects
-
+    if (cfgVersion.matches(cfgSnapshotPattern)) {
+        repositoryProjects = javaProjects
+        isReleaseVersion = false
+    } else {
+        repositoryProjects = distributionProjects
+        isReleaseVersion = true
+        cfgSignPom = true
+    }
 }
 
 configure(javaProjects) {
-  apply plugin: "java"
-  apply plugin: "maven"
-
-  uploadArchives {
-    repositories {
-      mavenDeployer {
-        pom.project {
-          licenses {
-            license {
-              name "GNU General Public License"
-              url "http://www.gnu.org/copyleft/gpl-3.0.html"
-              distribution "repo"
-            }
-          }
-        }
-      }
+    version = cfgVersion 
+    if (project.hasProperty('argBranchName')) {
+        version += '-' + argBranchName
     }
-  }
+    if (project.hasProperty('argCommitDate')) {
+        version += '-' + argCommitDate
+    }
+
+    apply plugin: "java"
+    apply plugin: "maven-publish"
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                pom {
+                    licenses {
+                        license {
+                            name = "GNU General Public License"
+                            url = "http://www.gnu.org/copyleft/gpl-3.0.html"
+                            distribution = "repo"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 task framework {
-  apply from: "./framework/conf/bundles.conf.gradle"
-  dependsOn updateBundles
+    apply from: rootDir.getPath() + "/framework/conf/bundles.gradle"
+    dependsOn updateBundles
 }
 
-tasks.withType(Tar) {
+task packages {
+    apply from: rootDir.getPath() + "/packages/build.gradle"
+    dependsOn debianPackages
+}
 
-  into(project.name) {
+task distribute(type: Tar) {
+    dependsOn(distributionProjects.build)
 
-    from("build") {
-      include "libs/**"
+    archiveFileName = project.name + "-" + cfgVersion + ".tar.gz"
+    destinationDirectory = file("build/dist/")
+    compression = Compression.GZIP
+
+    into(project.name) {
+        from("build") {
+			for (Project dist : distributionProjects) {
+				include "libs/" + dist.getName() + "*.jar"
+			}
+        }
+        from("./") {
+            include "LICENSE"
+            include "dependencies/**"
+
+        }
+        if (name.equals("tar") ){
+            exclude "**/dependencies/**/src"
+        }
     }
 
-    from("./") {
-      include "LICENSE"
-      include "dependencies/**"
-
+    into(project.name + "/docs/") {
+        from("./doc/") {
+            include "CHANGELOG.txt"
+            include "user-guide/**"
+        }
+        from("./build/docs/") {
+            include "javadoc/**"
+        }
     }
-
-    if (name.equals("tar") ){
-      exclude "**/dependencies/**/src"
-    }
-	
-  }
-
-  into(project.name + "/libs/") {
-    from("build/libs-all") {
-      include "openmuc-**"
-    }
-  }
-
-  into(project.name + "/docs/") {
-    from("./doc/") {
-      include "CHANGELOG.txt"
-      include "user-guide/**"
-    }
-    from("./build/docs/") {
-      include "javadoc/**"
-    }
-  }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -23,7 +23,6 @@ package org.openmuc.framework.datalogger.ascii;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +56,7 @@ public class LogFileReader {
 
     /**
      * LogFileReader Constructor
-     * 
+     *
      * @param path
      *            the path to the files to read from
      * @param logChannel
@@ -74,7 +73,7 @@ public class LogFileReader {
 
     /**
      * Get the values between start time stamp and end time stamp
-     * 
+     *
      * @param startTimestamp
      *            start time stamp
      * @param endTimestamp
@@ -116,6 +115,24 @@ public class LogFileReader {
     }
 
     /**
+     * Get all records of the given file
+     * 
+     * @param filePath
+     *            to be read from
+     * @return All records in the given file as a Map of String channelId and List of records for this channel
+     */
+    public Map<String, List<Record>> getValues(String filePath) {
+        this.startTimestamp = 0;
+        this.endTimestamp = 9223372036854775807l; // max long
+        Map<String, List<Record>> recordsMap = new HashMap<>();
+        for (String id : ids) {
+            recordsMap.put(id, new ArrayList<Record>());
+        }
+        recordsMap = processFile(recordsMap, filePath, true);
+        return recordsMap;
+    }
+
+    /**
      * get a single record from single channel of time stamp
      *
      * @param timestamp
@@ -124,11 +141,15 @@ public class LogFileReader {
      */
     public Map<String, Record> getValue(long timestamp) {
 
-        // Returns a record which lays within the interval [timestamp, timestamp + loggingInterval]
-        // The interval is necessary for a requested time stamp which lays between the time stamps of two logged values
+        // Returns a record which lays within the interval [timestamp, timestamp +
+        // loggingInterval]
+        // The interval is necessary for a requested time stamp which lays between the
+        // time stamps of two logged values
         // e.g.: t_request = 7, t1_logged = 5, t2_logged = 10, loggingInterval = 5
-        // method will return the record of t2_logged because this lays within the interval [7,12]
-        // If the t_request matches exactly a logged time stamp, then the according record is returned.
+        // method will return the record of t2_logged because this lays within the
+        // interval [7,12]
+        // If the t_request matches exactly a logged time stamp, then the according
+        // record is returned.
 
         Map<String, List<Record>> recordsMap = getValues(timestamp, timestamp);
         Map<String, Record> recordMap = new HashMap<>();
@@ -156,7 +177,7 @@ public class LogFileReader {
 
     /**
      * Reads the file line by line
-     * 
+     *
      * @param filepath
      *            file path
      * @param nextFile
@@ -183,7 +204,6 @@ public class LogFileReader {
                 line = raf.readLine();
                 channelsColumnsMap = LoggerUtils.getColumnNumbersByNames(line, ids);
             }
-
             unixTimestampColumn = channelsColumnsMap.get(Const.TIMESTAMP_STRING);
             firstValueLine = raf.readLine();
 
@@ -225,11 +245,9 @@ public class LogFileReader {
 
     /**
      * Process the line: ignore comments, read records
-     * 
+     *
      * @param line
      *            the line to process
-     * @param channelColumn
-     *            channel column
      * @param recordsMap
      *            list of records
      */
@@ -243,11 +261,9 @@ public class LogFileReader {
 
     /**
      * read the records from a line.
-     * 
+     *
      * @param line
      *            to read
-     * @param column
-     *            of the channelId
      * @return Records read from line
      */
     private void readRecordsFromLine(String line, Map<String, Integer> channelsColumnsMap,
@@ -286,7 +302,7 @@ public class LogFileReader {
 
     /**
      * Checks if the time stamp read from file is part of the requested logging interval
-     * 
+     *
      * @param lineTimestamp
      *            time stamp to check if it is part of the time span
      * @return true if it is a part of the requested interval, if not false.
@@ -307,7 +323,7 @@ public class LogFileReader {
 
     /**
      * Get the position of the startTimestamp, without Header.
-     * 
+     *
      * @param loggingInterval
      *            logging interval
      * @param startTimestamp
@@ -331,9 +347,10 @@ public class LogFileReader {
     }
 
     // TODO support ints, booleans, ...
+
     /**
      * Converts an entry from the logging file into a record
-     * 
+     *
      * @param strValue
      *            string value
      * @param timestamp
@@ -355,7 +372,7 @@ public class LogFileReader {
     /**
      * Returns the record from a non number value read from the logfile. This is the case if the value is an error like
      * "e0" or a normal ByteArrayValue
-     * 
+     *
      * @param strValue
      *            string value
      * @param timestamp
@@ -381,13 +398,7 @@ public class LogFileReader {
             }
         }
         else if (strValue.trim().startsWith(Const.HEXADECIMAL)) {
-            try {
-                record = new Record(new ByteArrayValue(strValue.trim().getBytes(Const.CHAR_SET)), timestamp,
-                        Flag.VALID);
-            } catch (UnsupportedEncodingException e) {
-                record = new Record(Flag.UNKNOWN_ERROR);
-                logger.error("Hexadecimal value is non US-ASCII decoded, value is: " + strValue.trim());
-            }
+            record = new Record(new ByteArrayValue(strValue.trim().getBytes(Const.CHAR_SET)), timestamp, Flag.VALID);
         }
         else {
             record = new Record(new StringValue(strValue.trim()), timestamp, Flag.VALID);
@@ -397,7 +408,7 @@ public class LogFileReader {
 
     /**
      * Checks if the string value is a number
-     * 
+     *
      * @param strValue
      *            string value
      * @return True on success, otherwise false

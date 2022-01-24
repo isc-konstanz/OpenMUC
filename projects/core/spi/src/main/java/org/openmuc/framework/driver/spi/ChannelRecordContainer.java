@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -24,7 +24,7 @@ package org.openmuc.framework.driver.spi;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.ReadRecordContainer;
 
-public interface ChannelRecordContainer extends ChannelContainer, ReadRecordContainer {
+public interface ChannelRecordContainer extends ReadRecordContainer, ChannelHandleContainer {
 
     void setRecord(Record record);
 

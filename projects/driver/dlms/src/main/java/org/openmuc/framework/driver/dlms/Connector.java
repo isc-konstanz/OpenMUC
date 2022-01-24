@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.data.TypeConverter;
 import org.openmuc.framework.driver.dlms.settings.DeviceAddress;
 import org.openmuc.framework.driver.dlms.settings.DeviceSettings;
 import org.openmuc.framework.driver.spi.ConnectionException;
@@ -169,12 +168,23 @@ class Connector {
 
         if (deviceSettings.getPassword().startsWith("0x")) {
             String hexStr = deviceSettings.getPassword().substring(2);
-            return TypeConverter.hexToBytes(hexStr);
+            return hexToBytes(hexStr);
         }
         else {
             return deviceSettings.getPassword().getBytes(StandardCharsets.US_ASCII);
         }
 
+    }
+
+    private static byte[] hexToBytes(String s) {
+        byte[] b = new byte[s.length() / 2];
+        int index;
+
+        for (int i = 0; i < b.length; i++) {
+            index = i * 2;
+            b[i] = (byte) Integer.parseInt(s.substring(index, index + 2), 16);
+        }
+        return b;
     }
 
     /**

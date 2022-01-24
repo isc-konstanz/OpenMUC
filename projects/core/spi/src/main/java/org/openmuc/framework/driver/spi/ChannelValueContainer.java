@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -24,11 +24,12 @@ package org.openmuc.framework.driver.spi;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Value;
 
-public interface ChannelValueContainer extends ChannelContainer {
+public interface ChannelValueContainer extends ChannelHandleContainer {
 
-    Value getValue();
+    Flag getFlag();
 
     void setFlag(Flag flag);
 
-    Flag getFlag();
+    Value getValue();
+
 }

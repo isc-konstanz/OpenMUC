@@ -1,0 +1,3 @@
+/opt/openmuc/conf/logback.xml
+/opt/openmuc/conf/config.properties
+/opt/openmuc/conf/system.properties

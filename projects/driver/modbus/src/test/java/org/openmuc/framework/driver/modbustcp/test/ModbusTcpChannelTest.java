@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-18 Fraunhofer ISE
+ * Copyright 2011-2021 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,13 +20,14 @@
  */
 package org.openmuc.framework.driver.modbustcp.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openmuc.framework.driver.modbus.EDatatype;
-import org.openmuc.framework.driver.modbus.EPrimaryTable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmuc.framework.driver.modbus.DataType;
+import org.openmuc.framework.driver.modbus.PrimaryTable;
 import org.openmuc.framework.driver.modbus.ModbusChannel;
 import org.openmuc.framework.driver.modbus.ModbusChannel.EAccess;
 
@@ -40,7 +41,7 @@ public class ModbusTcpChannelTest {
 
     private ArrayList<String> validAddressCombinations;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         validAddressCombinations = new ArrayList<>();
 
@@ -94,7 +95,7 @@ public class ModbusTcpChannelTest {
                 String testString = concatenate(channel.getAccessFlag(), channel.getPrimaryTable(),
                         channel.getDatatype());
                 if (!validAddressCombinations.contains(testString.toUpperCase())) {
-                    Assert.fail(testString + "is not a valid paramaeter combination");
+                    fail(testString + "is not a valid paramaeter combination");
                 }
                 else {
                     System.out.println(channelAddress + " and resulting " + testString.toUpperCase() + " are valid.");
@@ -102,7 +103,7 @@ public class ModbusTcpChannelTest {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Assert.fail("unexpected exception");
+                fail("unexpected exception");
             }
         }
     }
@@ -126,19 +127,19 @@ public class ModbusTcpChannelTest {
                 String testString = concatenate(channel.getAccessFlag(), channel.getPrimaryTable(),
                         channel.getDatatype());
                 if (!validAddressCombinations.contains(testString.toUpperCase())) {
-                    Assert.fail(testString + "is not a valid paramaeter combination");
+                    fail(testString + "is not a valid paramaeter combination");
                 }
                 else {
                     System.out.println(channelAddress + " and resulting " + testString.toUpperCase() + " are valid.");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Assert.fail("unexpected exception");
+                fail("unexpected exception");
             }
         }
     }
 
-    private String concatenate(EAccess a, EPrimaryTable p, EDatatype d) {
+    private String concatenate(EAccess a, PrimaryTable p, DataType d) {
         return a.toString() + ":" + p.toString() + ":" + d.toString();
     }
 
