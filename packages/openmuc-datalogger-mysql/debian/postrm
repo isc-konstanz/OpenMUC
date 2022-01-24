@@ -5,7 +5,6 @@ set -e
 . /usr/share/debconf/confmodule
 
 PASSWD_FILE=/home/pi/.setup/passwd.conf
-INSTALL_FILE=/var/opt/openmuc/install/org.openmuc.framework.datalogger.sql.SqlLogger.cfg
 
 # Fetching configuration from debconf
 db_get openmuc/mysql_database
