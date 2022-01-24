@@ -1,13 +1,24 @@
-
-def projectName = 'OpenMUC App - Household'
+project.ext {
+    projectName = "OpenMUC App - Household"
+    projectDescription = "The household app for the OpenMUC framework."
+}
 
 dependencies {
-  implementation project(':openmuc-core-api')
+    implementation project(':openmuc-core-api')
 }
 
 jar {
-  manifest {
-    name = projectName
-    instruction 'Export-Package', ''
-  }
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
 }
