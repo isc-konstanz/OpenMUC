@@ -26,7 +26,8 @@ copy {
     from project.configurations.osgibundles
     into Paths.get(projectPackage, 'bundle')
     exclude 'openmuc*'
-    exclude 'gson*'
+    exclude '*mysql*'
+    exclude '*gson*'
 }
 copy {
     from project.configurations.osgimain
