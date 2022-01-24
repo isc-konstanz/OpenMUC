@@ -12,7 +12,10 @@ case "$1" in
         if grep -E "^muc:" /etc/passwd > /dev/null 2>&1; then
             userdel -f "muc"
         fi
-        ;;&
+    *)
+        ;;
+esac
+case "$1" in
     purge)
         rm -r /opt/openmuc /var/opt/openmuc /var/log/openmuc /var/tmp/openmuc
         ;;
