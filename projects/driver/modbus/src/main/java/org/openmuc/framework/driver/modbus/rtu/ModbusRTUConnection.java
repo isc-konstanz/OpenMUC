@@ -272,12 +272,13 @@ public class ModbusRTUConnection extends ModbusConnection {
                     container.setRecord(new Record(value, receiveTime));
 
                 } catch (ModbusIOException e) {
-                    logger.error("ModbusIOException while reading channel:" + channel.getChannelAddress(), e);
+                	String err = "ModbusIOException while reading channel: " + channel.getChannelAddress();
+                    logger.debug(err, e);
                     disconnect();
                     throw new ConnectionException("ModbusIOException");
 
                 } catch (ModbusException e) {
-                    logger.error("ModbusException while reading channel: " + channel.getChannelAddress(), e);
+                    logger.warn("ModbusException while reading channel: " + channel.getChannelAddress(), e);
                     container.setRecord(new Record(Flag.DRIVER_ERROR_CHANNEL_NOT_ACCESSIBLE));
 
                 } catch (Exception e) {
