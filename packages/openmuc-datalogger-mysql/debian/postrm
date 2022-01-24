@@ -14,9 +14,6 @@ mysql_database_value=$RET
 db_get openmuc/mysql_user
 mysql_user_value=$RET
 
-db_get openmuc/mysql_password
-mysql_password_value=$RET
-
 case "$1" in
     purge)
         if test -f $PASSWD_FILE && grep -Fxq "[MySQL]" $PASSWD_FILE; then
