@@ -5,6 +5,7 @@
   * Improve MySQL datalogger database creation and remove it if purged
   * Fix NullPointerException for not yet connected SQL database requests
   * Fix Modbus TCP Server to use byteorder as big- and wordorder as little endian
+  * Reduce ModbusIOException stacktrace log level
 
  -- <maintainer>  <date>
 
