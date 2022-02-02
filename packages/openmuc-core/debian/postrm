@@ -12,6 +12,7 @@ case "$1" in
         if grep -E "^muc:" /etc/passwd > /dev/null 2>&1; then
             userdel -f "muc"
         fi
+        ;;
     *)
         ;;
 esac

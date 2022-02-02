@@ -25,6 +25,7 @@ import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.BooleanValue;
@@ -97,24 +98,27 @@ public class OpcChannel extends DriverChannel {
 
     public DataValue encode() {
         Value value = getRecord().getValue();
+        Variant variant;
         switch (getValueType()) {
         case BOOLEAN:
-            return new DataValue(new Variant(value.asBoolean()));
+            variant = new Variant(value.asBoolean());
         case BYTE:
-            return new DataValue(new Variant(value.asByte()));
+            variant = new Variant(value.asByte());
         case SHORT:
-            return new DataValue(new Variant(value.asShort()));
+            variant = new Variant(value.asShort());
         case INTEGER:
-            return new DataValue(new Variant(value.asInt()));
+            variant = new Variant(value.asInt());
         case LONG:
-            return new DataValue(new Variant(value.asLong()));
+            variant = new Variant(value.asLong());
         case FLOAT:
-            return new DataValue(new Variant(value.asFloat()));
+            variant = new Variant(value.asFloat());
         case DOUBLE:
-            return new DataValue(new Variant(value.asDouble()));
+            variant = new Variant(value.asDouble());
         default:
-            return new DataValue(new Variant(value.asString()));
+            variant = new Variant(value.asString());
         }
+        // FIXME: verify necessity of timestamp
+        return new DataValue(variant, StatusCode.GOOD, null);
     }
 
 }
