@@ -37,7 +37,7 @@ mysql_column_data_value=$RET
 mysql_column_data_key="value_column"
 
 case "$1" in
-    install)
+    install | configure)
         # Print some confirmation output to screen
         echo "Configuring OpenMUC MySQL Data Logger:"
         echo " - MySQL connection configuration: $mysql_user_value connecting to $mysql_database_value on $mysql_host_value:$mysql_port_value"
