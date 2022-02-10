@@ -10,7 +10,7 @@
         {{'CHANNEL_ID' | translate}} * 
       </label>
       <div class="col-md-6">
-        <input type="text" class="form-control" ng-disabled="selectedChannels.length > 1" ng-class="{true: 'form-submitted', false: ''}[channelForm.submitted]"  id="id" name="id" ng-model="channel.configs.id" required="required" ng-pattern="/^[a-zA-Z0-9_\-]*$/">
+        <input type="text" class="form-control" ng-disabled="selectedChannels.length > 1" ng-class="{true: 'form-submitted', false: ''}[channelForm.submitted]"  id="id" name="id" ng-model="channel.configs.id" required="required" ng-pattern="/^[a-zA-Z0-9\-\_\.\:\/]*$/">
         <div class="form-error-container" ng-show="(channelForm.id.$dirty && channelForm.id.$invalid) || (channelForm.submitted && channelForm.id.$invalid)">
           <div class="form-error-message" ng-show="channelForm.id.$error.required">{{'CHANNEL_ID_REQUIRED' | translate}}</div>
           <div class="form-error-message" ng-show="channelForm.id.$error.pattern">{{'CHANNEL_ID_PATTERN_INCORRECT' | translate}}</div>

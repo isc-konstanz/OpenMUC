@@ -280,12 +280,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
     }
 
     static void checkIdSyntax(String id) {
-        if (id.matches("[a-zA-Z0-9_-]+")) {
+        if (id.matches("[a-zA-Z0-9-_.:/]+")) {
             return;
         }
 
         String msg = MessageFormat.format(
-                "Invalid ID: \"{0}\". An ID may not be the empty string and must contain only ASCII letters, digits, hyphens and underscores.",
+                "Invalid ID: \"{0}\". An ID may not be the empty string and must contain only ASCII letters, digits, hyphens, underscores, dots and slashes.",
                 id);
         throw new IllegalArgumentException(msg);
     }

@@ -10,7 +10,7 @@
         {{'DEVICE_ID' | translate}} *
       </label>
       <div class="col-md-6">
-        <input type="text" class="form-control" name="id" id="id" ng-model="device.configs.id" required="required" ng-class="{true: 'form-submitted', false: ''}[deviceForm.submitted]" ng-pattern="/^[a-zA-Z0-9_\-]*$/">
+        <input type="text" class="form-control" name="id" id="id" ng-model="device.configs.id" required="required" ng-class="{true: 'form-submitted', false: ''}[deviceForm.submitted]" ng-pattern="/^[a-zA-Z0-9\-\_\.\:\/]*$/">
         <div class="form-error-container" ng-show="(deviceForm.id.$dirty && deviceForm.id.$invalid) || (deviceForm.submitted && deviceForm.id.$invalid)">
           <div class="form-error-message" ng-show="deviceForm.id.$error.required">{{'DEVICE_NAME_REQUIRED' | translate}}.</div>
           <div class="form-error-message" ng-show="deviceForm.id.$error.pattern">{{'DEVICE_ID_PATTERN_INCORRECT' | translate}}</div>
