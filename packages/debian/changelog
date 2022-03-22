@@ -2,7 +2,7 @@
 
   * Add debug flag for port 33284 in openmuc script
   * Add modbus channel setting to swap register word order
-  * User OPC DataValue timestamp null values
+  * Use OPC DataValue timestamp null values
   * Do not reset flags for channels that are not sampled on errors
 
  -- <maintainer>  <date>
