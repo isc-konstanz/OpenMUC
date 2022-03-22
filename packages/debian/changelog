@@ -1,5 +1,14 @@
 <package> (<version>) stable; urgency=medium
 
+  * Add debug flag for port 33284 in openmuc script
+  * Add modbus channel setting to swap register word order
+  * User OPC DataValue timestamp null values
+  * Do not reset flags for channels that are not sampled on errors
+
+ -- <maintainer>  <date>
+
+<package> (0.20.2) stable; urgency=medium
+
   * Use official OpenMUC v0.19.1
   * Implement SQL read latest method
   * Improve MySQL datalogger database creation and remove it if purged
@@ -7,7 +16,7 @@
   * Fix Modbus TCP Server to use byteorder as big- and wordorder as little endian
   * Reduce ModbusIOException stacktrace log level
 
- -- <maintainer>  <date>
+ -- Adrian Minde <adrian.minde@isc-konstanz.de>  Thu, 10 Feb 2022 10:16:21 +0100
 
 <package> (0.20.1) stable; urgency=medium
 
