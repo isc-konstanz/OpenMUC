@@ -188,7 +188,7 @@ public class ModbusChannelGroup {
 
             long receiveTime = System.currentTimeMillis();
 
-            Value value = ModbusDriverUtil.getRegistersValue(registers, channel.getDatatype());
+            Value value = ModbusDriverUtil.getRegistersValue(registers, channel.getDatatype(), channel.getSwap());
 
             if (logger.isTraceEnabled()) {
                 logger.trace("response value channel " + channel.getChannelAddress() + ": " + value.toString());
