@@ -165,8 +165,9 @@ stop() {
 }
 
 
+start_foreground=false
+start_debug=false
 start() {
-
     create_install_dir
 
     if [ -f $PID_FILE ]; then
@@ -181,13 +182,16 @@ start() {
 
     #echo -e "\e[96m\e[1m$(cat $OPENMUC_HOME/bin/welcome.txt)\e[0m"
 
-    if [ "$2" != "-fg" ]
-    then
+    if [ $start_debug = true ]; then
+        echo "Debug enabled at port 33284!"
+        JVM_OPTS="$JVM_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=*:33284,server=y,suspend=n"
+    fi
+    if [ $start_foreground = true ]; then
+        exec "$JAVACMD" $JVM_OPTS -jar "$OPENMUC_HOME"/bin/felix.jar
+    else
         echo "Starting in background. To start OpenMUC in foreground run this script with the -fg flag."
         # Option: -Dgosh.args=--nointeractive is necessary for running openmuc in background
         exec "$JAVACMD" $JVM_OPTS -Dgosh.args=--nointeractive -jar "$OPENMUC_HOME"/bin/felix.jar >"$ERR_FILE" 2>&1 &
-    else
-        exec "$JAVACMD" $JVM_OPTS -jar "$OPENMUC_HOME"/bin/felix.jar
     fi
 
     if [ $? = 0 ]; then
@@ -200,7 +204,18 @@ start() {
     echo "done"
 }
 
-
+for arg in "$@"; do
+    case "$arg" in
+        -fg | --foreground)
+            start_foreground=true
+            ;;
+        -d | --debug)
+            start_debug=true
+            ;;
+        *)
+            ;;
+    esac
+done
 case "$1" in
     start)
         start $*
