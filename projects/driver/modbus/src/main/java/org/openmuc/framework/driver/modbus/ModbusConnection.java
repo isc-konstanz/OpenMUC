@@ -110,10 +110,10 @@ public abstract class ModbusConnection implements Connection {
             value = ModbusDriverUtil.getBitVectorsValue(readDiscreteInputs(channel));
             break;
         case FC_03_READ_HOLDING_REGISTERS:
-            value = ModbusDriverUtil.getRegistersValue(readHoldingRegisters(channel), channel.getDatatype());
+            value = ModbusDriverUtil.getRegistersValue(readHoldingRegisters(channel), channel.getDatatype(), channel.getSwap());
             break;
         case FC_04_READ_INPUT_REGISTERS:
-            value = ModbusDriverUtil.getRegistersValue(readInputRegisters(channel), channel.getDatatype());
+            value = ModbusDriverUtil.getRegistersValue(readInputRegisters(channel), channel.getDatatype(), channel.getSwap());
             break;
         default:
             throw new RuntimeException("FunctionCode " + channel.getFunctionCode() + " not supported yet");
@@ -205,7 +205,7 @@ public abstract class ModbusConnection implements Connection {
             writeSingleRegister(channel, new SimpleInputRegister(value.asShort()));
             break;
         case FC_16_WRITE_MULTIPLE_REGISTERS:
-            writeMultipleRegisters(channel, ModbusDriverUtil.valueToRegisters(value, channel.getDatatype()));
+            writeMultipleRegisters(channel, ModbusDriverUtil.valueToRegisters(value, channel.getDatatype(), channel.getSwap()));
             break;
         default:
             throw new RuntimeException("FunctionCode " + channel.getFunctionCode().toString() + " not supported yet");

@@ -350,7 +350,7 @@ public final class Device {
         for (ChannelConfigImpl channelConfig : deviceConfig.channelConfigsById.values()) {
             if (channelConfig.state != ChannelState.DISABLED) {
                 channelConfig.state = channelState;
-                if (channelConfig.channel.getLatestRecord().getFlag() != Flag.SAMPLING_AND_LISTENING_DISABLED) {
+                if (channelConfig.getSamplingInterval() != ChannelConfig.SAMPLING_INTERVAL_DEFAULT) {
                     channelConfig.channel.setFlag(flag);
                 }
             }
