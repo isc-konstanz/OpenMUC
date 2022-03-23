@@ -40,7 +40,7 @@ find_gradle
 
 cd "$OPENMUC_HOME"
 
-eval $GRADLE packages
+eval $GRADLE clean build packages
 
 for package in $OPENMUC_HOME/build/dpkg/*/ ; do
     cd $package
