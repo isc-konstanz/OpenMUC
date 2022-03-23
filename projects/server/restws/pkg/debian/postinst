@@ -37,7 +37,8 @@ echo "To update OpenMUC RESTful Web Service configurations, run 'dpkg-reconfigur
 #DEBHELPER#
 
 # Start service if still idle
-if ! systemctl is-active --quiet openmuc; then
+if systemctl list-unit-files --all --type service --full --no-legend | grep -Fq "openmuc.service" \
+&& ! systemctl is-active --quiet openmuc ; then
     systemctl start openmuc
 fi
 
