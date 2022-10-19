@@ -55,8 +55,9 @@ project.ext {
                 it.getPath() == ":openmuc-lib-persistence" ||
                 it.getPath() == ":openmuc-lib-mqtt" ||
                 it.getPath() == ":openmuc-lib-osgi" ||
-                it.getPath() == ":openmuc-lib-parser-openmuc" ||
                 it.getPath() == ":openmuc-lib-parser-flotteladen" ||
+                it.getPath() == ":openmuc-lib-parser-jsonpath" ||
+                it.getPath() == ":openmuc-lib-parser-openmuc" ||
                 it.getPath() == ":openmuc-lib-rest" ||
                 it.getPath() == ":openmuc-lib-ssl" ||
                 it.getPath() == ":openmuc-server" ||

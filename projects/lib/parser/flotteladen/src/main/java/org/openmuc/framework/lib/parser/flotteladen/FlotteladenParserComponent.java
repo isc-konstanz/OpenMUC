@@ -19,7 +19,7 @@
  *
  */
 
-package org.openmuc.framework.lib.parser.openmuc;
+package org.openmuc.framework.lib.parser.flotteladen;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
