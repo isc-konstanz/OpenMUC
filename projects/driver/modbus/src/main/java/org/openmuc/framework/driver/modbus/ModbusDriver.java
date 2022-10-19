@@ -144,8 +144,7 @@ public final class ModbusDriver implements DriverService {
             logger.warn(
                     "Unable to parse timeout from settings. Using default timeout of " + DEFAULT_TIMEOUT_MS + " ms.");
         }
-
-        logger.info("Set sampling timeout to " + timeoutMs + " ms.");
+        logger.debug("Set sampling timeout to " + timeoutMs + " ms.");
 
         return timeoutMs;
     }
