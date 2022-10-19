@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -75,14 +75,14 @@ public class OpenmucParserServiceImpl implements ParserService {
     }
 
     @Override
-    public byte[] serialize(LoggingRecord openMucRecord) {
+    public synchronized byte[] serialize(LoggingRecord openMucRecord) {
         String serializedString = gson.toJson(openMucRecord.getRecord());
 
         return serializedString.getBytes();
     }
 
     @Override
-    public byte[] serialize(List<LoggingRecord> openMucRecords) throws SerializationException {
+    public synchronized byte[] serialize(List<LoggingRecord> openMucRecords) throws SerializationException {
         StringBuilder sb = new StringBuilder();
         for (LoggingRecord openMucRecord : openMucRecords) {
             sb.append(new String(serialize(openMucRecord)));

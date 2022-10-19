@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -59,6 +59,15 @@ public class DbAccess {
         }
     }
 
+    private DbAccess(DbConnector connector) { // for testing
+        url = "";
+        this.dbConnector = connector;
+    }
+
+    static protected DbAccess getTestInstance(DbConnector connector) {
+        return new DbAccess(connector);
+    }
+
     /**
      * Converts StringBuilder to String
      *
@@ -68,6 +77,9 @@ public class DbAccess {
     public void executeSQL(StringBuilder sb) {
         String sql = sb.toString();
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+        if (!dbConnector.isConnected()) {
+            dbConnector.getConnectionToDb();
+        }
         synchronized (dbConnector) {
             synchronizeStatement(sql);
         }
@@ -91,7 +103,7 @@ public class DbAccess {
     public boolean timeScaleIsActive() {
         StringBuilder sbExtensions = new StringBuilder("SELECT * FROM pg_extension;");
 
-        try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sbExtensions.toString());) {
+        try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sbExtensions.toString())) {
             while (resultSet.next()) {
                 return resultSet.getString("extname").contains("timescale");
             }
@@ -122,6 +134,9 @@ public class DbAccess {
                     .append(" where table_name = '" + table + "' AND column_name = '" + column.toLowerCase() + "';");
 
             try {
+                if (!dbConnector.isConnected()) {
+                    dbConnector.getConnectionToDb();
+                }
                 ResultSet rsLength = executeQuery(sbVarcharLength);
                 rsLength.next();
                 columnsLength.add(rsLength.getInt(1));
@@ -139,16 +154,16 @@ public class DbAccess {
 
     /**
      * Retrieves data from database and adds it to records
-     *
      */
 
     public List<Record> queryRecords(StringBuilder sb, ValueType valuetype) {
         // retrieve numeric values from database and add them to the records list
         List<Record> records = new ArrayList<>();
-        String sql = sb.toString();
-        try (ResultSet resultSet = dbConnector.createStatementWithConnection().executeQuery(sql);) {
+        if (!dbConnector.isConnected()) {
+            dbConnector.getConnectionToDb();
+        }
+        try (ResultSet resultSet = executeQuery(sb)) {
             while (resultSet.next()) {
-
                 if (valuetype == ValueType.STRING) {
                     Record rc = new Record(new StringValue(resultSet.getString(VALUE)),
                             resultSet.getTimestamp("time").getTime(), Flag.VALID);
@@ -171,6 +186,7 @@ public class DbAccess {
                 }
             }
         } catch (SQLException e) {
+            String sql = sb.toString();
             logger.error(MessageFormat.format("Error executing SQL: \n{0}", sql), e.getMessage());
         }
 

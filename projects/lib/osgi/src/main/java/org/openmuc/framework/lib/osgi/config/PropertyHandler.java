@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -30,6 +30,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,23 +178,67 @@ public class PropertyHandler {
         return false;
     }
 
+    /**
+     * Test if a key is contained in properties
+     */
+    public boolean hasValueForKey(String key) {
+        return currentProperties.containsKey(key);
+    }
+
+    /**
+     * Returns a property as integer.
+     * <p>
+     * Possibly throws:
+     * <p>
+     * - {@link IllegalArgumentException} if the key does not exist in properties
+     * <p>
+     * - {@link NumberFormatException} if the key exists but cannot be cast to integer
+     */
     public int getInt(String key) {
-        ServiceProperty prop = currentProperties.get(key);
+        ServiceProperty prop = getOrThrow(key);
         return Integer.valueOf(prop.getValue());
     }
 
+    /**
+     * Returns a property as double.
+     * <p>
+     * Possibly throws:
+     * <p>
+     * - {@link IllegalArgumentException} if the key does not exist in properties
+     * <p>
+     * - {@link NumberFormatException} if the key exists but cannot be cast to integer
+     */
     public double getDouble(String key) {
-        ServiceProperty prop = currentProperties.get(key);
+        ServiceProperty prop = getOrThrow(key);
         return Double.valueOf(prop.getValue());
     }
 
+    /**
+     * Returns a property as String.
+     * <p>
+     * Possibly throws:
+     * <p>
+     * - {@link IllegalArgumentException} if the key does not exist in properties
+     */
     public String getString(String key) {
-        return currentProperties.get(key).getValue();
+        return getOrThrow(key).getValue();
     }
 
+    /**
+     * Returns a property as boolean.
+     * <p>
+     * Possibly throws:
+     * <p>
+     * - {@link IllegalArgumentException} if the key does not exist in properties
+     */
     public boolean getBoolean(String key) {
-        ServiceProperty prop = currentProperties.get(key);
+        ServiceProperty prop = getOrThrow(key);
         return Boolean.valueOf(prop.getValue());
+    }
+
+    private ServiceProperty getOrThrow(String key) {
+        return Optional.ofNullable(currentProperties.get(key))
+                .orElseThrow(() -> new IllegalArgumentException("No value for key=" + key));
     }
 
     /**
@@ -230,13 +275,25 @@ public class PropertyHandler {
         return configChanged;
     }
 
+    /**
+     * Prints all keys and the corresponding values.
+     * <p>
+     * If the key contains "password", "*****" is shown instead of the corresponding value (which would be the
+     * password).
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, ServiceProperty> entry : currentProperties.entrySet()) {
             String key = entry.getKey();
-            ServiceProperty propValue = entry.getValue();
-            sb.append("\n" + key + "=" + propValue.getValue());
+            final String propValue;
+            if (key != null && key.contains("password")) {
+                propValue = "*****";
+            }
+            else {
+                propValue = entry.getValue().getValue();
+            }
+            sb.append("\n" + key + "=" + propValue);
         }
         return sb.toString();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -30,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -45,6 +46,7 @@ import org.openmuc.framework.datalogger.spi.LogChannel;
 import org.openmuc.framework.datalogger.sql.DbAccess;
 import org.openmuc.framework.datalogger.sql.MetaBuilder;
 import org.openmuc.framework.datalogger.sql.TableSetup;
+import org.openmuc.framework.datalogger.sql.TestConnectionHelper;
 import org.openmuc.framework.datalogger.sql.utils.PropertyHandlerProvider;
 import org.openmuc.framework.datalogger.sql.utils.Settings;
 import org.openmuc.framework.lib.osgi.config.PropertyHandler;
@@ -56,6 +58,8 @@ class TableSetupTest {
     private MetaBuilder metaBuilder;
     private DbAccess accessMock;
     private List<LogChannel> channelList;
+
+    private Connection connection;
 
     @BeforeEach
     void setupInitializer() throws SQLException {
@@ -76,6 +80,8 @@ class TableSetupTest {
 
         tableSetup = new TableSetup(channelList, accessMock);
         metaBuilder = new MetaBuilder(channelList, accessMock);
+
+        connection = TestConnectionHelper.getConnection();
     }
 
     private LogChannel getMockedChannel(String channelId) {
@@ -92,18 +98,29 @@ class TableSetupTest {
     }
 
     @Test
-    void initNewMetaTable() {
+    void initNewMetaTable() throws SQLException {
         metaBuilder.writeMetaTable();
         ArgumentCaptor<StringBuilder> sqlCaptor = ArgumentCaptor.forClass(StringBuilder.class);
-        verify(accessMock, atLeastOnce()).executeSQL(sqlCaptor.capture());
 
-        String sqlConstraint = sqlCaptor.getValue().toString();
-        assertTrue(sqlConstraint.contains(INSERT_META_ENTRIES_PATTERN));
-        assertTrue(sqlConstraint.contains("gridPower") && sqlConstraint.contains("pvPower"));
+        verify(accessMock, atLeastOnce()).executeSQL(sqlCaptor.capture());
+        List<StringBuilder> returnedBuilder = sqlCaptor.getAllValues();
+
+        for (StringBuilder sb : returnedBuilder) {
+            String sqlConstraint = sb.toString();
+
+            TestConnectionHelper.executeSQL(connection, sqlConstraint);
+
+            if (sqlConstraint.startsWith("INSERT INTO openmuc_meta")) {
+                assertTrue(sqlConstraint.contains(INSERT_META_ENTRIES_PATTERN));
+                assertTrue(sqlConstraint.contains("gridPower") && sqlConstraint.contains("pvPower"));
+            }
+        }
+
+        connection.close();
     }
 
     @Test
-    void createOpenmucTables() {
+    void createOpenmucTables() throws SQLException {
         tableSetup.createOpenmucTables();
         ArgumentCaptor<StringBuilder> sqlCaptor = ArgumentCaptor.forClass(StringBuilder.class);
 
@@ -114,7 +131,11 @@ class TableSetupTest {
         for (int i = 0; i < channelList.size(); i++) {
             String channelId = channelList.get(i).getId();
             assertTrue(returnedBuilder.get(i).toString().contains(channelId));
+
+            // test if the sql statements can be executed without errors
+            TestConnectionHelper.executeSQL(connection, returnedBuilder.get(i).toString());
         }
 
+        connection.close();
     }
 }

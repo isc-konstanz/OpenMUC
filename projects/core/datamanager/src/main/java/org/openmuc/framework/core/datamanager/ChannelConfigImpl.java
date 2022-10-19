@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -623,6 +623,12 @@ public final class ChannelConfigImpl implements ChannelConfig, LogChannel {
         if (loggingEvent != null) {
             childElement = document.createElement("loggingEvent");
             childElement.setTextContent(loggingEvent.toString());
+            parentElement.appendChild(childElement);
+        }
+
+        if (loggingSettings != null) {
+            childElement = document.createElement("loggingSettings");
+            childElement.setTextContent(loggingSettings);
             parentElement.appendChild(childElement);
         }
 

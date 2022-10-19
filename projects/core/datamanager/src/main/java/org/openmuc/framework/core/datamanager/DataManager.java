@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -86,6 +86,9 @@ import org.openmuc.framework.driver.spi.DriverService;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.openmuc.framework.server.spi.ServerMappingContainer;
 import org.openmuc.framework.server.spi.ServerService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -95,9 +98,6 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//
-//@Component(properties = { CommandProcessor.COMMAND_SCOPE + ":String=openmuc",
-//        CommandProcessor.COMMAND_FUNCTION + ":String=reload" }, provide =ssh  Object.class)
 @Component(service = { DataAccessService.class, ConfigService.class }, immediate = true, property = {
         CommandProcessor.COMMAND_SCOPE + ":String=openmuc", CommandProcessor.COMMAND_FUNCTION + ":String=reload" })
 public final class DataManager extends Thread implements DataAccessService, ConfigService, RecordsReceivedListener {
@@ -140,18 +140,24 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     @Activate
     protected void activate() throws TransformerFactoryConfigurationError, IOException, ParserConfigurationException,
             TransformerException, ParseException {
+
+        String configFileName = System.getProperty("org.openmuc.framework.channelconfig");
+        if (configFileName == null) {
+            configFileName = DEFAULT_CONF_FILE;
+        }
+        activateWithConfig(new File(configFileName));
+    }
+
+    protected void activateWithConfig(File configFile) throws TransformerFactoryConfigurationError, IOException,
+            ParserConfigurationException, TransformerException, ParseException {
+
+        logger.info("Activating Data Manager with config {}", configFile);
+
+        NamedThreadFactory namedThreadFactory = new NamedThreadFactory("OpenMUC Data Manager Pool - thread-");
+        executor = (ThreadPoolExecutor) Executors.newCachedThreadPool(namedThreadFactory);
+
         try {
-            logger.info("Activating Data Manager");
-
-            NamedThreadFactory namedThreadFactory = new NamedThreadFactory("OpenMUC Data Manager Pool - thread-");
-            executor = (ThreadPoolExecutor) Executors.newCachedThreadPool(namedThreadFactory);
-
-            String configFileName = System.getProperty("org.openmuc.framework.channelconfig");
-            if (configFileName == null) {
-                configFileName = DEFAULT_CONF_FILE;
-            }
-            configFile = new File(configFileName);
-
+            this.configFile = configFile;
             try {
                 rootConfigWithoutDefaults = RootConfigImpl.createFromFile(configFile);
             } catch (FileNotFoundException e) {
@@ -161,7 +167,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 logger.info("No configuration file found. Created an empty config file at: {}",
                         configFile.getAbsolutePath());
             } catch (ParseException e) {
-                throw new ParseException("Error parsing openMUC config file: " + e.getMessage(), e);
+                throw new ParseException("Error parsing OpenMUC config file: " + e.getMessage(), e);
             }
 
             rootConfig = new RootConfigImpl();
@@ -173,6 +179,14 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             dataManagerActivated = true;
         } catch (ParseException e) {
             logger.error(e.getMessage());
+            logger.error("Stopping Framework.");
+            final BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+            try {
+                bundleContext.getBundle(0).stop();
+                bundleContext.getBundle().stop();
+            } catch (BundleException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -249,7 +263,6 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                 triggerTimeouts(currentAction.timeouts);
             }
 
-            // started refactoring
             LoggingController loggingController = new LoggingController(activeDataLoggers);
 
             if (loggingController.channelsHaveToBeLogged(currentAction)) {
@@ -491,8 +504,12 @@ public final class DataManager extends Thread implements DataAccessService, Conf
                         .map(recContainer -> (ChannelRecordContainerImpl) recContainer)
                         .filter(containerImpl -> containerImpl.getChannel().getChannelState() == ChannelState.LISTENING
                                 || containerImpl.getChannel().getDriverName().equals("virtual"))
-                        .filter(containerImpl -> containerImpl.getChannel().isLoggingEvent())
-                        .forEach(containerImpl -> channelRecordContainerList.add(containerImpl));
+                        .forEach(containerImpl -> {
+                            containerImpl.getChannel().setNewRecord(containerImpl.getRecord());
+                            if (containerImpl.getChannel().isLoggingEvent()) {
+                                channelRecordContainerList.add(containerImpl);
+                            }
+                        });
             }
             loggingController.deliverLogsToEventBasedLogServices(channelRecordContainerList);
         }
@@ -864,7 +881,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    private void bindDriverService(DriverService driver) {
+    void bindDriverService(DriverService driver) {
 
         String driverId = driver.getInfo().getId();
 
@@ -962,7 +979,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    private void bindDataLoggerService(DataLoggerService dataLogger) {
+    void bindDataLoggerService(DataLoggerService dataLogger) {
         synchronized (newDataLoggers) {
             newDataLoggers.add(dataLogger);
             interrupt();
@@ -985,7 +1002,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
             }
         }
         else {
-            if (activeDataLoggers.remove(dataLogger) == false) {
+            if (!activeDataLoggers.remove(dataLogger)) {
                 newDataLoggers.remove(dataLogger);
             }
         }
@@ -1002,6 +1019,9 @@ public final class DataManager extends Thread implements DataAccessService, Conf
 
     @Override
     public Channel getChannel(String id) {
+        if (rootConfig == null) {
+            return null;
+        }
         ChannelConfigImpl channelConfig = rootConfig.channelConfigsById.get(id);
         if (channelConfig == null) {
             return null;
@@ -1294,7 +1314,7 @@ public final class DataManager extends Thread implements DataAccessService, Conf
         Map<Device, List<ChannelRecordContainerImpl>> containersByDevice = new HashMap<>();
 
         for (ReadRecordContainer container : readContainers) {
-            if (container instanceof ChannelRecordContainerImpl == false) {
+            if (!(container instanceof ChannelRecordContainerImpl)) {
                 throw new IllegalArgumentException(
                         "Only use ReadRecordContainer created by Channel.getReadContainer()");
             }

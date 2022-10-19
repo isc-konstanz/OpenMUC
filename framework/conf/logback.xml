@@ -70,18 +70,20 @@
   
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>log/openmuc.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <!-- daily rollover -->
-      <fileNamePattern>log/openmuc.%d{yyyyMMdd}.gz</fileNamePattern>
-      <!-- keep 30 days' worth of history capped at 3GB total size -->
-      <maxHistory>30</maxHistory>
-      <totalSizeCap>3GB</totalSizeCap>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+       <fileNamePattern>log/openmuc-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+         <!-- do at least daily rollover (may create a new file when maxFileSize is exceeded), use compression -->
+       <maxFileSize>100MB</maxFileSize>
+         <!-- split log files when file size exceeds 100MB -->
+       <maxHistory>30</maxHistory>
+         <!-- keep 30 days worth of history -->
+       <totalSizeCap>3GB</totalSizeCap>
+         <!-- total size of all logs must not exceed 3gb-->
     </rollingPolicy>
-
     <encoder>
       <pattern>%d{yy.MM.dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
-  </appender> 
+  </appender>
 
   <!--project specific-->
   <root level="INFO">

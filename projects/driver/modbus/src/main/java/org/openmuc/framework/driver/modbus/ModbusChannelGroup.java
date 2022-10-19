@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -244,6 +244,10 @@ public class ModbusChannelGroup {
 
     public int getUnitId() {
         return unitId;
+    }
+
+    public String getSamplingGroup() {
+        return samplingGroup;
     }
 
     public EFunctionCode getFunctionCode() {

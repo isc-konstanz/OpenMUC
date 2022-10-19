@@ -1,5 +1,5 @@
 project.ext {
-    cfgVersion = "0.19.1"
+    cfgVersion = "0.19.2"
 
     cfgGroup = "org.openmuc.framework"
 
@@ -18,6 +18,10 @@ project.ext {
     javaProjects = subprojects
 
     jarDefaultImportPackageVersion = ";version=0"
+
+
+    // versions of commonly used libraries
+    assertjVersion = '3.20.2'
 
     distributionProjects = javaProjects.findAll {
         it.getPath() == ":openmuc-app-simpledemo" ||
@@ -81,7 +85,7 @@ project.ext {
 }
 
 configure(javaProjects) {
-    version = cfgVersion 
+    version = cfgVersion
     if (project.hasProperty('argBranchName')) {
         version += '-' + argBranchName
     }

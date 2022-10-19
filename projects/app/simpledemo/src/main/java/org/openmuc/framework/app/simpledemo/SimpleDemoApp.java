@@ -36,7 +36,7 @@ public final class SimpleDemoApp {
     private static final DecimalFormat DF = new DecimalFormat("#0.000", DFS);
 
     // ChannelIDs, see conf/channel.xml
-    private static final String ID_POWER_ELECTIC_VEHICLE = "power_electric_vehicle";
+    private static final String ID_POWER_ELECTRIC_VEHICLE = "power_electric_vehicle";
     private static final String ID_POWER_GRID = "power_grid";
     private static final String ID_POWER_PHOTOVOLTAICS = "power_photovoltaics";
     private static final String ID_STATUS_ELECTRIC_VEHICLE = "status_electric_vehicle";
@@ -56,7 +56,7 @@ public final class SimpleDemoApp {
     private DataAccessService dataAccessService;
 
     // Channel for accessing data of a channel.
-    private Channel chPowerElecticVehicle;
+    private Channel chPowerElectricVehicle;
     private Channel chPowerPhotovoltaics;
     private Channel chPowerGrid;
     private Channel chEvStatus;
@@ -106,7 +106,7 @@ public final class SimpleDemoApp {
      * Initialize channel objects
      */
     private void initializeChannels() {
-        chPowerElecticVehicle = dataAccessService.getChannel(ID_POWER_ELECTIC_VEHICLE);
+        chPowerElectricVehicle = dataAccessService.getChannel(ID_POWER_ELECTRIC_VEHICLE);
         chPowerGrid = dataAccessService.getChannel(ID_POWER_GRID);
         chPowerPhotovoltaics = dataAccessService.getChannel(ID_POWER_PHOTOVOLTAICS);
         chEvStatus = dataAccessService.getChannel(ID_STATUS_ELECTRIC_VEHICLE);
@@ -177,11 +177,11 @@ public final class SimpleDemoApp {
         String status = "idle";
 
         // get current value of the electric vehicle power channel
-        Record lastRecord = chPowerElecticVehicle.getLatestRecord();
+        Record lastRecord = chPowerElectricVehicle.getLatestRecord();
         if (lastRecord != null) {
             Value value = lastRecord.getValue();
             if (value != null) {
-                evPower = chPowerElecticVehicle.getLatestRecord().getValue().asDouble();
+                evPower = chPowerElectricVehicle.getLatestRecord().getValue().asDouble();
                 if (evPower > STANDBY_POWER_CHARGING_STATION) {
                     status = "charging";
                 }
