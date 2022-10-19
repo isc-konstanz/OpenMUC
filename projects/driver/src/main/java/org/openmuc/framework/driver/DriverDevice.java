@@ -136,7 +136,7 @@ public abstract class DriverDevice extends DriverChannelContext implements Conne
         synchronized(channels) {
             List<DriverChannel> channels = getChannels(containers);
             
-            if (hasMethod(Write.class, this)) {
+            if (hasMethod(Write.class, this, channels)) {
                 invokeMethod(Write.class, this, channels);
             }
             else if (hasMethod(Write.class, channelClass)) {
