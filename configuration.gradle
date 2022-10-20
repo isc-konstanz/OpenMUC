@@ -19,6 +19,10 @@ project.ext {
 
     jarDefaultImportPackageVersion = ";version=0"
 
+
+    // versions of commonly used libraries
+    assertjVersion = '3.20.2'
+
     distributionProjects = javaProjects.findAll {
         it.getPath() == ":openmuc-app-simpledemo" ||
                 it.getPath() == ":openmuc-core-api" ||
@@ -55,8 +59,9 @@ project.ext {
                 it.getPath() == ":openmuc-lib-persistence" ||
                 it.getPath() == ":openmuc-lib-mqtt" ||
                 it.getPath() == ":openmuc-lib-osgi" ||
-                it.getPath() == ":openmuc-lib-parser-openmuc" ||
                 it.getPath() == ":openmuc-lib-parser-flotteladen" ||
+                it.getPath() == ":openmuc-lib-parser-jsonpath" ||
+                it.getPath() == ":openmuc-lib-parser-openmuc" ||
                 it.getPath() == ":openmuc-lib-rest" ||
                 it.getPath() == ":openmuc-lib-ssl" ||
                 it.getPath() == ":openmuc-lib-sql" ||
@@ -92,7 +97,7 @@ project.ext {
 }
 
 configure(javaProjects) {
-    version = cfgVersion 
+    version = cfgVersion
     if (project.hasProperty('argBranchName')) {
         version += '-' + argBranchName
     }

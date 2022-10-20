@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -48,13 +48,15 @@ public final class WriteTask extends DeviceTask implements ConnectedTask {
     @Override
     @SuppressWarnings("unchecked")
     public void run() {
-
         try {
             device.connection.write((List<ChannelValueContainer>) ((List<?>) writeValueContainers), null);
+            
         } catch (UnsupportedOperationException e) {
             for (WriteValueContainerImpl valueContainer : writeValueContainers) {
                 valueContainer.setFlag(Flag.ACCESS_METHOD_NOT_SUPPORTED);
             }
+            logger.warn("Access method not supported: {}", e.getMessage());
+            
         } catch (ConnectionException e) {
             // Connection to device lost. Signal to device instance and end task without notifying DataManager
             logger.warn("Connection to device {} lost because {}. Trying to reconnect...", device.deviceConfig.getId(),
@@ -69,7 +71,7 @@ public final class WriteTask extends DeviceTask implements ConnectedTask {
             dataManager.interrupt();
             return;
         } catch (Exception e) {
-            logger.warn("unexpected exception thrown by write funtion of driver ", e);
+            logger.warn("Unexpected exception thrown by write funtion of driver ", e);
             for (WriteValueContainerImpl valueContainer : writeValueContainers) {
                 valueContainer.setFlag(Flag.DRIVER_THREW_UNKNOWN_EXCEPTION);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -64,7 +64,7 @@ public class ModbusRTUConnection extends ModbusConnection {
     private static final int STOPBITS = 5;
     private static final int ECHO = 6;
     private static final int FLOWCONTROL_IN = 7;
-    private static final int FLOWCONTEOL_OUT = 8;
+    private static final int FLOWCONTROL_OUT = 8;
 
     private static final String SERIAL_ENCODING_RTU = "SERIAL_ENCODING_RTU";
 
@@ -128,7 +128,7 @@ public class ModbusRTUConnection extends ModbusConnection {
             setStopbits(params, settings[STOPBITS]);
             setEcho(params, settings[ECHO]);
             setFlowControlIn(params, settings[FLOWCONTROL_IN]);
-            setFlowControlOut(params, settings[FLOWCONTEOL_OUT]);
+            setFlowControlOut(params, settings[FLOWCONTROL_OUT]);
         } catch (Exception e) {
             logger.error("Unable to set all parameters for RTU connection", e);
             throw new ModbusConfigurationException("Specify all settings parameter");
@@ -257,13 +257,11 @@ public class ModbusRTUConnection extends ModbusConnection {
 
         if (samplingGroup.isEmpty()) {
             for (ChannelRecordContainer container : containers) {
-
                 long receiveTime = System.currentTimeMillis();
+                
                 ModbusChannel channel = getModbusChannel(container.getChannelAddress(), EAccess.READ);
-                Value value;
-
                 try {
-                    value = readChannel(channel);
+                	Value value = readChannel(channel);
 
                     if (logger.isTraceEnabled()) {
                         printResponseValue(channel, value);
@@ -275,7 +273,7 @@ public class ModbusRTUConnection extends ModbusConnection {
                 	String err = "ModbusIOException while reading channel: " + channel.getChannelAddress();
                     logger.debug(err, e);
                     disconnect();
-                    throw new ConnectionException("ModbusIOException");
+                    throw new ConnectionException(err);
 
                 } catch (ModbusException e) {
                     logger.warn("ModbusException while reading channel: " + channel.getChannelAddress(), e);
@@ -292,7 +290,6 @@ public class ModbusRTUConnection extends ModbusConnection {
         else {
             readChannelGroupHighLevel(containers, containerListHandle, samplingGroup);
         }
-
         return null;
     }
 
@@ -316,15 +313,15 @@ public class ModbusRTUConnection extends ModbusConnection {
         for (ChannelValueContainer container : containers) {
 
             ModbusChannel channel = getModbusChannel(container.getChannelAddress(), EAccess.WRITE);
-
             try {
                 writeChannel(channel, container.getValue());
                 container.setFlag(Flag.VALID);
 
             } catch (ModbusIOException e) {
-                logger.error("ModbusIOException while writing channel:" + channel.getChannelAddress(), e);
+            	String err = "ModbusIOException while writing channel: " + channel.getChannelAddress();
+                logger.debug(err, e);
                 disconnect();
-                throw new ConnectionException("Try to solve issue with reconnect.");
+                throw new ConnectionException(err);
 
             } catch (ModbusException e) {
                 logger.error("ModbusException while writing channel: " + channel.getChannelAddress(), e);
@@ -336,9 +333,7 @@ public class ModbusRTUConnection extends ModbusConnection {
             }
 
         }
-
         return null;
-
     }
 
     @Override

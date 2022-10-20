@@ -1,3 +1,18 @@
+v0.19.2 31-03-2022
+-----------------
+- core:
+   * stop OpenMUC framework on parsing errors of channels.xml
+   * Bugfix: Channel RecordListeners are called again upon incomming values
+- logging:
+   * add file size based rollover, log files are now <= 100MB each
+- logback:
+   * update to 1.2.11 to fix log4j vulnerability
+- datalogger sql:
+   * migrate to h2 v2.0.206, added script for automatic migration
+   * Add backup/restore
+- gradle:
+   * updated to gradle 7.3.3
+   
 v0.19.1 16-12-2021
 ------------------
 - logback:

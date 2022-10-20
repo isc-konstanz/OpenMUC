@@ -10,7 +10,7 @@ dependencies {
 jar {
     bnd('Bundle-Name': projectName,
         'Bundle-Description': projectDescription,
-        'Export-Package': 'org.openmuc.framework.*')
+        'Export-Package': 'org.openmuc.framework.webui.spi.*')
 }
 
 publishing {

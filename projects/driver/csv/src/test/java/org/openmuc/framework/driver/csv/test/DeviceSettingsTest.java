@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,20 +20,22 @@
  */
 package org.openmuc.framework.driver.csv.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.csv.test.utils.CsvTestFactory;
+import org.openmuc.framework.driver.csv.test.utils.CsvTestFile;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
 public class DeviceSettingsTest {
 
     private static final String DEVICE_ADDRESS = System.getProperty("user.dir") + "/src/test/resources/test_data.csv";
 
-    @Test(expected = ArgumentSyntaxException.class)
+    @Test
     public void testWrongSamplingMode() throws ConnectionException, ArgumentSyntaxException {
 
         String deviceSettings = "samplingmode=hhmmss2";
-        CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings);
 
+        Assertions.assertThrows(ArgumentSyntaxException.class,
+                () -> new CsvTestFile(DEVICE_ADDRESS, deviceSettings));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -66,16 +66,32 @@ public class DbConnector {
     private Server server;
 
     public DbConnector() {
-        PropertyHandler propertyHandler = PropertyHandlerProvider.getInstance().getPropertyHandler();
-        url = propertyHandler.getString(PropertySettings.URL);
+        this.url = getUrlFromProperties();
         initConnector();
         getConnectionToDb();
     }
 
-    private void initConnector() {
+    protected String getUrlFromProperties() {
+        PropertyHandler propertyHandler = PropertyHandlerProvider.getInstance().getPropertyHandler();
+        return propertyHandler.getString(PropertySettings.URL);
+    }
+
+    protected void initConnector() {
         BundleContext context = FrameworkUtil.getBundle(DbConnector.class).getBundleContext();
         ServiceReference<?> reference = context.getServiceReference(DataSourceFactory.class);
         dataSourceFactory = (DataSourceFactory) context.getService(reference);
+    }
+
+    public boolean isConnected() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                return false;
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -108,7 +124,7 @@ public class DbConnector {
      * installed with {@link #checkIfTimescaleInstalled()} or needs to be updated with {@link #updateTimescale()}. If a
      * H2 database is corrupted it renames it so a new one is created using {@link #renameCorruptedDb()}.
      */
-    private void getConnectionToDb() {
+    protected void getConnectionToDb() {
         try {
             logger.info("sql driver");
             if (connection == null || connection.isClosed()) {
@@ -133,11 +149,19 @@ public class DbConnector {
                 logger.debug("CONNECTED");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            logger.error(("SQLException: {0}" + e.getMessage()));
-            logger.error(MessageFormat.format("SQLState:     {0}", e.getSQLState()));
-            logger.error(MessageFormat.format("VendorError:  {0}", e.getErrorCode()));
-
+            if (e.getMessage().contains("The write format 1 is smaller than the supported format 2")) {
+                logger.error("Database is incompatible with H2 Database Engine version 2.0.206. "
+                        + "To continue using it, it has to be migrated to the newer version. "
+                        + "Explained here: https://www.openmuc.org/openmuc/user-guide/#_sql_logger; "
+                        + "More Information: https://h2database.com/html/tutorial.html#upgrade_backup_restore "
+                        + "If the Database does not contain important data, just delete the directory framework/data");
+            }
+            else {
+                logger.error(MessageFormat.format("SQLException: {0}", e.getMessage()));
+                logger.error(MessageFormat.format("SQLState:     {0}", e.getSQLState()));
+                logger.error(MessageFormat.format("VendorError:  {0}", e.getErrorCode()));
+                e.printStackTrace();
+            }
             if (url.contains("h2") && e.getErrorCode() == 90030) {
                 renameCorruptedDb();
 
@@ -186,6 +210,9 @@ public class DbConnector {
         BundleContext bundleContext = FrameworkUtil.getBundle(SqlLogger.class).getBundleContext();
         if (url.contains(POSTGRESQL)) {
             for (Bundle bundle : bundleContext.getBundles()) {
+                if (bundle.getSymbolicName() == null) {
+                    continue;
+                }
                 if (bundle.getSymbolicName().equals("org.postgresql.jdbc")) {
                     try {
                         dataSourceFactory = (DataSourceFactory) bundle.loadClass("org.postgresql.osgi.PGDataSourceFactory")
@@ -239,7 +266,7 @@ public class DbConnector {
     private void checkIfTimescaleInstalled() {
         StringBuilder sbExtensions = new StringBuilder("SELECT * FROM pg_extension;");
 
-        try (ResultSet resultSet = connection.createStatement().executeQuery(sbExtensions.toString());) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(sbExtensions.toString())) {
             while (resultSet.next()) {
                 if (resultSet.getString("extname").contains("timescale")) {
                     timescaleActive = true;

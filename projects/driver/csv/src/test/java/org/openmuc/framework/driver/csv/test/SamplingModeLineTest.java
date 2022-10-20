@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -26,11 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.csv.CsvFile;
-import org.openmuc.framework.driver.csv.test.utils.CsvTestFactory;
+import org.openmuc.framework.driver.csv.test.utils.CsvChannelRecordContainer;
+import org.openmuc.framework.driver.csv.test.utils.CsvTestFile;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
@@ -43,18 +44,18 @@ public class SamplingModeLineTest {
 
     private List<ChannelRecordContainer> containers;
 
-    @Before
+    @BeforeEach
     public void setup() {
 
         TimeZone.setDefault(TimeZone.getTimeZone("CET"));
         containers = new ArrayList<>();
-        containers.add(INDEX_HHMMSS, CsvTestFactory.newRecodContainer("hhmmss"));
-        containers.add(INDEX_POWER, CsvTestFactory.newRecodContainer("power_grid"));
+        containers.add(INDEX_HHMMSS, new CsvChannelRecordContainer("hhmmss"));
+        containers.add(INDEX_POWER, new CsvChannelRecordContainer("power_grid"));
     }
 
     /**
      * Reads 3 lines of the csv file. Test checks if the correct value of hhmmss is returned
-     * 
+     *
      * @throws ConnectionException
      * @throws ArgumentSyntaxException
      */
@@ -62,7 +63,7 @@ public class SamplingModeLineTest {
     public void testLineModeWithoutRewind() throws ConnectionException, ArgumentSyntaxException {
 
         String deviceSettings = "samplingmode=line";
-        CsvFile connection = CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings);
+        CsvFile connection = new CsvTestFile(DEVICE_ADDRESS, deviceSettings);
         System.out.println(String.format("%10s, %10s", "hhmmss", "power_grid"));
 
         read(connection, containers);
@@ -84,7 +85,7 @@ public class SamplingModeLineTest {
     public void testLineModeWitRewind() throws ConnectionException, ArgumentSyntaxException {
 
         String deviceSettings = "samplingmode=line;rewind=true";
-        CsvFile connection = CsvTestFactory.newConnection(DEVICE_ADDRESS, deviceSettings);
+        CsvFile connection = new CsvTestFile(DEVICE_ADDRESS, deviceSettings);
 
         System.out.println(String.format("%10s, %10s", "hhmmss", "power_grid"));
 

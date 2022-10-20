@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -31,7 +31,6 @@ import org.openmuc.framework.data.Record;
 import org.openmuc.framework.data.StringValue;
 import org.openmuc.framework.data.ValueType;
 import org.openmuc.framework.driver.DriverChannel;
-import org.openmuc.framework.driver.annotation.Read;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
@@ -66,6 +65,7 @@ public abstract class CsvChannel extends DriverChannel {
         if (!csv.containsKey(column)) {
             throw new ArgumentSyntaxException("Unknown column header specified: " + column);
         }
+        this.column = column;
         this.data = csv.get(column);
         this.maxIndex = data.size() - 1;
         this.rewind = rewind;
@@ -75,12 +75,16 @@ public abstract class CsvChannel extends DriverChannel {
         return column;
     }
 
-    @Read
-    public Record read(long samplingTime) throws ConnectionException {
+    public void read(long samplingTime) throws ConnectionException {
+        Record record = readRecord(samplingTime);
+        setRecord(record);
+    }
+
+    public Record readRecord(long samplingTime) throws ConnectionException {
         try {
             String valueAsString = readValue(samplingTime);
 
-            if (getValueType().equals(ValueType.STRING)) {
+            if (getValueType() == ValueType.STRING) {
                 return new Record(new StringValue(valueAsString), samplingTime, Flag.VALID);
             }
             else {

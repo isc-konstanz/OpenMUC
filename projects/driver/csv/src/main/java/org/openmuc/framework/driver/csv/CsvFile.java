@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -26,6 +26,7 @@ import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.openmuc.framework.config.Address;
 import org.openmuc.framework.config.ArgumentSyntaxException;
@@ -35,6 +36,7 @@ import org.openmuc.framework.driver.DriverChannelFactory;
 import org.openmuc.framework.driver.DriverDevice;
 import org.openmuc.framework.driver.annotation.Connect;
 import org.openmuc.framework.driver.annotation.Device;
+import org.openmuc.framework.driver.annotation.Read;
 import org.openmuc.framework.driver.csv.channel.CsvChannel;
 import org.openmuc.framework.driver.csv.channel.CsvChannelHHMMSS;
 import org.openmuc.framework.driver.csv.channel.CsvChannelLine;
@@ -76,8 +78,20 @@ public class CsvFile extends DriverDevice implements DriverChannelFactory {
     )
     private boolean rewind = false;
 
-    /** Map containing 'column name' as key and 'list of all column data' as value */
+    /**
+     * Map containing 'column name' as key and 'list of all column data' as value
+     */
     protected Map<String, List<String>> data;
+
+    private final Supplier<Long> currentMillisSupplier;
+
+    protected CsvFile(Supplier<Long> currentMillisSupplier) {
+        this.currentMillisSupplier = currentMillisSupplier;
+    }
+
+    public CsvFile() {
+    	this(() -> System.currentTimeMillis());
+    }
 
     public Map<String, List<String>> getData() {
         return data;
@@ -103,6 +117,15 @@ public class CsvFile extends DriverDevice implements DriverChannelFactory {
             }
         default:
             break;
+        }
+    }
+
+    @Read
+    public void read(List<CsvChannel> channels, String samplingGroup) throws ConnectionException {
+        long samplingTime = currentMillisSupplier.get();
+
+        for (CsvChannel csvChannel : channels) {
+            csvChannel.read(samplingTime);
         }
     }
 
