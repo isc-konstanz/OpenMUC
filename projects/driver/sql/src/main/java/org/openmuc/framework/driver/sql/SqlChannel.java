@@ -55,6 +55,8 @@ import org.slf4j.LoggerFactory;
 public class SqlChannel extends DriverChannel implements SqlData {
     private static final Logger logger = LoggerFactory.getLogger(SqlChannel.class);
 
+    protected TableType tableType;
+
     @Option(type = ADDRESS,
             name = "Table name",
             description = "Tablename to read columns from.<br>" +
@@ -84,6 +86,7 @@ public class SqlChannel extends DriverChannel implements SqlData {
 
     @Configure
     public void setTable(SqlClient client) throws ArgumentSyntaxException {
+    	this.tableType = client.getTableType();
         if (table == null) {
             table = client.getTable();
         }
@@ -99,14 +102,22 @@ public class SqlChannel extends DriverChannel implements SqlData {
         }
     }
 
+	@Override
+	public TableType getTableType() {
+		return tableType;
+	}
+
+	@Override
     public String getTable() {
         return table;
     }
 
+	@Override
     public String getKey() {
         return key;
     }
 
+	@Override
     public String getKeyColumn() {
         return keyColumn;
     }
@@ -179,11 +190,5 @@ public class SqlChannel extends DriverChannel implements SqlData {
         }
         return b;
     }
-
-	@Override
-	public TableType getTableType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
