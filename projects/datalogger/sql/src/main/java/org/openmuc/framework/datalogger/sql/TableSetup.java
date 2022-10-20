@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -29,7 +29,7 @@ import static org.openmuc.framework.datalogger.sql.utils.TabelNames.DOUBLE_VALUE
 import java.sql.JDBCType;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.openmuc.framework.datalogger.spi.LogChannel;
@@ -95,7 +95,7 @@ public class TableSetup {
 
             appendTimestamp(sb);
 
-            sb.append("flag ").append(JDBCType.SMALLINT).append(" NOT NULL,").append("value ");
+            sb.append("flag ").append(JDBCType.SMALLINT).append(" NOT NULL,").append("\"VALUE\" ");
             switch (temp.getValueType()) {
             case BOOLEAN:
                 sb.append(JDBCType.BOOLEAN);
@@ -115,6 +115,7 @@ public class TableSetup {
                 }
                 break;
             case DOUBLE:
+
                 if (url.contains(POSTGRESQL)) {
                     sb.append("DOUBLE PRECISION");
                 }
@@ -142,7 +143,7 @@ public class TableSetup {
                 break;
             default:
                 execute = false;
-                logger.error("Unable to create table for  channel {}, reason: unknown ValueType {}", temp.getId(),
+                logger.error("Unable to create table for channel {}, reason: unknown ValueType {}", temp.getId(),
                         temp.getValueType());
                 break;
             }
@@ -161,7 +162,7 @@ public class TableSetup {
         // FIXME
         for (LogChannel logChannel : channels) {
             String channelId = logChannel.getId();
-            List<String> columns = Arrays.asList("channelid");
+            List<String> columns = Collections.singletonList("channelid");
             List<Integer> varcharLength = dbAccess.getColumnLength(columns, DOUBLE_VALUE);
 
             if (varcharLength.get(0) < channelId.length()) {

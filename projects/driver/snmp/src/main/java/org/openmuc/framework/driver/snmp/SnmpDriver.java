@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -51,7 +51,7 @@ public final class SnmpDriver implements DriverService {
         SECURITYNAME,
         AUTHENTICATIONPASSPHRASE,
         PRIVACYPASSPHRASE
-    };
+    }
 
     // AUTHENTICATIONPASSPHRASE is the same COMMUNITY word in SNMP V2c
     public enum SnmpDriverScanSettingVariableNames {
@@ -62,7 +62,7 @@ public final class SnmpDriver implements DriverService {
         PRIVACYPASSPHRASE,
         STARTIP,
         ENDIP
-    };
+    }
 
     // exception messages
     private static final String NULL_DEVICE_ADDRESS_EXCEPTION = "No device address found in config. Please specify one [eg. \"1.1.1.1/161\"].";

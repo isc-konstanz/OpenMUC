@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,8 +20,8 @@
  */
 package org.openmuc.framework.driver.csv.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.driver.csv.CsvFileReader;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
@@ -36,10 +36,10 @@ public class CsvFileReaderTest {
 
         try {
             CsvFileReader.readCsvFile(fileName);
-            Assert.assertTrue(true);
+            Assertions.assertTrue(true);
         } catch (ConnectionException e) {
             e.printStackTrace();
-            Assert.assertTrue(false);
+            Assertions.assertTrue(false);
         }
 
     }

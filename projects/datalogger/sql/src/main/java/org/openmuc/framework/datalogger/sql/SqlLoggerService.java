@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -85,7 +85,9 @@ public class SqlLoggerService implements DataLoggerService, ManagedService {
      */
     public void shutdown() {
         logger.info("Deactivating SQL Logger");
-        dbAccess.closeConnection();
+        if (dbAccess != null) {
+            dbAccess.closeConnection();
+        }
     }
 
     @Override

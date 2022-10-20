@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,9 +20,10 @@
  */
 package org.openmuc.framework.driver.csv.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.driver.csv.test.utils.CsvTestFactory;
+import org.openmuc.framework.driver.csv.test.utils.CsvTestFile;
 import org.openmuc.framework.driver.spi.ConnectionException;
 
 public class DeviceConnectionTest {
@@ -33,30 +34,32 @@ public class DeviceConnectionTest {
     public void testCsvWithHhmmss() throws ConnectionException, ArgumentSyntaxException {
         String deviceAddress = DIR + "test_data.csv";
         String deviceSettings = "samplingmode=hhmmss";
-        CsvTestFactory.newConnection(deviceAddress, deviceSettings);
+        new CsvTestFile(deviceAddress, deviceSettings);
     }
 
     // expect exception since csv file has no hhmmss column
-    @Test(expected = ArgumentSyntaxException.class)
+    @Test
     public void testCvsWithoutHhmmss() throws ConnectionException, ArgumentSyntaxException {
         String deviceAddress = DIR + "test_data_no_hhmmss.csv";
         String deviceSettings = "samplingmode=hhmmss";
-        CsvTestFactory.newConnection(deviceAddress, deviceSettings);
+        Assertions.assertThrows(ArgumentSyntaxException.class,
+                () -> new CsvTestFile(deviceAddress, deviceSettings));
     }
 
     @Test
     public void testCvsWithUnixtimestamp() throws ConnectionException, ArgumentSyntaxException {
         String deviceAddress = DIR + "test_data.csv";
         String deviceSettings = "samplingmode=unixtimestamp";
-        CsvTestFactory.newConnection(deviceAddress, deviceSettings);
+        new CsvTestFile(deviceAddress, deviceSettings);
     }
 
     // expect exception since csv file has no unixtimestamp column
-    @Test(expected = ArgumentSyntaxException.class)
+    @Test
     public void testCvsWithoutUnixtimestamp() throws ConnectionException, ArgumentSyntaxException {
         String deviceAddress = DIR + "test_data_no_unixtimestamp.csv";
         String deviceSettings = "samplingmode=unixtimestamp";
-        CsvTestFactory.newConnection(deviceAddress, deviceSettings);
+        Assertions.assertThrows(ArgumentSyntaxException.class,
+                () -> new CsvTestFile(deviceAddress, deviceSettings));
     }
 
 }

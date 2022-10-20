@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -22,9 +22,16 @@
 package org.openmuc.framework.lib.parser.openmuc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -184,4 +191,30 @@ class OpenmucParserServiceImplTest {
         }
     }
 
+    @Test
+    void serialisationAndDeserialisationAreThreadSafe() {
+        // this is pretty hard to test (at least I (dwerner) could not figure out how to in 1h, so I'm giving up now)
+        // the methods should be thread safe if:
+        // 1. there are no members in the class (making the methods inherited by ReactParser effectively static and thus
+        // thread safe)
+        // 2. the inherited methods have the 'synchronized' keyword -> looking for all public methods here, just to be
+        // safe
+
+        Set<Field> members = Arrays.stream(OpenmucParserServiceImpl.class.getDeclaredFields())
+                .filter(f -> !Modifier.isStatic(f.getModifiers()))
+                .collect(Collectors.toSet());
+        if (members.isEmpty()) {
+            System.out.println("OpenmucParserServiceImpl does not have non-static members and should be thread safe");
+            return;
+        }
+        else {
+            Set<Method> publicMethods = Arrays.stream(OpenmucParserServiceImpl.class.getDeclaredMethods())
+                    .filter(m -> Modifier.isPublic(m.getModifiers()))
+                    .collect(Collectors.toSet());
+            for (Method method : publicMethods) {
+                assertTrue(Modifier.isSynchronized(method.getModifiers()),
+                        "Method '" + method + "' should have the 'synchronized' keyword");
+            }
+        }
+    }
 }

@@ -2,7 +2,7 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Source: https://github.com/isc-konstanz/OpenMUC
 
 Files: *
-Copyright: Copyright 2011-2021 Fraunhofer ISE
+Copyright: Copyright 2011-2022 Fraunhofer ISE
 License: GPL-3.0
  This file is part of OpenMUC.
  For more information visit http://www.openmuc.org
