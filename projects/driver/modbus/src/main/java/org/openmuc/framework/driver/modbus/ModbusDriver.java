@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -144,8 +144,7 @@ public final class ModbusDriver implements DriverService {
             logger.warn(
                     "Unable to parse timeout from settings. Using default timeout of " + DEFAULT_TIMEOUT_MS + " ms.");
         }
-
-        logger.info("Set sampling timeout to " + timeoutMs + " ms.");
+        logger.debug("Set sampling timeout to " + timeoutMs + " ms.");
 
         return timeoutMs;
     }

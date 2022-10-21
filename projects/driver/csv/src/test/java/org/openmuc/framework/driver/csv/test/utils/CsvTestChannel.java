@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -32,7 +32,6 @@ import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.ChannelState;
 import org.openmuc.framework.dataaccess.DataLoggerNotAvailableException;
 import org.openmuc.framework.dataaccess.DeviceState;
-import org.openmuc.framework.dataaccess.ReadRecordContainer;
 import org.openmuc.framework.dataaccess.RecordListener;
 import org.openmuc.framework.dataaccess.WriteValueContainer;
 
@@ -40,7 +39,7 @@ public class CsvTestChannel implements Channel {
 
     private final String address;
 
-    CsvTestChannel(String address) {
+    public CsvTestChannel(String address) {
         this.address = address;
     }
 
@@ -258,8 +257,8 @@ public class CsvTestChannel implements Channel {
     }
 
     @Override
-    public ReadRecordContainer getReadContainer() {
-        return new CsvTestContainer(this);
+    public CsvChannelRecordContainer getReadContainer() {
+        return new CsvChannelRecordContainer(this);
     }
 
     @Override

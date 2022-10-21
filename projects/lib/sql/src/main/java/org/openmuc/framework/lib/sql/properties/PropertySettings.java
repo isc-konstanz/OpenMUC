@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -55,7 +55,7 @@ public class PropertySettings extends GenericSettings {
     public PropertySettings() {
         super();
         
-        //String defaultUrl = "jdbc:h2:retry:file:./data/h2/h2;AUTO_SERVER=TRUE;MODE=MYSQL";
+        //String defaultUrl = "jdbc:h2:file:./data/h2/h2;AUTO_SERVER=TRUE;MODE=MYSQL";
         //properties.put(url, new ServiceProperty(url, "URL of the used database", URL, false));
         properties.put(HOST, new ServiceProperty(HOST, "Host name of the database", SqlProperties.HOST, false));
         properties.put(PORT, new ServiceProperty(PORT, "Port of the database", SqlProperties.PORT, false));

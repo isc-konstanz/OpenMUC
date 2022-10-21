@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -71,7 +71,7 @@ public abstract class SnmpDevice implements Connection {
         V1,
         V2c,
         V3
-    };
+    }
 
     protected Address targetAddress;
     protected Snmp snmp;
@@ -90,7 +90,7 @@ public abstract class SnmpDevice implements Connection {
         ScanOIDs.put("Device name: ", "1.3.6.1.2.1.1.5.0");
         ScanOIDs.put("Description: ", "1.3.6.1.2.1.1.1.0");
         ScanOIDs.put("Location: ", "1.3.6.1.2.1.1.6.0");
-    };
+    }
 
     /**
      * snmp constructor takes primary parameters in order to create snmp object. this implementation uses UDP protocol

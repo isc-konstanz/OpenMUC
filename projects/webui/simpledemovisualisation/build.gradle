@@ -4,7 +4,6 @@ project.ext {
 }
 
 dependencies {
-    implementation project(':openmuc-core-api')
     implementation project(':openmuc-webui-spi')
 }
 

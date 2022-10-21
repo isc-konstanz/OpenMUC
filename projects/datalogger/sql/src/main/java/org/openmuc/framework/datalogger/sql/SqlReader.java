@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -57,7 +57,7 @@ public class SqlReader {
      */
     public Record readLatestRecordFromDb(String channelId, ValueType valuetype) {
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT time,value FROM ").append(channelId).append(" ORDER BY time DESC LIMIT 1;");
+        sb.append("SELECT time,\"VALUE\" FROM ").append(channelId).append(" ORDER BY time DESC LIMIT 1;");
         List<Record> records = dbAccess.queryRecords(sb, valuetype);
         if (records.size() == 1) {
             return records.get(0);
@@ -91,7 +91,7 @@ public class SqlReader {
         // .append(endTimestamp)
         // .append("';");
 
-        sb.append("SELECT time,value FROM ")
+        sb.append("SELECT time,\"VALUE\" FROM ")
                 .append(channelId)
                 .append(" WHERE time BETWEEN '")
                 .append(startTimestamp)

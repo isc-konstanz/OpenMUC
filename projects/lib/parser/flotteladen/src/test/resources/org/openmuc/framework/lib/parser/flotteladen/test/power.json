@@ -1,0 +1,9 @@
+{
+    "source": "powermeter1",
+    "register": "power",
+    "units": {
+        "P1":-23.445396,
+        "P2":-6.2342644,
+        "P3":-8.541468
+    }
+}

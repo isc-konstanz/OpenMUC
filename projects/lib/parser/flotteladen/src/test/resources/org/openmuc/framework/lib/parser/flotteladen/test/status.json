@@ -1,0 +1,24 @@
+{
+    "status": "CONNECTED",
+    "serialNumber": 13,
+    "minChargingCurrent": {
+        "unitOfMeasure": "mA",
+        "value": 6000
+    },
+    "maxChargingCurrent": {
+        "unitOfMeasure": "mA",
+        "value": 16000
+    },
+    "chargingCurrent": {
+        "unitOfMeasure": "mA",
+        "value": 6000
+    },
+    "chargingMode": {
+        "value": "OPTIMIZED",
+        "requiredChargingCompletedTime": "2022-05-02T12:47:21.798Z",
+        "requiredChargingQuantity": {
+            "unitOfMeasure": "Wh",
+            "value": 104640.47
+        }
+    }
+}
