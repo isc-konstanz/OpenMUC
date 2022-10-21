@@ -126,11 +126,11 @@ public class DbConnector {
      */
     protected void getConnectionToDb() {
         try {
-            logger.info("sql driver");
+            logger.info("SQL driver");
+            
             if (connection == null || connection.isClosed()) {
-                logger.debug("CONNECTING");
+                logger.info(MessageFormat.format("Connecting to URL: {0}", url));
                 Properties properties = setSqlProperties();
-                logger.info(MessageFormat.format("URL is: {0}", url));
 
                 setDataSourceFactory();
 
@@ -146,7 +146,7 @@ public class DbConnector {
                 if (url.contains(POSTGRES) && timescaleActive) {
                     updateTimescale();
                 }
-                logger.debug("CONNECTED");
+                logger.debug("Connected successfully");
             }
         } catch (SQLException e) {
             if (e.getMessage().contains("The write format 1 is smaller than the supported format 2")) {

@@ -37,7 +37,7 @@ public class Settings extends GenericSettings {
 
     public Settings() {
         super();
-        String defaultUrl = "jdbc:h2:retry:file:./data/h2/h2;AUTO_SERVER=TRUE;MODE=MYSQL";
+        String defaultUrl = "jdbc:h2:file:./data/h2/h2;AUTO_SERVER=TRUE;MODE=MYSQL";
         properties.put(URL, new ServiceProperty(URL, "URL of the used database", defaultUrl, true));
         properties.put(USER, new ServiceProperty(USER, "User of the used database", "openmuc", true));
         properties.put(PASSWORD, new ServiceProperty(PASSWORD, "Password for the database user", "openmuc", true));
