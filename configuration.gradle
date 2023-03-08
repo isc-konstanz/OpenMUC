@@ -50,6 +50,7 @@ project.ext {
                 it.getPath() == ":openmuc-driver-mqtt" ||
                 it.getPath() == ":openmuc-driver-opcua" ||
                 it.getPath() == ":openmuc-driver-rest" ||
+                it.getPath() == ":openmuc-driver-revpi" ||
                 it.getPath() == ":openmuc-driver-rpi-gpio" ||
                 it.getPath() == ":openmuc-driver-rpi-w1" ||
                 it.getPath() == ":openmuc-driver-snmp" ||
