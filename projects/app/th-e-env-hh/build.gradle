@@ -1,0 +1,31 @@
+project.ext {
+    projectName = "OpenMUC App - TH-E Household Environment"
+    projectDescription = "An environment emulator for a household of TH-E EMS."
+}
+
+dependencies {
+    implementation project(':th-e-env-hp')
+}
+
+jar {
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Export-Package': 'org.the.ems.env.hh.*')
+}
+
+eclipse {
+    project {
+        name = "TH-E-EMS-Environment-Household"
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
+}

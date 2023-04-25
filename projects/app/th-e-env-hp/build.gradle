@@ -1,0 +1,31 @@
+project.ext {
+    projectName = "OpenMUC App - TH-E HeatPump Environment"
+    projectDescription = "An environment emulator for a heat pump of TH-E EMS."
+}
+
+dependencies {
+    api project(':openmuc-core-api')
+}
+
+jar {
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Export-Package': 'org.the.ems.env.*')
+}
+
+eclipse {
+    project {
+        name = "TH-E-EMS-Environment-HeatPump"
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
+}
