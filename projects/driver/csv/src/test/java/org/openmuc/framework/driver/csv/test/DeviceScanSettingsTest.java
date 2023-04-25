@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,10 +20,9 @@
  */
 package org.openmuc.framework.driver.csv.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.config.ArgumentSyntaxException;
-import org.openmuc.framework.config.ScanException;
-import org.openmuc.framework.config.ScanInterruptedException;
 import org.openmuc.framework.driver.csv.CsvScanner;
 
 public class DeviceScanSettingsTest {
@@ -34,52 +33,52 @@ public class DeviceScanSettingsTest {
 
     @Test
     public void testArgumentCorrectEndingWithSlash() throws ArgumentSyntaxException {
-        String settings = "path=" + dir + "/src/test/resources";
+        String settings = "path=" + dir + "/src/test/resources/";
         new CsvScanner(settings);
     }
 
     @Test
-    public void testArgumentCorrectendingWithoutSlash() throws ArgumentSyntaxException {
-        String settings = "path=" + dir + "/src/test/resources/";
+    public void testArgumentCorrectEndingWithoutSlash() throws ArgumentSyntaxException {
+        String settings = "path=" + dir + "/src/test/resources";
         new CsvScanner(settings);
     }
 
     // Tests expected to FAIL
 
-    @Test(expected = ArgumentSyntaxException.class)
+    @Test
     public void testArgumentsNull() throws ArgumentSyntaxException {
-        String settings = null;
-        new CsvScanner(settings);
+        String arguments = null;
+        Assertions.assertThrows(ArgumentSyntaxException.class, () -> new CsvScanner(arguments));
     }
 
-    @Test(expected = ArgumentSyntaxException.class)
+    @Test
     public void testArgumentsEmptyString() throws ArgumentSyntaxException {
-        String settings = "";
-        new CsvScanner(settings);
+        String arguments = "";
+        Assertions.assertThrows(ArgumentSyntaxException.class, () -> new CsvScanner(arguments));
     }
 
-    @Test(expected = ArgumentSyntaxException.class)
+    @Test
     public void testWrongArgument() throws ArgumentSyntaxException {
-        String settings = "paaaaath";
-        new CsvScanner(settings);
+        String arguments = "paaaaath";
+        Assertions.assertThrows(ArgumentSyntaxException.class, () -> new CsvScanner(arguments));
     }
 
-    @Test(expected = ArgumentSyntaxException.class)
+    @Test
     public void testArgumentIncomplete1() throws ArgumentSyntaxException {
-        String settings = "path";
-        new CsvScanner(settings);
+        String arguments = "path";
+        Assertions.assertThrows(ArgumentSyntaxException.class, () -> new CsvScanner(arguments));
     }
 
-    @Test(expected = ArgumentSyntaxException.class)
+    @Test
     public void testArgumentIncomplete2() throws ArgumentSyntaxException {
-        String settings = "path=";
-        new CsvScanner(settings);
+        String arguments = "path=";
+        Assertions.assertThrows(ArgumentSyntaxException.class, () -> new CsvScanner(arguments));
     }
 
-    @Test(expected = ArgumentSyntaxException.class)
-    public void testWrongArgumentPathDoesNotExist() throws ArgumentSyntaxException, UnsupportedOperationException, ScanException, ScanInterruptedException {
-        String settings = "path=/home/does_not_exist";
-        new CsvScanner(settings);
+    @Test
+    public void testWrongArgumentPathDoesNotExist() throws ArgumentSyntaxException {
+        String arguments = "path=/home/does_not_exist";
+        Assertions.assertThrows(ArgumentSyntaxException.class, () -> new CsvScanner(arguments));
     }
 
 }

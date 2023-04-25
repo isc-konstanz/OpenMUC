@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -64,14 +64,16 @@ public class ModbusDriverUtil {
     /**
      * Converts the registers into the datatyp of the channel
      * 
-     * @param registers
+     * @param inputRegisters
      *            input register array
      * @param datatype
      *            Edatatype
+     * @param swap
+     *            flags if the register word should be swapped
      * @return the corresponding Value Object
      */
-
-    public static Value getRegistersValue(InputRegister[] registers, DataType datatype) {
+    public static Value getRegistersValue(InputRegister[] inputRegisters, DataType datatype, boolean swap) {
+    	InputRegister[] registers = swap ? swapInputRegisterArray(inputRegisters) : inputRegisters;
         byte[] registerAsByteArray = inputRegisterToByteArray(registers);
         return getValueFromByteArray(registerAsByteArray, datatype);
     }
@@ -141,12 +143,11 @@ public class ModbusDriverUtil {
         default:
             throw new RuntimeException("Datatype " + datatype.toString() + " not supported yet");
         }
-
         return registerValue;
     }
 
     @SuppressWarnings("deprecation")
-	public static Register[] valueToRegisters(Value value, DataType datatype) {
+	public static Register[] valueToRegisters(Value value, DataType datatype, boolean swap) {
 
         Register[] registers;
 
@@ -185,8 +186,26 @@ public class ModbusDriverUtil {
         default:
             throw new RuntimeException("Datatype " + datatype.toString() + " not supported yet");
         }
-
+        if (swap) {
+        	return swapRegisterArray(registers);
+        }
         return registers;
+    }
+
+    private static InputRegister[] swapInputRegisterArray(InputRegister[] registers) {
+    	InputRegister[] swappedRegisters = new InputRegister[registers.length];
+        for (int i = 0; i < registers.length; i++) {
+        	swappedRegisters[i] = registers[(registers.length - 1) - i];
+        }
+        return swappedRegisters;
+    }
+
+    private static Register[] swapRegisterArray(Register[] registers) {
+    	Register[] swappedRegisters = new Register[registers.length];
+        for (int i = 0; i < registers.length; i++) {
+        	swappedRegisters[i] = registers[(registers.length - 1) - i];
+        }
+        return swappedRegisters;
     }
 
     /**

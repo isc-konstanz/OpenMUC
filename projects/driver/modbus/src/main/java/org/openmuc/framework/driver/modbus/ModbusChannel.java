@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -46,11 +46,17 @@ public class ModbusChannel {
     /** A Parameter of the channel address */
     private static final int DATATYPE = 3;
 
+    /** A Parameter of the channel address */
+    private static final int SWAP = 4;
+
     /** Start address to read or write from */
     private int startAddress;
 
     /** Number of registers/coils to be read or written */
     private int count;
+
+    /** Specifies wheather a word swap should be performed */
+    private boolean swap = false;
 
     /** Used to determine the register/coil count */
     private DataType datatype;
@@ -85,6 +91,7 @@ public class ModbusChannel {
             setStartAddress(addressParams[ADDRESS]);
             setDatatype(addressParams[DATATYPE]);
             setCount(addressParams[DATATYPE]);
+            setSwap(addressParams[SWAP]);
             setAccessFlag(accessFlag);
             setFunctionCode();
         }
@@ -101,19 +108,28 @@ public class ModbusChannel {
 
     private String[] decomposeAddress(String channelAddress) {
 
-        String[] param = new String[4];
+        String[] param = new String[5];
         String[] addressParams = channelAddress.toLowerCase().split(":");
         if (addressParams.length == 3) {
             param[UNITID] = "";
             param[PRIMARYTABLE] = addressParams[0];
             param[ADDRESS] = addressParams[1];
             param[DATATYPE] = addressParams[2];
+            param[SWAP] = "NONE";
         }
         else if (addressParams.length == 4) {
             param[UNITID] = addressParams[0];
             param[PRIMARYTABLE] = addressParams[1];
             param[ADDRESS] = addressParams[2];
             param[DATATYPE] = addressParams[3];
+            param[SWAP] = "NONE";
+        }
+        else if (addressParams.length == 5) {
+            param[UNITID] = addressParams[0];
+            param[PRIMARYTABLE] = addressParams[1];
+            param[ADDRESS] = addressParams[2];
+            param[DATATYPE] = addressParams[3];
+            param[SWAP] = addressParams[4];
         }
         else {
             return null;
@@ -256,8 +272,8 @@ public class ModbusChannel {
         this.primaryTable = PrimaryTable.getEnumfromString(primaryTable);
     }
 
-    public PrimaryTable getPrimaryTable() {
-        return primaryTable;
+    private void setSwap(String swap) {
+        this.swap = swap.trim().toUpperCase().equals("SWAP");
     }
 
     private void setCount(String addressParamDatatyp) {
@@ -280,12 +296,20 @@ public class ModbusChannel {
         this.accessFlag = accessFlag;
     }
 
+    public PrimaryTable getPrimaryTable() {
+        return primaryTable;
+    }
+
     public int getStartAddress() {
         return startAddress;
     }
 
     public int getCount() {
         return count;
+    }
+
+    public boolean getSwap() {
+        return swap;
     }
 
     public DataType getDatatype() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -350,7 +350,7 @@ public final class Device {
         for (ChannelConfigImpl channelConfig : deviceConfig.channelConfigsById.values()) {
             if (channelConfig.state != ChannelState.DISABLED) {
                 channelConfig.state = channelState;
-                if (channelConfig.channel.getLatestRecord().getFlag() != Flag.SAMPLING_AND_LISTENING_DISABLED) {
+                if (channelConfig.getSamplingInterval() != ChannelConfig.SAMPLING_INTERVAL_DEFAULT) {
                     channelConfig.channel.setFlag(flag);
                 }
             }

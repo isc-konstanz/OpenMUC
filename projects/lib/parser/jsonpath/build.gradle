@@ -1,0 +1,46 @@
+project.ext {
+    projectName = "OpenMUC Library - JsonPath Parser Service"
+    projectDescription = "JsonPath parser library for the OpenMUC framework."
+}
+configurations.create('embed')
+
+dependencies {
+    implementation project(':openmuc-core-spi')
+
+    api   group: 'com.jayway.jsonpath', name: 'json-path', version: '2.7.0'
+    embed group: 'com.jayway.jsonpath', name: 'json-path', version: '2.7.0'
+}
+
+def embed = configurations.embed.findAll {
+    !it.getName().contains("slf4j")
+}
+
+jar {
+    into('lib') {
+        from embed
+    }
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath': '.,' + embed.collect { 'lib/'+it.getName() }.join(','),
+        'Export-Package': 'org.openmuc.framework.lib.parser.jsonpath.*,' +
+                          'com.jayway.jsonpath.*,' +
+                          'org.objectweb.asm.*,' +
+                          'net.minidev.*',
+        'Import-Package': '!org.openmuc.framework.lib.parser.jsonpath.*,' +
+                          '!org.codehaus.jettison.json.*,' +
+                          '!org.apache.tapestry5.json.*,' +
+                          '!com.fasterxml.jackson.*,' +
+                          '!org.json.*,' +
+                          '!jakarta.json.*,*' + jarDefaultImportPackageVersion)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
+}

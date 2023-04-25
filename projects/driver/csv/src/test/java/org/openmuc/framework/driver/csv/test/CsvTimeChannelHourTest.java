@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -20,20 +20,21 @@
  */
 package org.openmuc.framework.driver.csv.test;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openmuc.framework.driver.csv.channel.CsvChannelHHMMSS;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
 import org.openmuc.framework.driver.csv.exceptions.NoValueReceivedYetException;
 import org.openmuc.framework.driver.csv.exceptions.TimeTravelException;
-import org.openmuc.framework.driver.csv.test.utils.CsvTestFactory;
+import org.openmuc.framework.driver.csv.test.utils.CsvTestFile;
 
 public class CsvTimeChannelHourTest {
 
@@ -41,7 +42,7 @@ public class CsvTimeChannelHourTest {
     static long[] timestamps;
     static String value;
 
-    @BeforeClass
+    @BeforeAll
     public static void initTestClass() {
 
         // create test data. first data entry corresponds to first timestamps entry
@@ -59,43 +60,43 @@ public class CsvTimeChannelHourTest {
     @Test
     public void testReadNextValueInbetween() throws CsvException {
 
-        CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, false);
+        CsvChannelHHMMSS channel = CsvTestFile.newChannelHHMMSS(data, timestamps, false);
 
         value = channel.readValue(createTimestamp(100006));
-        Assert.assertTrue(value.equals("5.0"));
+        assertTrue(value.equals("5.0"));
 
         value = channel.readValue(createTimestamp(100014));
-        Assert.assertTrue(value.equals("10.0"));
+        assertTrue(value.equals("10.0"));
     }
 
     @Test
     public void testReadNextValueStart() throws CsvException {
 
-        CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, false);
+        CsvChannelHHMMSS channel = CsvTestFile.newChannelHHMMSS(data, timestamps, false);
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(value.equals("0.0"));
+        assertTrue(value.equals("0.0"));
 
         value = channel.readValue(createTimestamp(100005));
-        Assert.assertTrue(value.equals("5.0"));
+        assertTrue(value.equals("5.0"));
     }
 
     @Test
     public void testReadNextValueEndNoRewind() throws CsvException {
 
-        CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, false);
+        CsvChannelHHMMSS channel = CsvTestFile.newChannelHHMMSS(data, timestamps, false);
 
         value = channel.readValue(createTimestamp(100020));
-        Assert.assertTrue(value.equals("20.0"));
+        assertTrue(value.equals("20.0"));
 
         value = channel.readValue(createTimestamp(100025));
-        Assert.assertTrue(value.equals("20.0"));
+        assertTrue(value.equals("20.0"));
 
         // timestamp before the last one, but rewind is false so timestamp is not considered and old value is returned
         try {
             value = channel.readValue(createTimestamp(100000));
         } catch (TimeTravelException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
         }
 
     }
@@ -103,66 +104,66 @@ public class CsvTimeChannelHourTest {
     @Test
     public void testReadNextValueEndWithRewind() throws CsvException {
 
-        CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, true);
+        CsvChannelHHMMSS channel = CsvTestFile.newChannelHHMMSS(data, timestamps, true);
 
         value = channel.readValue(createTimestamp(100020));
-        Assert.assertTrue(value.equals("20.0"));
+        assertTrue(value.equals("20.0"));
 
         value = channel.readValue(createTimestamp(100025));
-        Assert.assertTrue(value.equals("20.0"));
+        assertTrue(value.equals("20.0"));
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(value.equals("0.0"));
+        assertTrue(value.equals("0.0"));
     }
 
     @Test
     public void testReadT1BeforeT2Valid() throws CsvException {
 
-        CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, false);
+        CsvChannelHHMMSS channel = CsvTestFile.newChannelHHMMSS(data, timestamps, false);
 
         try {
             value = channel.readValue(createTimestamp(90000));
-            Assert.assertTrue(false);
+            assertTrue(false);
         } catch (NoValueReceivedYetException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
         }
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(value.equals("0.0"));
+        assertTrue(value.equals("0.0"));
 
     }
 
     @Test
     public void testReadT1ValidT2BeforeDisabledRewind() throws CsvException {
 
-        CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, false);
+        CsvChannelHHMMSS channel = CsvTestFile.newChannelHHMMSS(data, timestamps, false);
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(value.equals("0.0"));
+        assertTrue(value.equals("0.0"));
 
         // sampling jumed back before first timestamp of file
         try {
             value = channel.readValue(createTimestamp(90000));
-            Assert.assertTrue(false);
+            assertTrue(false);
         } catch (TimeTravelException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
         }
     }
 
     @Test
     public void testReadT1ValidT2BeforeEnabledRewind() throws CsvException {
 
-        CsvChannelHHMMSS channel = CsvTestFactory.newChannelHHMMSS(data, timestamps, true);
+        CsvChannelHHMMSS channel = CsvTestFile.newChannelHHMMSS(data, timestamps, true);
 
         value = channel.readValue(createTimestamp(100000));
-        Assert.assertTrue(value.equals("0.0"));
+        assertTrue(value.equals("0.0"));
 
         // sampling jumed back before first timestamp of file
         try {
             value = channel.readValue(createTimestamp(90000));
-            Assert.assertTrue(false);
+            assertTrue(false);
         } catch (TimeTravelException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
         }
 
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -54,7 +54,8 @@ public abstract class Reflectable extends Configurable {
             methods.addAll(Arrays.asList(type.getDeclaredMethods()));
             type = type.getSuperclass();
         }
-        methods.removeIf(m -> !m.isAnnotationPresent(annot) || !hasParameterTypes(m, args));
+        methods.removeIf(m -> !m.isAnnotationPresent(annot));
+        methods.removeIf(m -> !hasParameterTypes(m, args));
 
         return methods;
     }
@@ -135,7 +136,7 @@ public abstract class Reflectable extends Configurable {
         else if (method.getParameterCount() > 0) {
             Class<?>[] parameterTypes = method.getParameterTypes();
             for (int i=0; i<args.length; i++) {
-                if (!isAssignableTo(args[i].getClass(), parameterTypes[i])) {
+                if (!isAssignableTo(args[i], parameterTypes[i])) {
                     logger.trace("Removing method \"{}\" with nonmatching arguments: {} != {}", method.getName(), 
                             args[i].getClass().getSimpleName(), parameterTypes[i].getSimpleName());
                     
@@ -146,7 +147,11 @@ public abstract class Reflectable extends Configurable {
         return true;
     }
 
-    public static boolean isAssignableTo(Class<?> targetClass, Class<?> parameterClass) {
+    public static boolean isAssignableTo(Object targetObj, Class<?> parameterClass) {
+    	if (targetObj == null && !parameterClass.isPrimitive()) {
+    		return true;
+    	}
+    	Class<?> targetClass = targetObj.getClass();
         if (parameterClass.isAssignableFrom(targetClass)) {
             return true;
         }

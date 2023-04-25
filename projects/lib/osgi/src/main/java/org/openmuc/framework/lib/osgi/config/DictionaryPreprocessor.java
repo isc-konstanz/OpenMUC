@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -94,6 +94,9 @@ public class DictionaryPreprocessor {
 
     /**
      * Method for debugging purposes to print whole dictionary
+     * <p>
+     * If the key contains "password", "*****" is shown instead of the corresponding value (which would be the
+     * password).
      *
      * @param propertyDict
      */
@@ -106,7 +109,12 @@ public class DictionaryPreprocessor {
                     String key = keys.nextElement();
                     String dictValue = (String) propertyDict.get(key);
                     if (dictValue != null) {
-                        sb.append(key + "=" + dictValue + "\n");
+                        if (key != null && key.contains("password")) {
+                            sb.append(key + "=*****\n");
+                        }
+                        else {
+                            sb.append(key + "=" + dictValue + "\n");
+                        }
                     }
                     else {
                         sb.append(key + "=null" + "\n");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -226,9 +226,8 @@ public class MqttLogger implements DataLoggerService, ManagedService {
                 propertyHandler.getBoolean(MqttLoggerSettings.WEB_SOCKET));
         // @formatter:on
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("MqttSettings for MqttConnection \n" + settings.toString());
-        }
+        logger.info("MqttSettings for MqttConnection \n", settings.toString());
+
         return settings;
     }
 

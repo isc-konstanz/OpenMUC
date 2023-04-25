@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2021 Fraunhofer ISE
+ * Copyright 2011-2022 Fraunhofer ISE
  *
  * This file is part of OpenMUC.
  * For more information visit http://www.openmuc.org
@@ -553,13 +553,17 @@ public class ChannelResourceServlet extends GenericServlet {
 
         if (channel != null) {
             Value value = json.getValue(channel.getValueType());
-            Flag flag = channel.write(value);
+            Flag flag = writeToChannel(channel, value);
 
             if (flag != Flag.VALID) {
                 ServletLib.sendHTTPErrorAndLogDebug(response, HttpServletResponse.SC_CONFLICT, logger,
                         "Problems by writing to channel. Flag = " + flag.toString());
             }
         }
+    }
+
+    public static Flag writeToChannel(Channel channel, Value value) {
+        return channel.write(value);
     }
 
     @Override
