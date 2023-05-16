@@ -1,23 +1,24 @@
-/* 
- * Copyright 2016-2021 ISC Konstanz
- * 
- * This file is part of TH-E-EMS.
- * For more information visit https://github.com/isc-konstanz/th-e-ems
- * 
- * TH-E-EMS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
+/*
+ * Copyright 2011-2022 Fraunhofer ISE
+ *
+ * This file is part of OpenMUC.
+ * For more information visit http://www.openmuc.org
+ *
+ * OpenMUC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
- * TH-E-EMS is distributed in the hope that it will be useful,
+ *
+ * OpenMUC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with TH-E-EMS.  If not, see <http://www.gnu.org/licenses/>.
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
-package org.the.ems.env.hp.vlv;
+package org.the.ems.env.hh.vlv;
 
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -29,6 +30,7 @@ import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.RecordListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.the.ems.env.hh.vlv.Valve;
 
 
 public class Valve implements Runnable, RecordListener {
