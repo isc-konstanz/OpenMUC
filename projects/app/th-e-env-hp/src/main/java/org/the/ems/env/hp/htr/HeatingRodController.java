@@ -22,10 +22,8 @@ package org.the.ems.env.hp.htr;
 
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.Flag;
-import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
-import org.openmuc.framework.dataaccess.RecordListener;
 
 public class HeatingRodController {
 
