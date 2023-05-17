@@ -32,9 +32,9 @@ public class HeatingRodController {
     double minTemp = 5;
 
     private static final String ID_HEATINGROD_STATE = "hr_brine_state";
-    private static final String ID_TEMP_HEATPUMP_INLET = "hp_brine_source_temp";
-    private static final String ID_TEMP_HEATPUMP_OUTLET = "hp_brine_return_temp";
-    private static final String ID_BRINE_PUMP = "hp_brine_pump_state";
+    private static final String ID_TEMP_HEATPUMP_INLET = "hp_source_temp_in";
+    private static final String ID_TEMP_HEATPUMP_OUTLET = "hp_source_temp_out";
+    private static final String ID_BRINE_PUMP = "hp_source_pump_state";
 
     private Channel state;
     private Channel heatPumpInletTemp;
