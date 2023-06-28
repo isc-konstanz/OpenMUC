@@ -24,14 +24,17 @@ import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HeatingRodController {
 
+    private static final Logger logger = LoggerFactory.getLogger(HeatingRodController.class);
     // Temperature boundaries of the heat pump brine [°C]
-    double maxTemp = 15;
-    double minTemp = 5;
+    double maxTemp = 20;
+    double minTemp = 10;
 
-    private static final String ID_HEATINGROD_STATE = "hr_brine_state";
+    private static final String ID_HEATINGROD_STATE = "hp_source_hr_state";
     private static final String ID_TEMP_HEATPUMP_INLET = "hp_source_temp_in";
     private static final String ID_TEMP_HEATPUMP_OUTLET = "hp_source_temp_out";
     private static final String ID_BRINE_PUMP = "hp_source_pump_state";
@@ -50,39 +53,60 @@ public class HeatingRodController {
         
         this.heatPumpInletTemp.addListener(record -> {
             if (record.getFlag() != Flag.VALID) {
+                logger.warn("Heat pump source inlet channel invalid flag: {}", record.getFlag());
                 return;
             }
+            logger.trace("Heat pump source intlet temperature : {} °C", String.format("%.1f", record.getValue().asDouble()));
+
             if (record.getValue().asDouble() >= maxTemp) {
+                logger.info("Heat pump source inlet temperatur {} > 15°C. Switching heating rod off", String.format("%.1f", record.getValue().asDouble()));
                 writeState(false);
             }
         });
-        
+
         this.heatPumpOutletTemp.addListener(record -> {
             if (record.getFlag() != Flag.VALID) {
+                logger.warn("Heat pump source outlet channel invalid flag!");
                 return;
             }
-            if (pumpState.getLatestRecord().getFlag()!= Flag.VALID ||
-                    !pumpState.getLatestRecord().getValue().asBoolean()) {
+            logger.trace("Heat pump source outlet temperature : {} °C", record.getValue().asDouble());
+
+            if (pumpState.getLatestRecord().getFlag()!= Flag.VALID) {
+                logger.warn("Skip switching heating rod. Source pump invalid flag: {}", pumpState.getLatestRecord().getFlag());
+                return;
+            }
+            if (!pumpState.getLatestRecord().getValue().asBoolean()) {
+                logger.debug("Skip switching heating rod off. Source pump is not running.");
                 return;
             }
             if (record.getValue().asDouble() <= minTemp) {
+                logger.info("Heat pump source outlet temperatur {} < 10°C, switching heating rod on", String.format("%.1f", record.getValue().asDouble()));
                 writeState(true);
             }
         });
-        
+
         this.pumpState.addListener(record -> {
             if (record.getFlag() != Flag.VALID) {
+                logger.warn("Heat pump source pump channel invalid flag: {}", record.getFlag());
                 return;
             }
-            if (!record.getValue().asBoolean()) {
+            if (state.getLatestRecord().getFlag() != Flag.VALID) {
+                logger.warn("Heating rod channel invalid flag: {}", record.getFlag());
+                return;
+            }
+            if (!record.getValue().asBoolean() && state.getLatestRecord().getValue().asBoolean()) {
+                logger.info("Heat pump source pump is not running, heating rod will be switched off.");
                 writeState(false);
             }
         });
     }
 
     public void writeState(boolean enable) {
-        if (state.getLatestRecord().getFlag() != Flag.VALID ||
-        		state.getLatestRecord().getValue().asBoolean() == enable) {
+        if (state.getLatestRecord().getFlag() != Flag.VALID) {
+            logger.warn("Heating rod Channel state flag invalid: {}", state.getLatestRecord().getFlag());
+            return;
+        }
+        if (state.getLatestRecord().getValue().asBoolean() == enable) {
             return;
         }
         state.write(new BooleanValue(enable));
@@ -90,11 +114,11 @@ public class HeatingRodController {
 
     private void checkPump() {
         if (pumpState.getLatestRecord().getFlag() != Flag.VALID) {
+            logger.warn("Skip switching heating rod. Source pump invalid flag: {}", pumpState.getLatestRecord().getFlag());
             return;
         }
         if (!pumpState.getLatestRecord().getValue().asBoolean()) {
             writeState(false);
         }
     }
-
 }
