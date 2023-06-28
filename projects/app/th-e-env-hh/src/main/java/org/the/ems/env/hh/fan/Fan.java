@@ -115,6 +115,12 @@ public class Fan implements RecordListener {
             timeOn = timeToRun * intervalNumber / takt * 1000;
         }
         setUpdateTimer(singleInterval);    
+        if (timeToRun < 5) {
+        	logger.info("No Fan PWM needed");
+        	timeOn = 0;
+        	singleInterval = 0;
+        }
+        setUpdateTimer(singleInterval);
     }
 
     public synchronized void setUpdateTimer(int singleInterval) {
@@ -124,6 +130,10 @@ public class Fan implements RecordListener {
             updateTimer.cancel();
             updateTimer.purge();
             updateTimer = null;
+        }
+        if (interval == 0) {
+        	writeState(false);
+            return;
         }
         TimerTask task = new PwmTimer(timeOn);
         updateTimer = new Timer("TH-E Environment: Fan PWM Timer");
