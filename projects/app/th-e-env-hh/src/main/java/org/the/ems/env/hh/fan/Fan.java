@@ -29,34 +29,38 @@ import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.RecordListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Fan implements RecordListener {
-    
+	
+    private static final Logger logger = LoggerFactory.getLogger(Fan.class);
+
     // Thermal power for fan to cool
     private double thPowerSetpoint;
-    
+
     private Channel fanChannel;
     private Channel fanPWM;
-    
+
     private Timer updateTimer;
     // Max. fan cooling power in [W]
-    private double maxPower = 20000;
-    
+    private double maxPower = 2000;
+
     // Interval time in [s], default 3 min
     private int intervalTime = 180;
-    
+
     // Interval time for PWM in [s], varies from 60 to 180s 
     private int singleInterval = 180;
-    
+
     // Number of intervals in one intervalTime
     private int intervalNumber = 3;
-    
+
     // PWM percent [%]
     private int percentPWM = 0;
-    
+
     // Active fan time per singleInterval [ms]
     private int timeOn;
-    
+
     // Time boundaries for fan in [ms]
     private final int maxTime = 55 * 1000;
     private final int minTime = 15 * 1000;
@@ -69,8 +73,8 @@ public class Fan implements RecordListener {
 
     public void setSetpoint(double thpower) {
         thPowerSetpoint = thpower;
+        logger.trace("Heat output to be dissipated via the fan: {}W",thPowerSetpoint);
         int percent = (int) ((thPowerSetpoint/maxPower) * 100);
-        fanPWM.setLatestRecord(new Record(new IntValue(percent), System.currentTimeMillis()));
         if (percent > 100) {
             logger.info("PWM Percent:{}% bigger than 100% setting it to 100%",percent);
             percent = 100;
@@ -81,6 +85,7 @@ public class Fan implements RecordListener {
     @Override
     public void newRecord(Record record) {
         if (record.getFlag() != Flag.VALID) { 
+            logger.warn("Invalid PWM Record flag state:{}", record.getFlag());
             return;
         }
         percentPWM = record.getValue().asInt();
@@ -94,17 +99,17 @@ public class Fan implements RecordListener {
 
     public void setPWM(int percent) {
         if (percent > 100) {
-        return;
+            logger.info("setPWM: PWM percentage :{} bigger than 100", percent);
+            return;
         }
-
         int takt = 1;
         int timeToRun = (intervalTime*percent/100) / intervalNumber;
-        if (timeToRun >= minTime) {
+        if (timeToRun >= minTime/1000) {
             takt = 3;
             singleInterval = intervalTime / takt;
             timeOn = timeToRun * intervalNumber / takt * 1000;
         }
-        if (timeToRun < minTime & timeToRun >= 10) {
+        if (timeToRun < minTime/1000 & timeToRun >= 10) {
             takt = 2;
             singleInterval = intervalTime / takt;
             timeOn = timeToRun * intervalNumber / takt * 1000;
@@ -114,7 +119,6 @@ public class Fan implements RecordListener {
             singleInterval = intervalTime / takt;
             timeOn = timeToRun * intervalNumber / takt * 1000;
         }
-        setUpdateTimer(singleInterval);    
         if (timeToRun < 5) {
         	logger.info("No Fan PWM needed");
         	timeOn = 0;
@@ -141,7 +145,14 @@ public class Fan implements RecordListener {
     }
 
     public void writeState(boolean bol) {
-        fanChannel.write(new BooleanValue(bol));
+    	if (fanChannel.getLatestRecord().getFlag() != Flag.VALID) {
+    		logger.info("Invalid Fan Channel Flag : {}",fanChannel.getLatestRecord().getFlag());
+    		return;
+    	}
+    	if (fanChannel.getLatestRecord().getValue().asBoolean() != bol) {
+    		logger.info("Setting Ventilator {}", bol);
+            fanChannel.write(new BooleanValue(bol));
+    	}  
     }
 
     class PwmTimer extends TimerTask {
@@ -154,6 +165,7 @@ public class Fan implements RecordListener {
         
         @Override
         public void run() {
+            logger.info("Starting PWM with timeActive:{}s", timeActive/1000);
             pulseRealais(timeActive);
         }
 
@@ -161,6 +173,7 @@ public class Fan implements RecordListener {
 
             Record stateRecord = fanChannel.getLatestRecord();
             if (stateRecord.getFlag() != Flag.VALID) {
+                logger.warn("Invalid Fan flag state:{}", stateRecord.getFlag());
                 return;
             }
             if (timeActive >= maxTime) {
@@ -169,7 +182,6 @@ public class Fan implements RecordListener {
                 }
             }
             else if (timeActive >= minTime) {
-
                 if (!stateRecord.getValue().asBoolean()) {
                     writeState(true);
                 }
