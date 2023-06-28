@@ -56,6 +56,7 @@ public final class HouseholdEnvironment {
     private Controller controler = new Controller(0.6, 0.5, 0.125, 30000, 1); 
     private Fan fan;
     private Timer updateTimer;
+    private Controller controlerFan = new Controller(0.8, 0.2, 0.125, 2000, -1000, true);
 
     private double coolingWithoutVentilator = 500;
 
@@ -136,7 +137,8 @@ public final class HouseholdEnvironment {
     }
 
     public void setFanSetpoint() {
-        fan.setSetpoint(controler.process(interval, getFanSetpoint(), thPowerListener.getMean()));
+        Double controledSetpoint  = controlerFan.process(interval/(1000*60*3), getFanSetpoint(), thPowerListener.getMean());
+        fan.setSetpoint(controledSetpoint);
         if (thPowerSetpointListener.getMean() > coolingWithoutVentilator && controledSetpoint > -coolingWithoutVentilator) {
             setPumpState(thPowerSetpointListener.getMean());
         }
@@ -146,7 +148,10 @@ public final class HouseholdEnvironment {
     }   
 
     public double getFanSetpoint() {
-        double value = thPowerSetpointListener.getMean() - coolingWithoutVentilator;
+        double value = thPowerSetpointListener.getMean();
+        if (value < 0) {
+            return 0;
+        }
         return value;
     }
 
