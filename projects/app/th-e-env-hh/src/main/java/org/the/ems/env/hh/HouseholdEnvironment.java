@@ -24,6 +24,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.openmuc.framework.data.BooleanValue;
+import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
 import org.osgi.service.component.annotations.Activate;
@@ -33,6 +34,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.the.ems.env.hh.fan.Fan;
+import org.the.ems.env.hh.src.HeatPumpSource;
 
 @Component(immediate = true, service = {})
 public final class HouseholdEnvironment {
@@ -53,10 +55,10 @@ public final class HouseholdEnvironment {
     private Channel thPower;
     private Channel pumpState;
 
-    private Controller controler = new Controller(0.6, 0.5, 0.125, 30000, 1); 
     private Fan fan;
     private Timer updateTimer;
     private Controller controlerFan = new Controller(0.8, 0.2, 0.125, 2000, -1000, true);
+    private HeatPumpSource heatPumpSource;
 
     private double coolingWithoutVentilator = 500;
 
@@ -73,6 +75,7 @@ public final class HouseholdEnvironment {
         fan = new Fan(
                 dataAccessService.getChannel(ID_FAN), 
                 dataAccessService.getChannel(ID_FAN_PWM));
+        heatPumpSource = new HeatPumpSource(dataAccessService);
         initializeChannels();
         applyChannelListener();
 
@@ -90,24 +93,27 @@ public final class HouseholdEnvironment {
     }
 
     private void initializeChannels() {
+        logger.info("Initializing Channels");
         thPowerSetpoint = dataAccessService.getChannel(ID_TH_POWER_SETPOINT);
         thPower = dataAccessService.getChannel(ID_TH_POWER);
         pumpState = dataAccessService.getChannel(ID_PUMP_STATE);
     }
 
     private void applyChannelListener() {
+        logger.info("Applying Channel Listener");
         thPowerSetpointListener = new RecordAverageListener(interval);
         thPowerSetpoint.addListener(thPowerSetpointListener);
-        
+
         thPowerListener = new RecordAverageListener(interval);
         thPower.addListener(thPowerListener);
-        
+
         pumpStateListener = new RecordAverageListener(interval);
         pumpState.addListener(pumpStateListener);
     }
-
+  
     private void initializeUpdateTimer() {
-        controler.reset();
+        logger.info("Initializing Timer");
+        controlerFan.reset();
         updateTimer = new Timer("TH-E Environment: Household control timer");
         TimerTask task = new TimerTask() {
             @Override
@@ -154,5 +160,4 @@ public final class HouseholdEnvironment {
         }
         return value;
     }
-
 }
