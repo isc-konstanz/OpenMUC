@@ -71,6 +71,11 @@ public class Fan implements RecordListener {
         thPowerSetpoint = thpower;
         int percent = (int) ((thPowerSetpoint/maxPower) * 100);
         fanPWM.setLatestRecord(new Record(new IntValue(percent), System.currentTimeMillis()));
+        if (percent > 100) {
+            logger.info("PWM Percent:{}% bigger than 100% setting it to 100%",percent);
+            percent = 100;
+        }
+    	fanPWM.setLatestRecord(new Record(new IntValue(percent), System.currentTimeMillis()));
     }
 
     @Override
@@ -79,6 +84,11 @@ public class Fan implements RecordListener {
             return;
         }
         percentPWM = record.getValue().asInt();
+        if (percentPWM > 100) {
+            logger.info("PWM Percent:{}% bigger than 100% setting it to 100%",percentPWM);
+            percentPWM = 100;
+        }
+        logger.trace("PWM percentage:{}%", percentPWM);
         setPWM(percentPWM);
     }
 
