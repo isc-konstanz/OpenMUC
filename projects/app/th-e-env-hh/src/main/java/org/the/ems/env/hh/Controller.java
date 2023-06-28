@@ -74,6 +74,8 @@ public class Controller {
         }
         if (value < -maximum) {
             return -maximum;
+        if (value <= minimum) {
+            return minimum;
         }
         return value;
     }
