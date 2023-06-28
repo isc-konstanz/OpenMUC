@@ -111,20 +111,24 @@ public final class HouseholdEnvironment {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                setPumpState();
                 setFanSetpoint();
             }
         };
         updateTimer.scheduleAtFixedRate(task, 0, interval);
     }
 
-    public void setPumpState() {
-        if (thPowerSetpointListener.getMean() > 0) {
+    public void setPumpState(double Setpoint) {
+        logger.info("Setting Pumpstate");
+        if (pumpState.getLatestRecord().getFlag() != Flag.VALID) {
+            logger.warn("Invalid flow pump flag :{}",pumpState.getLatestRecord().getFlag());
+            return;
+        }
+        if (Setpoint >= coolingWithoutVentilator) {
             if(!pumpStateListener.getLatestState()) {
                 pumpState.write(new BooleanValue(true));
             }
         } 
-        if (thPowerSetpointListener.getLatestRecord() == 0) {
+        if (Setpoint < coolingWithoutVentilator) {
             if(pumpStateListener.getLatestState()) {
                 pumpState.write(new BooleanValue(false));
             }
@@ -133,6 +137,12 @@ public final class HouseholdEnvironment {
 
     public void setFanSetpoint() {
         fan.setSetpoint(controler.process(interval, getFanSetpoint(), thPowerListener.getMean()));
+        if (thPowerSetpointListener.getMean() > coolingWithoutVentilator && controledSetpoint > -coolingWithoutVentilator) {
+            setPumpState(thPowerSetpointListener.getMean());
+        }
+        else {
+            setPumpState(controledSetpoint);
+        }
     }   
 
     public double getFanSetpoint() {
