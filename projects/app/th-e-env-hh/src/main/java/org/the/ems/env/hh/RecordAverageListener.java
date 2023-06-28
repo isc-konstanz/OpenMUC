@@ -41,19 +41,27 @@ public class RecordAverageListener implements RecordListener {
     }
 
     public double getMean() {
-        lastTimestamp = records.getLast().getTimestamp();
-        while(records.getFirst().getTimestamp() < lastTimestamp - interval) {
-            records.removeFirst();
-        }
+    	if (!records.isEmpty()) {
+    		lastTimestamp = records.getLast().getTimestamp();
+    		while(records.getFirst().getTimestamp() < lastTimestamp - interval) {
+                records.removeFirst();
+            }
+    	}        
         return records.stream().mapToDouble(r -> r.getValue().asDouble()).average().orElse(0);
     }
 
-    public double getLatestRecord() {
-        return records.getLast().getValue().asDouble();
+    public double getLatestDouble() {
+    	if (records.isEmpty()) {
+    		return 0;
+    	}
+    	return records.getLast().getValue().asDouble();
     }
 
     public boolean getLatestState() {
-        return records.getLast().getValue().asBoolean();
+    	if (records.isEmpty()) {
+    		return false;
+    	}
+    	return records.getLast().getValue().asBoolean();
     }
 
     @Override
