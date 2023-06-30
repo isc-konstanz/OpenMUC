@@ -36,7 +36,7 @@ public abstract class CsvChannelTime extends CsvChannel {
 
     protected boolean isInitialised = false;
 
-    protected long[] timestamps;
+    protected List<Long> timestamps;
     protected long firstTimestamp;
     protected long lastTimestamp;
 
@@ -45,20 +45,20 @@ public abstract class CsvChannelTime extends CsvChannel {
         super(column, csv, rewind);
         
         timestamps = parseIndex(csv);
-        firstTimestamp = timestamps[0];
-        lastTimestamp = timestamps[timestamps.length - 1];
+        firstTimestamp = timestamps.get(0);
+        lastTimestamp = timestamps.get(timestamps.size() - 1);
     }
 
-    protected CsvChannelTime(String column, long[] index, Map<String, List<String>> csv, boolean rewind) 
+    protected CsvChannelTime(String column, List<Long> index, Map<String, List<String>> csv, boolean rewind) 
             throws ArgumentSyntaxException {
         super(column, csv, rewind);
         
         this.timestamps = index;
-        firstTimestamp = index[0];
-        lastTimestamp = index[index.length - 1];
+        firstTimestamp = index.get(0);
+        lastTimestamp = index.get(index.size() - 1);
     }
 
-    protected abstract long[] parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException;
+    protected abstract List<Long> parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException;
 
     protected int searchNextIndex(long samplingTime) throws CsvException {
         int index;
@@ -124,7 +124,7 @@ public abstract class CsvChannelTime extends CsvChannel {
             if (nextIndex > maxIndex) {
                 return maxIndex;
             }
-            nextTimestamp = timestamps[nextIndex];
+            nextTimestamp = timestamps.get(nextIndex);
             lastIndexRead = nextIndex;
         } while (samplingTime > nextTimestamp);
 
@@ -138,7 +138,8 @@ public abstract class CsvChannelTime extends CsvChannel {
     }
 
     private boolean isBeforeLastReadIndex(long samplingTime) {
-        if (samplingTime < timestamps[lastIndexRead]) {
+    	long lastTimeRead = timestamps.get(lastIndexRead);
+        if (samplingTime < lastTimeRead) {
             return true;
         }
         else {
@@ -151,7 +152,11 @@ public abstract class CsvChannelTime extends CsvChannel {
     }
 
     private boolean isBehindLastReadIndex(long samplingTime) {
-        if (samplingTime > timestamps[lastIndexRead]) {
+    	long lastTimeRead = timestamps.get(lastIndexRead);
+        if (samplingTime > lastTimeRead) {
+            return true;
+        }
+        else if (samplingTime < lastTimeRead && lastIndexRead < timestamps.lastIndexOf(lastTimeRead)) {
             return true;
         }
         else {
