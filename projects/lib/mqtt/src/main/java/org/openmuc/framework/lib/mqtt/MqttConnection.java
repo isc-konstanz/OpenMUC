@@ -178,9 +178,9 @@ public class MqttConnection {
         Mqtt3ClientBuilder clientBuilder = Mqtt3Client.builder()
                 .identifier(UUID.randomUUID().toString())
                 .automaticReconnect()
-                .initialDelay(settings.getConnectionRetryInterval(), TimeUnit.SECONDS)
-                .maxDelay(settings.getConnectionRetryInterval(), TimeUnit.SECONDS)
-                .applyAutomaticReconnect()
+	                .initialDelay(settings.getConnectionRetryInterval(), TimeUnit.SECONDS)
+	                .maxDelay(settings.getConnectionRetryInterval(), TimeUnit.SECONDS)
+	                .applyAutomaticReconnect()
                 .serverHost(settings.getHost())
                 .serverPort(settings.getPort());
         if (settings.isSsl() && sslManager != null) {
