@@ -35,58 +35,46 @@ public class Controller {
     protected double errorDerivative = 0;
     protected double errorLast = 0;
     protected double lastErrors = 0;
-    protected double lastMeasurements = 0;
+    protected double lastSetpoint = 0;
 
     protected double proportional;
     protected double integral;
     protected double derivative;
     protected double maximum;
     protected double minimum;
-    protected boolean delta;
  
     private final Deque<Record> errors = new ArrayDeque<Record>();
-    private final Deque<Record> measurement = new ArrayDeque<Record>();
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-    public Controller(double proportional,double integral, double derivative, double maximum,double minimum, boolean delta) {
+    public Controller(double proportional,double integral, double derivative, double maximum,double minimum) {
         this.proportional = proportional;
         this.derivative = derivative;
         this.integral = integral;
         this.maximum = maximum;
         this.minimum = minimum;
-        this.delta = delta;
     }
 
     public double process(long interval, double thPowerSetpoint, double thPowerSensor) {
         double timeDelta = interval;
         double error = thPowerSetpoint - thPowerSensor;
-        if(delta) {
-            if (!errors.isEmpty()) {
-                if (errors.getLast().getFlag() == Flag.VALID) {
-                    lastErrors = errors.stream().mapToDouble(r -> r.getValue().asDouble()).average().orElse(0);
-                    lastMeasurements = measurement.stream().mapToDouble(r -> r.getValue().asDouble()).average().orElse(0);
-                    lastErrors = lastErrors - lastMeasurements;
-                    if (Math.abs(lastErrors) < 200) {
-                        logger.debug("Delta of Lasterrors smaller than 200 W, removing past errors!");
-                        lastErrors = 0;
-                        lastMeasurements = 0;
-                        errors.clear();
-                        measurement.clear();
-                    }
+        if (!errors.isEmpty()) {
+            if (errors.getLast().getFlag() == Flag.VALID) {
+                lastErrors = errors.stream().mapToDouble(r -> r.getValue().asDouble()).sum();
+                if (Math.abs(lastErrors) < 200) {
+                    logger.debug("Delta of Lasterrors smaller than 200 W, removing past errors!");
+                    lastErrors = 0;
+                    errors.clear();
                 }
             }
+        }
 
-            errors.add(new Record(new DoubleValue(error),System.currentTimeMillis()));
-            measurement.add(new Record(new DoubleValue(thPowerSensor),System.currentTimeMillis()));
-            error = error + lastErrors;
-            if (errors.size() > 20) {
-                logger.trace("Bigger thatn 20 items in errors deque, starting clearing");
+        errors.add(new Record(new DoubleValue(error),System.currentTimeMillis()));
+        error = error + lastErrors;
+        if (errors.size() > 20) {
+            logger.trace("Bigger thatn 20 items in errors deque, starting clearing");
+            errors.removeFirst();
+            while (errors.getFirst().getValue().asDouble() < 0) {
                 errors.removeFirst();
-                measurement.removeFirst();
-                while (errors.getFirst().getValue().asDouble() < 0) {
-                    errors.removeFirst();
-                    measurement.removeFirst();
-                }
             }
         }
 
