@@ -23,8 +23,6 @@ package org.the.ems.env.hh;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.openmuc.framework.data.BooleanValue;
-import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
 import org.osgi.service.component.annotations.Activate;
@@ -34,6 +32,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.the.ems.env.hh.fan.Fan;
+import org.the.ems.env.hh.pump.Pump;
 import org.the.ems.env.hh.src.HeatPumpSource;
 
 @Component(immediate = true, service = {})
@@ -43,9 +42,6 @@ public final class HouseholdEnvironment {
 
     private static final String ID_TH_POWER_SETPOINT = "hh_th_power";
     private static final String ID_TH_POWER = "hh_flow_power";
-    private static final String ID_FAN ="hh_flow_fan_state";
-    private static final String ID_FAN_PWM ="hh_flow_fan_pwm";
-    private static final String ID_PUMP_STATE ="hh_flow_pump_state";
 
     private static final int SECONDS_PER_INTERVAL = 60*3;
 
@@ -53,18 +49,15 @@ public final class HouseholdEnvironment {
 
     private Channel thPowerSetpoint;
     private Channel thPower;
-    private Channel pumpState;
 
     private Fan fan;
-    private Timer updateTimer;
-    private Controller controlerFan = new Controller(0.8, 0.2, 0.125, 2000, -1000, true);
+    private Pump pump;
     private HeatPumpSource heatPumpSource;
-
-    private double coolingWithoutVentilator = 500;
+    private Timer updateTimer;
+    private Controller controlerFan = new Controller(0.8, 0.2, 0.125, 4000, 0);
 
     RecordAverageListener thPowerSetpointListener;
     RecordAverageListener thPowerListener;
-    RecordAverageListener pumpStateListener;
 
     @Reference
     private DataAccessService dataAccessService;
@@ -72,13 +65,11 @@ public final class HouseholdEnvironment {
     @Activate
     private void activate() {
         logger.info("Activating TH-E Environment: Household");
-        fan = new Fan(
-                dataAccessService.getChannel(ID_FAN), 
-                dataAccessService.getChannel(ID_FAN_PWM));
+        fan = new Fan(dataAccessService);
+        pump = new Pump(dataAccessService);
         heatPumpSource = new HeatPumpSource(dataAccessService);
         initializeChannels();
         applyChannelListener();
-
         initializeUpdateTimer();
     }
 
@@ -96,7 +87,6 @@ public final class HouseholdEnvironment {
         logger.info("Initializing Channels");
         thPowerSetpoint = dataAccessService.getChannel(ID_TH_POWER_SETPOINT);
         thPower = dataAccessService.getChannel(ID_TH_POWER);
-        pumpState = dataAccessService.getChannel(ID_PUMP_STATE);
     }
 
     private void applyChannelListener() {
@@ -106,9 +96,6 @@ public final class HouseholdEnvironment {
 
         thPowerListener = new RecordAverageListener(interval);
         thPower.addListener(thPowerListener);
-
-        pumpStateListener = new RecordAverageListener(interval);
-        pumpState.addListener(pumpStateListener);
     }
   
     private void initializeUpdateTimer() {
@@ -118,39 +105,12 @@ public final class HouseholdEnvironment {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                setFanSetpoint();
+                setThermalSetpoint();
             }
         };
         updateTimer.scheduleAtFixedRate(task, 0, interval);
     }
 
-    public void setPumpState(double Setpoint) {
-        logger.info("Setting Pumpstate");
-        if (pumpState.getLatestRecord().getFlag() != Flag.VALID) {
-            logger.warn("Invalid flow pump flag :{}",pumpState.getLatestRecord().getFlag());
-            return;
-        }
-        if (Setpoint >= coolingWithoutVentilator) {
-            if(!pumpStateListener.getLatestState()) {
-                pumpState.write(new BooleanValue(true));
-            }
-        } 
-        if (Setpoint < coolingWithoutVentilator) {
-            if(pumpStateListener.getLatestState()) {
-                pumpState.write(new BooleanValue(false));
-            }
-        }
-    }
-
-    public void setFanSetpoint() {
-        Double controledSetpoint  = controlerFan.process(interval/(1000*60*3), getFanSetpoint(), thPowerListener.getMean());
-        fan.setSetpoint(controledSetpoint);
-        if (thPowerSetpointListener.getMean() > coolingWithoutVentilator && controledSetpoint > -coolingWithoutVentilator) {
-            setPumpState(thPowerSetpointListener.getMean());
-        }
-        else {
-            setPumpState(controledSetpoint);
-        }
     public void setThermalSetpoint() {
         Double controledSetpoint  = controlerFan.process(interval/(1000*60*3), thPowerSetpointListener.getMean(),
         		thPowerListener.getMean());
@@ -159,12 +119,4 @@ public final class HouseholdEnvironment {
         heatPumpSource.setSetPoint(controledSetpoint- pump.getPower());
         fan.setSetPoint(controledSetpoint- pump.getPower()- heatPumpSource.getPower());
     }   
-
-    public double getFanSetpoint() {
-        double value = thPowerSetpointListener.getMean();
-        if (value < 0) {
-            return 0;
-        }
-        return value;
-    }
 }
