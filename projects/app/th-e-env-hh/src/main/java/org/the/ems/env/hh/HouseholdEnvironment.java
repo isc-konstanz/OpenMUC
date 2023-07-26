@@ -151,6 +151,13 @@ public final class HouseholdEnvironment {
         else {
             setPumpState(controledSetpoint);
         }
+    public void setThermalSetpoint() {
+        Double controledSetpoint  = controlerFan.process(interval/(1000*60*3), thPowerSetpointListener.getMean(),
+        		thPowerListener.getMean());
+        logger.info("Controled Setpoint :{}",controledSetpoint);
+        pump.setSetPoint(controledSetpoint);
+        heatPumpSource.setSetPoint(controledSetpoint- pump.getPower());
+        fan.setSetPoint(controledSetpoint- pump.getPower()- heatPumpSource.getPower());
     }   
 
     public double getFanSetpoint() {
