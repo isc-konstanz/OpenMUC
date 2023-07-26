@@ -28,12 +28,25 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;
+import org.openmuc.framework.dataaccess.DataAccessService;
 import org.openmuc.framework.dataaccess.RecordListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.the.ems.env.hh.HeatSink;
+import org.the.ems.env.hh.flow.Flow;
 
-public class Fan implements RecordListener {
-	
+public class Fan implements RecordListener, HeatSink {
+
+    private static final String ID_FAN ="hh_flow_fan_state";
+    private static final String ID_FAN_PWM ="hh_flow_fan_pwm";
+
+    private static final String ID_TEMP_HEATEXCHANGER_IN ="hh_flow_fan_in_temp";
+    private static final String ID_TEMP_HEATEXCHANGER_OUT ="hh_flow_fan_out_temp";
+    private static final String ID_TEMP_HEATEXCHANGER_DELTA="hh_flow_fan_delta_temp";
+    private static final String ID_FLOW_VOLUM="hh_flow_rate";
+    private static final String ID_POWER_HEATEXCHANGER="hh_flow_fan_power";
+    private static final String ID_ENERGY_HEATEXCHANGER = "hh_flow_fan_energy";
+
     private static final Logger logger = LoggerFactory.getLogger(Fan.class);
 
     // Thermal power for fan to cool
@@ -42,9 +55,10 @@ public class Fan implements RecordListener {
     private Channel fanChannel;
     private Channel fanPWM;
 
+    Flow flowFan;
     private Timer updateTimer;
     // Max. fan cooling power in [W]
-    private double maxPower = 2000;
+    private double maxPower = 2500;
 
     // Interval time in [s], default 3 min
     private int intervalTime = 180;
@@ -65,13 +79,20 @@ public class Fan implements RecordListener {
     private final int maxTime = 55 * 1000;
     private final int minTime = 15 * 1000;
 
-    public Fan(Channel fanChannel, Channel fanPWM) {
-        this.fanChannel = fanChannel;
-        this.fanPWM = fanPWM;
+    public Fan(DataAccessService dataAccessService) {
+        this.fanChannel = dataAccessService.getChannel(ID_FAN);
+        this.fanPWM = dataAccessService.getChannel(ID_FAN_PWM);
         this.fanPWM.addListener(this);
+        
+        flowFan = new Flow(dataAccessService.getChannel(ID_FLOW_VOLUM),
+                dataAccessService.getChannel(ID_POWER_HEATEXCHANGER),
+                dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_IN),
+                dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_OUT),
+                dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_DELTA),
+                dataAccessService.getChannel(ID_ENERGY_HEATEXCHANGER));
     }
-
-    public void setSetpoint(double thpower) {
+    @Override
+    public void setSetPoint(double thpower) {
         thPowerSetpoint = thpower;
         logger.trace("Heat output to be dissipated via the fan: {}W",thPowerSetpoint);
         int percent = (int) ((thPowerSetpoint/maxPower) * 100);
@@ -79,7 +100,16 @@ public class Fan implements RecordListener {
             logger.info("PWM Percent:{}% bigger than 100% setting it to 100%",percent);
             percent = 100;
         }
-    	fanPWM.setLatestRecord(new Record(new IntValue(percent), System.currentTimeMillis()));
+        if (percent < 0) {
+            logger.info("PWM Percent:{}% negative, setting it 0%",percent);
+            percent = 0;
+        }
+        fanPWM.setLatestRecord(new Record(new IntValue(percent), System.currentTimeMillis()));
+    }
+
+    @Override
+    public double getPower() {
+        return flowFan.getAveragePower();
     }
 
     @Override
@@ -98,10 +128,6 @@ public class Fan implements RecordListener {
     }
 
     public void setPWM(int percent) {
-        if (percent > 100) {
-            logger.info("setPWM: PWM percentage :{} bigger than 100", percent);
-            return;
-        }
         int takt = 1;
         int timeToRun = (intervalTime*percent/100) / intervalNumber;
         if (timeToRun >= minTime/1000) {
@@ -120,9 +146,9 @@ public class Fan implements RecordListener {
             timeOn = timeToRun * intervalNumber / takt * 1000;
         }
         if (timeToRun < 5) {
-        	logger.info("No Fan PWM needed");
-        	timeOn = 0;
-        	singleInterval = 0;
+            logger.info("No Fan PWM needed");
+            timeOn = 0;
+            singleInterval = 0;
         }
         setUpdateTimer(singleInterval);
     }
@@ -136,7 +162,7 @@ public class Fan implements RecordListener {
             updateTimer = null;
         }
         if (interval == 0) {
-        	writeState(false);
+            writeState(false);
             return;
         }
         TimerTask task = new PwmTimer(timeOn);
@@ -145,14 +171,14 @@ public class Fan implements RecordListener {
     }
 
     public void writeState(boolean bol) {
-    	if (fanChannel.getLatestRecord().getFlag() != Flag.VALID) {
-    		logger.info("Invalid Fan Channel Flag : {}",fanChannel.getLatestRecord().getFlag());
-    		return;
-    	}
-    	if (fanChannel.getLatestRecord().getValue().asBoolean() != bol) {
-    		logger.info("Setting Ventilator {}", bol);
+        if (fanChannel.getLatestRecord().getFlag() != Flag.VALID) {
+            logger.info("Invalid Fan Channel Flag : {}",fanChannel.getLatestRecord().getFlag());
+            return;
+        }
+        if (fanChannel.getLatestRecord().getValue().asBoolean() != bol) {
+            logger.info("Setting Ventilator {}", bol);
             fanChannel.write(new BooleanValue(bol));
-    	}  
+        }  
     }
 
     class PwmTimer extends TimerTask {
