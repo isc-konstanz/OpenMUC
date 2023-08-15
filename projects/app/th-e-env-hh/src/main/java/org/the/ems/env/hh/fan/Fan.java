@@ -37,14 +37,14 @@ import org.the.ems.env.hh.flow.Flow;
 
 public class Fan implements RecordListener, HeatSink {
 
-    private static final String ID_FAN ="hh_flow_fan_state";
-    private static final String ID_FAN_PWM ="hh_flow_fan_pwm";
+    private static final String ID_FAN = "hh_flow_fan_state";
+    private static final String ID_FAN_PWM = "hh_flow_fan_pwm";
 
-    private static final String ID_TEMP_HEATEXCHANGER_IN ="hh_flow_fan_in_temp";
-    private static final String ID_TEMP_HEATEXCHANGER_OUT ="hh_flow_fan_out_temp";
-    private static final String ID_TEMP_HEATEXCHANGER_DELTA="hh_flow_fan_delta_temp";
-    private static final String ID_FLOW_VOLUM="hh_flow_rate";
-    private static final String ID_POWER_HEATEXCHANGER="hh_flow_fan_power";
+    private static final String ID_TEMP_HEATEXCHANGER_IN = "hh_flow_fan_in_temp";
+    private static final String ID_TEMP_HEATEXCHANGER_OUT = "hh_flow_fan_out_temp";
+    private static final String ID_TEMP_HEATEXCHANGER_DELTA = "hh_flow_fan_delta_temp";
+    private static final String ID_FLOW_VOLUME = "hh_flow_rate";
+    private static final String ID_POWER_HEATEXCHANGER = "hh_flow_fan_power";
     private static final String ID_ENERGY_HEATEXCHANGER = "hh_flow_fan_energy";
 
     private static final Logger logger = LoggerFactory.getLogger(Fan.class);
@@ -84,7 +84,7 @@ public class Fan implements RecordListener, HeatSink {
         this.fanPWM = dataAccessService.getChannel(ID_FAN_PWM);
         this.fanPWM.addListener(this);
         
-        flowFan = new Flow(dataAccessService.getChannel(ID_FLOW_VOLUM),
+        flowFan = new Flow(dataAccessService.getChannel(ID_FLOW_VOLUME),
                 dataAccessService.getChannel(ID_POWER_HEATEXCHANGER),
                 dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_IN),
                 dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_OUT),
