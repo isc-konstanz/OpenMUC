@@ -31,8 +31,8 @@ public class HeatingRodController {
 
     private static final Logger logger = LoggerFactory.getLogger(HeatingRodController.class);
     // Temperature boundaries of the heat pump brine [°C]
-    double maxTemp = 20;
-    double minTemp = 10;
+    double maxTemp = 9;
+    double minTemp = 5;
 
     private static final String ID_HEATINGROD_STATE = "hp_source_hr_state";
     private static final String ID_TEMP_HEATPUMP_INLET = "hp_source_temp_in";
@@ -59,8 +59,14 @@ public class HeatingRodController {
             logger.trace("Heat pump source intlet temperature : {} °C", String.format("%.1f", record.getValue().asDouble()));
 
             if (record.getValue().asDouble() >= maxTemp) {
-                logger.info("Heat pump source inlet temperatur {} > 15°C. Switching heating rod off", String.format("%.1f", record.getValue().asDouble()));
-                writeState(false);
+            	if (state.getLatestRecord().getFlag() != Flag.VALID) {
+                    logger.warn("Source pump channel invalid flag: {}", state.getLatestRecord().getFlag());
+                    return;
+                }
+            	if (state.getLatestRecord().getValue().asBoolean()) {
+            		logger.info("Heat pump source inlet temperatur {} > 20°C. Switching heating rod off", String.format("%.1f", record.getValue().asDouble()));
+                    writeState(false);
+            	} 
             }
         });
 
@@ -80,8 +86,14 @@ public class HeatingRodController {
                 return;
             }
             if (record.getValue().asDouble() <= minTemp) {
-                logger.info("Heat pump source outlet temperatur {} < 10°C, switching heating rod on", String.format("%.1f", record.getValue().asDouble()));
-                writeState(true);
+            	if (state.getLatestRecord().getFlag() != Flag.VALID) {
+                    logger.warn("Source pump channel invalid flag: {}", state.getLatestRecord().getFlag());
+                    return;
+                }
+            	if (!state.getLatestRecord().getValue().asBoolean()) {
+            		logger.info("Heat pump source inlet temperatur {} < 10°C. Switching heating rod on", String.format("%.1f", record.getValue().asDouble()));
+                    writeState(true);
+            	} 
             }
         });
 
