@@ -98,12 +98,6 @@ public class MqttConnection {
                     .payload(settings.getLastWillPayload())
                     .applyWillPublish();
         }
-        if (settings.getUsername() != null) {
-            connectBuilder.simpleAuth()
-                    .username(settings.getUsername())
-                    .password(settings.getPassword().getBytes())
-                    .applySimpleAuth();
-        }
         return connectBuilder.build();
     }
 
@@ -183,6 +177,13 @@ public class MqttConnection {
 	                .applyAutomaticReconnect()
                 .serverHost(settings.getHost())
                 .serverPort(settings.getPort());
+
+        if (settings.getUsername() != null) {
+        	clientBuilder.simpleAuth()
+                    .username(settings.getUsername())
+                    .password(settings.getPassword().getBytes())
+                    .applySimpleAuth();
+        }
         if (settings.isSsl() && sslManager != null) {
             clientBuilder.sslConfig(getSslConfig());
         }
