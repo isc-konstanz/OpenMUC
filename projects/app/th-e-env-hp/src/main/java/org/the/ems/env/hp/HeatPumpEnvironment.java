@@ -20,33 +20,67 @@
  */
 package org.the.ems.env.hp;
 
+import java.util.Dictionary;
+
 import org.openmuc.framework.dataaccess.DataAccessService;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
+import org.openmuc.framework.lib.osgi.config.DictionaryPreprocessor;
+import org.openmuc.framework.lib.osgi.config.ServicePropertyException;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.the.ems.env.hp.htr.HeatingRodController;
+import org.the.ems.env.hp.hr.HeatingRodController;
 
-@Component(immediate = true, service = HeatPumpEnvironmentService.class)
-public final class HeatPumpEnvironment implements HeatPumpEnvironmentService {
+public final class HeatPumpEnvironment implements HeatPumpEnvironmentService, ManagedService {
     private static final Logger logger = LoggerFactory.getLogger(HeatPumpEnvironment.class);
 
-    HeatingRodController heatingRod;
+    private final HeatPumpEnvironmentSettings settings;
+    private final HeatPumpEnvironmentProperties properties;
 
-    @Reference
-    private DataAccessService dataAccessService;
+    private HeatingRodController heatingRod;
 
-    @Activate
-    private void activate() {
-        logger.info("Activating TH-E Environment: Heat Pump");
-        heatingRod = new HeatingRodController(dataAccessService);
+    HeatPumpEnvironment(DataAccessService dataAccessService) {
+        settings = new HeatPumpEnvironmentSettings();
+        properties = new HeatPumpEnvironmentProperties(settings, dataAccessService);
+	}
+
+    protected void activate() {
+    	heatingRod = new HeatingRodController(properties);
     }
 
-    @Deactivate
-    private void deactivate() {
-        logger.info("Deactivating TH-E Environment: Heat Pump");
+    protected void deactivate() {
+    	if (heatingRod != null) {
+    		heatingRod.shutdown();
+        	heatingRod = null;
+    	}
+    }
+
+    @Override
+    public void updated(Dictionary<String, ?> propertyDict) throws ConfigurationException {
+        DictionaryPreprocessor dictionary = new DictionaryPreprocessor(propertyDict);
+        if (!dictionary.wasIntermediateOsgiInitCall()) {
+            updateConfiguration(dictionary);
+        }
+    }
+
+    private void updateConfiguration(DictionaryPreprocessor dictionary) {
+        try {
+        	properties.processConfig(dictionary);
+            if (properties.configChanged() || properties.isDefaultConfig()) {
+            	applyConfiguration();
+            }
+        } catch (ServicePropertyException e) {
+            logger.error("Update properties failed", e);
+            deactivate();
+        }
+    }
+
+    private void applyConfiguration() {
+        logger.info("Heat pump environment configuration updated: {}", properties.toString());
+        if (heatingRod != null) {
+        	deactivate();
+        }
+        activate();
     }
 
 }

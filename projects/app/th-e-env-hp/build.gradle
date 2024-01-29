@@ -5,6 +5,8 @@ project.ext {
 
 dependencies {
     api project(':openmuc-core-api')
+    api project(':openmuc-lib-osgi')
+    api group: 'org.osgi', name: 'org.osgi.service.cm', version: '1.6.0'
 }
 
 jar {
