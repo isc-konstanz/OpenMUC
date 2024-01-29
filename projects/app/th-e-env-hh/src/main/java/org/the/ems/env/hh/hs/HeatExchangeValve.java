@@ -17,8 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.the.ems.env.hh.src;
+package org.the.ems.env.hh.hs;
 
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
@@ -26,15 +25,11 @@ import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.DataAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.the.ems.env.hh.HeatSink;
-import org.the.ems.env.hh.flow.Flow;
-import org.the.ems.env.hh.vlv.Valve;
+import org.the.ems.env.hh.Flow;
+import org.the.ems.env.hh.Valve;
 
-public class HeatPumpSource implements HeatSink{
-
-    private Valve valve;
-    Flow flow;
-    Flow flowBrine;
+public class HeatExchangeValve implements HeatSink {
+    private static final Logger logger = LoggerFactory.getLogger(HeatExchangeValve.class);
 
     private static final String ID_ROTATE_COUNTER_CLOCKWISE = "hp_source_valve_rot_ccw_state";
     private static final String ID_ROTATE_CLOCKWISE = "hp_source_valve_rot_cw_state";
@@ -48,28 +43,22 @@ public class HeatPumpSource implements HeatSink{
     private static final String ID_POWER_HEATEXCHANGER="hh_flow_hp_source_power";
     private static final String ID_ENERGY_HEATEXCHANGER = "hh_flow_hp_source_energy";
     
-    private static final String ID_TEMP_HEATPUMP_INLET = "hp_source_temp_in";
-    private static final String ID_TEMP_HEATPUMP_OUTLET = "hp_source_temp_out";
-    private static final String ID_TEMP_HEATPUMP_BRINE_DELTA="hp_source_temp_delta";
-    
-    private static final String ID_POWER_HEATPUMP_BRINE = "hp_source_power";
-    private static final String ID_ENERGY_HEATPUMP_BRINE = "hp_source_energy";
-    private static final String ID_FLOW_RATE_HEATPUMP_BRINE = "hp_source_flow_rate";
-    
     private static final String ID_BRINE_PUMP = "hp_source_pump_state";
 
     // Duration for full Rotation of Valve [ms]
     private int rotateDuration = 210*1000;
 
-    private double lastSetpoint = 0;
-    private double maxPower = 2500;
-    private double calcAngle = 0;
+    private double setpoint = 0;
+    private double powerMax = 2500;
 
-    private static final Logger logger = LoggerFactory.getLogger(HeatPumpSource.class);
-    
+    private Valve valve;
+    private double valveAngle = 0;
+
+    private Flow flow;
+
     private Channel brinePumpState;
 
-    public HeatPumpSource(DataAccessService dataAccessService) {
+    public HeatExchangeValve(DataAccessService dataAccessService) {
 
         valve = new Valve(rotateDuration,
                 dataAccessService.getChannel(ID_ROTATE_COUNTER_CLOCKWISE),
@@ -83,19 +72,12 @@ public class HeatPumpSource implements HeatSink{
                 dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_OUT),
                 dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_DELTA),
                 dataAccessService.getChannel(ID_ENERGY_HEATEXCHANGER));
-
-        flowBrine = new Flow(dataAccessService.getChannel(ID_FLOW_RATE_HEATPUMP_BRINE),
-                dataAccessService.getChannel(ID_POWER_HEATPUMP_BRINE),
-                dataAccessService.getChannel(ID_TEMP_HEATPUMP_INLET),
-                dataAccessService.getChannel(ID_TEMP_HEATPUMP_OUTLET),
-                dataAccessService.getChannel(ID_TEMP_HEATPUMP_BRINE_DELTA),
-                dataAccessService.getChannel(ID_ENERGY_HEATPUMP_BRINE));
         
         brinePumpState = dataAccessService.getChannel(ID_BRINE_PUMP);
     }
-    
+
     @Override
-    public void setSetPoint(double thPowerSetpoint) {
+    public void set(double setpoint) {
         if (valve.getPositionAngle().getFlag() != Flag.VALID) {
             logger.warn("Valve angle position invalid flag: {}", valve.getPositionAngle().getFlag());
             return;
@@ -105,31 +87,41 @@ public class HeatPumpSource implements HeatSink{
             return;
         }
         
-        if (thPowerSetpoint < 300 || !brinePumpState.getLatestRecord().getValue().asBoolean() ) {
+        if (setpoint < 300 || !brinePumpState.getLatestRecord().getValue().asBoolean() ) {
         	valve.set(new DoubleValue(0));
         }
         
-        if (Math.abs(thPowerSetpoint - lastSetpoint) > 300 && brinePumpState.getLatestRecord().getValue().asBoolean()) {
-            calcAngle = thPowerSetpoint/maxPower * 90;
-            if (calcAngle > 90) {
-            	calcAngle = 90;
+        if (Math.abs(setpoint - setpoint) > 300 && brinePumpState.getLatestRecord().getValue().asBoolean()) {
+            valveAngle = setpoint/powerMax * 90;
+            if (valveAngle > 90) {
+            	valveAngle = 90;
             }
-            valve.set(new DoubleValue(calcAngle));
+            valve.set(new DoubleValue(valveAngle));
         }
-        lastSetpoint = thPowerSetpoint; 
+        this.setpoint = setpoint; 
     }
 
 	@Override
+	public double getSetpoint() {
+		return setpoint;
+	}
+
+	@Override
 	public double getPower() {
-		if (calcAngle < 10) {
+		if (valveAngle < 10) {
 			return 250;
 		}
-		if (calcAngle < 60 && calcAngle > 10) {
+		if (valveAngle < 60 && valveAngle > 10) {
 			return 1500;
 		}
-		if (calcAngle > 60) {
+		if (valveAngle > 60) {
 			return 2500;
 		}
 		return flow.getAveragePower();
+	}
+
+	@Override
+	public double getPowerMax() {
+		return powerMax;
 	}
 }

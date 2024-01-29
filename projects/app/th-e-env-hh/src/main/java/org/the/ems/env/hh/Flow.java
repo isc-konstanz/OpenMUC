@@ -18,11 +18,11 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.the.ems.env.hh.flow;
+package org.the.ems.env.hh;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.the.ems.env.hh.RecordAverageListener;
+
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class Flow{
+public class Flow {
 
     public enum FlowTemperature {
         IN,

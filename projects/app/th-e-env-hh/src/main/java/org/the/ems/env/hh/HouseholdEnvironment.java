@@ -20,6 +20,8 @@
  */
 package org.the.ems.env.hh;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,33 +33,32 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.the.ems.env.hh.fan.Fan;
-import org.the.ems.env.hh.pump.Pump;
-import org.the.ems.env.hh.src.HeatPumpSource;
+import org.the.ems.env.hh.hs.CirculationPump;
+import org.the.ems.env.hh.hs.HeatExchangeValve;
+import org.the.ems.env.hh.hs.HeatSink;
+import org.the.ems.env.hh.hs.HeatExchangePulse;
 
 @Component(immediate = true, service = {})
 public final class HouseholdEnvironment {
-
     private static final Logger logger = LoggerFactory.getLogger(HouseholdEnvironment.class);
 
     private static final String ID_TH_POWER_SETPOINT = "hh_th_power";
     private static final String ID_TH_POWER = "hh_flow_power";
 
     private static final int SECONDS_PER_INTERVAL = 60*3;
-
     private final int interval = SECONDS_PER_INTERVAL*1000;
 
-    private Channel thPowerSetpoint;
-    private Channel thPower;
+    private Channel powerSetpoint;
+    private Channel power;
 
-    private Fan fan;
-    private Pump pump;
-    private HeatPumpSource heatPumpSource;
+    private List<HeatSink> heatSinks = new ArrayList<HeatSink>();
+
     private Timer updateTimer;
-    private Controller controlerFan = new Controller(0.8, 0.2, 0.125, 4000, 0);
 
-    RecordAverageListener thPowerSetpointListener;
-    RecordAverageListener thPowerListener;
+    private Controller powerSetpointController = new Controller(0.8, 0.2, 0.125, 4000, 0);
+
+    private RecordAverageListener powerSetpointListener;
+    private RecordAverageListener powerListener;
 
     @Reference
     private DataAccessService dataAccessService;
@@ -65,11 +66,18 @@ public final class HouseholdEnvironment {
     @Activate
     private void activate() {
         logger.info("Activating TH-E Environment: Household");
-        fan = new Fan(dataAccessService);
-        pump = new Pump(dataAccessService);
-        heatPumpSource = new HeatPumpSource(dataAccessService);
-        initializeChannels();
-        applyChannelListener();
+        heatSinks.add(new CirculationPump(dataAccessService));
+        heatSinks.add(new HeatExchangeValve(dataAccessService));
+        heatSinks.add(new HeatExchangePulse(dataAccessService));
+
+        powerSetpointListener = new RecordAverageListener(interval);
+        powerSetpoint = dataAccessService.getChannel(ID_TH_POWER_SETPOINT);
+        powerSetpoint.addListener(powerSetpointListener);
+
+        powerListener = new RecordAverageListener(interval);
+        power = dataAccessService.getChannel(ID_TH_POWER);
+        power.addListener(powerListener);
+        
         initializeUpdateTimer();
     }
 
@@ -81,26 +89,12 @@ public final class HouseholdEnvironment {
             updateTimer.purge();
             updateTimer = null;
         }
+        powerSetpoint.removeListener(powerSetpointListener);
+        power.removeListener(powerListener);
     }
 
-    private void initializeChannels() {
-        logger.info("Initializing Channels");
-        thPowerSetpoint = dataAccessService.getChannel(ID_TH_POWER_SETPOINT);
-        thPower = dataAccessService.getChannel(ID_TH_POWER);
-    }
-
-    private void applyChannelListener() {
-        logger.info("Applying Channel Listener");
-        thPowerSetpointListener = new RecordAverageListener(interval);
-        thPowerSetpoint.addListener(thPowerSetpointListener);
-
-        thPowerListener = new RecordAverageListener(interval);
-        thPower.addListener(thPowerListener);
-    }
-  
     private void initializeUpdateTimer() {
-        logger.info("Initializing Timer");
-        controlerFan.reset();
+        powerSetpointController.reset();
         updateTimer = new Timer("TH-E Environment: Household control timer");
         TimerTask task = new TimerTask() {
             @Override
@@ -112,11 +106,18 @@ public final class HouseholdEnvironment {
     }
 
     public void setThermalSetpoint() {
-        Double controledSetpoint  = controlerFan.process(interval/(1000*60*3), thPowerSetpointListener.getMean(),
-        		thPowerListener.getMean());
-        logger.info("Controled Setpoint :{}",controledSetpoint);
-        pump.setSetPoint(controledSetpoint);
-        heatPumpSource.setSetPoint(controledSetpoint- pump.getPower());
-        fan.setSetPoint(controledSetpoint- pump.getPower()- heatPumpSource.getPower());
-    }   
+        double setpoint  = powerSetpointController.process(interval/(1000*60*3), 
+        		powerSetpointListener.getMean(),
+        		powerListener.getMean());
+        
+        for (HeatSink heatSink : heatSinks) {
+        	heatSink.set(setpoint);
+        	if (setpoint > 0) {
+            	setpoint -= heatSink.getPower();
+            	if (setpoint < 0) {
+            		setpoint = 0;
+            	}
+        	}
+        }
+    }
 }
