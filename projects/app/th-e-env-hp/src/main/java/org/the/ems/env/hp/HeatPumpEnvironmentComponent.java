@@ -31,12 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(immediate = true)
-public final class HeatPumpEnvironmentComponent implements HeatPumpEnvironmentService {
-    private static final Logger logger = LoggerFactory.getLogger(HeatPumpEnvironmentComponent.class);
-
-    private RegistrationHandler registrationHandler;
+public final class HeatPumpEnvironmentComponent {
+    private static final Logger logger = LoggerFactory.getLogger(HeatPumpEnvironment.class);
 
     private HeatPumpEnvironment heatPumpEnv;
+
+    private RegistrationHandler registrationHandler;
 
     @Reference
     private DataAccessService dataAccessService;
