@@ -1,5 +1,5 @@
 project.ext {
-    cfgVersion = "0.20.4"
+    cfgVersion = "0.20.5"
 
     cfgGroup = "org.openmuc.framework"
 
@@ -41,6 +41,7 @@ project.ext {
                 it.getPath() == ":openmuc-driver" ||
                 it.getPath() == ":openmuc-driver-aggregator" ||
                 it.getPath() == ":openmuc-driver-amqp" ||
+                it.getPath() == ":openmuc-driver-clipper" ||
                 it.getPath() == ":openmuc-driver-csv" ||
                 it.getPath() == ":openmuc-driver-derivator" ||
                 it.getPath() == ":openmuc-driver-dlms" ||

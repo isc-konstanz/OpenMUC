@@ -23,6 +23,7 @@ package org.openmuc.framework.driver.csv.test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -36,25 +37,19 @@ import org.openmuc.framework.driver.csv.test.utils.CsvTestFile;
 public class CsvTimeChannelUnixtimestampTest {
 
     static List<String> data;
-    static long[] timestamps;
+    static List<Long> timestamps;
     static String value;
     private static final long OFFSET = 1436306400000l;
 
     @BeforeAll
     public static void initTestClass() {
-        data = new ArrayList<>();
-        data.add("0.0");
-        data.add("5.0");
-        data.add("10.0");
-        data.add("15.0");
-        data.add("20.0");
-
-        timestamps = new long[] { //
+        data = new ArrayList<String>(Arrays.asList("0.0", "5.0", "10.0", "15.0", "20.0"));
+        timestamps = new ArrayList<Long>(Arrays.asList(
                 OFFSET /* ........= 20150708 000000 */, //
                 1436306405000l /* = 20150708 000005 */, //
                 1436306410000l /* = 20150708 000010 */, //
                 1436306415000l /* = 20150708 000015 */, //
-                1436306420000l /* = 20150708 000020 */ };
+                1436306420000l /* = 20150708 000020 */ ));
     }
 
     @Test

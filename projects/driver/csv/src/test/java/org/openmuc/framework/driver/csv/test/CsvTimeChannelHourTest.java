@@ -23,6 +23,7 @@ package org.openmuc.framework.driver.csv.test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -39,22 +40,15 @@ import org.openmuc.framework.driver.csv.test.utils.CsvTestFile;
 public class CsvTimeChannelHourTest {
 
     static List<String> data;
-    static long[] timestamps;
+    static List<Long> timestamps;
     static String value;
 
     @BeforeAll
     public static void initTestClass() {
 
         // create test data. first data entry corresponds to first timestamps entry
-        data = new ArrayList<>();
-        data.add("0.0");
-        data.add("5.0");
-        data.add("10.0");
-        data.add("15.0");
-        data.add("20.0");
-
-        timestamps = new long[] { 100000, 100005, 100010, 100015, 100020 };
-
+        data = new ArrayList<String>(Arrays.asList("0.0", "5.0", "10.0", "15.0", "20.0"));
+        timestamps = new ArrayList<Long>(Arrays.asList(100000l, 100005l, 100010l, 100015l, 100020l));
     }
 
     @Test

@@ -244,7 +244,8 @@ public class MqttWriter {
         logger.info("[{}] {}", pid, message);
     }
 
-    private void debug(String message, Object... args) {
+    @SuppressWarnings("unused")
+	private void debug(String message, Object... args) {
         message = MessageFormatter.arrayFormat(message, args).getMessage();
         logger.debug("[{}] {}", pid, message);
     }
@@ -254,6 +255,7 @@ public class MqttWriter {
         logger.warn("[{}] {}", pid, message);
     }
 
+    @SuppressWarnings("unused")
     private void error(String message, Object... args) {
         message = MessageFormatter.arrayFormat(message, args).getMessage();
         logger.error("[{}] {}", pid, message);

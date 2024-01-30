@@ -29,6 +29,8 @@ import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.config.DriverInfo;
 import org.openmuc.framework.config.ScanException;
 import org.openmuc.framework.config.ScanInterruptedException;
+import org.openmuc.framework.config.option.DriverOptionsFactory;
+import org.openmuc.framework.driver.mqtt.MqttDriverSettings.MqttChannelAddress;
 import org.openmuc.framework.driver.spi.Connection;
 import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.DriverDeviceScanListener;
@@ -53,6 +55,21 @@ public class MqttDriver implements DriverService {
     private BundleContext context;
     private MqttDriverConnection connection;
 
+    private static final String ID = "mqtt";
+    private static final String NAME = "MQTT";
+    private static final String DESCRIPTION = "Driver to read from / write to mqtt queue";
+
+    private static final DriverInfo info = DriverOptionsFactory.getInfo(ID)
+            .setName(NAME)
+            .setDescription(DESCRIPTION)
+            .setDevice(MqttDriverSettings.class)
+            .setChannel(MqttChannelAddress.class);
+
+    @Override
+    public DriverInfo getInfo() {
+        return info;
+    }
+
     @Activate
     public void activate(BundleContext context) {
         this.context = context;
@@ -63,21 +80,6 @@ public class MqttDriver implements DriverService {
         if (connection != null) {
             connection.disconnect();
         }
-    }
-
-    @Override
-    public DriverInfo getInfo() {
-        final String ID = "mqtt";
-        final String DESCRIPTION = "Driver to read from / write to mqtt queue";
-        final String DEVICE_ADDRESS = "mqtt host e.g. localhost, 192.168.8.4, ...";
-        final String DEVICE_SETTINGS = "port=<port>;user=<user>;password=<pw>;"
-                + "framework=<framework_name>;parser=<parser_name>[;lastWillTopic=<topic>;lastWillPayload=<payload>]"
-                + "[;lastWillAlways=<boolean>][;firstWillTopic=<topic>;firstWillPayload=<payload>]"
-                + "[;buffersize=<buffersize>][;ssl=<true/false>]";
-        final String CHANNEL_ADDRESS = "<channel>";
-        final String DEVICE_SCAN_SETTINGS = "device scan not supported";
-
-        return new DriverInfo(ID, DESCRIPTION, DEVICE_ADDRESS, DEVICE_SETTINGS, CHANNEL_ADDRESS, DEVICE_SCAN_SETTINGS);
     }
 
     @Override
