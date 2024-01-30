@@ -98,12 +98,6 @@ public class MqttConnection {
                     .payload(settings.getLastWillPayload())
                     .applyWillPublish();
         }
-        if (settings.getUsername() != null) {
-            connectBuilder.simpleAuth()
-                    .username(settings.getUsername())
-                    .password(settings.getPassword().getBytes())
-                    .applySimpleAuth();
-        }
         return connectBuilder.build();
     }
 
@@ -178,11 +172,18 @@ public class MqttConnection {
         Mqtt3ClientBuilder clientBuilder = Mqtt3Client.builder()
                 .identifier(UUID.randomUUID().toString())
                 .automaticReconnect()
-                .initialDelay(settings.getConnectionRetryInterval(), TimeUnit.SECONDS)
-                .maxDelay(settings.getConnectionRetryInterval(), TimeUnit.SECONDS)
-                .applyAutomaticReconnect()
+	                .initialDelay(settings.getConnectionRetryInterval(), TimeUnit.SECONDS)
+	                .maxDelay(settings.getConnectionRetryInterval(), TimeUnit.SECONDS)
+	                .applyAutomaticReconnect()
                 .serverHost(settings.getHost())
                 .serverPort(settings.getPort());
+
+        if (settings.getUsername() != null) {
+        	clientBuilder.simpleAuth()
+                    .username(settings.getUsername())
+                    .password(settings.getPassword().getBytes())
+                    .applySimpleAuth();
+        }
         if (settings.isSsl() && sslManager != null) {
             clientBuilder.sslConfig(getSslConfig());
         }

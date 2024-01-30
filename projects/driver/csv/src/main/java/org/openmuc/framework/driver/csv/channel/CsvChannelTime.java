@@ -22,6 +22,7 @@ package org.openmuc.framework.driver.csv.channel;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
 import org.openmuc.framework.driver.csv.exceptions.CsvException;
@@ -36,29 +37,34 @@ public abstract class CsvChannelTime extends CsvChannel {
 
     protected boolean isInitialised = false;
 
-    protected long[] timestamps;
+    protected List<Long> timestamps;
     protected long firstTimestamp;
     protected long lastTimestamp;
 
     public CsvChannelTime(String column, Map<String, List<String>> csv, boolean rewind) 
             throws ArgumentSyntaxException {
         super(column, csv, rewind);
+        Supplier<ArgumentSyntaxException> e = () -> new ArgumentSyntaxException("Index column invalid");
         
         timestamps = parseIndex(csv);
-        firstTimestamp = timestamps[0];
-        lastTimestamp = timestamps[timestamps.length - 1];
+        firstTimestamp = timestamps.stream().mapToLong(i -> i).min().orElseThrow(e);
+        lastTimestamp = timestamps.stream().mapToLong(i -> i).max().orElseThrow(e);
+        
+        logger.info("Read index for column \"{}\" of {} values from {} to {}", 
+        		column, timestamps.size(), firstTimestamp, lastTimestamp);
     }
 
-    protected CsvChannelTime(String column, long[] index, Map<String, List<String>> csv, boolean rewind) 
+    protected CsvChannelTime(String column, List<Long> index, Map<String, List<String>> csv, boolean rewind) 
             throws ArgumentSyntaxException {
         super(column, csv, rewind);
+        Supplier<ArgumentSyntaxException> e = () -> new ArgumentSyntaxException("Index column invalid");
         
-        this.timestamps = index;
-        firstTimestamp = index[0];
-        lastTimestamp = index[index.length - 1];
+        timestamps = index;
+        firstTimestamp = index.stream().mapToLong(i -> i).min().orElseThrow(e);
+        lastTimestamp = index.stream().mapToLong(i -> i).max().orElseThrow(e);
     }
 
-    protected abstract long[] parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException;
+    protected abstract List<Long> parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException;
 
     protected int searchNextIndex(long samplingTime) throws CsvException {
         int index;
@@ -89,13 +95,22 @@ public abstract class CsvChannelTime extends CsvChannel {
     }
 
     private int handleBeforeLastReadIndex(long samplingTime) throws CsvException {
-        if (rewind) {
+    	long lastTimeRead = timestamps.get(lastIndexRead);
+        if (lastIndexRead < timestamps.lastIndexOf(lastTimeRead)) {
+            logger.info(
+            		"Current sampling time is behind maximum available timestamp of csv file. " +
+            		"Skipping forward to next day.");
+        	advanceIndex();
+            return getIndexByRegularSearch(samplingTime);
+        }
+        else if (rewind) {
             rewindIndex();
             return getIndexByRegularSearch(samplingTime);
         }
         else { // rewind disabled
             throw new TimeTravelException(
-                    "Current sampling time is before the last sampling time. Since rewind is disabled, driver can't get value for current sampling time.");
+                    "Current sampling time is before the last sampling time. " +
+                    "Since rewind is disabled, driver can't get value for current sampling time.");
         }
     }
 
@@ -105,7 +120,14 @@ public abstract class CsvChannelTime extends CsvChannel {
         }
         else { // is after last timestamp
             logger.warn(
-                    "Current sampling time is behind last available timestamp of csv file. Returning value corresponding to last timestamp in file.");
+            		"Current sampling time is behind last available timestamp of csv file." +
+            		"Returning value corresponding to last timestamp of day.");
+            
+        	long lastTimeRead = timestamps.get(lastIndexRead);
+            if (lastIndexRead < timestamps.lastIndexOf(lastTimeRead)) {
+            	advanceIndex();
+            	return lastIndexRead;
+            }
             return maxIndex;
         }
     }
@@ -115,20 +137,19 @@ public abstract class CsvChannelTime extends CsvChannel {
      * will normally increase with each read called*
      */
     private int getIndexByRegularSearch(long samplingTime) {
-
-        long nextTimestamp;
+        logger.trace("Searching next index for time: {}", samplingTime);
+    	int lastIndex = lastIndexRead;
         int nextIndex;
-
         do {
-            nextIndex = lastIndexRead + 1;
+            nextIndex = lastIndex + 1;
             if (nextIndex > maxIndex) {
                 return maxIndex;
             }
-            nextTimestamp = timestamps[nextIndex];
-            lastIndexRead = nextIndex;
-        } while (samplingTime > nextTimestamp);
+            lastIndex = nextIndex;
+            
+        } while (isBehindIndex(nextIndex, samplingTime));
 
-        if (samplingTime == nextTimestamp) {
+        if (samplingTime == timestamps.get(nextIndex)) {
             return nextIndex;
         }
         else {
@@ -137,26 +158,43 @@ public abstract class CsvChannelTime extends CsvChannel {
 
     }
 
-    private boolean isBeforeLastReadIndex(long samplingTime) {
-        if (samplingTime < timestamps[lastIndexRead]) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    private void advanceIndex() {
+    	long lastTime;
+        int nextIndex;
+        do {
+        	lastTime = timestamps.get(lastIndexRead);
+            nextIndex = lastIndexRead + 1;
+            if (lastTime < timestamps.get(nextIndex)) {
+                return;
+            }
+            lastIndexRead = nextIndex;
+        } while (lastIndexRead < maxIndex);
     }
 
     private void rewindIndex() {
         lastIndexRead = 0;
     }
 
-    private boolean isBehindLastReadIndex(long samplingTime) {
-        if (samplingTime > timestamps[lastIndexRead]) {
+    private boolean isBeforeLastReadIndex(long samplingTime) {
+    	long lastTimeRead = timestamps.get(lastIndexRead);
+        if (samplingTime < lastTimeRead) {
             return true;
         }
         else {
             return false;
         }
+    }
+
+    private boolean isBehindLastReadIndex(long samplingTime) {
+    	return this.isBehindIndex(lastIndexRead, samplingTime);
+    }
+
+    private boolean isBehindIndex(int index, long samplingTime) {
+    	long time = timestamps.get(index);
+        if (samplingTime > time) {
+            return true;
+        }
+        return false;
     }
 
     private int handleOutsideTimeperiodEarly(long samplingTime) throws CsvException {
@@ -179,7 +217,6 @@ public abstract class CsvChannelTime extends CsvChannel {
     }
 
     private boolean isBeforeFirstTimestamp(long samplingTime) {
-
         if (samplingTime < firstTimestamp) {
             return true;
         }

@@ -57,7 +57,7 @@ public class CsvTestFile extends CsvFile {
         configure(settings);
     }
 
-    public static CsvChannelUnixtimestamp newChannelUnixtimestamp(List<String> data, long[] timestamps, boolean rewind) {
+    public static CsvChannelUnixtimestamp newChannelUnixtimestamp(List<String> data, List<Long> timestamps, boolean rewind) {
         try {
             return new CsvChannelUnixtimestamp("test", timestamps, Collections.singletonMap("test", data), rewind);
         
@@ -66,7 +66,7 @@ public class CsvTestFile extends CsvFile {
         }
     }
 
-    public static CsvChannelHHMMSS newChannelHHMMSS(List<String> data, long[] timestamps, boolean rewind) {
+    public static CsvChannelHHMMSS newChannelHHMMSS(List<String> data, List<Long> timestamps, boolean rewind) {
         try {
             return new CsvChannelHHMMSS("test", timestamps, Collections.singletonMap("test", data), rewind);
         

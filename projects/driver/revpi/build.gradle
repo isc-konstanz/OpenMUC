@@ -1,0 +1,40 @@
+project.ext {
+    projectName = "OpenMUC Driver - Revolution Pi Digital IO"
+    projectDescription = "Revolution Pi Digital IO driver for the OpenMUC framework."
+}
+
+configurations.create('embed')
+
+dependencies {
+    implementation project(':openmuc-driver')
+
+    implementation fileTree(dir: 'lib/', include: ['*.jar'])
+    embed          fileTree(dir: 'lib/', include: ['*.jar'])
+}
+
+def embed = configurations.embed.findAll {
+    it.getName().matches(".*(revpi).*")
+}
+
+jar {
+    bnd('Bundle-Name':        projectName,
+        'Bundle-Description': projectDescription,
+        'Bundle-ClassPath':   '.,' + embed.collect { 'lib/'+it.getName() }.join(','),
+        'Import-Package':     '!org.clehne.revpi.*,' +
+                              '*'+jarDefaultImportPackageVersion)
+
+    into('lib') {
+        from embed
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
+}

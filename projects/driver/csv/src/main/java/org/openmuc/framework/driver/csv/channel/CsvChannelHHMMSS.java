@@ -20,6 +20,8 @@
  */
 package org.openmuc.framework.driver.csv.channel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -39,20 +41,20 @@ public class CsvChannelHHMMSS extends CsvChannelTime {
         super(column, csv, rewind);
     }
 
-    public CsvChannelHHMMSS(String column, long[] index, Map<String, List<String>> csv, boolean rewind) 
+    public CsvChannelHHMMSS(String column, List<Long> index, Map<String, List<String>> csv, boolean rewind) 
             throws ArgumentSyntaxException {
         super(column, index, csv, rewind);
     }
 
     @Override
-    protected long[] parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException {
+    protected List<Long> parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException {
         List<String> hoursList = csv.get(INDEX);
-        
-        long[] hours = new long[hoursList.size()];
+
+        Long[] hours = new Long[hoursList.size()];
         for (int i = 0; i < hoursList.size(); i++) {
             hours[i] = Long.parseLong(hoursList.get(i));
         }
-        return hours;
+        return new ArrayList<Long>(Arrays.asList(hours));
     }
 
     @Override

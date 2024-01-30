@@ -141,6 +141,7 @@ public class MqttReader {
         logger.info("[{}] {}", pid, message);
     }
 
+    @SuppressWarnings("unused")
     private void debug(String message, Object... args) {
         message = MessageFormatter.arrayFormat(message, args).getMessage();
         logger.debug("[{}] {}", pid, message);
