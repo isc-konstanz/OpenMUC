@@ -58,8 +58,8 @@ public class HeatPumpEnvironmentProperties extends PropertyHandler {
     	return dataAccessService.getChannel(getString(HeatPumpEnvironmentSettings.HEAT_PUMP_TEMP_OUTLET));
     }
 
-    public Channel getHeatPumpCircPumpStateChannel() {
-    	return dataAccessService.getChannel(getString(HeatPumpEnvironmentSettings.HEAT_PUMP_CIRC_PUMP_STATE));
+    public Channel getHeatPumpSourcePumpStateChannel() {
+    	return dataAccessService.getChannel(getString(HeatPumpEnvironmentSettings.HEAT_PUMP_SOURCE_PUMP_STATE));
     }
 
 }

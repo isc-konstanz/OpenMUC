@@ -22,58 +22,42 @@ package org.the.ems.env.hh.hs;
 import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.dataaccess.Channel;
-import org.openmuc.framework.dataaccess.DataAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.the.ems.env.hh.Flow;
+import org.the.ems.env.hh.HouseholdEnvironmentProperties;
 import org.the.ems.env.hh.Valve;
 
 public class HeatExchangeValve implements HeatSink {
     private static final Logger logger = LoggerFactory.getLogger(HeatExchangeValve.class);
 
-    private static final String ID_ROTATE_COUNTER_CLOCKWISE = "hp_source_valve_rot_ccw_state";
-    private static final String ID_ROTATE_CLOCKWISE = "hp_source_valve_rot_cw_state";
-    private static final String ID_POSITION_ANGLE_SETPOINT = "hp_source_rotate_angle_setpoint";
-    private static final String ID_POSITION_ANGLE = "hp_source_rotate_angle";
+    private final double powerMax;
+    private double powerSetpoint = 0;
 
-    private static final String ID_TEMP_HEATEXCHANGER_IN ="hh_flow_tes_out_temp";
-    private static final String ID_TEMP_HEATEXCHANGER_OUT ="hh_flow_fan_in_temp";
-    private static final String ID_TEMP_HEATEXCHANGER_DELTA="hh_flow_hp_source_delta_temp";
-    private static final String ID_FLOW_VOLUM="hh_flow_rate";
-    private static final String ID_POWER_HEATEXCHANGER="hh_flow_hp_source_power";
-    private static final String ID_ENERGY_HEATEXCHANGER = "hh_flow_hp_source_energy";
-    
-    private static final String ID_BRINE_PUMP = "hp_source_pump_state";
+    private final Flow flow;
 
-    // Duration for full Rotation of Valve [ms]
-    private int rotateDuration = 210*1000;
-
-    private double setpoint = 0;
-    private double powerMax = 2500;
-
-    private Valve valve;
+    private final Valve valve;
     private double valveAngle = 0;
 
-    private Flow flow;
+    private Channel pumpState;
 
-    private Channel brinePumpState;
+    public HeatExchangeValve(HouseholdEnvironmentProperties properties) {
+        valve = new Valve(properties.getThreeWayValveRotationDuration(),
+        		properties.getThreeWayValveCounterClockwiseRotationStateChannel(),
+        		properties.getThreeWayValveClockwiseRotationStateChannel(),
+        		properties.getThreeWayValveAngleSetpointChannel(),
+        		properties.getThreeWayValveAngleChannel());
 
-    public HeatExchangeValve(DataAccessService dataAccessService) {
+        flow = new Flow(properties.getFlowRate(),
+        		properties.getThreeWayValveHexTempInChannel(),
+        		properties.getThreeWayValveHexTempOutChannel(),
+        		properties.getThreeWayValveHexTempDeltaChannel(),
+        		properties.getThreeWayValveHexPowerChannel(),
+        		properties.getThreeWayValveHexEnergyChannel());
 
-        valve = new Valve(rotateDuration,
-                dataAccessService.getChannel(ID_ROTATE_COUNTER_CLOCKWISE),
-                dataAccessService.getChannel(ID_ROTATE_CLOCKWISE),
-                dataAccessService.getChannel(ID_POSITION_ANGLE_SETPOINT),
-                dataAccessService.getChannel(ID_POSITION_ANGLE));
+		powerMax = properties.getThreeWayValvePowerMax();
 
-        flow = new Flow(dataAccessService.getChannel(ID_FLOW_VOLUM),
-                dataAccessService.getChannel(ID_POWER_HEATEXCHANGER),
-                dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_IN),
-                dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_OUT),
-                dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_DELTA),
-                dataAccessService.getChannel(ID_ENERGY_HEATEXCHANGER));
-        
-        brinePumpState = dataAccessService.getChannel(ID_BRINE_PUMP);
+        pumpState = properties.getHeatPumpSourcePumpStateChannel();
     }
 
     @Override
@@ -82,28 +66,28 @@ public class HeatExchangeValve implements HeatSink {
             logger.warn("Valve angle position invalid flag: {}", valve.getPositionAngle().getFlag());
             return;
         }
-        if (brinePumpState.getLatestRecord().getFlag() != Flag.VALID) {
-        	logger.warn("BrinePump Invalid Flag: {}", brinePumpState.getLatestRecord().getFlag());
+        if (pumpState.getLatestRecord().getFlag() != Flag.VALID) {
+        	logger.warn("BrinePump Invalid Flag: {}", pumpState.getLatestRecord().getFlag());
             return;
         }
         
-        if (setpoint < 300 || !brinePumpState.getLatestRecord().getValue().asBoolean() ) {
+        if (setpoint < 300 || !pumpState.getLatestRecord().getValue().asBoolean() ) {
         	valve.set(new DoubleValue(0));
         }
         
-        if (Math.abs(setpoint - setpoint) > 300 && brinePumpState.getLatestRecord().getValue().asBoolean()) {
+        if (Math.abs(setpoint - setpoint) > 300 && pumpState.getLatestRecord().getValue().asBoolean()) {
             valveAngle = setpoint/powerMax * 90;
             if (valveAngle > 90) {
             	valveAngle = 90;
             }
             valve.set(new DoubleValue(valveAngle));
         }
-        this.setpoint = setpoint; 
+        this.powerSetpoint = setpoint; 
     }
 
 	@Override
 	public double getSetpoint() {
-		return setpoint;
+		return powerSetpoint;
 	}
 
 	@Override

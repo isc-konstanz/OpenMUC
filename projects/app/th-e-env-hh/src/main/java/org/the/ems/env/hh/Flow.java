@@ -66,30 +66,33 @@ public class Flow {
     private List<Double> flowTempInValues = new ArrayList<Double>();
     private List<Double> flowTempOutValues = new ArrayList<Double>();
 
-    private Channel energy;
+    private Channel flowEnergy;
     private Record energyLatest = null;
 
     RecordAverageListener flowPowerAverage;
 
     private static final Logger logger = LoggerFactory.getLogger(Flow.class);
 
-    public Flow(Channel flowVolume, 
-                Channel flowPower, 
-                Channel flowTempIn, 
-                Channel flowTempOut, 
-                Channel flowTempDelta, 
-                Channel energy) {
+    public Flow(Channel flowVolume,
+                Channel flowTempIn,
+                Channel flowTempOut,
+                Channel flowTempDelta,
+                Channel flowPower,
+                Channel flowEnergy) {
         this.flowVolume = flowVolume;
-        this.flowPower = flowPower;
         this.flowTempIn = flowTempIn;
         this.flowTempOut = flowTempOut;
         this.flowTempDelta = flowTempDelta;
-        this.energy = energy;
-        energy.setLatestRecord(new Record(new DoubleValue(0),System.currentTimeMillis()));
-        flowPowerAverage = new RecordAverageListener(interval);
+        
+        this.flowEnergy = flowEnergy;
+        this.flowEnergy.setLatestRecord(new Record(new DoubleValue(0),System.currentTimeMillis()));
+
+        this.flowPower = flowPower;
+        this.flowPowerAverage = new RecordAverageListener(interval);
         this.flowPower.addListener(flowPowerAverage);
         onActivate();
     }
+
     public double getAveragePower() {
         return flowPowerAverage.getMean();
     }
@@ -175,7 +178,7 @@ public class Flow {
                 }
                 else {
                     if (flowTempDelta.getLatestRecord().getFlag() !=Flag.VALID) {
-                        logger.warn("Temperaturedelta channel invalid flag: {}", flowTempDelta.getLatestRecord().getFlag());
+                        logger.warn("Temperature delta channel invalid flag: {}", flowTempDelta.getLatestRecord().getFlag());
                         return;
                     }
                     flowTempDeltaValue = flowTempDelta.getLatestRecord().getValue().asDouble();
@@ -196,7 +199,6 @@ public class Flow {
                 }
 
             }
-
             onEnergyReceived(new Record(new DoubleValue(flowEnergyValue/3600), timestamp));
         }
 
@@ -234,11 +236,11 @@ public class Flow {
             energyLatest = new Record(new DoubleValue(energyLatest.getValue().asDouble() + energyValue.getValue().asDouble()),
                     energyValue.getTimestamp());
         }
-        if (energy.getLatestRecord().getFlag() != Flag.VALID) {
-            logger.warn("Energy channel invalid flag: {}",energy.getLatestRecord().getFlag());
+        if (flowEnergy.getLatestRecord().getFlag() != Flag.VALID) {
+            logger.warn("Energy channel invalid flag: {}",flowEnergy.getLatestRecord().getFlag());
             return;
         }
-        energy.write(energyLatest.getValue());
+        flowEnergy.write(energyLatest.getValue());
     }
 
 }

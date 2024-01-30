@@ -27,38 +27,43 @@ import org.openmuc.framework.lib.osgi.config.ServiceProperty;
 public class HeatPumpEnvironmentSettings extends GenericSettings {
 
     static final String HEATING_ROD_TEMP_SETPOINT = "heatingRodTempSetpoint";
-    static final String HEATING_ROD_TEMP_SETPOINT_DEFAULT = "10";
-
     static final String HEATING_ROD_TEMP_HYSTERESIS = "heatingRodTempHysteresis";
-    static final String HEATING_ROD_TEMP_HYSTERESIS_DEFAULT = "1";
 
     static final String HEATING_ROD_2PH_STATE = "heatingRod2PhStateChannel";
-    static final String HEATING_ROD_2PH_STATE_DEFAULT = "hp_source_hr_2ph_state";
-
     static final String HEATING_ROD_3PH_STATE = "heatingRod3PhStateChannel";
-    static final String HEATING_ROD_3PH_STATE_DEFAULT = "hp_source_hr_3ph_state";
 
     static final String HEAT_PUMP_TEMP_INLET = "heatPumpTempInlet";
-    static final String HEAT_PUMP_TEMP_INLET_DEFAULT = "hp_source_temp_in";
-
     static final String HEAT_PUMP_TEMP_OUTLET = "heatPumpTempOutlet";
-    static final String HEAT_PUMP_TEMP_OUTLET_DEFAULT = "hp_source_temp_out";
-
-    static final String HEAT_PUMP_CIRC_PUMP_STATE = "heatPumpCircPumpState";
-    static final String HEAT_PUMP_CIRC_PUMP_STATE_DEFAULT = "hp_source_pump_state";
+    static final String HEAT_PUMP_SOURCE_PUMP_STATE = "heatPumpSourcePumpState";
 
 
     public HeatPumpEnvironmentSettings() {
         super();
-        properties.put(HEATING_ROD_TEMP_SETPOINT, new ServiceProperty(HEATING_ROD_TEMP_SETPOINT, "Temperature setpoint for the heating rod", HEATING_ROD_TEMP_SETPOINT_DEFAULT, true));
-        properties.put(HEATING_ROD_TEMP_HYSTERESIS, new ServiceProperty(HEATING_ROD_TEMP_HYSTERESIS, "Temperature hysteresis for the heating rod", HEATING_ROD_TEMP_HYSTERESIS_DEFAULT, true));
+        properties.put(HEATING_ROD_TEMP_SETPOINT, new ServiceProperty(
+        		HEATING_ROD_TEMP_SETPOINT, "Temperature setpoint for the heating rod", "10", true)
+        );
+        properties.put(HEATING_ROD_TEMP_HYSTERESIS, new ServiceProperty(
+        		HEATING_ROD_TEMP_HYSTERESIS, "Temperature hysteresis for the heating rod", "1", true)
+        );
 
-        properties.put(HEATING_ROD_2PH_STATE, new ServiceProperty(HEATING_ROD_2PH_STATE, "Channel ID for the 2 Phase mode state of the heating rod", HEATING_ROD_2PH_STATE_DEFAULT, true));
-        properties.put(HEATING_ROD_3PH_STATE, new ServiceProperty(HEATING_ROD_3PH_STATE, "Channel ID for the 3 Phase mode state of the heating rod", HEATING_ROD_3PH_STATE_DEFAULT, true));
 
-        properties.put(HEAT_PUMP_TEMP_INLET, new ServiceProperty(HEAT_PUMP_TEMP_INLET, "Channel ID for the source inlet temperature of the heat pump", HEAT_PUMP_TEMP_INLET_DEFAULT, true));
-        properties.put(HEAT_PUMP_TEMP_OUTLET, new ServiceProperty(HEAT_PUMP_TEMP_OUTLET, "Channel ID for the source outlet temperature of the heat pump", HEAT_PUMP_TEMP_OUTLET_DEFAULT, true));
-        properties.put(HEAT_PUMP_CIRC_PUMP_STATE, new ServiceProperty(HEAT_PUMP_CIRC_PUMP_STATE, "Channel ID for the source circulation pump state of the heat pump", HEAT_PUMP_CIRC_PUMP_STATE_DEFAULT, true));
+        properties.put(HEATING_ROD_2PH_STATE, new ServiceProperty(
+        		HEATING_ROD_2PH_STATE, "Channel ID for the 2 Phase mode state of the heating rod", "hp_source_hr_2ph_state", true)
+        );
+        properties.put(HEATING_ROD_3PH_STATE, new ServiceProperty(
+        		HEATING_ROD_3PH_STATE, "Channel ID for the 3 Phase mode state of the heating rod", "hp_source_hr_3ph_state", true)
+        );
+
+
+        properties.put(HEAT_PUMP_TEMP_INLET, new ServiceProperty(
+        		HEAT_PUMP_TEMP_INLET, "Channel ID for the source inlet temperature of the heat pump", "hp_source_temp_in", true)
+        );
+        properties.put(HEAT_PUMP_TEMP_OUTLET, new ServiceProperty(
+        		HEAT_PUMP_TEMP_OUTLET, "Channel ID for the source outlet temperature of the heat pump", "hp_source_temp_out", true)
+        );
+        properties.put(HEAT_PUMP_SOURCE_PUMP_STATE, new ServiceProperty(
+        		HEAT_PUMP_SOURCE_PUMP_STATE, "Channel ID for the source circulation pump state of the heat pump", "hp_source_pump_state", true)
+        );
     }
 
 }

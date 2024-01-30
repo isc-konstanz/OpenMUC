@@ -36,17 +36,17 @@ import org.slf4j.LoggerFactory;
 public abstract class HeatSinkPulse implements RecordListener, HeatSink {
     private static final Logger logger = LoggerFactory.getLogger(HeatSinkPulse.class);
 
-    // Time boundaries for fan in [ms]
-	protected final int runtimeMax;
-    protected final int runtimeMin;
+    // Interval time in [ms]
+    protected final int period;
 
-    // Interval time in [s]
-    protected final int interval;
+    // Duty cycle ratio boundaries for PWM in
+    protected final double ratioMin;
+	protected final double ratioMax;
 
     protected final Channel pwmPercent;
     protected final Channel pwmState;
 
-    protected PwmTimer pwmTimer;
+    protected PulseTimer pulseTimer;
     protected Timer updateTimer;
 
     // Thermal power setpoint to sink
@@ -56,12 +56,12 @@ public abstract class HeatSinkPulse implements RecordListener, HeatSink {
     protected double ratio = 0;
 
 
-	public HeatSinkPulse(Channel pwmState, Channel pwmPercent, int interval, int runtimeMax, int runtimeMin) {
+	public HeatSinkPulse(Channel pwmState, Channel pwmPercent, int period, int percentMin, int percentMax) {
 		super();
-		this.interval = interval;
-		this.runtimeMax = runtimeMax;
-		this.runtimeMin = runtimeMin;
-		
+		this.period = period;
+		this.ratioMin = ((double) percentMin)/100.;
+		this.ratioMax = ((double) percentMax)/100.;
+
 		this.pwmState = pwmState;
 		this.pwmPercent = pwmPercent;
         if (pwmPercent != null) {
@@ -73,16 +73,16 @@ public abstract class HeatSinkPulse implements RecordListener, HeatSink {
 	public void set(double powerSetpoint) {
 		this.powerSetpoint = powerSetpoint;
     	this.ratio = powerSetpoint/getPowerMax();
-        if (ratio > 1) {
-            ratio = 1;
+        if (ratio < ratioMin) {
+        	ratio = 0;
         }
-        if (ratio < 0) {
-            ratio = 0;
+        if (ratio > ratioMax) {
+        	ratio = 1;
         }
         if (pwmPercent != null) {
             pwmPercent.setLatestRecord(new Record(new IntValue((int) Math.round(ratio * 100)), System.currentTimeMillis()));
         }
-        setUpdateTimer((int) Math.round(interval*ratio*1000));
+        setUpdateTimer((int) Math.round(period*ratio));
 	}
 
 	@Override
@@ -104,24 +104,24 @@ public abstract class HeatSinkPulse implements RecordListener, HeatSink {
         	percent = 0;
         }
         ratio = percent/100;
+        if (ratio < ratioMin) {
+        	ratio = 0;
+        }
+        if (ratio > ratioMax) {
+        	ratio = 1;
+        }
         logger.info("PWM percentage:{}%", percent);
         
-        setUpdateTimer((int) Math.round(interval*ratio*1000));
+        setUpdateTimer((int) Math.round(period*ratio));
     }
 
 	protected synchronized void setUpdateTimer(int timeActive) {
-        if (timeActive < runtimeMin) {
-        	timeActive = runtimeMin;
-        }
-        if (timeActive > runtimeMax) {
-        	timeActive = runtimeMax;
-        }
-		if (pwmTimer != null) {
-			if (pwmTimer.timeActive == timeActive) {
+		if (pulseTimer != null) {
+			if (pulseTimer.timeActive == timeActive && timeActive > 0) {
 				return;
 			}
-			pwmTimer.cancel();
-			pwmTimer = null;
+			pulseTimer.cancel();
+			pulseTimer = null;
 		}
         if (updateTimer != null) {
             updateTimer.cancel();
@@ -132,9 +132,9 @@ public abstract class HeatSinkPulse implements RecordListener, HeatSink {
         	writeState(false);
             return;
         }
-        pwmTimer = new PwmTimer(timeActive);
+        pulseTimer = new PulseTimer(timeActive);
         updateTimer = new Timer("TH-E Environment: Pump PWM Timer");
-        updateTimer.scheduleAtFixedRate(pwmTimer, 0, timeActive);
+        updateTimer.scheduleAtFixedRate(pulseTimer, 0, timeActive);
     }
 
     protected void writeState(boolean state) {
@@ -148,11 +148,11 @@ public abstract class HeatSinkPulse implements RecordListener, HeatSink {
     	}  
     }
 
-	class PwmTimer extends TimerTask {
+	class PulseTimer extends TimerTask {
 
         final int timeActive;
 
-        public PwmTimer(int timeActive) {
+        public PulseTimer(int timeActive) {
             this.timeActive = timeActive;
         }
 
@@ -163,24 +163,10 @@ public abstract class HeatSinkPulse implements RecordListener, HeatSink {
         }
 
         public void pulseState(int timeActive) {
-            Record stateRecord = pwmState.getLatestRecord();
-            if (stateRecord.getFlag() != Flag.VALID) {
-                logger.warn("Invalid PWM state channel flag: {}", stateRecord.getFlag());
-                return;
-            }
+            writeState(true);
+            wait(timeActive);
             
-            if (timeActive >= runtimeMax) {
-                if (!stateRecord.getValue().asBoolean()) {
-                    writeState(true);
-                }
-            }
-            else if (timeActive >= runtimeMin) {
-                if (!stateRecord.getValue().asBoolean()) {
-                    writeState(true);
-                }
-                wait(timeActive);
-                writeState(false);
-            }
+            writeState(false);
         }
 
         public void wait(int ms) {

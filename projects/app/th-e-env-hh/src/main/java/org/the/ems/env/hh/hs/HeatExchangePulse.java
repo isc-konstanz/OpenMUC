@@ -20,40 +20,32 @@
  */
 package org.the.ems.env.hh.hs;
 
-import org.openmuc.framework.dataaccess.DataAccessService;
 import org.the.ems.env.hh.Flow;
+import org.the.ems.env.hh.HouseholdEnvironmentProperties;
 
 
 public class HeatExchangePulse extends HeatSinkPulse {
 
-    private static final String ID_FAN = "hh_flow_fan_state";
-    private static final String ID_FAN_PWM = "hh_flow_fan_pwm";
-
-    private static final String ID_TEMP_HEATEXCHANGER_IN = "hh_flow_fan_in_temp";
-    private static final String ID_TEMP_HEATEXCHANGER_OUT = "hh_flow_fan_out_temp";
-    private static final String ID_TEMP_HEATEXCHANGER_DELTA = "hh_flow_fan_delta_temp";
-    private static final String ID_FLOW_VOLUME = "hh_flow_rate";
-    private static final String ID_POWER_HEATEXCHANGER = "hh_flow_fan_power";
-    private static final String ID_ENERGY_HEATEXCHANGER = "hh_flow_fan_energy";
-
     private Flow flow;
 
     // Max. heat sink power in [W]
-    private final double powerMax = 2500;
+    private final double powerMax;
 
-    public HeatExchangePulse(DataAccessService dataAccessService) {
-		super(dataAccessService.getChannel(ID_FAN),
-				dataAccessService.getChannel(ID_FAN_PWM),
-				60,
-				55 * 1000,
-				15 * 1000);
-        
-        flow = new Flow(dataAccessService.getChannel(ID_FLOW_VOLUME),
-                dataAccessService.getChannel(ID_POWER_HEATEXCHANGER),
-                dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_IN),
-                dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_OUT),
-                dataAccessService.getChannel(ID_TEMP_HEATEXCHANGER_DELTA),
-                dataAccessService.getChannel(ID_ENERGY_HEATEXCHANGER));
+    public HeatExchangePulse(HouseholdEnvironmentProperties properties) {
+		super(properties.getPulseValveStateChannel(),
+				properties.getPulseValvePwmChannel(),
+				properties.getPwmPeriod(),
+				properties.getPwmDutyCycleMin(),
+				properties.getPwmDutyCycleMax());
+
+        flow = new Flow(properties.getFlowRate(),
+        		properties.getPulseValveHexTempInChannel(),
+        		properties.getPulseValveHexTempOutChannel(),
+        		properties.getPulseValveHexTempDeltaChannel(),
+        		properties.getPulseValveHexPowerChannel(),
+        		properties.getPulseValveHexEnergyChannel());
+
+		powerMax = properties.getPulseValvePowerMax();
     }
 
     @Override

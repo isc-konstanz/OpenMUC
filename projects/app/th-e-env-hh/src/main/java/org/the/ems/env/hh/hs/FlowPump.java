@@ -22,31 +22,30 @@ package org.the.ems.env.hh.hs;
 
 import org.openmuc.framework.data.IntValue;
 import org.openmuc.framework.data.Record;
-import org.openmuc.framework.dataaccess.DataAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.the.ems.env.hh.HouseholdEnvironmentProperties;
 
 
-public class CirculationPump extends HeatSinkPulse {
-    private static final Logger logger = LoggerFactory.getLogger(CirculationPump.class);
-	
-	private static final String ID_PUMP_STATE = "hh_flow_pump_state";
-	private static final String ID_PUMP_PWM = "hh_flow_pump_pwm";
+public class FlowPump extends HeatSinkPulse {
+    private static final Logger logger = LoggerFactory.getLogger(FlowPump.class);
 
     // Max. fan cooling power in [W]
-    private double powerLowMax = 1000;
-    private double powerHighMax = 3500;
+    private final double powerLowMax;
+    private final double powerHighMax;
     private boolean powerHigh = false;
 
     private double ratioLast = 0;
 
 
-	public CirculationPump(DataAccessService dataAccessService) {
-		super(dataAccessService.getChannel(ID_PUMP_STATE),
-				dataAccessService.getChannel(ID_PUMP_PWM),
-				60,
-				55 * 1000,
-				15 * 1000);
+	public FlowPump(HouseholdEnvironmentProperties properties) {
+		super(properties.getFlowPumpStateChannel(),
+				properties.getFlowPumpPwmChannel(),
+				properties.getPwmPeriod(),
+				properties.getPwmDutyCycleMin(),
+				properties.getPwmDutyCycleMax());
+		powerLowMax = properties.getFlowPowerLow();
+		powerHighMax = properties.getFlowPowerHigh();
 	}
 
 	@Override
@@ -64,16 +63,16 @@ public class CirculationPump extends HeatSinkPulse {
         	powerHigh = false;
         	logger.trace("Low power mode");
         }
-        if (ratio > 1) {
-            ratio = 1;
+        if (ratio < ratioMin) {
+        	ratio = 0;
         }
-        if (ratio < 0) {
-            ratio = 0;
+        if (ratio > ratioMax) {
+        	ratio = 1;
         }
         if (pwmPercent != null) {
             pwmPercent.setLatestRecord(new Record(new IntValue((int) Math.round(ratio * 100)), System.currentTimeMillis()));
         }
-        setUpdateTimer((int) Math.round(interval*ratio*1000));
+        setUpdateTimer((int) Math.round(period*ratio));
 	}
 
 	@Override

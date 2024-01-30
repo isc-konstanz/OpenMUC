@@ -56,7 +56,7 @@ public class HeatingRodController {
 
         sourceTempInletTemp = properties.getHeatPumpInletTempChannel();
         sourceTempOutletTemp = properties.getHeatPumpOutletTempChannel();
-        sourcePumpState = properties.getHeatPumpCircPumpStateChannel();
+        sourcePumpState = properties.getHeatPumpSourcePumpStateChannel();
 
         verifyPump();
 
