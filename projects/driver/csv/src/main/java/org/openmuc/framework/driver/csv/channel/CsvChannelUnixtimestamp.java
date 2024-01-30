@@ -20,6 +20,8 @@
  */
 package org.openmuc.framework.driver.csv.channel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -35,20 +37,20 @@ public class CsvChannelUnixtimestamp extends CsvChannelTime {
         super(column, csv, rewind);
     }
 
-    public CsvChannelUnixtimestamp(String column, long[] index, Map<String, List<String>> csv, boolean rewind) 
+    public CsvChannelUnixtimestamp(String column, List<Long> index, Map<String, List<String>> csv, boolean rewind) 
             throws ArgumentSyntaxException {
         super(column, index, csv, rewind);
     }
 
     @Override
-    protected long[] parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException {
+    protected List<Long> parseIndex(Map<String, List<String>> csv) throws ArgumentSyntaxException {
         List<String> timestampsList = csv.get(INDEX);
         
-        long[] timestamps = new long[timestampsList.size()];
+        Long[] timestamps = new Long[timestampsList.size()];
         for (int i = 0; i < timestampsList.size(); i++) {
             timestamps[i] = Long.parseLong(timestampsList.get(i));
         }
-        return timestamps;
+        return new ArrayList<Long>(Arrays.asList(timestamps));
     }
 
     @Override

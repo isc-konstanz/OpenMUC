@@ -21,13 +21,10 @@
 
 package org.openmuc.framework.driver.mqtt;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import org.openmuc.framework.config.ArgumentSyntaxException;
@@ -38,6 +35,7 @@ import org.openmuc.framework.data.ByteArrayValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
 import org.openmuc.framework.dataaccess.Channel;
+import org.openmuc.framework.driver.mqtt.MqttDriverSettings.MqttChannelAddress;
 import org.openmuc.framework.driver.spi.ChannelRecordContainer;
 import org.openmuc.framework.driver.spi.ChannelValueContainer;
 import org.openmuc.framework.driver.spi.Connection;
@@ -45,7 +43,6 @@ import org.openmuc.framework.driver.spi.ConnectionException;
 import org.openmuc.framework.driver.spi.RecordsReceivedListener;
 import org.openmuc.framework.lib.mqtt.MqttConnection;
 import org.openmuc.framework.lib.mqtt.MqttReader;
-import org.openmuc.framework.lib.mqtt.MqttSettings;
 import org.openmuc.framework.lib.mqtt.MqttWriter;
 import org.openmuc.framework.parser.spi.ParserService;
 import org.openmuc.framework.parser.spi.SerializationException;
@@ -56,53 +53,23 @@ import org.slf4j.LoggerFactory;
 public class MqttDriverConnection implements Connection {
 
     private static final Logger logger = LoggerFactory.getLogger(MqttDriverConnection.class);
+    private final MqttDriverSettings mqttSettings;
     private final MqttConnection mqttConnection;
-    private final MqttWriter mqttWriter;
     private final MqttReader mqttReader;
+    private final MqttWriter mqttWriter;
     private final Map<String, ParserService> parsers = new HashMap<>();
     private final Map<String, Long> lastLoggedRecords = new HashMap<>();
     private final List<ChannelRecordContainer> recordContainerList = new ArrayList<>();
-    private final Properties settings = new Properties();
 
     public MqttDriverConnection(String host, String settings) throws ArgumentSyntaxException {
-        MqttSettings mqttSettings = getMqttSettings(host, settings);
-        mqttConnection = new MqttConnection(mqttSettings);
         String pid = "mqttdriver";
-        mqttWriter = new MqttWriter(mqttConnection, pid);
+        mqttSettings = new MqttDriverSettings(host, settings);
+        mqttConnection = new MqttConnection(mqttSettings.getSettings());
         mqttReader = new MqttReader(mqttConnection, pid);
+        mqttWriter = new MqttWriter(mqttConnection, pid);
         if (!mqttSettings.isSsl()) {
             mqttConnection.connect();
         }
-    }
-
-    private MqttSettings getMqttSettings(String host, String settings) throws ArgumentSyntaxException {
-        settings = settings.replaceAll(";", "\n");
-        try {
-            this.settings.load(new StringReader(settings));
-        } catch (IOException e) {
-            throw new ArgumentSyntaxException("Could not read settings string");
-        }
-
-        int port = Integer.parseInt(this.settings.getProperty("port"));
-        String username = this.settings.getProperty("username");
-        String password = this.settings.getProperty("password");
-        boolean ssl = Boolean.parseBoolean(this.settings.getProperty("ssl"));
-        long maxBufferSize = Long.parseLong(this.settings.getProperty("maxBufferSize", "0"));
-        long maxFileSize = Long.parseLong(this.settings.getProperty("maxFileSize", "0"));
-        int maxFileCount = Integer.parseInt(this.settings.getProperty("maxFileCount", "1"));
-        int connectionRetryInterval = Integer.parseInt(this.settings.getProperty("connectionRetryInterval", "10"));
-        int connectionAliveInterval = Integer.parseInt(this.settings.getProperty("connectionAliveInterval", "10"));
-        String persistenceDirectory = this.settings.getProperty("persistenceDirectory", "data/driver/mqtt");
-        String lastWillTopic = this.settings.getProperty("lastWillTopic", "");
-        byte[] lastWillPayload = this.settings.getProperty("lastWillPayload", "").getBytes();
-        boolean lastWillAlways = Boolean.parseBoolean(this.settings.getProperty("lastWillAlways", "false"));
-        String firstWillTopic = this.settings.getProperty("firstWillTopic", "");
-        byte[] firstWillPayload = this.settings.getProperty("firstWillPayload", "").getBytes();
-        boolean webSocket = Boolean.parseBoolean(this.settings.getProperty("webSocket", "false"));
-
-        return new MqttSettings(host, port, username, password, ssl, maxBufferSize, maxFileSize, maxFileCount,
-                connectionRetryInterval, connectionAliveInterval, persistenceDirectory, lastWillTopic, lastWillPayload,
-                lastWillAlways, firstWillTopic, firstWillPayload, webSocket);
     }
 
     @Override
@@ -122,9 +89,15 @@ public class MqttDriverConnection implements Connection {
             throws UnsupportedOperationException, ConnectionException {
         List<String> topics = new ArrayList<>();
         for (ChannelRecordContainer container : containers) {
-            String topic = Stream.of(container.getChannelAddress().split(";"))
-            		.findFirst().orElse(ChannelConfig.ADDRESS_DEFAULT);
-            topics.add(topic);
+            MqttChannelAddress address;
+			try {
+				address = new MqttChannelAddress(container.getChannelAddress());
+	            topics.add(address.getTopic());
+				
+			} catch (ArgumentSyntaxException e) {
+        		logger.warn("Unable to parse topic \"{}\" in for channel: {}", 
+        				container.getChannelAddress(), container.getChannel().getId());
+			}
         }
 
         if (topics.isEmpty()) {
@@ -136,8 +109,8 @@ public class MqttDriverConnection implements Connection {
         		return;
         	}
         	for (ChannelRecordContainer container : containers) {
-        		if (!Stream.of(container.getChannelAddress().split(";")).findFirst()
-        				.orElse(ChannelConfig.ADDRESS_DEFAULT).equals(topic)) {
+        		if (!Stream.of(container.getChannelAddress().split(";"))
+                		.findFirst().orElse(ChannelConfig.ADDRESS_DEFAULT).equals(topic)) {
         			continue;
         		}
                 Channel channel = container.getChannel();
@@ -148,7 +121,7 @@ public class MqttDriverConnection implements Connection {
                 }
                 addMessageToContainerList(record, container);
         	}
-            if (recordContainerList.size() >= Integer.parseInt(settings.getProperty("recordCollectionSize", "1"))) {
+            if (recordContainerList.size() >= mqttSettings.getRecordCollectionSize()) {
                 notifyListenerAndPurgeList(listener);
             }
         });
@@ -185,8 +158,8 @@ public class MqttDriverConnection implements Connection {
 
     private Record getRecord(byte[] message, ChannelRecordContainer container) {
         Record record;
-        if (parsers.containsKey(settings.getProperty("parser"))) {
-            record = parsers.get(settings.getProperty("parser")).deserialize(message, container);
+        if (parsers.containsKey(mqttSettings.getParser())) {
+            record = parsers.get(mqttSettings.getParser()).deserialize(message, container);
         }
         else if (container.getChannel().getScalingFactor() == 1.0) {
             record = new Record(new ByteArrayValue(message), System.currentTimeMillis());
@@ -202,18 +175,23 @@ public class MqttDriverConnection implements Connection {
             throws UnsupportedOperationException, ConnectionException {
         for (ChannelValueContainer container : containers) {
             Record record = new Record(container.getValue(), System.currentTimeMillis());
-            if (parsers.containsKey(settings.getProperty("parser"))) {
+            if (parsers.containsKey(mqttSettings.getParser())) {
                 byte[] message;
                 try {
-                    message = parsers.get(settings.getProperty("parser")).serialize(record, container);
+                    message = parsers.get(mqttSettings.getParser()).serialize(record, container);
                 } catch (SerializationException e) {
                     logger.error(e.getMessage());
                     continue;
                 }
-                String topic = Stream.of(container.getChannelAddress().split(";"))
-                		.findFirst().orElse(ChannelConfig.ADDRESS_DEFAULT);
-                mqttWriter.write(topic, message);
-                container.setFlag(Flag.VALID);
+    			try {
+                    MqttChannelAddress address = new MqttChannelAddress(container.getChannelAddress());
+                    mqttWriter.write(address.getTopic(), message);
+                    container.setFlag(Flag.VALID);
+    				
+    			} catch (ArgumentSyntaxException e) {
+            		logger.warn("Unable to parse topic \"{}\" in for channel: {}", 
+            				container.getChannelAddress(), container.getChannel().getId());
+    			}
             }
             else {
                 logger.error("A parser is needed to write messages and none have been registered.");

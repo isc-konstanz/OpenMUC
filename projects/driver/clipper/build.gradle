@@ -1,0 +1,25 @@
+project.ext {
+    projectName = "OpenMUC Driver - Clipper"
+    projectDescription = "Clipping driver for the OpenMUC framework."
+}
+
+dependencies {
+    implementation project(':openmuc-driver')
+}
+
+jar {
+    bnd('Bundle-Name': projectName,
+        'Bundle-Description': projectDescription,
+        'Import-Package': '*' + jarDefaultImportPackageVersion)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = projectName
+                description = projectDescription
+            }
+        }
+    }
+}

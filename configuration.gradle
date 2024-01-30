@@ -1,5 +1,5 @@
 project.ext {
-    cfgVersion = "0.20.4"
+    cfgVersion = "0.20.5"
 
     cfgGroup = "org.openmuc.framework"
 
@@ -37,6 +37,7 @@ project.ext {
                 it.getPath() == ":openmuc-driver" ||
                 it.getPath() == ":openmuc-driver-aggregator" ||
                 it.getPath() == ":openmuc-driver-amqp" ||
+                it.getPath() == ":openmuc-driver-clipper" ||
                 it.getPath() == ":openmuc-driver-csv" ||
                 it.getPath() == ":openmuc-driver-derivator" ||
                 it.getPath() == ":openmuc-driver-dlms" ||
@@ -50,6 +51,7 @@ project.ext {
                 it.getPath() == ":openmuc-driver-mqtt" ||
                 it.getPath() == ":openmuc-driver-opcua" ||
                 it.getPath() == ":openmuc-driver-rest" ||
+                it.getPath() == ":openmuc-driver-revpi" ||
                 it.getPath() == ":openmuc-driver-rpi-gpio" ||
                 it.getPath() == ":openmuc-driver-rpi-w1" ||
                 it.getPath() == ":openmuc-driver-snmp" ||
