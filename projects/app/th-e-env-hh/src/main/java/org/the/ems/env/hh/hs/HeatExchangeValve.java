@@ -24,9 +24,9 @@ import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.dataaccess.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.the.ems.env.hh.Flow;
+import org.the.ems.env.Flow;
+import org.the.ems.env.Valve;
 import org.the.ems.env.hh.HouseholdEnvironmentProperties;
-import org.the.ems.env.hh.Valve;
 
 public class HeatExchangeValve implements HeatSink {
     private static final Logger logger = LoggerFactory.getLogger(HeatExchangeValve.class);

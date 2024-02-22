@@ -1,13 +1,15 @@
 package org.the.ems.env.hh.hs;
 
-public interface HeatSink {
+import org.the.ems.env.Controllable;
 
-	void set(double power);
+public interface HeatSink extends Controllable {
 
-	double getSetpoint();
-
-	double getPower();
+	default void setPowerSetpoint(double power) {
+		set(power/getPowerMax() * 100.);
+	}
 
 	double getPowerMax();
+
+	double getPower();
 
 }

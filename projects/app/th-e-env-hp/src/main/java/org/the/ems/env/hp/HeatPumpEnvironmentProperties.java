@@ -34,6 +34,22 @@ public class HeatPumpEnvironmentProperties extends PropertyHandler {
         this.dataAccessService = dataAccessService;
     }
 
+    public int getPwmPeriod() {
+    	return getInt(HeatPumpEnvironmentSettings.PWM_PERIOD)*1000;
+    }
+
+    public int getPwmDutyCycleMin() {
+    	return getInt(HeatPumpEnvironmentSettings.PWM_DUTY_CYCLE_MIN);
+    }
+
+    public int getPwmDutyCycleMax() {
+    	return getInt(HeatPumpEnvironmentSettings.PWM_DUTY_CYCLE_MAX);
+    }
+
+    public double getHeatingRodPwmSetpointDefault() {
+    	return getDouble(HeatPumpEnvironmentSettings.HEATING_ROD_PWM_SETPOINT_DEFAULT);
+    }
+
     public double getHeatingRodTemperatureSetpoint() {
     	return getDouble(HeatPumpEnvironmentSettings.HEATING_ROD_TEMP_SETPOINT);
     }
@@ -42,12 +58,12 @@ public class HeatPumpEnvironmentProperties extends PropertyHandler {
     	return getDouble(HeatPumpEnvironmentSettings.HEATING_ROD_TEMP_HYSTERESIS);
     }
 
-    public Channel getHeatingRodLowStateChannel() {
-    	return dataAccessService.getChannel(getString(HeatPumpEnvironmentSettings.HEATING_ROD_2PH_STATE));
+    public Channel getHeatingRodStateChannel() {
+    	return dataAccessService.getChannel(getString(HeatPumpEnvironmentSettings.HEATING_ROD_STATE));
     }
 
-    public Channel getHeatingRodHighStateChannel() {
-    	return dataAccessService.getChannel(getString(HeatPumpEnvironmentSettings.HEATING_ROD_3PH_STATE));
+    public Channel getHeatingRodPwmChannel() {
+    	return dataAccessService.getChannel(getString(HeatPumpEnvironmentSettings.HEATING_ROD_PWM));
     }
 
     public Channel getHeatPumpInletTempChannel() {

@@ -1,21 +1,23 @@
 project.ext {
-    projectName = "OpenMUC App - TH-E HeatPump Environment"
-    projectDescription = "An environment emulator for a heat pump of TH-E EMS."
+    projectName = "OpenMUC App - TH-E Environment"
+    projectDescription = "An environment emulator library of TH-E EMS."
 }
 
 dependencies {
-    api project(':th-e-env')
+    api project(':openmuc-core-api')
+    api project(':openmuc-lib-osgi')
+    api group: 'org.osgi', name: 'org.osgi.service.cm', version: '1.6.0'
 }
 
 jar {
     bnd('Bundle-Name': projectName,
         'Bundle-Description': projectDescription,
-        'Export-Package': 'org.the.ems.env.hp.*')
+        'Export-Package': 'org.the.ems.env.*')
 }
 
 eclipse {
     project {
-        name = "TH-E-EMS-Environment-HeatPump"
+        name = "TH-E-EMS-Environment"
     }
 }
 

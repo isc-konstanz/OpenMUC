@@ -24,6 +24,7 @@ project.ext {
     assertjVersion = '3.20.2'
 
     distributionProjects = javaProjects.findAll {
+		        it.getPath() == ":th-e-env" ||
 		        it.getPath() == ":th-e-env-hp" ||
 		        it.getPath() == ":th-e-env-hh" ||
         		it.getPath() == ":openmuc-app-household" ||

@@ -20,11 +20,12 @@
  */
 package org.the.ems.env.hh.hs;
 
-import org.the.ems.env.hh.Flow;
+import org.the.ems.env.Flow;
+import org.the.ems.env.PulseWidthModulator;
 import org.the.ems.env.hh.HouseholdEnvironmentProperties;
 
 
-public class HeatExchangePulse extends HeatSinkPulse {
+public class HeatExchangePulse extends PulseWidthModulator implements HeatSink {
 
     private Flow flow;
 

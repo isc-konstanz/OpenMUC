@@ -20,87 +20,104 @@
 
 package org.the.ems.env.hp.hr;
 
-import org.openmuc.framework.data.BooleanValue;
+import org.openmuc.framework.data.DoubleValue;
 import org.openmuc.framework.data.Flag;
 import org.openmuc.framework.data.Record;
+import org.openmuc.framework.data.Value;
 import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.RecordListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.the.ems.env.Controller;
+import org.the.ems.env.PulseWidthModulator;
+import org.the.ems.env.RecordAverageListener;
 import org.the.ems.env.hp.HeatPumpEnvironmentProperties;
 
-public class HeatingRodController {
+public class HeatingRodController extends PulseWidthModulator {
     private static final Logger logger = LoggerFactory.getLogger(HeatingRodController.class);
+
+    private final Controller percentSetpointController;
+
+    private final Value percentSetpointDefault;
 
     private final double tempSetpoint;
     private final double tempHysteresis;
 
-    private final Channel stateLow;
-    private final Channel stateHigh;
-
-    private final Channel sourceTempInletTemp;
-    private final Channel sourceTempOutletTemp;
+    //private final Channel sourceTempOutlet;
+    private final Channel sourceTempInlet;
     private final Channel sourcePumpState;
 
+    private final RecordAverageListener sourceTempAvgListener;
     private final SourceTempListener sourceTempListener;
     private final SourcePumpStateListener sourcePumpStateListener;
 
     public HeatingRodController(HeatPumpEnvironmentProperties properties) {
+        super(properties.getHeatingRodStateChannel(),
+                properties.getHeatingRodPwmChannel(),
+                properties.getPwmPeriod(),
+                properties.getPwmDutyCycleMin(),
+                properties.getPwmDutyCycleMax());
         logger.info("Activating TH-E Environment: Heating Rod Controller");
+
+        percentSetpointDefault = new DoubleValue(properties.getHeatingRodPwmSetpointDefault());
+        percentSetpointController = new Controller(.5, 2./period, 1.*period, 100, ratioMin*100);
 
         tempSetpoint = properties.getHeatingRodTemperatureSetpoint();
         tempHysteresis = properties.getHeatingRodTemperatureHysteresis();
 
-        stateLow = properties.getHeatingRodLowStateChannel();
-        stateHigh = properties.getHeatingRodHighStateChannel();
-
-        sourceTempInletTemp = properties.getHeatPumpInletTempChannel();
-        sourceTempOutletTemp = properties.getHeatPumpOutletTempChannel();
+        //sourceTempOutlet = properties.getHeatPumpOutletTempChannel();
+        sourceTempInlet = properties.getHeatPumpInletTempChannel();
         sourcePumpState = properties.getHeatPumpSourcePumpStateChannel();
 
         verifyPump();
 
+        sourceTempAvgListener = new RecordAverageListener(period);
         sourceTempListener = new SourceTempListener();
-        sourceTempInletTemp.addListener(sourceTempListener);
+        sourceTempInlet.addListener(sourceTempListener);
+        sourceTempInlet.addListener(sourceTempAvgListener);
 
         sourcePumpStateListener = new SourcePumpStateListener();
         sourcePumpState.addListener(sourcePumpStateListener);
     }
 
+    @Override
     public void shutdown() {
+        super.shutdown();
         logger.info("Deactivating TH-E Environment: Heating Rod Controller");
-        
-    	sourceTempInletTemp.removeListener(sourceTempListener);
+
+        reset();
+        sourceTempInlet.removeListener(sourceTempListener);
         sourcePumpState.removeListener(sourcePumpStateListener);
     }
 
-    private void writeState(Channel state, boolean enable) {
-        if (state.getLatestRecord().getFlag() != Flag.VALID) {
-            logger.warn("Heating rod channel state flag invalid: {}", state.getLatestRecord().getFlag());
-            return;
-        }
-        if (state.getLatestRecord().getValue().asBoolean() == enable) {
-            return;
-        }
-        state.write(new BooleanValue(enable));
+    @Override
+    public void reset() {
+        super.reset();
+        percentSetpointController.reset();
     }
 
-    private boolean checkState(Channel state) {
-        if (state.getLatestRecord().getFlag() != Flag.VALID) {
-            logger.warn("Heating rod state channel \"{}\" invalid flag: {}", state.getId(), state.getLatestRecord().getFlag());
-            return false;
-        }
-        return state.getLatestRecord().getValue().asBoolean();
-    }
-
-    private void verifyPump() {
+    private boolean verifyPump() {
         if (sourcePumpState.getLatestRecord().getFlag() != Flag.VALID) {
             logger.warn("Skip switching heating rod. Source pump invalid flag: {}", sourcePumpState.getLatestRecord().getFlag());
-            return;
+            return false;
         }
         if (!sourcePumpState.getLatestRecord().getValue().asBoolean()) {
-            writeState(stateLow, false);
-            writeState(stateHigh, false);
+            reset();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    protected void onPulse(PulseEdge edge) {
+        if (edge == PulseEdge.FALLING) {
+            double controlSetpoint  = Math.round(percentSetpointController.process(period, tempSetpoint, sourceTempAvgListener.getMean()));
+
+            if (Math.abs(controlSetpoint - percentSetpoint) > .5) {
+                set(controlSetpoint);
+
+                logger.info("Updated Heating rod PWM duty cycle setpoint: {}", controlSetpoint);
+            }
         }
     }
 
@@ -114,21 +131,16 @@ public class HeatingRodController {
             }
             logger.trace("Heat pump source intlet temperature : {} Â°C", String.format("%.1f", record.getValue().asDouble()));
             
-            
-            // Check if heating rod needs to be switched off
-            if (record.getValue().asDouble() > tempSetpoint + tempHysteresis && (checkState(stateLow) || checkState(stateHigh))) {
-                logger.info("Heat pump source inlet temperatur {} > {}°C. Switching heating rod off", 
-                        String.format("%.1f", record.getValue().asDouble()), String.format("%.1f", tempSetpoint + tempHysteresis));
-
-                writeState(stateLow, false);
-                writeState(stateHigh, false);
+//            // Check if heating rod needs to be switched off
+//            if (record.getValue().asDouble() > tempSetpoint + tempHysteresis && isPulsing()) {
+//                logger.info("Heat pump source inlet temperatur {} > {}°C. Switching heating rod off", 
+//                        String.format("%.1f", record.getValue().asDouble()), String.format("%.1f", tempSetpoint + tempHysteresis));
+//
+//                reset();
+//            }
+            if (!verifyPump()) {
+            	return;
             }
-            if (record.getValue().asDouble() > tempSetpoint && checkState(stateHigh)) {
-                logger.info("Heat pump source inlet temperatur {} > {}°C. Switching heating rod 3. phase off", 
-                        String.format("%.1f", record.getValue().asDouble()), String.format("%.1f", tempSetpoint));
-                writeState(stateHigh, false);
-            }
-            
             
             // Check if heating rod needs to be switched on
             if (sourcePumpState.getLatestRecord().getFlag()!= Flag.VALID) {
@@ -139,15 +151,13 @@ public class HeatingRodController {
                 logger.debug("Skip switching heating rod off. Source pump is not running.");
                 return;
             }
-            if (record.getValue().asDouble() <= tempSetpoint && !checkState(stateLow)) {
+            if (record.getValue().asDouble() < tempSetpoint + tempHysteresis && !isPulsing()) {
                 logger.info("Heat pump source inlet temperatur {} < {}°C. Switching heating rod on", 
-                        String.format("%.1f", record.getValue().asDouble(), String.format("%.1f", tempSetpoint)));
-                writeState(stateLow, true);
-            }
-            if (record.getValue().asDouble() <= tempSetpoint - tempHysteresis && !checkState(stateHigh)) {
-                logger.info("Heat pump source inlet temperatur {} < {}°C. Switching heating rod 3. phase on", 
-                        String.format("%.1f", record.getValue().asDouble()), String.format("%.1f", tempSetpoint - tempHysteresis));
-                writeState(stateHigh, true);
+                        String.format("%.1f", record.getValue().asDouble()), String.format("%.1f", tempSetpoint + tempHysteresis));
+                
+                double percentSetpoint = percentSetpointDefault.asDouble();
+                percentSetpointController.setIntegal(percentSetpoint);
+                set(percentSetpoint);
             }
         }
     }
@@ -160,11 +170,11 @@ public class HeatingRodController {
                 logger.warn("Heat pump source pump channel invalid flag: {}", record.getFlag());
                 return;
             }
-            if (!record.getValue().asBoolean() && (checkState(stateLow) || checkState(stateHigh))) {
+            if (!record.getValue().asBoolean() && isPulsing()) {
                 logger.info("Heat pump source pump is not running, heating rod will be switched off.");
-                writeState(stateLow, false);
-                writeState(stateHigh, false);
+                reset();
             }
         }
     }
+
 }

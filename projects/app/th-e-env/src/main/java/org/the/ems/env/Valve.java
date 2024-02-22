@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.the.ems.env.hh;
+package org.the.ems.env;
 
 import org.openmuc.framework.data.BooleanValue;
 import org.openmuc.framework.data.DoubleValue;
@@ -30,7 +30,7 @@ import org.openmuc.framework.dataaccess.Channel;
 import org.openmuc.framework.dataaccess.RecordListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.the.ems.env.hh.Valve;
+import org.the.ems.env.Valve;
 
 
 public class Valve implements Runnable, RecordListener {

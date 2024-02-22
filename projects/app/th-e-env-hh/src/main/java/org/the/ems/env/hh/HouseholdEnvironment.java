@@ -35,6 +35,8 @@ import org.osgi.service.cm.ManagedService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.the.ems.env.Controller;
+import org.the.ems.env.RecordAverageListener;
 import org.the.ems.env.hh.hs.FlowPump;
 import org.the.ems.env.hh.hs.HeatExchangePulse;
 import org.the.ems.env.hh.hs.HeatExchangeValve;
@@ -55,7 +57,7 @@ public final class HouseholdEnvironment implements ManagedService {
 
     private List<HeatSink> heatSinks = new ArrayList<HeatSink>();
 
-    private Controller powerSetpointController = new Controller(0.8, 0.2, 0.125, 4000, 0);
+    private Controller powerSetpointController;
 
     private RecordAverageListener powerSetpointListener;
     private RecordAverageListener powerListener;
@@ -73,6 +75,9 @@ public final class HouseholdEnvironment implements ManagedService {
         heatSinks.add(new FlowPump(properties));
         heatSinks.add(new HeatExchangeValve(properties));
         heatSinks.add(new HeatExchangePulse(properties));
+
+    	powerSetpointController = new Controller(0.8, 0.2, 0.125, 4000, 0);
+    	powerSetpointController.enableErrorDragging(200);
 
         powerSetpointListener = new RecordAverageListener(interval);
         powerSetpoint = properties.getThermalPowerChannel();
@@ -115,7 +120,7 @@ public final class HouseholdEnvironment implements ManagedService {
     }
 
     public void setThermalSetpoint() {
-        double setpoint  = powerSetpointController.process(interval/(1000*60*3), 
+        double setpoint  = powerSetpointController.process(interval, 
         		powerSetpointListener.getMean(),
         		powerListener.getMean());
         
@@ -151,7 +156,7 @@ public final class HouseholdEnvironment implements ManagedService {
     }
 
     private void applyConfiguration() {
-        logger.info("Heat pump environment configuration updated: {}", properties.toString());
+        logger.info("Household environment configuration updated: {}", properties.toString());
         if (heatSinks.size() > 0) {
         	deactivate();
         }

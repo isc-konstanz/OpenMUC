@@ -18,7 +18,7 @@
  * along with OpenMUC.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.the.ems.env.hh;
+package org.the.ems.env;
 
 import java.util.ArrayList;
 import java.util.List;

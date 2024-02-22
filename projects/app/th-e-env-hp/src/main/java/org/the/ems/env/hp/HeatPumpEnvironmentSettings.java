@@ -26,11 +26,15 @@ import org.openmuc.framework.lib.osgi.config.ServiceProperty;
 
 public class HeatPumpEnvironmentSettings extends GenericSettings {
 
+	static final String PWM_PERIOD = "pwmPeriod";
+	static final String PWM_DUTY_CYCLE_MIN = "pwmDutyCycleMin";
+	static final String PWM_DUTY_CYCLE_MAX = "pwmDutyCycleMax";
+
     static final String HEATING_ROD_TEMP_SETPOINT = "heatingRodTempSetpoint";
     static final String HEATING_ROD_TEMP_HYSTERESIS = "heatingRodTempHysteresis";
-
-    static final String HEATING_ROD_2PH_STATE = "heatingRod2PhStateChannel";
-    static final String HEATING_ROD_3PH_STATE = "heatingRod3PhStateChannel";
+    static final String HEATING_ROD_STATE = "heatingRodStateChannel";
+    static final String HEATING_ROD_PWM = "heatingRodPwmChannel";
+    static final String HEATING_ROD_PWM_SETPOINT_DEFAULT = "heatingRodPwmSetpointDefault";
 
     static final String HEAT_PUMP_TEMP_INLET = "heatPumpTempInlet";
     static final String HEAT_PUMP_TEMP_OUTLET = "heatPumpTempOutlet";
@@ -39,19 +43,31 @@ public class HeatPumpEnvironmentSettings extends GenericSettings {
 
     public HeatPumpEnvironmentSettings() {
         super();
+        properties.put(PWM_PERIOD, new ServiceProperty(
+        		PWM_PERIOD, "PWM interval or period in seconds", "20", false)
+        );
+        properties.put(PWM_DUTY_CYCLE_MIN, new ServiceProperty(
+        		PWM_DUTY_CYCLE_MIN, "Minium PWM duty cycle in %", "10", false)
+        );
+        properties.put(PWM_DUTY_CYCLE_MAX, new ServiceProperty(
+        		PWM_DUTY_CYCLE_MAX, "Maximum PWM duty cycle in %", "90", false)
+        );
+
+
+        properties.put(HEATING_ROD_PWM_SETPOINT_DEFAULT, new ServiceProperty(
+        		HEATING_ROD_PWM_SETPOINT_DEFAULT, "Default PWM duty cycle setpoint for the heating rod to start with", "66", true)
+        );
         properties.put(HEATING_ROD_TEMP_SETPOINT, new ServiceProperty(
         		HEATING_ROD_TEMP_SETPOINT, "Temperature setpoint for the heating rod", "10", true)
         );
         properties.put(HEATING_ROD_TEMP_HYSTERESIS, new ServiceProperty(
         		HEATING_ROD_TEMP_HYSTERESIS, "Temperature hysteresis for the heating rod", "1", true)
         );
-
-
-        properties.put(HEATING_ROD_2PH_STATE, new ServiceProperty(
-        		HEATING_ROD_2PH_STATE, "Channel ID for the 2 Phase mode state of the heating rod", "hp_source_hr_2ph_state", true)
+        properties.put(HEATING_ROD_STATE, new ServiceProperty(
+        		HEATING_ROD_STATE, "Channel ID for the state of the heating rod", "hp_source_hr_state", true)
         );
-        properties.put(HEATING_ROD_3PH_STATE, new ServiceProperty(
-        		HEATING_ROD_3PH_STATE, "Channel ID for the 3 Phase mode state of the heating rod", "hp_source_hr_3ph_state", true)
+        properties.put(HEATING_ROD_PWM, new ServiceProperty(
+        		HEATING_ROD_PWM, "Channel ID for the PWM duty cycle of the heating rod", "hp_source_hr_pwm", true)
         );
 
 
