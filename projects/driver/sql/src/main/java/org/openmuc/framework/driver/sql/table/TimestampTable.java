@@ -109,12 +109,12 @@ public class TimestampTable extends SqlTable {
         for (SqlChannel channel : channels) {
             String query;
             if (channel.getKey() != null && !channel.getKey().isEmpty()) {
-                query = MessageFormat.format("INSERT INTO {0} ({1},{2}) VALUES ('{3}','{4}') ON DUPLICATE KEY UPDATE {2} = VALUES({2})", 
-                        table, index.getColumn(), channel.getDataColumn(), index.encode(timestamp), channel.encodeValue());
+                query = MessageFormat.format("INSERT INTO {0} ({1},{2},{3}) VALUES (''{4}'',''{5}'',''{6}'') ON DUPLICATE KEY UPDATE {3} = VALUES({3})", 
+                        table, index.getColumn(), channel.getDataColumn(), channel.getKeyColumn(), index.encode(timestamp), channel.getKey(), channel.encodeValue());
             }
             else {
-                query = MessageFormat.format("INSERT INTO {0} ({1},{2},{3}) VALUES ('{4}','{5}','{6}') ON DUPLICATE KEY UPDATE {3} = VALUES({3})", 
-                        table, index.getColumn(), channel.getDataColumn(), channel.getKeyColumn(), index.encode(timestamp), channel.getKey(), channel.encodeValue());
+                query = MessageFormat.format("INSERT INTO {0} ({1},{2}) VALUES (''{3}'',''{4}'') ON DUPLICATE KEY UPDATE {2} = VALUES({2})", 
+                        table, index.getColumn(), channel.getDataColumn(), index.encode(timestamp), channel.encodeValue());
             }
             logger.debug("Querying {}", query);
             

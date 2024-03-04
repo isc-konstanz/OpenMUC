@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -225,6 +224,7 @@ public class MqttLogMsgBuilderTest {
         // 1. prepare channels to log - equal to logger.setChannelsToLog(...) call
         HashMap<String, MqttLogChannel> channelsToLog = new HashMap<>();
         channelsToLog.put(logChannelMockA.getId(), new MqttLogChannel(logChannelMockA));
+        channelsToLog.put(logChannelMockB.getId(), new MqttLogChannel(logChannelMockB));
         channelsToLog.put(logChannelMockC.getId(), new MqttLogChannel(logChannelMockC));
 
         // 2. apply settings to logger
@@ -233,15 +233,29 @@ public class MqttLogMsgBuilderTest {
         // 3. prepare records which should be logged
         List<LoggingRecord> records = new ArrayList<>();
         records.add(new LoggingRecord(logChannelMockA.getId(), record3));
+        records.add(new LoggingRecord(logChannelMockB.getId(), record5));
         records.add(new LoggingRecord(logChannelMockC.getId(), record7));
 
         // 4. equal to calling logger.log(..) method
         MqttLogMsgBuilder builder = new MqttLogMsgBuilder(channelsToLog, parser);
+        List<MqttLogMsg> messages = builder.buildLogMsg(records, isLogMultiple);
 
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-            List<MqttLogMsg> messages = builder.buildLogMsg(records, isLogMultiple);
-        });
+        printDebug(isDebugEnabled, messages);
 
+        // expected size = 1 since isLogMultiple = true;
+        assertEquals(2, messages.size());
+
+        // check content of the messages
+        StringBuilder sbRef = new StringBuilder();
+        sbRef.append(TOPIC_1 + ": {\"timestamp\":" + TIMESTAMP + ",\"flag\":\"VALID\",\"value\":3.0}");
+        sbRef.append("\n");
+        sbRef.append("{\"timestamp\":" + TIMESTAMP + ",\"flag\":\"VALID\",\"value\":5.0}");
+        sbRef.append("\n");
+        String referenceString1 = sbRef.toString();
+        String referenceString2 = TOPIC_2 + ": {\"timestamp\":" + TIMESTAMP + ",\"flag\":\"VALID\",\"value\":7.0}\n";
+        
+        assertEquals(referenceString1, TOPIC_1 + ": " + new String(messages.get(0).message));
+        assertEquals(referenceString2, TOPIC_2 + ": " + new String(messages.get(1).message));
     }
 
     private void printDebug(boolean isEnabled, List<MqttLogMsg> messages) {

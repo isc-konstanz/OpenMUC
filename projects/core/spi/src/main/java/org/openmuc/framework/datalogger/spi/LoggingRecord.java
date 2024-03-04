@@ -32,6 +32,8 @@ public class LoggingRecord implements SerializationContainer {
     private final String channelAddress;
     private final String channelSettings;
 
+    private final String loggingSettings;
+
     private final ValueType valueType;
     private final Integer valueTypeLength;
     
@@ -39,7 +41,7 @@ public class LoggingRecord implements SerializationContainer {
 
     public LoggingRecord(LogChannel channel, Record record) {
         this(channel.getId(), 
-                channel.getAddress(), channel.getSettings(), 
+                channel.getAddress(), channel.getSettings(), channel.getLoggingSettings(),
                 channel.getValueType(), channel.getValueTypeLength(), record);
     }
 
@@ -47,17 +49,19 @@ public class LoggingRecord implements SerializationContainer {
         this(channelId,
                 ChannelConfig.ADDRESS_DEFAULT,
                 ChannelConfig.SETTINGS_DEFAULT,
+                ChannelConfig.LOGGING_SETTINGS_DEFAULT,
                 ChannelConfig.VALUE_TYPE_DEFAULT, null, record);
     }
 
     public LoggingRecord(String channelId, 
-            String channelAddress, String ChannelSettings, 
-            ValueType valueType, Integer ValueTypeLength, 
-            Record record) {
+            String channelAddress, String ChannelSettings, String loggingSettings,
+            ValueType valueType, Integer ValueTypeLength, Record record) {
 
         this.channelId = channelId;
         this.channelAddress = channelAddress;
         this.channelSettings = ChannelSettings;
+
+        this.loggingSettings = loggingSettings;
         
         this.valueType = valueType;
         this.valueTypeLength = ValueTypeLength;
@@ -78,6 +82,11 @@ public class LoggingRecord implements SerializationContainer {
     public String getChannelSettings() {
         return channelSettings;
     }
+
+	@Override
+	public String getLoggingSettings() {
+		return loggingSettings;
+	}
 
     @Override
     public ValueType getValueType() {
