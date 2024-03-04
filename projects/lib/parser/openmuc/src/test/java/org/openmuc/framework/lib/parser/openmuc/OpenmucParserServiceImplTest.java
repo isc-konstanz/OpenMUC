@@ -181,6 +181,11 @@ class OpenmucParserServiceImplTest {
         }
     
         @Override
+        public String getLoggingSettings() {
+            return null;
+        }
+    
+        @Override
         public ValueType getValueType() {
             return valueType;
         }
