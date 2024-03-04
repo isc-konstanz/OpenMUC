@@ -29,6 +29,8 @@ public interface SerializationContainer {
 
     String getChannelSettings();
 
+    String getLoggingSettings();
+
     ValueType getValueType();
 
     Integer getValueTypeLength();
