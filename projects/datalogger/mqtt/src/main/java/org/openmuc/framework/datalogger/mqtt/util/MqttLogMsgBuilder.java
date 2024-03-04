@@ -24,6 +24,7 @@ package org.openmuc.framework.datalogger.mqtt.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.openmuc.framework.datalogger.mqtt.dto.MqttLogChannel;
@@ -73,52 +74,33 @@ public class MqttLogMsgBuilder {
     }
 
     private List<MqttLogMsg> logMultiple(List<LoggingRecord> loggingRecords) {
-
         List<MqttLogMsg> logMessages = new ArrayList<>();
 
-        if (hasDifferentTopics()) {
-
-            throw new UnsupportedOperationException(
-                    "logMultiple feature is an experimental feature: logMultiple=true is not possible with "
-                            + "different topics in logSettings. Set logMultiple=false OR leave it true "
-                            + "and assign same topic to all channels.");
-
-            // TODO make improvement: check only for given channels
-
-            // TODO make improvement:
-            // CASE A - OK
-            // ch1, ch2, ch3 = 5 s - topic1
-            // CASE B - NOT SUPPORTED YET
-            // ch1, ch2 logInterval = 5 s - topic1
-            // ch3, ch3 logInterval = 10 s - topic2
-            // ch4 logInterval 20 s - topic 3
-            // if isLogMultiple=true, then group channels per topic
-            // or default: log warning and use logSingle instead
-
+        Map<String, List<LoggingRecord>> loggingTopicRecords = new HashMap<String, List<LoggingRecord>>();
+        for (LoggingRecord loggingRecord : loggingRecords) {
+            String topic = channelsToLog.get(loggingRecord.getChannelId()).topic;
+        	List<LoggingRecord> topicRecords = loggingTopicRecords.get(topic);
+        	if (topicRecords == null) {
+        		topicRecords = new ArrayList<LoggingRecord>();
+        		loggingTopicRecords.put(topic, topicRecords);
+        	}
+        	topicRecords.add(loggingRecord);
         }
-        else {
+        for (String topic : loggingTopicRecords.keySet()) {
+        	List<LoggingRecord> topicRecords = loggingTopicRecords.get(topic);
             try {
-                // since all topics are the same, get the topic of
-                String topic = channelsToLog.get(loggingRecords.get(0).getChannelId()).topic;
-                byte[] message = parserService.serialize(loggingRecords);
-                String channelIds = loggingRecords.stream()
+                byte[] message = parserService.serialize(topicRecords);
+                String channelIds = topicRecords.stream()
                         .map(record -> record.getChannelId())
                         .collect(Collectors.toList())
                         .toString();
                 logMessages.add(new MqttLogMsg(channelIds, message, topic));
+                
             } catch (SerializationException e) {
                 logger.error("failed to parse records {}", e.getMessage());
             }
-
         }
-
         return logMessages;
-    }
-
-    private boolean hasDifferentTopics() {
-        long distinct = channelsToLog.values().stream().map(channel -> channel.topic).distinct().count();
-        // If the count of this stream is smaller or equal to 1, then all the elements are equal. so > 1 means unequal
-        return distinct > 1;
     }
 
 }
