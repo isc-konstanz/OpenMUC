@@ -35,6 +35,10 @@ public interface ChannelHandleContainer extends ChannelContainer, SerializationC
         return getChannel().getSettings();
     }
 
+	default String getLoggingSettings() {
+		return getChannel().getLoggingSettings();
+	}
+
     default ValueType getValueType() {
         return getChannel().getValueType();
     }

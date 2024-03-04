@@ -119,7 +119,7 @@ public class LoggingController {
         logContainerMap.forEach((k, v) -> {
             if (loggerWithIdNotRequiresSettings(k)) {
                 v.add(new LoggingRecord(channel.getId(),
-                        channel.getAddress(), channel.getSettings(),
+                        channel.getAddress(), channel.getSettings(), channel.getLoggingSettings(),
                         channel.getValueType(), channel.getValueTypeLength(), latestRecord));
             }
         });
@@ -139,7 +139,7 @@ public class LoggingController {
             if (logContainerMap.get(definedLogger) != null) {
                 Record latestRecord = channel.getLatestRecord();
                 logContainerMap.get(definedLogger).add(new LoggingRecord(channel.getId(),
-                        channel.getAddress(), channel.getSettings(),
+                        channel.getAddress(), channel.getSettings(), channel.getLoggingSettings(),
                         channel.getValueType(), channel.getValueTypeLength(), latestRecord));
             }
             else if (activeDataLoggers.size() > 0) {

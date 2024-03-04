@@ -228,7 +228,7 @@ public class SqlClient extends DriverDevice implements SqlSettings {
     }
 
     @Configure
-    protected void configure() throws ArgumentSyntaxException {
+    public void configure() throws ArgumentSyntaxException {
         if (database == null || database.isEmpty()) {
             throw new ArgumentSyntaxException("Database name needs to be configured");
         }
@@ -254,7 +254,7 @@ public class SqlClient extends DriverDevice implements SqlSettings {
     }
 
     @Connect
-    protected void connect() throws ArgumentSyntaxException, ConnectionException {
+    public void connect() throws ArgumentSyntaxException, ConnectionException {
         logger.info("Initializing SQL connection \"{}\"", url);
         try {
             if (connector != null) {

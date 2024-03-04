@@ -53,6 +53,11 @@ public class FlotteladenParserContainer implements SerializationContainer {
 	}
 
 	@Override
+	public String getLoggingSettings() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public ValueType getValueType() {
 		return type;
 	}
