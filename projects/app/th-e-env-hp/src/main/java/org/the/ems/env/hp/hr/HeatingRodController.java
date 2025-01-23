@@ -32,13 +32,18 @@ import org.the.ems.env.Controller;
 import org.the.ems.env.PulseWidthModulator;
 import org.the.ems.env.RecordAverageListener;
 import org.the.ems.env.hp.HeatPumpEnvironmentProperties;
+import org.the.ems.env.hp.HeatPumpEnvironmentSettings;
 
 public class HeatingRodController extends PulseWidthModulator {
     private static final Logger logger = LoggerFactory.getLogger(HeatingRodController.class);
 
-    private final Controller percentSetpointController;
+    private final Controller controller;
 
-    private final Value percentSetpointDefault;
+    private final Value controllerSetpointDefault;
+
+    private final int controllerSetInterval;
+
+    private volatile long controllerSetTimestamp = Long.MAX_VALUE;
 
     private final double tempSetpoint;
     private final double tempHysteresis;
@@ -59,8 +64,9 @@ public class HeatingRodController extends PulseWidthModulator {
                 properties.getPwmDutyCycleMax());
         logger.info("Activating TH-E Environment: Heating Rod Controller");
 
-        percentSetpointDefault = new DoubleValue(properties.getHeatingRodPwmSetpointDefault());
-        percentSetpointController = new Controller(.5, 2./period, 1.*period, 100, ratioMin*100);
+        controller = new Controller(.1, 1./period, 1.*period, 100, ratioMin*100);
+        controllerSetpointDefault = new DoubleValue(properties.getHeatingRodPwmSetpointDefault());
+        controllerSetInterval = properties.getInterval();
 
         tempSetpoint = properties.getHeatingRodTemperatureSetpoint();
         tempHysteresis = properties.getHeatingRodTemperatureHysteresis();
@@ -93,7 +99,7 @@ public class HeatingRodController extends PulseWidthModulator {
     @Override
     public void reset() {
         super.reset();
-        percentSetpointController.reset();
+        controller.reset();
     }
 
     private boolean verifyPump() {
@@ -110,10 +116,11 @@ public class HeatingRodController extends PulseWidthModulator {
 
     @Override
     protected void onPulse(PulseEdge edge) {
-        if (edge == PulseEdge.FALLING) {
-            double controlSetpoint  = Math.round(percentSetpointController.process(period, tempSetpoint, sourceTempAvgListener.getMean()));
+        if (edge == PulseEdge.FALLING && System.currentTimeMillis() - controllerSetTimestamp >= controllerSetInterval) {
+            double controlSetpoint  = Math.round(controller.process(controllerSetInterval, tempSetpoint, sourceTempAvgListener.getMean()));
 
             if (Math.abs(controlSetpoint - percentSetpoint) > .5) {
+            	controllerSetTimestamp = System.currentTimeMillis();
                 set(controlSetpoint);
 
                 logger.info("Updated Heating rod PWM duty cycle setpoint: {}", controlSetpoint);
@@ -155,8 +162,9 @@ public class HeatingRodController extends PulseWidthModulator {
                 logger.info("Heat pump source inlet temperatur {} < {}°C. Switching heating rod on", 
                         String.format("%.1f", record.getValue().asDouble()), String.format("%.1f", tempSetpoint + tempHysteresis));
                 
-                double percentSetpoint = percentSetpointDefault.asDouble();
-                percentSetpointController.setIntegal(percentSetpoint);
+                double percentSetpoint = controllerSetpointDefault.asDouble();
+                controller.setIntegal(percentSetpoint);
+                controllerSetTimestamp = System.currentTimeMillis();
                 set(percentSetpoint);
             }
         }

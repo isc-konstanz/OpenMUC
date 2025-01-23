@@ -26,6 +26,9 @@ import org.openmuc.framework.lib.osgi.config.ServiceProperty;
 
 public class HeatPumpEnvironmentSettings extends GenericSettings {
 
+	static final String INTERVAL = "interval";
+    static final int INTERVAL_DEFAULT = 3*60;
+
 	static final String PWM_PERIOD = "pwmPeriod";
 	static final String PWM_DUTY_CYCLE_MIN = "pwmDutyCycleMin";
 	static final String PWM_DUTY_CYCLE_MAX = "pwmDutyCycleMax";
@@ -43,6 +46,10 @@ public class HeatPumpEnvironmentSettings extends GenericSettings {
 
     public HeatPumpEnvironmentSettings() {
         super();
+        properties.put(INTERVAL, new ServiceProperty(
+                INTERVAL, "Interval of the heating rod PWM PID control in seconds", String.valueOf(INTERVAL_DEFAULT), false)
+        );
+
         properties.put(PWM_PERIOD, new ServiceProperty(
         		PWM_PERIOD, "PWM interval or period in seconds", "20", false)
         );
@@ -55,13 +62,13 @@ public class HeatPumpEnvironmentSettings extends GenericSettings {
 
 
         properties.put(HEATING_ROD_PWM_SETPOINT_DEFAULT, new ServiceProperty(
-        		HEATING_ROD_PWM_SETPOINT_DEFAULT, "Default PWM duty cycle setpoint for the heating rod to start with", "66", true)
+        		HEATING_ROD_PWM_SETPOINT_DEFAULT, "Default PWM duty cycle setpoint for the heating rod to start with", "50", true)
         );
         properties.put(HEATING_ROD_TEMP_SETPOINT, new ServiceProperty(
         		HEATING_ROD_TEMP_SETPOINT, "Temperature setpoint for the heating rod", "10", true)
         );
         properties.put(HEATING_ROD_TEMP_HYSTERESIS, new ServiceProperty(
-        		HEATING_ROD_TEMP_HYSTERESIS, "Temperature hysteresis for the heating rod", "1", true)
+        		HEATING_ROD_TEMP_HYSTERESIS, "Temperature hysteresis for the heating rod", "5", true)
         );
         properties.put(HEATING_ROD_STATE, new ServiceProperty(
         		HEATING_ROD_STATE, "Channel ID for the state of the heating rod", "hp_source_hr_state", true)

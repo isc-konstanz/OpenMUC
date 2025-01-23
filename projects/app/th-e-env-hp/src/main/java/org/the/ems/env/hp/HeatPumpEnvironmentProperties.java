@@ -34,6 +34,10 @@ public class HeatPumpEnvironmentProperties extends PropertyHandler {
         this.dataAccessService = dataAccessService;
     }
 
+    public int getInterval() {
+    	return getInt(HeatPumpEnvironmentSettings.INTERVAL)*1000;
+    }
+
     public int getPwmPeriod() {
     	return getInt(HeatPumpEnvironmentSettings.PWM_PERIOD)*1000;
     }
