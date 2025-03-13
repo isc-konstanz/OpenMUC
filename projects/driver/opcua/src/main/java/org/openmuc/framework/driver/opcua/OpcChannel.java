@@ -21,11 +21,9 @@
 package org.openmuc.framework.driver.opcua;
 
 import static org.openmuc.framework.config.option.annotation.OptionType.ADDRESS;
-import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.BooleanValue;
@@ -49,16 +47,6 @@ public class OpcChannel extends DriverChannel {
             description = "The identifier string for a node in the address space of an OPC UA server.")
     private String identifier;
 
-    @Option(id="ns",
-            type = SETTING,
-            name = "Namespace index",
-            description = "The namespace index formatted as a base 10 number. The index an OPC UA server uses "
-                        + "for a namespace URI. The namespace URI identifies the naming authority defining the "
-                        + "identifiers of NodeIds, e.g. the OPC Foundation, other standard bodies and consortia, "
-                        + "the underlying system, the local server.",
-            mandatory = false)
-    private int namespaceIndex = -1;
-
     private NodeId nodeId;
 
     public NodeId getNodeId() {
@@ -67,10 +55,13 @@ public class OpcChannel extends DriverChannel {
 
     @Configure
     public void setNamespace(OpcConnection connection) {
-        if (namespaceIndex < 0) {
-            namespaceIndex = connection.getNamespaceIndex();
-        }
-        nodeId = new NodeId(namespaceIndex, identifier);
+    	for (NodeId nodeId: connection.nodes) {
+    		if (nodeId.getIdentifier().equals(identifier)) {
+    	        this.nodeId = nodeId;
+    	        return;
+    		}
+    	}
+        nodeId = new NodeId(connection.getNamespaceIndex(), identifier);
     }
 
     public Record decode(DataValue data) {
@@ -102,23 +93,31 @@ public class OpcChannel extends DriverChannel {
         switch (getValueType()) {
         case BOOLEAN:
             variant = new Variant(value.asBoolean());
+            break;
         case BYTE:
             variant = new Variant(value.asByte());
+            break;
         case SHORT:
             variant = new Variant(value.asShort());
+            break;
         case INTEGER:
             variant = new Variant(value.asInt());
+            break;
         case LONG:
             variant = new Variant(value.asLong());
+            break;
         case FLOAT:
             variant = new Variant(value.asFloat());
+            break;
         case DOUBLE:
             variant = new Variant(value.asDouble());
+            break;
         default:
             variant = new Variant(value.asString());
+            break;
         }
-        // FIXME: verify necessity of timestamp
-        return new DataValue(variant, StatusCode.GOOD, null);
+        // FIXME: verify necessity of status or timestamp
+        return new DataValue(variant, null, null);
     }
 
 }

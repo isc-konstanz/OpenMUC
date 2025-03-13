@@ -3,7 +3,7 @@ project.ext {
     projectDescription = "OPC UA driver for the OpenMUC framework."
 }
 
-def miloVersion = '0.4.3'
+def miloVersion = '0.6.1'
 
 configurations.create('embed')
 

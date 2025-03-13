@@ -27,7 +27,7 @@ import static org.openmuc.framework.config.option.annotation.OptionType.SETTING;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -35,17 +35,20 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfigBuilder;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.openmuc.framework.config.option.annotation.Option;
 import org.openmuc.framework.data.DoubleValue;
@@ -78,12 +81,14 @@ public class OpcConnection extends DriverDevice {
             mandatory = false)
     private String namespaceUri = null;
 
-    private int namespaceIndex = 0;
+    private UShort namespaceIndex = UShort.valueOf(0);
 
     private String host;
     private int port;
 
-    public int getNamespaceIndex() {
+    List<NodeId> nodes = new ArrayList<NodeId>();
+
+    public UShort getNamespaceIndex() {
         return namespaceIndex;
     }
 
@@ -123,20 +128,18 @@ public class OpcConnection extends DriverDevice {
 
             client = OpcUaClient.create(clientBuilder.build());
             client.connect().get();
-
-            // Get a typed reference to the Server object: ServerNode
-            ServerTypeNode serverNode = client.getAddressSpace().getObjectNode(
-                    Identifiers.Server, 
-                    ServerTypeNode.class
-                ).get();
-
+            
             if (namespaceUri != null && !namespaceUri.isEmpty()) {
-                try {
-                    namespaceIndex = Integer.parseInt(namespaceUri);
-
-                } catch (NumberFormatException e) {
-                    namespaceIndex = Arrays.asList(serverNode.getNamespaceArray().get()).indexOf(namespaceUri);
-                }
+                namespaceIndex = UShort.valueOf(namespaceUri);
+            }
+            
+            NamespaceTable namespaceTable = client.getNamespaceTable();
+            List<ReferenceDescription> references = client.getAddressSpace().browse(Identifiers.ObjectsFolder);
+            for (ReferenceDescription reference : references) {
+            	ExpandedNodeId nodeId = reference.getNodeId();
+            	if (nodeId.getNamespaceIndex().equals(namespaceIndex)) {
+            		nodes.add(nodeId.toNodeIdOrThrow(namespaceTable));
+            	}
             }
         } catch (Exception e) {
             logger.error("OPC connection to server failed {}", e);
